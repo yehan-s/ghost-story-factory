@@ -32,7 +32,13 @@ def _build_llm():
             or os.getenv("MOONSHOT_MODEL")
             or "kimi-k2-0905-preview"
         )
-        return LLM(model=model, api_key=kimi_key, base_url=base)
+        # Moonshot/Kimi 是 OpenAI 兼容接口，但模型名不带提供商前缀，需显式指定 provider
+        return LLM(
+            model=model,
+            api_key=kimi_key,
+            api_base=base,
+            custom_llm_provider="openai",
+        )
 
     # OpenAI 或兼容代理
     openai_key = os.getenv("OPENAI_API_KEY")
