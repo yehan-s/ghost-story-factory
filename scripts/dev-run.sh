@@ -21,9 +21,9 @@ if [[ -f .env ]]; then
   set +a
 fi
 
-# 关键环境变量检查
-if [[ -z "${OPENAI_API_KEY:-}" ]]; then
-  echo "[dev-run] 错误：未检测到 OPENAI_API_KEY（可在 .env 中配置）。" >&2
+# 关键环境变量检查：优先 KIMI_API_KEY，其次 OPENAI_API_KEY
+if [[ -z "${KIMI_API_KEY:-}" && -z "${OPENAI_API_KEY:-}" ]]; then
+  echo "[dev-run] 错误：未检测到 KIMI_API_KEY 或 OPENAI_API_KEY（可在 .env 中配置）。" >&2
   echo "[dev-run] 退出。" >&2
   exit 1
 fi
@@ -70,4 +70,3 @@ else
   echo "[dev-run] 警告：未发现期望的输出文件 ./$OUT_FILE（上方日志中可能有错误）。" >&2
   exit 2
 fi
-
