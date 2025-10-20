@@ -3,7 +3,7 @@ import os
 import re
 from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import GoogleSearchRun
-from langchain_openai import ChatOpenAI
+from crewai.llm import LLM
 from dotenv import load_dotenv
 
 # 加载 .env 文件中的环境变量 (如 OPENAI_API_KEY、Google 搜索相关密钥)
@@ -32,15 +32,15 @@ def _build_llm():
             or os.getenv("MOONSHOT_MODEL")
             or "kimi-k2-0905-preview"
         )
-        return ChatOpenAI(model=model, api_key=kimi_key, base_url=base)
+        return LLM(model=model, api_key=kimi_key, base_url=base)
 
     # OpenAI 或兼容代理
     openai_key = os.getenv("OPENAI_API_KEY")
     if openai_key:
         base = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_API_BASE")
         model = os.getenv("OPENAI_MODEL", "gpt-4o")
-        # ChatOpenAI 支持 base_url=None，则走官方默认
-        return ChatOpenAI(model=model, api_key=openai_key, base_url=base)
+        # LLM 支持 base_url=None，则走官方默认
+        return LLM(model=model, api_key=openai_key, base_url=base)
 
     # 无任何可用密钥
     raise RuntimeError(
