@@ -90,3 +90,31 @@ pipx run --spec ghost-story-factory get-story --city "东莞"
   - 可选：`OPENAI_MODEL=gpt-4o`
 
 优先级：`KIMI_*` > `OPENAI_*`。未配置任一密钥将无法运行。
+
+## 自定义 Prompt 文件
+
+本项目支持用仓库根目录下的 Markdown 提示词文件，精确控制三条命令的行为与风格：
+
+- set-city.md
+  - 作用：生成城市候选列表
+  - 变量：`{city}`
+  - 输出：严格的 JSON 数组（每项仅含 `title`,`blurb`,`source`）
+  - 约束：只返回一个 ```json 代码块；强制 ASCII 双引号，不得使用中文引号/书名号
+
+- get-struct.md
+  - 作用：从原始素材中提炼结构化框架
+  - 变量：`{raw_text_from_agent_a}`（由命令内部先让研究员汇编长文素材后注入）
+  - 输出：仅一个 JSON 代码块；必须包含键：
+    - `title` (string)
+    - `city` (string)
+    - `location_name` (string)
+    - `core_legend` (string)
+    - `key_elements` (string[])
+    - `potential_roles` (string[])
+
+- get-story.md
+  - 作用：将结构化 JSON 扩写为 UP 主讲述风格的 Markdown 文案
+  - 变量：`{json_skeleton_from_agent_b}`（即 `*_struct.json` 的完整 JSON 字符串）
+  - 输出：仅 Markdown 文案，≥1500 字，强氛围、第二人称倾向、可直接配音
+
+放置/修改以上文件后，命令会优先读取这些 md；若缺失，则使用内置默认提示词。
