@@ -1,6 +1,7 @@
 import argparse
 import os
 import re
+import json
 from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import GoogleSearchRun
 from crewai.llm import LLM
@@ -8,6 +9,16 @@ from dotenv import load_dotenv
 
 # 加载 .env 文件中的环境变量 (如 OPENAI_API_KEY、Google 搜索相关密钥)
 load_dotenv()
+
+
+def _load_prompt(name: str) -> str | None:
+    """从当前工作目录加载自定义 Prompt 文件，不存在则返回 None。"""
+    path = os.path.join(os.getcwd(), name)
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return f.read()
+    except Exception:
+        return None
 
 def _build_llm():
     """根据环境变量选择并构建 LLM 客户端。
@@ -152,17 +163,46 @@ def run():
     researcher, analyst, writer = _make_agents()
     task_search, task_analyze, task_write = _make_tasks(researcher, analyst, writer)
 
-    # 3. 组建 Crew (团队) 和 Process (工作流)
-    story_crew = Crew(
-        agents=[researcher, analyst, writer],
-        tasks=[task_search, task_analyze, task_write],
-        process=Process.sequential,  # A -> B -> C 顺序执行
-        verbose=True,
-    )
+    # 3. 若存在结构化框架文件，则直接按框架生成故事；否则走 A->B->C 流程
+    struct_path = f"{_sanitize_filename(city)}_struct.json"
+    if os.path.exists(struct_path):
+        try:
+            struct_obj = _read_json_file(struct_path)
+            struct_json = json.dumps(struct_obj, ensure_ascii=False, indent=2)
+        except Exception:
+            with open(struct_path, "r", encoding="utf-8") as f:
+                struct_json = f.read()
 
-    # 4. 启动任务
-    inputs = {"city": city}
-    final_story_content = story_crew.kickoff(inputs=inputs)
+        # 尝试加载 get-story.md 作为写作 Prompt（若不存在则使用内置提示）
+        writer_prompt = _load_prompt("get-story.md")
+        if writer_prompt is None:
+            writer_prompt = (
+                "[SYSTEM]\n你是恐怖故事 UP 主，按给定 JSON 框架扩写成 1500+ 字 Markdown。\n"
+                "[严格指令]\n只返回 Markdown 文案。\n[USER]\n[故事框架]\n{json_skeleton_from_agent_b}\n[/故事框架]"
+            )
+
+        writer_only = Task(
+            description=writer_prompt,
+            expected_output='Markdown 格式完整故事',
+            agent=writer,
+        )
+        story_crew = Crew(
+            agents=[writer],
+            tasks=[writer_only],
+            process=Process.sequential,
+            verbose=True,
+        )
+        inputs = {"json_skeleton_from_agent_b": struct_json}
+        final_story_content = story_crew.kickoff(inputs=inputs)
+    else:
+        story_crew = Crew(
+            agents=[researcher, analyst, writer],
+            tasks=[task_search, task_analyze, task_write],
+            process=Process.sequential,  # A -> B -> C 顺序执行
+            verbose=True,
+        )
+        inputs = {"city": city}
+        final_story_content = story_crew.kickoff(inputs=inputs)
 
     # 5. 保存产出到本地文件
     output_basename = f"{_sanitize_filename(city)}_story.md"
@@ -184,3 +224,272 @@ def run():
 if __name__ == "__main__":
     # 允许直接运行：python src/ghost_story_factory/main.py --city "广州"
     run()
+
+
+# ---------------- 1.3 命令实现：set-city / get-struct / get-story ----------------
+
+def _write_json_file(path: str, data: object) -> None:
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _read_json_file(path: str) -> object:
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _escape_json_str(s: str) -> str:
+    """将文本转换为 JSON 字符串内容（不含外层引号）。"""
+    return json.dumps(s, ensure_ascii=False)[1:-1]
+
+
+def _normalize_candidates_blob(blob: str) -> str:
+    """尽力将近似 JSON 的候选列表修正为可解析的 JSON。
+
+    处理要点：
+    - 去除 BOM / 不可见字符
+    - 修正常见字段值使用中文引号包裹的情况（仅限字段 title/blurb/source）
+    """
+    blob = blob.replace("\ufeff", "")
+
+    import re as _re
+
+    def fix_field(field: str, text: str) -> str:
+        # 将 "field": “xxx” 修正为 "field": "xxx"
+        pattern = rf'("{field}"\s*:\s*)[“](.*?)[”]'
+        def repl(m: _re.Match):
+            content = m.group(2)
+            return f'{m.group(1)}"{_escape_json_str(content)}"'
+        return _re.sub(pattern, repl, text, flags=_re.S)
+
+    for fld in ("title", "blurb", "source"):
+        blob = fix_field(fld, blob)
+    return blob
+
+
+def _generate_candidates(city: str) -> list | None:
+    """生成候选故事列表，并写入 <city>_candidates.json 或 .txt；返回 JSON 列表或 None。"""
+    researcher, _, _ = _make_agents()
+    # 优先使用 set-city.md 自定义提示词
+    description = _load_prompt("set-city.md")
+    if description is None:
+        description = (
+            "请针对城市 {city} 汇总至少 5 条广为流传的灵异故事/都市传说候选，"
+            "以 JSON 数组输出。每项包含: title(故事名), blurb(一句话简介), source(可选来源或线索)。"
+            "仅输出 JSON，不要其它文字。"
+        )
+    task = Task(
+        description=description,
+        expected_output="JSON 数组，字段: title, blurb, source",
+        agent=researcher,
+    )
+    crew = Crew(agents=[researcher], tasks=[task], process=Process.sequential, verbose=True)
+    raw = crew.kickoff(inputs={"city": city})
+
+    text = str(raw)
+    out_json = f"{_sanitize_filename(city)}_candidates.json"
+    out_txt = out_json.replace(".json", ".txt")
+
+    # 1) 直接尝试解析
+    try:
+        data = json.loads(text)
+        if isinstance(data, list):
+            _write_json_file(out_json, data)
+            return data
+    except Exception:
+        pass
+
+    # 2) 提取数组并修正
+    import re as _re
+    m = _re.search(r"\[[\s\S]*\]", text)
+    if m:
+        blob = m.group(0)
+        fixed = _normalize_candidates_blob(blob)
+        try:
+            data = json.loads(fixed)
+            if isinstance(data, list):
+                _write_json_file(out_json, data)
+                return data
+        except Exception:
+            pass
+
+    # 3) 失败则落原始文本
+    with open(out_txt, "w", encoding="utf-8") as f:
+        f.write(text)
+    return None
+
+
+def set_city():
+    """命令 set-city：
+    - 输入：--city
+    - 输出：打印候选故事列表，并保存到 ./<city>_candidates.json
+    """
+    parser = argparse.ArgumentParser(description="列出城市的灵异故事候选（名称 + 简介）")
+    parser.add_argument("--city", type=str, required=True, help="目标城市")
+    args = parser.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    data = _generate_candidates(city)
+    out_json = f"{_sanitize_filename(city)}_candidates.json"
+    if data is not None:
+        print(f"\n[AI 助手]: 候选故事列表已保存: ./{out_json}\n")
+        for i, item in enumerate(data, 1):
+            title = item.get("title") if isinstance(item, dict) else None
+            blurb = item.get("blurb") if isinstance(item, dict) else None
+            print(f"[{i}] {title} - {blurb}")
+    else:
+        print(f"\n[AI 助手]: 未能解析为 JSON，已保存原始文本到 ./{out_json.replace('.json','.txt')}\n")
+
+
+def get_struct():
+    """命令 get-struct：
+    - 输入：--city 必填； --index 或 --title 选其一（默认 index=1）
+    - 行为：读取 ./<city>_candidates.json，选择指定故事，产出详细结构化 JSON 到 ./<city>_struct.json
+    """
+    p = argparse.ArgumentParser(description="从候选中选定故事并生成结构化框架")
+    p.add_argument("--city", type=str, required=True, help="目标城市")
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--index", type=int, help="候选序号（从1开始）")
+    g.add_argument("--title", type=str, help="候选标题（模糊匹配）")
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    cand_path = f"{_sanitize_filename(city)}_candidates.json"
+    cand_txt_path = cand_path.replace(".json", ".txt")
+    if not os.path.exists(cand_path) and not os.path.exists(cand_txt_path):
+        print(f"[AI 助手]: 未找到候选文件 ./{cand_path}，将先自动生成候选……")
+        _generate_candidates(city)
+
+    candidates = None
+    candidates_text = None
+    if os.path.exists(cand_path):
+        try:
+            candidates = _read_json_file(cand_path)
+        except Exception:
+            candidates = None
+    elif os.path.exists(cand_txt_path):
+        with open(cand_txt_path, "r", encoding="utf-8") as f:
+            candidates_text = f.read()
+
+    picked_title = None
+    picked_blurb = None
+    picked_index = args.index or 1
+
+    if isinstance(candidates, list):
+        if args.title:
+            key = args.title.strip().lower()
+            for item in candidates:
+                title = (item.get("title") if isinstance(item, dict) else None) or ""
+                if key in title.lower():
+                    picked_title = title
+                    picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
+                    break
+        else:
+            idx = picked_index - 1
+            if 0 <= idx < len(candidates):
+                item = candidates[idx]
+                picked_title = (item.get("title") if isinstance(item, dict) else str(item)) or ""
+                picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
+
+    # 先用研究员对“选中的候选”进行素材汇编，得到原始长文本
+    researcher, analyst, _ = _make_agents()
+    research_desc = (
+        "围绕城市 {city} 的选中候选故事，汇编原始素材为长文本。\n"
+        "若给定标题与简介，则以其为主题展开收集与整合。\n"
+        "请合并来源梳理、传说变体、时间线、目击叙述与反驳观点，输出为 Markdown 长文。\n"
+        "选中候选：\n标题：{picked_title}\n简介：{picked_blurb}\n(如标题为空，则请根据城市最具代表性的一个传说自动选择)\n"
+    )
+    research_task = Task(
+        description=research_desc,
+        expected_output="关于选中候选的长篇原始素材（Markdown 长文）",
+        agent=researcher,
+    )
+    research_crew = Crew(agents=[researcher], tasks=[research_task], process=Process.sequential, verbose=True)
+    research_inputs = {"city": city, "picked_title": picked_title or "", "picked_blurb": picked_blurb or ""}
+    raw_material = str(research_crew.kickoff(inputs=research_inputs))
+
+    # 读取 get-struct.md 提示词，驱动分析师输出严格 JSON 代码块
+    def _load_prompt(name: str) -> str | None:
+        p = os.path.join(os.getcwd(), name)
+        try:
+            with open(p, "r", encoding="utf-8") as f:
+                return f.read()
+        except Exception:
+            return None
+
+    prompt = _load_prompt("get-struct.md")
+    if prompt is None:
+        prompt = (
+            "[SYSTEM]\n你是一个金牌编剧与故事分析师。\n"
+            "[严格指令]\n1. 只返回一个 JSON 代码块。2. 严禁任何额外说明。\n"
+            "键：title, city, location_name, core_legend, key_elements(数组), potential_roles(数组)\n"
+            "[USER]\n[原始故事素材]\n{raw_text_from_agent_a}\n[/原始故事素材]"
+        )
+
+    analyze_task = Task(
+        description=prompt,
+        expected_output="仅一个 JSON 代码块，字段按规范返回",
+        agent=analyst,
+    )
+    analyze_inputs = {"raw_text_from_agent_a": raw_material, "city": city}
+    analyze_crew = Crew(agents=[analyst], tasks=[analyze_task], process=Process.sequential, verbose=True)
+    text = str(analyze_crew.kickoff(inputs=analyze_inputs))
+
+    # 提取 JSON 对象
+    data = None
+    def _try_parse_obj(s: str):
+        try:
+            v = json.loads(s)
+            return v if isinstance(v, dict) else None
+        except Exception:
+            return None
+
+    data = _try_parse_obj(text)
+    if data is None:
+        import re as _re
+        m = _re.search(r"\{[\s\S]*\}", text)
+        if m:
+            blob = m.group(0)
+            # 将中文引号替换为转义 ASCII 引号，避免破坏字符串
+            blob = blob.replace("\ufeff", "")
+            blob = blob.replace('“', '\\"').replace('”', '\\"')
+            blob = blob.replace('’', "'").replace('‘', "'")
+            data = _try_parse_obj(blob)
+
+    def _normalize_struct(d: dict, city_name: str) -> dict:
+        # 规范化键名与必填字段
+        out = {}
+        out["title"] = str(d.get("title") or "").strip() or "未命名故事"
+        out["city"] = str(d.get("city") or city_name)
+        loc = d.get("location_name") or d.get("location") or ""
+        out["location_name"] = str(loc)
+        out["core_legend"] = str(d.get("core_legend") or d.get("legend") or "").strip()
+        # key_elements
+        ke = d.get("key_elements")
+        if not isinstance(ke, list):
+            ke = []
+        out["key_elements"] = [str(x) for x in ke if isinstance(x, (str,int,float))]
+        # potential_roles
+        roles = d.get("potential_roles")
+        if not isinstance(roles, list):
+            # 简单兜底，避免空字段
+            roles = ["目击者", "讲述者", "地方居民"]
+        out["potential_roles"] = [str(x) for x in roles if isinstance(x, (str,int,float))]
+        return out
+
+    out_path = f"{_sanitize_filename(city)}_struct.json"
+    if data is not None:
+        data = _normalize_struct(data, city)
+        _write_json_file(out_path, data)
+        print(f"\n[AI 助手]: 故事框架已保存: ./{out_path}\n")
+        print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        with open(out_path.replace(".json", ".txt"), "w", encoding="utf-8") as f:
+            f.write(text)
+        raise SystemExit("未能解析为 JSON，请检查输出（已保存为 .txt）。")

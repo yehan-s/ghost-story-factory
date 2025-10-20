@@ -27,9 +27,13 @@ uv pip install -e .
 
 # 4) 运行（两种方式，择一）
 # A) 可编辑安装后的直接运行
-get-story --city "广州"
+set-city --city "广州"      # 列出候选（名称+简介），保存 广州_candidates.json
+get-struct --city "广州"   # 选定候选并生成结构化框架，保存 广州_struct.json
+get-story --city "广州"    # 若存在 广州_struct.json 则按框架写作，否则走全流程
 
 # B) 本地临时环境运行（不污染环境）
+uvx --from . set-city --city "广州"
+uvx --from . get-struct --city "广州"
 uvx --from . get-story --city "广州"
 ```
 
@@ -37,6 +41,8 @@ uvx --from . get-story --city "广州"
 
 ```bash
 # 使用 uvx（推荐写法）
+uvx --from ghost-story-factory set-city --city "东莞"
+uvx --from ghost-story-factory get-struct --city "东莞"
 uvx --from ghost-story-factory get-story --city "东莞"
 
 # 锁定版本（可选，保证可重复）

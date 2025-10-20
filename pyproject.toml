@@ -29,8 +29,9 @@ dependencies = [
 
 [project.scripts]
 get-story = "ghost_story_factory.main:run"
+set-city = "ghost_story_factory.main:set_city"
+get-struct = "ghost_story_factory.main:get_struct"
 
 [project.urls]
 Homepage = "https://github.com/your-username/ghost-story-factory"
 "Bug Tracker" = "https://github.com/your-username/ghost-story-factory/issues"
-
