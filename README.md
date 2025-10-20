@@ -25,18 +25,25 @@ uv pip install -e .
 #   GOOGLE_API_KEY=...
 #   GOOGLE_CSE_ID=...
 
-# 4) 运行
+# 4) 运行（两种方式，择一）
+# A) 可编辑安装后的直接运行
 get-story --city "广州"
+
+# B) 本地临时环境运行（不污染环境）
+uvx --from . get-story --city "广州"
 ```
 
 ### 作为一次性工具运行（发布到 PyPI 后）
 
 ```bash
-# 使用 uvx（需用户已安装 uv）
-uvx ghost-story-factory get-story --city "东莞"
+# 使用 uvx（推荐写法）
+uvx --from ghost-story-factory get-story --city "东莞"
 
-# 或使用 pipx
-pipx run ghost-story-factory get-story --city "东莞"
+# 锁定版本（可选，保证可重复）
+uvx --from ghost-story-factory==1.0.0 get-story --city "东莞"
+
+# 或使用 pipx（等价）
+pipx run --spec ghost-story-factory get-story --city "东莞"
 ```
 
 ## 依赖
@@ -60,4 +67,3 @@ pipx run ghost-story-factory get-story --city "东莞"
 
 - 需自行提供并合法使用 API Key（OpenAI/Google 等）。
 - 网络检索结果可能包含不准确或有偏差的信息，使用前请审阅与二次创作。
-
