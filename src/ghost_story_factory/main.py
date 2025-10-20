@@ -151,6 +151,7 @@ def run():
     # 1. 解析命令行参数
     parser = argparse.ArgumentParser(description="AI 灵异故事助手 (MCP-CLI)")
     parser.add_argument("--city", type=str, required=True, help="要搜索的目标城市名称")
+    parser.add_argument("--out", type=str, required=False, help="自定义输出文件路径（可含目录）")
     args = parser.parse_args()
 
     city = (args.city or "").strip()
@@ -163,9 +164,54 @@ def run():
     researcher, analyst, writer = _make_agents()
     task_search, task_analyze, task_write = _make_tasks(researcher, analyst, writer)
 
-    # 3. 若存在结构化框架文件，则直接按框架生成故事；否则走 A->B->C 流程
+    # 3. 若存在角色线或结构化框架文件，则直接按之生成故事；否则走 A->B->C 流程
+    role = (getattr(args, "role", "") or "").strip()
+    role_story_path_candidates = []
+    if role:
+        role_story_path_candidates.extend([
+            f"{_sanitize_filename(city)}_role_{_sanitize_filename(role)}.json",
+            f"{_sanitize_filename(city)}_role_story.json",
+        ])
+    else:
+        role_story_path_candidates.append(f"{_sanitize_filename(city)}_role_story.json")
+
+    picked_role_story = None
+    for _p in role_story_path_candidates:
+        if os.path.exists(_p):
+            picked_role_story = _p
+            break
+
     struct_path = f"{_sanitize_filename(city)}_struct.json"
-    if os.path.exists(struct_path):
+    if picked_role_story:
+        try:
+            struct_obj = _read_json_file(picked_role_story)
+            struct_json = json.dumps(struct_obj, ensure_ascii=False, indent=2)
+        except Exception:
+            with open(picked_role_story, "r", encoding="utf-8") as f:
+                struct_json = f.read()
+
+        # 尝试加载 get-story.md 作为写作 Prompt（若不存在则使用内置提示）
+        writer_prompt = _load_prompt("get-story.md")
+        if writer_prompt is None:
+            writer_prompt = (
+                "[SYSTEM]\\n你是恐怖故事 UP 主，按给定 JSON 框架扩写成 1500+ 字 Markdown。\\n"
+                "[严格指令]\\n只返回 Markdown 文案。\\n[USER]\\n[故事框架]\\n{json_skeleton_from_agent_b}\\n[/故事框架]"
+            )
+
+        writer_only = Task(
+            description=writer_prompt,
+            expected_output='Markdown 格式完整故事',
+            agent=writer,
+        )
+        story_crew = Crew(
+            agents=[writer],
+            tasks=[writer_only],
+            process=Process.sequential,
+            verbose=True,
+        )
+        inputs = {"json_skeleton_from_agent_b": struct_json}
+        final_story_content = story_crew.kickoff(inputs=inputs)
+    elif os.path.exists(struct_path):
         try:
             struct_obj = _read_json_file(struct_path)
             struct_json = json.dumps(struct_obj, ensure_ascii=False, indent=2)
@@ -194,7 +240,7 @@ def run():
         )
         inputs = {"json_skeleton_from_agent_b": struct_json}
         final_story_content = story_crew.kickoff(inputs=inputs)
-    else:
+    elif True:
         story_crew = Crew(
             agents=[researcher, analyst, writer],
             tasks=[task_search, task_analyze, task_write],
@@ -205,9 +251,12 @@ def run():
         final_story_content = story_crew.kickoff(inputs=inputs)
 
     # 5. 保存产出到本地文件
-    output_basename = f"{_sanitize_filename(city)}_story.md"
+    output_basename = args.out.strip() if getattr(args, "out", None) else f"{_sanitize_filename(city)}_story.md"
     try:
         content = str(final_story_content)
+        out_dir = os.path.dirname(output_basename)
+        if out_dir:
+            os.makedirs(out_dir, exist_ok=True)
         with open(output_basename, "w", encoding="utf-8") as f:
             f.write(content)
         print(f"\n[AI 助手]: 任务完成！故事已保存到: ./{output_basename}\n")
@@ -493,3 +542,205 @@ def get_struct():
         with open(out_path.replace(".json", ".txt"), "w", encoding="utf-8") as f:
             f.write(text)
         raise SystemExit("未能解析为 JSON，请检查输出（已保存为 .txt）。")
+
+
+def get_lore():
+    """生成城市的世界观圣经（lore.json）。"""
+    p = argparse.ArgumentParser(description="生成世界观圣经（lore.json）")
+    p.add_argument("--city", type=str, required=True)
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--index", type=int)
+    g.add_argument("--title", type=str)
+    p.add_argument("--out", type=str)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    # 确保候选存在
+    cand_path = f"{_sanitize_filename(city)}_candidates.json"
+    if not os.path.exists(cand_path):
+        _generate_candidates(city)
+    candidates = None
+    try:
+        if os.path.exists(cand_path):
+            candidates = _read_json_file(cand_path)
+    except Exception:
+        candidates = None
+
+    picked_title = None
+    picked_blurb = None
+    if isinstance(candidates, list):
+        if args.title:
+            key = args.title.strip().lower()
+            for item in candidates:
+                t = (item.get("title") if isinstance(item, dict) else None) or ""
+                if key in t.lower():
+                    picked_title = t
+                    picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
+                    break
+        else:
+            idx = ((args.index or 1) - 1)
+            if 0 <= idx < len(candidates):
+                it = candidates[idx]
+                picked_title = (it.get("title") if isinstance(it, dict) else str(it)) or ""
+                picked_blurb = it.get("blurb") if isinstance(it, dict) else ""
+
+    # 汇编原始素材
+    researcher, analyst, _ = _make_agents()
+    research_desc = (
+        "围绕城市 {city} 的选中候选故事，汇编原始素材为长文本。\n"
+        "合并来源、变体、时间线、目击叙述与反驳观点，输出为 Markdown 长文。\n"
+        "选中候选：\n标题：{picked_title}\n简介：{picked_blurb}\n城市：{city}。"
+    )
+    research_task = Task(description=research_desc, expected_output="Markdown 长文", agent=researcher)
+    raw_material = str(Crew(agents=[researcher], tasks=[research_task], process=Process.sequential, verbose=True).kickoff(inputs={
+        "city": city, "picked_title": picked_title or "", "picked_blurb": picked_blurb or ""
+    }))
+
+    lore_prompt = _load_prompt("lore.md")
+    if lore_prompt is None:
+        lore_prompt = (
+            "[SYSTEM]\n你是一名‘世界观圣经’构建专家。只返回一个 JSON 代码块。\n"
+            "要求：world_truth, rules[], motifs[], locations[], timeline_hints[], allowed_roles[]；全部使用 ASCII 双引号。\n"
+            "[USER]\n[城市]\n{city}\n[/城市]\n[原始素材]\n{raw_material}\n[/原始素材]"
+        )
+    task = Task(description=lore_prompt, expected_output="仅一个 JSON 代码块", agent=analyst)
+    text = str(Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True).kickoff(inputs={
+        "city": city, "raw_material": raw_material
+    }))
+
+    def _try_parse_obj(s: str):
+        try:
+            v = json.loads(s)
+            return v if isinstance(v, dict) else None
+        except Exception:
+            return None
+    data = _try_parse_obj(text)
+    if data is None:
+        import re as _re
+        m = _re.search(r"\{[\s\S]*\}", text)
+        if m:
+            blob = m.group(0).replace("\ufeff", "").replace('“', '"').replace('”', '"')
+            data = _try_parse_obj(blob)
+
+    out_path = (args.out or f"{_sanitize_filename(city)}_lore.json").strip()
+    if data is not None:
+        _write_json_file(out_path, data)
+        print(f"\n[AI 助手]: 世界观圣经已保存: ./{out_path}\n")
+    else:
+        with open(out_path.replace(".json", ".txt"), "w", encoding="utf-8") as f:
+            f.write(text)
+        raise SystemExit("未能解析为 JSON，请检查输出（已保存为 .txt）。")
+
+
+def gen_role():
+    """基于 lore.json 生成角色剧情拍点 role_story.json。"""
+    p = argparse.ArgumentParser(description="从 lore.json 生成角色剧情拍点（role_story.json）")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--role", type=str, required=True)
+    p.add_argument("--pov", type=str, required=False)
+    p.add_argument("--lore", type=str, required=False)
+    p.add_argument("--out", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    role = (args.role or "").strip()
+    if not city or not role:
+        raise SystemExit("--city 与 --role 均为必填")
+
+    lore_path = (args.lore or f"{_sanitize_filename(city)}_lore.json").strip()
+    if not os.path.exists(lore_path):
+        raise SystemExit(f"未找到 lore 文件: {lore_path}。请先运行 get-lore。")
+
+    try:
+        lore_obj = _read_json_file(lore_path)
+        lore_json = json.dumps(lore_obj, ensure_ascii=False, indent=2)
+    except Exception:
+        with open(lore_path, "r", encoding="utf-8") as f:
+            lore_json = f.read()
+
+    prompt = _load_prompt("role-beats.md")
+    if prompt is None:
+        prompt = (
+            "[SYSTEM] 你是剧情设计师。只返回一个 JSON 代码块。\n"
+            "字段：role, pov, goal, constraints_used{rules[],motifs[],locations[]}, beats{opening_hook,first_contact,investigation,mid_twist,confrontation,aftershock,cta}。\n"
+            "[USER]\n[世界观]\n{lore_json}\n[/世界观]\n[角色]\n{role}\n[/角色]\n[视角]\n{pov}\n[/视角]"
+        )
+    analyst = _make_agents()[1]
+    task = Task(description=prompt, expected_output="仅一个 JSON 代码块", agent=analyst)
+    text = str(Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True).kickoff(inputs={
+        "lore_json": lore_json, "role": role, "pov": (args.pov or "第二人称")
+    }))
+
+    def _try_parse_obj2(s: str):
+        try:
+            v = json.loads(s)
+            return v if isinstance(v, dict) else None
+        except Exception:
+            return None
+    data = _try_parse_obj2(text)
+    if data is None:
+        import re as _re
+        m = _re.search(r"\{[\s\S]*\}", text)
+        if m:
+            blob = m.group(0).replace("\ufeff", "").replace('“', '"').replace('”', '"')
+            data = _try_parse_obj2(blob)
+
+    out_default = f"{_sanitize_filename(city)}_role_{_sanitize_filename(role)}.json"
+    out_path = (args.out or out_default).strip()
+    if data is not None:
+        _write_json_file(out_path, data)
+        print(f"\n[AI 助手]: 角色剧情拍点已保存: ./{out_path}\n")
+    else:
+        with open(out_path.replace(".json", ".txt"), "w", encoding="utf-8") as f:
+            f.write(text)
+        raise SystemExit("未能解析为 JSON，请检查输出（已保存为 .txt）。")
+
+
+def validate_role():
+    """对比 role_story.json 与 lore.json 的一致性（软校验）。"""
+    p = argparse.ArgumentParser(description="校验角色拍点与世界观圣经的一致性")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--role", type=str, required=False)
+    p.add_argument("--lore", type=str, required=False)
+    p.add_argument("--role-file", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    role = (args.role or "").strip()
+    lore_path = (args.lore or f"{_sanitize_filename(city)}_lore.json").strip()
+    role_path = (args.role_file or (f"{_sanitize_filename(city)}_role_{_sanitize_filename(role)}.json" if role else f"{_sanitize_filename(city)}_role_story.json")).strip()
+
+    if not os.path.exists(lore_path):
+        raise SystemExit(f"未找到 lore 文件: {lore_path}")
+    if not os.path.exists(role_path):
+        raise SystemExit(f"未找到角色文件: {role_path}")
+
+    lore_text = json.dumps(_read_json_file(lore_path), ensure_ascii=False)
+    role_obj = _read_json_file(role_path)
+
+    issues = []
+    for k in ("role", "beats"):
+        if k not in role_obj:
+            issues.append(f"缺少字段: {k}")
+    beats = role_obj.get("beats", {})
+    for k in ("opening_hook","first_contact","investigation","mid_twist","confrontation","aftershock","cta"):
+        if k not in beats:
+            issues.append(f"缺少拍点: beats.{k}")
+
+    cu = role_obj.get("constraints_used", {}) or {}
+    for group in ("rules","motifs","locations"):
+        arr = cu.get(group) or []
+        for s in arr:
+            if s and (s not in lore_text):
+                issues.append(f"未在 lore 中找到约束引用: {group}:{s}")
+
+    if issues:
+        print("[验证] 发现问题：")
+        for it in issues:
+            print(f"- {it}")
+        raise SystemExit("验证未通过。")
+    else:
+        print("[验证] 通过：role_story 与 lore 在软约束下匹配。")

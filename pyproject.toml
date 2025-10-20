@@ -31,6 +31,9 @@ dependencies = [
 get-story = "ghost_story_factory.main:run"
 set-city = "ghost_story_factory.main:set_city"
 get-struct = "ghost_story_factory.main:get_struct"
+get-lore = "ghost_story_factory.main:get_lore"
+gen-role = "ghost_story_factory.main:gen_role"
+validate-role = "ghost_story_factory.main:validate_role"
 
 [project.urls]
 Homepage = "https://github.com/your-username/ghost-story-factory"
