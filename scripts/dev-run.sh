@@ -21,10 +21,28 @@ if [[ -f .env ]]; then
   set +a
 fi
 
-# 关键环境变量检查：优先 KIMI_API_KEY，其次 OPENAI_API_KEY
+# 若未设置，尝试读取 MoonLens-server/.env（只导入相关变量）
 if [[ -z "${KIMI_API_KEY:-}" && -z "${OPENAI_API_KEY:-}" ]]; then
-  echo "[dev-run] 错误：未检测到 KIMI_API_KEY 或 OPENAI_API_KEY（可在 .env 中配置）。" >&2
-  echo "[dev-run] 退出。" >&2
+  ML_ENV="$HOME/code/MoonLens/MoonLens-server/.env"
+  if [[ -f "$ML_ENV" ]]; then
+    echo "[dev-run] 未检测到本地密钥，尝试加载 MoonLens-server/.env ..."
+    # shellcheck disable=SC2162
+    while IFS='=' read key val; do
+      # 清理空白
+      k="$(echo "$key" | sed 's/^\s*//;s/\s*$//')"
+      v="$(echo "$val" | sed 's/^\s*//;s/\s*$//')"
+      case "$k" in
+        KIMI_API_KEY|KIMI_API_BASE|KIMI_BASE_URL|KIMI_API_URL|KIMI_MODEL|MOONSHOT_API_KEY|MOONSHOT_API_URL|MOONSHOT_MODEL|OPENAI_API_KEY|OPENAI_BASE_URL|OPENAI_API_BASE|OPENAI_MODEL)
+          export "$k"="$v" ;;
+      esac
+    done < <(grep -E '^(KIMI_|MOONSHOT_|OPENAI_)' "$ML_ENV" | grep -v '^#' || true)
+  fi
+fi
+
+# 关键环境变量检查：优先 KIMI_API_KEY，其次 OPENAI_API_KEY
+if [[ -z "${KIMI_API_KEY:-${MOONSHOT_API_KEY:-}}" && -z "${OPENAI_API_KEY:-}" ]]; then
+  echo "[dev-run] 错误：未检测到 KIMI_API_KEY/MOONSHOT_API_KEY 或 OPENAI_API_KEY。" >&2
+  echo "[dev-run] 可在当前项目 .env 中配置，或确保 MoonLens-server/.env 存在有效密钥。" >&2
   exit 1
 fi
 
