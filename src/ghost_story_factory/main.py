@@ -9,64 +9,104 @@ from dotenv import load_dotenv
 # 加载 .env 文件中的环境变量 (如 OPENAI_API_KEY、Google 搜索相关密钥)
 load_dotenv()
 
-# --- Agent 定义 ---
+def _build_llm():
+    """根据环境变量选择并构建 LLM 客户端。
 
-# Agent A: 故事搜寻者
-researcher = Agent(
-    role='资深灵异故事调查员',
-    goal='在中文互联网上搜索关于城市 {city} 的所有灵异故事、都市传说和闹鬼地点。',
-    backstory='你是一个对都市传说和民间鬼故事了如指掌的专家，擅长从海量信息中过滤出有价值的线索。',
-    tools=[GoogleSearchRun()],
-    llm=ChatOpenAI(model="gpt-4o"),  # 或替换为您可用的模型
-    verbose=True,
-    allow_delegation=False,
-)
+    优先级：KIMI_* > OPENAI_* > 默认OpenAI。
+    支持的变量：
+      - KIMI_API_KEY, KIMI_API_BASE(或KIMI_BASE_URL), KIMI_MODEL
+      - OPENAI_API_KEY, OPENAI_BASE_URL(或OPENAI_API_BASE), OPENAI_MODEL
+    """
+    # Kimi (Moonshot) 优先
+    kimi_key = os.getenv("KIMI_API_KEY")
+    if kimi_key:
+        base = (
+            os.getenv("KIMI_API_BASE")
+            or os.getenv("KIMI_BASE_URL")
+            or "https://api.moonshot.cn/v1"
+        )
+        model = os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+        return ChatOpenAI(model=model, api_key=kimi_key, base_url=base)
 
-# Agent B: 框架提炼师
-analyst = Agent(
-    role='金牌编剧与故事分析师',
-    goal='从非结构化的原始文本中，提炼出结构化的、用于撰写故事的核心框架。必须以 JSON 格式输出。',
-    backstory='你拥有敏锐的故事嗅觉，能迅速识别出任何故事的核心要素（地点、角色、事件、冲突），并将其整理为结构化数据。',
-    tools=[],
-    llm=ChatOpenAI(model="gpt-4o"),
-    verbose=True,
-    allow_delegation=False,
-)
+    # OpenAI 或兼容代理
+    openai_key = os.getenv("OPENAI_API_KEY")
+    if openai_key:
+        base = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_API_BASE")
+        model = os.getenv("OPENAI_MODEL", "gpt-4o")
+        # ChatOpenAI 支持 base_url=None，则走官方默认
+        return ChatOpenAI(model=model, api_key=openai_key, base_url=base)
 
-# Agent C: 叙事编剧
-writer = Agent(
-    role='B 站百万粉丝的恐怖故事 UP 主',
-    goal='将结构化的 JSON 框架，扩写成一篇引人入胜、氛围感十足的“讲述式”故事文案（Markdown 格式）。',
-    backstory='你是讲故事的大师，擅长使用第一人称视角、强烈的心理描写和恰到好处的停顿来营造恐怖气氛。你的文案能让人不寒而栗。',
-    tools=[],
-    llm=ChatOpenAI(model="gpt-4"),  # 可根据可用模型调整
-    verbose=True,
-    allow_delegation=False,
-)
+    # 无任何可用密钥
+    raise RuntimeError(
+        "未检测到可用的 LLM 凭证。请在 .env 或环境中配置 KIMI_API_KEY 或 OPENAI_API_KEY。"
+    )
+
+
+# --- Agent 定义工厂 ---
+
+def _make_agents():
+    llm_main = _build_llm()
+    # 如果需要不同写作模型，可在此创建第二个 llm；目前保持一致以简化
+    llm_writer = llm_main
+
+    researcher = Agent(
+        role='资深灵异故事调查员',
+        goal='在中文互联网上搜索关于城市 {city} 的所有灵异故事、都市传说和闹鬼地点。',
+        backstory='你是一个对都市传说和民间鬼故事了如指掌的专家，擅长从海量信息中过滤出有价值的线索。',
+        tools=[GoogleSearchRun()],
+        llm=llm_main,
+        verbose=True,
+        allow_delegation=False,
+    )
+
+    analyst = Agent(
+        role='金牌编剧与故事分析师',
+        goal='从非结构化的原始文本中，提炼出结构化的、用于撰写故事的核心框架。必须以 JSON 格式输出。',
+        backstory='你拥有敏锐的故事嗅觉，能迅速识别出任何故事的核心要素（地点、角色、事件、冲突），并将其整理为结构化数据。',
+        tools=[],
+        llm=llm_main,
+        verbose=True,
+        allow_delegation=False,
+    )
+
+    writer = Agent(
+        role='B 站百万粉丝的恐怖故事 UP 主',
+        goal='将结构化的 JSON 框架，扩写成一篇引人入胜、氛围感十足的“讲述式”故事文案（Markdown 格式）。',
+        backstory='你是讲故事的大师，擅长使用第一人称视角、强烈的心理描写和恰到好处的停顿来营造恐怖气氛。你的文案能让人不寒而栗。',
+        tools=[],
+        llm=llm_writer,
+        verbose=True,
+        allow_delegation=False,
+    )
+
+    return researcher, analyst, writer
 
 
 # --- Task 定义 ---
 
-# 任务 1: 搜索
-task_search = Task(
-    description='执行对城市 {city} 的深度网络搜索。汇总至少 3 个不同的故事或传说，将所有找到的原始文本合并为一个文档。',
-    expected_output='一个包含所有搜索结果的 Markdown 格式长文本。',
-    agent=researcher,
-)
+def _make_tasks(researcher: Agent, analyst: Agent, writer: Agent):
+    # 任务 1: 搜索
+    task_search = Task(
+        description='执行对城市 {city} 的深度网络搜索。汇总至少 3 个不同的故事或传说，将所有找到的原始文本合并为一个文档。',
+        expected_output='一个包含所有搜索结果的 Markdown 格式长文本。',
+        agent=researcher,
+    )
 
-# 任务 2: 提炼
-task_analyze = Task(
-    description='分析 [搜寻者] 提供的原始素材。识别出最有潜力的 1 个故事，并将其提炼为 JSON 框架，包含 "title", "location", "core_legend", "key_elements" 字段。',
-    expected_output='一个包含故事核心框架的 JSON 字符串。',
-    agent=analyst,
-)
+    # 任务 2: 提炼
+    task_analyze = Task(
+        description='分析 [搜寻者] 提供的原始素材。识别出最有潜力的 1 个故事，并将其提炼为 JSON 框架，包含 "title", "location", "core_legend", "key_elements" 字段。',
+        expected_output='一个包含故事核心框架的 JSON 字符串。',
+        agent=analyst,
+    )
 
-# 任务 3: 撰写
-task_write = Task(
-    description='使用 [框架师] 提供的 JSON 框架，撰写一篇至少 1500 字的详细故事文案。必须包含引人入胜的开头、丰富的细节和恐怖的氛围渲染。',
-    expected_output='一篇完整的、高质量的 Markdown 格式的故事文案。',
-    agent=writer,
-)
+    # 任务 3: 撰写
+    task_write = Task(
+        description='使用 [框架师] 提供的 JSON 框架，撰写一篇至少 1500 字的详细故事文案。必须包含引人入胜的开头、丰富的细节和恐怖的氛围渲染。',
+        expected_output='一篇完整的、高质量的 Markdown 格式的故事文案。',
+        agent=writer,
+    )
+
+    return task_search, task_analyze, task_write
 
 
 # --- CLI 入口函数 (`run` 函数) ---
@@ -94,7 +134,11 @@ def run():
 
     print(f"\n[AI 助手]: 正在启动 MCP 工作流，目标城市: {city} ...\n")
 
-    # 2. 组建 Crew (团队) 和 Process (工作流)
+    # 2. 组建 Agents 与 Tasks
+    researcher, analyst, writer = _make_agents()
+    task_search, task_analyze, task_write = _make_tasks(researcher, analyst, writer)
+
+    # 3. 组建 Crew (团队) 和 Process (工作流)
     story_crew = Crew(
         agents=[researcher, analyst, writer],
         tasks=[task_search, task_analyze, task_write],
@@ -102,11 +146,11 @@ def run():
         verbose=2,
     )
 
-    # 3. 启动任务
+    # 4. 启动任务
     inputs = {"city": city}
     final_story_content = story_crew.kickoff(inputs=inputs)
 
-    # 4. 保存产出到本地文件
+    # 5. 保存产出到本地文件
     output_basename = f"{_sanitize_filename(city)}_story.md"
     try:
         content = str(final_story_content)
@@ -126,4 +170,3 @@ def run():
 if __name__ == "__main__":
     # 允许直接运行：python src/ghost_story_factory/main.py --city "广州"
     run()
-

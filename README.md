@@ -67,3 +67,19 @@ pipx run --spec ghost-story-factory get-story --city "东莞"
 
 - 需自行提供并合法使用 API Key（OpenAI/Google 等）。
 - 网络检索结果可能包含不准确或有偏差的信息，使用前请审阅与二次创作。
+
+## LLM 配置（OpenAI 或 Kimi）
+
+本工具支持通过环境变量选择不同的兼容提供商（优先使用 Kimi，再回退到 OpenAI）。
+
+- 使用 Kimi（Moonshot）：
+  - `KIMI_API_KEY=...`
+  - 可选：`KIMI_API_BASE=https://api.moonshot.cn/v1`（默认已是该值）
+  - 可选：`KIMI_MODEL=kimi-k2-0905-preview`
+
+- 使用 OpenAI（或兼容代理）：
+  - `OPENAI_API_KEY=...`
+  - 可选：`OPENAI_BASE_URL=...`（或 `OPENAI_API_BASE=...`）
+  - 可选：`OPENAI_MODEL=gpt-4o`
+
+优先级：`KIMI_*` > `OPENAI_*`。未配置任一密钥将无法运行。
