@@ -70,12 +70,13 @@ pipx run --spec ghost-story-factory get-story --city "东莞"
 
 ## LLM 配置（OpenAI 或 Kimi）
 
-本工具支持通过环境变量选择不同的兼容提供商（优先使用 Kimi，再回退到 OpenAI）。
+本工具支持通过环境变量选择不同的兼容提供商（优先使用 Kimi，再回退到 OpenAI）。同时兼容 MoonLens 中使用的 MOONSHOT_* 命名。
 
 - 使用 Kimi（Moonshot）：
   - `KIMI_API_KEY=...`
   - 可选：`KIMI_API_BASE=https://api.moonshot.cn/v1`（默认已是该值）
   - 可选：`KIMI_MODEL=kimi-k2-0905-preview`
+  - 兼容：`MOONSHOT_API_KEY`、`MOONSHOT_API_URL`、`MOONSHOT_MODEL`
 
 - 使用 OpenAI（或兼容代理）：
   - `OPENAI_API_KEY=...`

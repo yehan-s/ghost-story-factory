@@ -18,14 +18,20 @@ def _build_llm():
       - OPENAI_API_KEY, OPENAI_BASE_URL(或OPENAI_API_BASE), OPENAI_MODEL
     """
     # Kimi (Moonshot) 优先
-    kimi_key = os.getenv("KIMI_API_KEY")
+    kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
     if kimi_key:
         base = (
             os.getenv("KIMI_API_BASE")
             or os.getenv("KIMI_BASE_URL")
+            or os.getenv("KIMI_API_URL")
+            or os.getenv("MOONSHOT_API_URL")
             or "https://api.moonshot.cn/v1"
         )
-        model = os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+        model = (
+            os.getenv("KIMI_MODEL")
+            or os.getenv("MOONSHOT_MODEL")
+            or "kimi-k2-0905-preview"
+        )
         return ChatOpenAI(model=model, api_key=kimi_key, base_url=base)
 
     # OpenAI 或兼容代理
@@ -49,11 +55,13 @@ def _make_agents():
     # 如果需要不同写作模型，可在此创建第二个 llm；目前保持一致以简化
     llm_writer = llm_main
 
+    google_enabled = bool(os.getenv("GOOGLE_API_KEY") and os.getenv("GOOGLE_CSE_ID"))
+
     researcher = Agent(
         role='资深灵异故事调查员',
         goal='在中文互联网上搜索关于城市 {city} 的所有灵异故事、都市传说和闹鬼地点。',
         backstory='你是一个对都市传说和民间鬼故事了如指掌的专家，擅长从海量信息中过滤出有价值的线索。',
-        tools=[GoogleSearchRun()],
+        tools=[GoogleSearchRun()] if google_enabled else [],
         llm=llm_main,
         verbose=True,
         allow_delegation=False,
