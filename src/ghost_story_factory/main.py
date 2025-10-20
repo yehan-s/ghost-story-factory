@@ -151,7 +151,7 @@ def run():
         agents=[researcher, analyst, writer],
         tasks=[task_search, task_analyze, task_write],
         process=Process.sequential,  # A -> B -> C 顺序执行
-        verbose=2,
+        verbose=True,
     )
 
     # 4. 启动任务
