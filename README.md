@@ -1,15 +1,121 @@
-# Ghost Story Factory
+# Ghost Story Factory v3.1 🎯
 
-一个基于 CrewAI 的命令行工具，输入城市名，自动进行素材搜集、框架提炼与故事撰写，在当前目录生成 `[城市名]_story.md`。
+**一个专业的灵异故事生成工厂** - 基于CrewAI和专业范文模板，自动生成完整的、高质量的灵异故事。
 
-- AI 做“体力活”——搜集与撰写草稿
-- 人类做“创意活”——基于产出编写最终游戏脚本与角色卡
+## 🌟 核心特性
 
-## 安装与运行
+- ✅ **自动化生成**：输入城市名，自动生成完整故事（1500-3000字）
+- ✅ **专业范文**：基于35个专业设计模式（范文文件夹）
+- ✅ **分层架构**：阶段1（世界书1.0）→ 阶段2（角色+规则）→ 阶段3（GDD+故事）
+- ✅ **选项交互式设计**：支持生成游戏化的选择点系统
+- ✅ **AI做体力活，人类做创意活**
+
+## 📚 文档索引
+
+- **🔥 完整工作流程指南**：[WORKFLOW.md](./WORKFLOW.md) ⭐ **推荐**
+- **快速上手**：见下方"快速开始"
+- **游戏引擎使用指南**：[GAME_ENGINE.md](./GAME_ENGINE.md) 🎮
+- **使用指南（精简版）**：[USAGE.md](./USAGE.md)
+- **项目规格说明（开发者/验收）**：[SPEC.md](./SPEC.md)
+- **范文库说明**：[范文/README.md](./范文/README.md)
+- **范文索引（AI优化）**：[范文/00-index.md](./范文/00-index.md)
+- **架构设计**：[范文/00-architecture.md](./范文/00-architecture.md)
+
+## ⚡ 快速开始（推荐）
+
+### ⭐ 新推荐：自动流水线（3步完成！）
+
+```bash
+# 1. 获取候选故事
+set-city --city "杭州"
+
+# 2. 选择故事框架
+get-struct --city "杭州" --index 1
+
+# 3. 一键生成所有内容（自动执行 5 个步骤！）
+gen-complete --city "杭州" --index 1
+```
+
+**🎯 自动完成：** Lore v1 → 主角设计 → Lore v2 → GDD → 主线故事（≥5000字）
+
+---
+
+### 一键生成完整故事（备选方案）
+
+```bash
+# 1. 安装依赖
+uv venv && source .venv/bin/activate
+uv pip install -e .
+
+# 2. 配置环境变量（创建 .env 文件）
+# KIMI_API_KEY=your_key_here  # 或 OPENAI_API_KEY
+
+# 3. 生成故事（自动执行完整流程）
+python generate_full_story.py --city 武汉
+
+# 或使用shell脚本
+chmod +x generate_full_story.sh
+./generate_full_story.sh 武汉
+```
+
+**输出目录：** `deliverables/程序-武汉/`
+
+**生成文件：**
+- ✅ `武汉_lore_v1.md` - 世界书1.0（高保真地基）
+- ✅ `武汉_protagonist.md` - 角色分析
+- ✅ `武汉_lore_v2.md` - 世界书2.0（游戏化规则）🎮
+- ✅ `武汉_gdd.md` - AI导演任务简报 🎮
+- ✅ `武汉_story.md` - **完整故事（⭐最终产物）**
+- ✅ `README.md` - 说明文档
+
+**🎮 = 游戏引擎所需文件**
+
+---
+
+### 运行交互式游戏（可选）
+
+生成故事后，可以运行交互式游戏引擎：
+
+```bash
+# 启动游戏（基于生成的GDD和Lore v2）
+python game_engine.py \
+    --city 武汉 \
+    --gdd deliverables/程序-武汉/武汉_gdd.md \
+    --lore deliverables/程序-武汉/武汉_lore_v2.md
+```
+
+**游戏特性：**
+- 🎯 选项式交互（A/B/C/D）
+- 📝 AI实时生成响应
+- 🔄 动态状态管理
+- 🎮 多结局系统
+
+**详细说明：** 查看 [GAME_ENGINE.md](./GAME_ENGINE.md)
+
+---
+
+## 📖 详细安装与运行
 
 建议使用 `uv`（或 `pip`）。项目已提供 `pyproject.toml` 与脚本入口。
 
-### 本地开发
+### 方式A：使用新生成器（推荐）🎯
+
+```bash
+# 完整流程，基于范文模板
+python generate_full_story.py --city 广州 --output deliverables/程序-广州/
+```
+
+**优点：**
+- ✅ 自动执行阶段1→2→3的完整流程
+- ✅ 使用范文文件夹中的专业提示词
+- ✅ 生成所有中间产物（lore、protagonist、GDD等）
+- ✅ 最终输出完整故事
+
+---
+
+### 方式B：使用旧命令行工具（兼容模式）
+
+#### 本地开发
 
 ```bash
 # 1) 创建并激活虚拟环境
@@ -124,33 +230,59 @@ pipx run --spec ghost-story-factory get-story --city "东莞"
 
 ## 顶层设计（Top-Down Design）工作流
 
-推荐以“世界观 → 角色拍点 → 成稿”的顺序产出，保证一致性与可复用：
+推荐以"世界观 → 角色拍点 → **完整故事**"的顺序产出，保证一致性与可复用。
 
-1) 生成世界观圣经（lore）
+### ⚡ 方式 A：一键生成（推荐）
+
+```bash
+# 自动完成 3 步：lore → role → story
+./generate_full_story.sh 武汉 夜跑者
+
+# 自定义输出路径
+./generate_full_story.sh 广州 保安 deliverables/广州_story.md
+```
+
+**⚠️ 重要**：这个脚本会自动生成 **完整的 Markdown 故事**，而不仅仅是 JSON！
+
+### 📋 方式 B：手动分步执行
+
+**第 1 步**：生成世界观圣经（lore）
 
 ```bash
 uvx --from . get-lore --city "广州" --title "荔湾"
 # 输出：广州_lore.json
 ```
 
-2) 生成角色剧情拍点（beats）
+**第 2 步**：生成角色剧情拍点（beats）
 
 ```bash
 uvx --from . gen-role --city "广州" --role "保安" --pov "第二人称"
 # 输出：广州_role_保安.json
 ```
 
-3) 扩写长文（优先按角色线 → 否则按结构 → 否则全流程）
+**第 3 步**：生成完整故事 ← **必须执行，否则只有 JSON！**
 
 ```bash
-# 优先使用角色线（若存在）
-uvx --from . get-story --city "广州" --role "保安" --out "deliverables/程序-广州/广州_story.md"
+uvx --from . get-story --city "广州" --role "保安" --out "deliverables/广州_story.md"
+# 输出：广州_story.md ✅ 这才是完整的故事！
 ```
 
-4) 一致性校验（可选）
+**第 4 步**：一致性校验（可选）
 
 ```bash
 uvx --from . validate-role --city "广州" --role "保安"
 ```
+
+### 📁 产出文件说明
+
+| 文件类型 | 示例 | 说明 |
+|---------|------|------|
+| `*_lore.json` | `武汉_lore.json` | 世界观圣经（中间文件） |
+| `*_role_*.json` | `武汉_role_夜跑者.json` | 角色剧情拍点（中间文件） |
+| `*_story.md` | `武汉_story.md` | **✅ 完整故事（最终产物）** |
+
+**💡 提示**：JSON 文件是中间产物，用于保证一致性。最终的故事在 `.md` 文件中！
+
+---
 
 所有新增命令均不破坏现有 set-city / get-struct / get-story 契约，仅作为增强。
