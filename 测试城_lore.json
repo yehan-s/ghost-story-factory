@@ -1,0 +1,15 @@
+{
+  "world_truth": "真相掩藏在旧商场的封闭楼层。",
+  "rules": [
+    {"name": "静音", "description": "午夜后不得发出连续声响。"},
+    {"name": "门后影子", "description": "不要回头看第三个影子。"}
+  ],
+  "motifs": [
+    {"name": "红伞", "pattern": "雨夜出现于拐角", "symbolism": "警告"}
+  ],
+  "locations": [
+    {"name": "旧商场", "traits": ["空置","安保薄弱"], "taboos": ["照镜子"], "sensory": ["霉味","金属回声"]}
+  ],
+  "timeline_hints": ["凌晨三点铃响"],
+  "allowed_roles": ["保安","夜跑者"]
+}

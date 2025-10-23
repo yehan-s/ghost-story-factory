@@ -14,6 +14,7 @@ env/
 .coverage
 coverage.xml
 .hypothesis/
+.serena/
 
 # Build artifacts
 build/
