@@ -22,19 +22,42 @@ classifiers = [
 dependencies = [
     "crewai>=0.30.0",
     "langchain-community",
-    "langchain-google-community",
     "python-dotenv",
     "langchain-openai",
 ]
 
 [project.scripts]
-get-story = "ghost_story_factory.main:run"
+# ⚡ 推荐命令（自动流水线）
+gen-complete = "ghost_story_factory.main:gen_complete"
+
+# Stage 1: 候选与结构
 set-city = "ghost_story_factory.main:set_city"
 get-struct = "ghost_story_factory.main:get_struct"
+
+# Stage 2: Lore v1 与主角设计
 get-lore = "ghost_story_factory.main:get_lore"
+gen-protagonist = "ghost_story_factory.main:gen_protagonist"
+
+# Stage 3: Lore v2 与 GDD
+gen-lore-v2 = "ghost_story_factory.main:gen_lore_v2"
+gen-gdd = "ghost_story_factory.main:gen_gdd"
+
+# Stage 4: 完整故事生成
+gen-main-thread = "ghost_story_factory.main:gen_main_thread"
+gen-branch = "ghost_story_factory.main:gen_branch"
+
+# Legacy/旧版命令 (简化流程)
+get-story = "ghost_story_factory.main:run"
 gen-role = "ghost_story_factory.main:gen_role"
 validate-role = "ghost_story_factory.main:validate_role"
 
 [project.urls]
 Homepage = "https://github.com/your-username/ghost-story-factory"
 "Bug Tracker" = "https://github.com/your-username/ghost-story-factory/issues"
+
+# 正确声明 src 布局，确保本地/发布安装均能找到包
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]

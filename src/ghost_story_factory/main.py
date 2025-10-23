@@ -2,6 +2,8 @@ import argparse
 import os
 import re
 import json
+from dataclasses import dataclass
+from typing import List, Dict, Any
 from crewai import Agent, Task, Crew, Process
 from langchain_community.tools import GoogleSearchRun
 from crewai.llm import LLM
@@ -9,6 +11,71 @@ from dotenv import load_dotenv
 
 # 加载 .env 文件中的环境变量 (如 OPENAI_API_KEY、Google 搜索相关密钥)
 load_dotenv()
+
+
+# ============================================================================
+# 数据模型定义（基于实际 JSON 结构）
+# ============================================================================
+
+@dataclass
+class Candidate:
+    """候选故事结构（来自 set-city 命令）"""
+    title: str
+    blurb: str
+    source: str
+
+
+@dataclass
+class StoryStructure:
+    """故事结构化框架（来自 get-struct 命令）"""
+    title: str
+    city: str
+    location_name: str
+    core_legend: str
+    key_elements: List[str]
+    potential_roles: List[str]
+
+
+@dataclass
+class LoreRule:
+    """世界观规则项"""
+    name: str
+    description: str
+    trigger: str = ""
+    signal: str = ""
+
+
+@dataclass
+class LoreMotif:
+    """世界观意象"""
+    name: str
+    pattern: str
+    symbolism: str
+
+
+@dataclass
+class LoreLocation:
+    """世界观地点"""
+    name: str
+    traits: List[str]
+    taboos: List[str]
+    sensory: List[str]
+
+
+@dataclass
+class Lore:
+    """世界观圣经（来自 get-lore 命令）"""
+    world_truth: str
+    rules: List[Dict[str, Any]]  # 实际可以是 LoreRule，但为兼容性保持灵活
+    motifs: List[Dict[str, Any]]
+    locations: List[Dict[str, Any]]
+    timeline_hints: List[str]
+    allowed_roles: List[str]
+
+
+# ============================================================================
+# 工具函数（JSON 处理、文件操作、Prompt 加载）
+# ============================================================================
 
 
 def _load_prompt(name: str) -> str | None:
@@ -19,6 +86,251 @@ def _load_prompt(name: str) -> str | None:
             return f.read()
     except Exception:
         return None
+
+
+def _try_parse_json_obj(text: str) -> dict | None:
+    """从文本中提取并解析 JSON 对象。
+
+    处理流程：
+    1. 直接尝试解析整个文本
+    2. 若失败，提取 {...} 块并修正中文引号
+    3. 返回解析后的 dict 或 None
+    """
+    # 1) 直接解析
+    try:
+        v = json.loads(text)
+        return v if isinstance(v, dict) else None
+    except Exception:
+        pass
+
+    # 2) 提取 JSON 对象并修正引号
+    m = re.search(r"\{[\s\S]*\}", text)
+    if m:
+        blob = m.group(0)
+        # 去除 BOM 和修正中文引号
+        blob = blob.replace("\ufeff", "")
+        blob = blob.replace('"', '"').replace('"', '"')
+        blob = blob.replace(''', "'").replace(''', "'")
+        try:
+            v = json.loads(blob)
+            return v if isinstance(v, dict) else None
+        except Exception:
+            pass
+
+    return None
+
+
+def _write_json_file(path: str, data: object) -> None:
+    """保存 JSON 到文件。"""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+
+
+def _read_json_file(path: str) -> object:
+    """从文件读取 JSON。"""
+    with open(path, "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _save_json_or_fallback(data: dict | None, json_path: str, text_fallback: str) -> None:
+    """保存 JSON 数据，失败则保存原始文本到 .txt 文件。"""
+    if data is not None:
+        _write_json_file(json_path, data)
+    else:
+        txt_path = json_path.replace(".json", ".txt")
+        with open(txt_path, "w", encoding="utf-8") as f:
+            f.write(text_fallback)
+
+
+def _ensure_candidates_file(city: str) -> tuple[list | None, str]:
+    """确保候选文件存在，返回 (candidates_data, candidates_path)。
+
+    若文件不存在，自动生成；返回的 data 可能是 list 或 None。
+
+    注意：_generate_candidates 函数需要在调用此函数前定义。
+    """
+    cand_path = f"{_sanitize_filename(city)}_candidates.json"
+    cand_txt_path = cand_path.replace(".json", ".txt")
+
+    if not os.path.exists(cand_path) and not os.path.exists(cand_txt_path):
+        print(f"[AI 助手]: 未找到候选文件 ./{cand_path}，将先自动生成候选……")
+        # 需要在后面定义 _generate_candidates
+        # 这里使用前向引用，实际调用时函数已定义
+        _generate_candidates(city)
+
+    candidates = None
+    if os.path.exists(cand_path):
+        try:
+            candidates = _read_json_file(cand_path)
+        except Exception:
+            candidates = None
+
+    return candidates, cand_path
+
+
+def _pick_candidate_from_list(
+    candidates: list,
+    title_query: str | None = None,
+    index: int = 1
+) -> tuple[str, str]:
+    """从候选列表中选择一个，返回 (title, blurb)。
+
+    Args:
+        candidates: 候选列表
+        title_query: 标题模糊匹配（优先）
+        index: 序号（从1开始，默认1）
+
+    Returns:
+        (picked_title, picked_blurb)
+    """
+    picked_title = None
+    picked_blurb = None
+
+    if title_query:
+        key = title_query.strip().lower()
+        for item in candidates:
+            t = (item.get("title") if isinstance(item, dict) else None) or ""
+            if key in t.lower():
+                picked_title = t
+                picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
+                break
+    else:
+        idx = index - 1
+        if 0 <= idx < len(candidates):
+            item = candidates[idx]
+            picked_title = (item.get("title") if isinstance(item, dict) else str(item)) or ""
+            picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
+
+    return picked_title or "", picked_blurb or ""
+
+
+def _sanitize_filename(name: str) -> str:
+    """将城市名转换为安全文件名。"""
+    s = name.strip()
+    s = s.replace("/", "_").replace("\\", "_")
+    # 允许常见文字、数字、破折号与空格，其余替换为下划线
+    s = re.sub(r"[^\w\-\s\u4e00-\u9fff]", "_", s)
+    s = re.sub(r"\s+", "_", s)
+    return s or "city"
+
+
+def _generate_story_from_json(json_path: str, writer: Agent) -> str:
+    """从 JSON 框架文件生成故事（通用逻辑）。
+
+    Args:
+        json_path: JSON 框架文件路径
+        writer: Writer Agent
+
+    Returns:
+        生成的故事内容
+    """
+    # 读取 JSON 框架
+    try:
+        struct_obj = _read_json_file(json_path)
+        struct_json = json.dumps(struct_obj, ensure_ascii=False, indent=2)
+    except Exception:
+        with open(json_path, "r", encoding="utf-8") as f:
+            struct_json = f.read()
+
+    # 加载自定义 Prompt 或使用默认
+    writer_prompt = _load_prompt("get-story.md")
+    if writer_prompt is None:
+        writer_prompt = (
+            "[SYSTEM]\n你是恐怖故事 UP 主，按给定 JSON 框架扩写成 1500+ 字 Markdown。\n"
+            "[严格指令]\n只返回 Markdown 文案。\n[USER]\n[故事框架]\n{json_skeleton_from_agent_b}\n[/故事框架]"
+        )
+
+    # 创建任务并执行
+    writer_task = Task(
+        description=writer_prompt,
+        expected_output='Markdown 格式完整故事',
+        agent=writer,
+    )
+    story_crew = Crew(
+        agents=[writer],
+        tasks=[writer_task],
+        process=Process.sequential,
+        verbose=True,
+    )
+    inputs = {"json_skeleton_from_agent_b": struct_json}
+    return str(story_crew.kickoff(inputs=inputs))
+
+
+def _gather_raw_materials(
+    city: str,
+    picked_title: str,
+    picked_blurb: str,
+    researcher: Agent
+) -> str:
+    """汇编原始素材（通用逻辑）。
+
+    Args:
+        city: 城市名
+        picked_title: 选中的故事标题
+        picked_blurb: 选中的故事简介
+        researcher: Researcher Agent
+
+    Returns:
+        汇编的原始素材长文本
+    """
+    research_desc = (
+        "围绕城市 {city} 的选中候选故事，汇编原始素材为长文本。\n"
+        "若给定标题与简介，则以其为主题展开收集与整合。\n"
+        "请合并来源梳理、传说变体、时间线、目击叙述与反驳观点，输出为 Markdown 长文。\n"
+        "选中候选：\n标题：{picked_title}\n简介：{picked_blurb}\n城市：{city}\n"
+        "(如标题为空，则请根据城市最具代表性的一个传说自动选择)"
+    )
+    research_task = Task(
+        description=research_desc,
+        expected_output="关于选中候选的长篇原始素材（Markdown 长文）",
+        agent=researcher,
+    )
+    research_crew = Crew(
+        agents=[researcher],
+        tasks=[research_task],
+        process=Process.sequential,
+        verbose=True
+    )
+    research_inputs = {
+        "city": city,
+        "picked_title": picked_title,
+        "picked_blurb": picked_blurb
+    }
+    return str(research_crew.kickoff(inputs=research_inputs))
+
+
+def _normalize_struct(data: dict, city_name: str) -> dict:
+    """规范化故事结构字段。
+
+    Args:
+        data: 原始 JSON 对象
+        city_name: 城市名（用于兜底）
+
+    Returns:
+        规范化后的 StoryStructure 字典
+    """
+    out = {}
+    out["title"] = str(data.get("title") or "").strip() or "未命名故事"
+    out["city"] = str(data.get("city") or city_name)
+    loc = data.get("location_name") or data.get("location") or ""
+    out["location_name"] = str(loc)
+    out["core_legend"] = str(data.get("core_legend") or data.get("legend") or "").strip()
+
+    # key_elements
+    ke = data.get("key_elements")
+    if not isinstance(ke, list):
+        ke = []
+    out["key_elements"] = [str(x) for x in ke if isinstance(x, (str, int, float))]
+
+    # potential_roles
+    roles = data.get("potential_roles")
+    if not isinstance(roles, list):
+        # 简单兜底，避免空字段
+        roles = ["目击者", "讲述者", "地方居民"]
+    out["potential_roles"] = [str(x) for x in roles if isinstance(x, (str, int, float))]
+
+    return out
+
 
 def _build_llm():
     """根据环境变量选择并构建 LLM 客户端。
@@ -49,6 +361,7 @@ def _build_llm():
             api_key=kimi_key,
             api_base=base,
             custom_llm_provider="openai",
+            max_tokens=16000,  # 支持长文本生成（约5000字故事需要足够token）
         )
 
     # OpenAI 或兼容代理
@@ -57,7 +370,12 @@ def _build_llm():
         base = os.getenv("OPENAI_BASE_URL") or os.getenv("OPENAI_API_BASE")
         model = os.getenv("OPENAI_MODEL", "gpt-4o")
         # LLM 支持 base_url=None，则走官方默认
-        return LLM(model=model, api_key=openai_key, base_url=base)
+        return LLM(
+            model=model,
+            api_key=openai_key,
+            base_url=base,
+            max_tokens=16000,  # 支持长文本生成（约5000字故事需要足够token）
+        )
 
     # 无任何可用密钥
     raise RuntimeError(
@@ -136,22 +454,13 @@ def _make_tasks(researcher: Agent, analyst: Agent, writer: Agent):
 
 # --- CLI 入口函数 (`run` 函数) ---
 
-def _sanitize_filename(name: str) -> str:
-    """将城市名转换为安全文件名。"""
-    s = name.strip()
-    s = s.replace("/", "_").replace("\\", "_")
-    # 允许常见文字、数字、破折号与空格，其余替换为下划线
-    s = re.sub(r"[^\w\-\s\u4e00-\u9fff]", "_", s)
-    s = re.sub(r"\s+", "_", s)
-    return s or "city"
-
-
 def run():
     """命令行入口：解析参数，编排 Crew 流程，保存产出。"""
     # 1. 解析命令行参数
     parser = argparse.ArgumentParser(description="AI 灵异故事助手 (MCP-CLI)")
     parser.add_argument("--city", type=str, required=True, help="要搜索的目标城市名称")
     parser.add_argument("--out", type=str, required=False, help="自定义输出文件路径（可含目录）")
+    parser.add_argument("--role", type=str, required=False, help="优先按角色线写作（若存在 <city>_role_<role>.json）")
     args = parser.parse_args()
 
     city = (args.city or "").strip()
@@ -164,91 +473,34 @@ def run():
     researcher, analyst, writer = _make_agents()
     task_search, task_analyze, task_write = _make_tasks(researcher, analyst, writer)
 
-    # 3. 若存在角色线或结构化框架文件，则直接按之生成故事；否则走 A->B->C 流程
-    role = (getattr(args, "role", "") or "").strip()
-    role_story_path_candidates = []
+    # 3. 决定生成策略：角色线 > 结构框架 > 全流程
+    role = (args.role or "").strip()
+
+    # 检查角色线文件
+    role_story_candidates = []
     if role:
-        role_story_path_candidates.extend([
-            f"{_sanitize_filename(city)}_role_{_sanitize_filename(role)}.json",
-            f"{_sanitize_filename(city)}_role_story.json",
-        ])
-    else:
-        role_story_path_candidates.append(f"{_sanitize_filename(city)}_role_story.json")
+        role_story_candidates.append(f"{_sanitize_filename(city)}_role_{_sanitize_filename(role)}.json")
+    role_story_candidates.append(f"{_sanitize_filename(city)}_role_story.json")
 
-    picked_role_story = None
-    for _p in role_story_path_candidates:
-        if os.path.exists(_p):
-            picked_role_story = _p
-            break
-
+    picked_role_story = next((p for p in role_story_candidates if os.path.exists(p)), None)
     struct_path = f"{_sanitize_filename(city)}_struct.json"
+
+    # 执行生成策略
     if picked_role_story:
-        try:
-            struct_obj = _read_json_file(picked_role_story)
-            struct_json = json.dumps(struct_obj, ensure_ascii=False, indent=2)
-        except Exception:
-            with open(picked_role_story, "r", encoding="utf-8") as f:
-                struct_json = f.read()
-
-        # 尝试加载 get-story.md 作为写作 Prompt（若不存在则使用内置提示）
-        writer_prompt = _load_prompt("get-story.md")
-        if writer_prompt is None:
-            writer_prompt = (
-                "[SYSTEM]\\n你是恐怖故事 UP 主，按给定 JSON 框架扩写成 1500+ 字 Markdown。\\n"
-                "[严格指令]\\n只返回 Markdown 文案。\\n[USER]\\n[故事框架]\\n{json_skeleton_from_agent_b}\\n[/故事框架]"
-            )
-
-        writer_only = Task(
-            description=writer_prompt,
-            expected_output='Markdown 格式完整故事',
-            agent=writer,
-        )
-        story_crew = Crew(
-            agents=[writer],
-            tasks=[writer_only],
-            process=Process.sequential,
-            verbose=True,
-        )
-        inputs = {"json_skeleton_from_agent_b": struct_json}
-        final_story_content = story_crew.kickoff(inputs=inputs)
+        # 策略 1: 使用角色线 JSON
+        final_story_content = _generate_story_from_json(picked_role_story, writer)
     elif os.path.exists(struct_path):
-        try:
-            struct_obj = _read_json_file(struct_path)
-            struct_json = json.dumps(struct_obj, ensure_ascii=False, indent=2)
-        except Exception:
-            with open(struct_path, "r", encoding="utf-8") as f:
-                struct_json = f.read()
-
-        # 尝试加载 get-story.md 作为写作 Prompt（若不存在则使用内置提示）
-        writer_prompt = _load_prompt("get-story.md")
-        if writer_prompt is None:
-            writer_prompt = (
-                "[SYSTEM]\n你是恐怖故事 UP 主，按给定 JSON 框架扩写成 1500+ 字 Markdown。\n"
-                "[严格指令]\n只返回 Markdown 文案。\n[USER]\n[故事框架]\n{json_skeleton_from_agent_b}\n[/故事框架]"
-            )
-
-        writer_only = Task(
-            description=writer_prompt,
-            expected_output='Markdown 格式完整故事',
-            agent=writer,
-        )
-        story_crew = Crew(
-            agents=[writer],
-            tasks=[writer_only],
-            process=Process.sequential,
-            verbose=True,
-        )
-        inputs = {"json_skeleton_from_agent_b": struct_json}
-        final_story_content = story_crew.kickoff(inputs=inputs)
-    elif True:
+        # 策略 2: 使用结构框架 JSON
+        final_story_content = _generate_story_from_json(struct_path, writer)
+    else:
+        # 策略 3: 全流程（搜索 → 分析 → 写作）
         story_crew = Crew(
             agents=[researcher, analyst, writer],
             tasks=[task_search, task_analyze, task_write],
-            process=Process.sequential,  # A -> B -> C 顺序执行
+            process=Process.sequential,
             verbose=True,
         )
-        inputs = {"city": city}
-        final_story_content = story_crew.kickoff(inputs=inputs)
+        final_story_content = story_crew.kickoff(inputs={"city": city})
 
     # 5. 保存产出到本地文件
     output_basename = args.out.strip() if getattr(args, "out", None) else f"{_sanitize_filename(city)}_story.md"
@@ -276,16 +528,6 @@ if __name__ == "__main__":
 
 
 # ---------------- 1.3 命令实现：set-city / get-struct / get-story ----------------
-
-def _write_json_file(path: str, data: object) -> None:
-    with open(path, "w", encoding="utf-8") as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
-
-
-def _read_json_file(path: str) -> object:
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
-
 
 def _escape_json_str(s: str) -> str:
     """将文本转换为 JSON 字符串内容（不含外层引号）。"""
@@ -398,6 +640,7 @@ def get_struct():
     - 输入：--city 必填； --index 或 --title 选其一（默认 index=1）
     - 行为：读取 ./<city>_candidates.json，选择指定故事，产出详细结构化 JSON 到 ./<city>_struct.json
     """
+    # 1. 参数解析
     p = argparse.ArgumentParser(description="从候选中选定故事并生成结构化框架")
     p.add_argument("--city", type=str, required=True, help="目标城市")
     g = p.add_mutually_exclusive_group()
@@ -409,69 +652,23 @@ def get_struct():
     if not city:
         raise SystemExit("--city 不能为空")
 
-    cand_path = f"{_sanitize_filename(city)}_candidates.json"
-    cand_txt_path = cand_path.replace(".json", ".txt")
-    if not os.path.exists(cand_path) and not os.path.exists(cand_txt_path):
-        print(f"[AI 助手]: 未找到候选文件 ./{cand_path}，将先自动生成候选……")
-        _generate_candidates(city)
+    # 2. 确保候选文件存在并加载
+    candidates, _ = _ensure_candidates_file(city)
 
-    candidates = None
-    candidates_text = None
-    if os.path.exists(cand_path):
-        try:
-            candidates = _read_json_file(cand_path)
-        except Exception:
-            candidates = None
-    elif os.path.exists(cand_txt_path):
-        with open(cand_txt_path, "r", encoding="utf-8") as f:
-            candidates_text = f.read()
-
-    picked_title = None
-    picked_blurb = None
-    picked_index = args.index or 1
-
+    # 3. 从候选列表中选择
+    picked_title, picked_blurb = "", ""
     if isinstance(candidates, list):
-        if args.title:
-            key = args.title.strip().lower()
-            for item in candidates:
-                title = (item.get("title") if isinstance(item, dict) else None) or ""
-                if key in title.lower():
-                    picked_title = title
-                    picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
-                    break
-        else:
-            idx = picked_index - 1
-            if 0 <= idx < len(candidates):
-                item = candidates[idx]
-                picked_title = (item.get("title") if isinstance(item, dict) else str(item)) or ""
-                picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
+        picked_title, picked_blurb = _pick_candidate_from_list(
+            candidates,
+            title_query=args.title,
+            index=args.index or 1
+        )
 
-    # 先用研究员对“选中的候选”进行素材汇编，得到原始长文本
+    # 4. 汇编原始素材
     researcher, analyst, _ = _make_agents()
-    research_desc = (
-        "围绕城市 {city} 的选中候选故事，汇编原始素材为长文本。\n"
-        "若给定标题与简介，则以其为主题展开收集与整合。\n"
-        "请合并来源梳理、传说变体、时间线、目击叙述与反驳观点，输出为 Markdown 长文。\n"
-        "选中候选：\n标题：{picked_title}\n简介：{picked_blurb}\n(如标题为空，则请根据城市最具代表性的一个传说自动选择)\n"
-    )
-    research_task = Task(
-        description=research_desc,
-        expected_output="关于选中候选的长篇原始素材（Markdown 长文）",
-        agent=researcher,
-    )
-    research_crew = Crew(agents=[researcher], tasks=[research_task], process=Process.sequential, verbose=True)
-    research_inputs = {"city": city, "picked_title": picked_title or "", "picked_blurb": picked_blurb or ""}
-    raw_material = str(research_crew.kickoff(inputs=research_inputs))
+    raw_material = _gather_raw_materials(city, picked_title, picked_blurb, researcher)
 
-    # 读取 get-struct.md 提示词，驱动分析师输出严格 JSON 代码块
-    def _load_prompt(name: str) -> str | None:
-        p = os.path.join(os.getcwd(), name)
-        try:
-            with open(p, "r", encoding="utf-8") as f:
-                return f.read()
-        except Exception:
-            return None
-
+    # 5. 生成结构化框架
     prompt = _load_prompt("get-struct.md")
     if prompt is None:
         prompt = (
@@ -486,53 +683,18 @@ def get_struct():
         expected_output="仅一个 JSON 代码块，字段按规范返回",
         agent=analyst,
     )
-    analyze_inputs = {"raw_text_from_agent_a": raw_material, "city": city}
-    analyze_crew = Crew(agents=[analyst], tasks=[analyze_task], process=Process.sequential, verbose=True)
-    text = str(analyze_crew.kickoff(inputs=analyze_inputs))
+    analyze_crew = Crew(
+        agents=[analyst],
+        tasks=[analyze_task],
+        process=Process.sequential,
+        verbose=True
+    )
+    text = str(analyze_crew.kickoff(inputs={"raw_text_from_agent_a": raw_material, "city": city}))
 
-    # 提取 JSON 对象
-    data = None
-    def _try_parse_obj(s: str):
-        try:
-            v = json.loads(s)
-            return v if isinstance(v, dict) else None
-        except Exception:
-            return None
-
-    data = _try_parse_obj(text)
-    if data is None:
-        import re as _re
-        m = _re.search(r"\{[\s\S]*\}", text)
-        if m:
-            blob = m.group(0)
-            # 将中文引号替换为转义 ASCII 引号，避免破坏字符串
-            blob = blob.replace("\ufeff", "")
-            blob = blob.replace('“', '\\"').replace('”', '\\"')
-            blob = blob.replace('’', "'").replace('‘', "'")
-            data = _try_parse_obj(blob)
-
-    def _normalize_struct(d: dict, city_name: str) -> dict:
-        # 规范化键名与必填字段
-        out = {}
-        out["title"] = str(d.get("title") or "").strip() or "未命名故事"
-        out["city"] = str(d.get("city") or city_name)
-        loc = d.get("location_name") or d.get("location") or ""
-        out["location_name"] = str(loc)
-        out["core_legend"] = str(d.get("core_legend") or d.get("legend") or "").strip()
-        # key_elements
-        ke = d.get("key_elements")
-        if not isinstance(ke, list):
-            ke = []
-        out["key_elements"] = [str(x) for x in ke if isinstance(x, (str,int,float))]
-        # potential_roles
-        roles = d.get("potential_roles")
-        if not isinstance(roles, list):
-            # 简单兜底，避免空字段
-            roles = ["目击者", "讲述者", "地方居民"]
-        out["potential_roles"] = [str(x) for x in roles if isinstance(x, (str,int,float))]
-        return out
-
+    # 6. 解析、规范化并保存
+    data = _try_parse_json_obj(text)
     out_path = f"{_sanitize_filename(city)}_struct.json"
+
     if data is not None:
         data = _normalize_struct(data, city)
         _write_json_file(out_path, data)
@@ -546,6 +708,7 @@ def get_struct():
 
 def get_lore():
     """生成城市的世界观圣经（lore.json）。"""
+    # 1. 参数解析
     p = argparse.ArgumentParser(description="生成世界观圣经（lore.json）")
     p.add_argument("--city", type=str, required=True)
     g = p.add_mutually_exclusive_group()
@@ -558,85 +721,53 @@ def get_lore():
     if not city:
         raise SystemExit("--city 不能为空")
 
-    # 确保候选存在
-    cand_path = f"{_sanitize_filename(city)}_candidates.json"
-    if not os.path.exists(cand_path):
-        _generate_candidates(city)
-    candidates = None
-    try:
-        if os.path.exists(cand_path):
-            candidates = _read_json_file(cand_path)
-    except Exception:
-        candidates = None
+    # 2. 确保候选文件存在并加载
+    candidates, _ = _ensure_candidates_file(city)
 
-    picked_title = None
-    picked_blurb = None
+    # 3. 从候选列表中选择
+    picked_title, picked_blurb = "", ""
     if isinstance(candidates, list):
-        if args.title:
-            key = args.title.strip().lower()
-            for item in candidates:
-                t = (item.get("title") if isinstance(item, dict) else None) or ""
-                if key in t.lower():
-                    picked_title = t
-                    picked_blurb = item.get("blurb") if isinstance(item, dict) else ""
-                    break
-        else:
-            idx = ((args.index or 1) - 1)
-            if 0 <= idx < len(candidates):
-                it = candidates[idx]
-                picked_title = (it.get("title") if isinstance(it, dict) else str(it)) or ""
-                picked_blurb = it.get("blurb") if isinstance(it, dict) else ""
+        picked_title, picked_blurb = _pick_candidate_from_list(
+            candidates,
+            title_query=args.title,
+            index=args.index or 1
+        )
 
-    # 汇编原始素材
+    # 4. 汇编原始素材
     researcher, analyst, _ = _make_agents()
-    research_desc = (
-        "围绕城市 {city} 的选中候选故事，汇编原始素材为长文本。\n"
-        "合并来源、变体、时间线、目击叙述与反驳观点，输出为 Markdown 长文。\n"
-        "选中候选：\n标题：{picked_title}\n简介：{picked_blurb}\n城市：{city}。"
-    )
-    research_task = Task(description=research_desc, expected_output="Markdown 长文", agent=researcher)
-    raw_material = str(Crew(agents=[researcher], tasks=[research_task], process=Process.sequential, verbose=True).kickoff(inputs={
-        "city": city, "picked_title": picked_title or "", "picked_blurb": picked_blurb or ""
-    }))
+    raw_material = _gather_raw_materials(city, picked_title, picked_blurb, researcher)
 
+    # 5. 生成世界观圣经
     lore_prompt = _load_prompt("lore.md")
     if lore_prompt is None:
         lore_prompt = (
-            "[SYSTEM]\n你是一名‘世界观圣经’构建专家。只返回一个 JSON 代码块。\n"
+            "[SYSTEM]\n你是一名'世界观圣经'构建专家。只返回一个 JSON 代码块。\n"
             "要求：world_truth, rules[], motifs[], locations[], timeline_hints[], allowed_roles[]；全部使用 ASCII 双引号。\n"
             "[USER]\n[城市]\n{city}\n[/城市]\n[原始素材]\n{raw_material}\n[/原始素材]"
         )
     task = Task(description=lore_prompt, expected_output="仅一个 JSON 代码块", agent=analyst)
-    text = str(Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True).kickoff(inputs={
-        "city": city, "raw_material": raw_material
-    }))
+    lore_crew = Crew(
+        agents=[analyst],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    text = str(lore_crew.kickoff(inputs={"city": city, "raw_material": raw_material}))
 
-    def _try_parse_obj(s: str):
-        try:
-            v = json.loads(s)
-            return v if isinstance(v, dict) else None
-        except Exception:
-            return None
-    data = _try_parse_obj(text)
-    if data is None:
-        import re as _re
-        m = _re.search(r"\{[\s\S]*\}", text)
-        if m:
-            blob = m.group(0).replace("\ufeff", "").replace('“', '"').replace('”', '"')
-            data = _try_parse_obj(blob)
-
+    # 6. 解析并保存
+    data = _try_parse_json_obj(text)
     out_path = (args.out or f"{_sanitize_filename(city)}_lore.json").strip()
+    _save_json_or_fallback(data, out_path, text)
+
     if data is not None:
-        _write_json_file(out_path, data)
         print(f"\n[AI 助手]: 世界观圣经已保存: ./{out_path}\n")
     else:
-        with open(out_path.replace(".json", ".txt"), "w", encoding="utf-8") as f:
-            f.write(text)
         raise SystemExit("未能解析为 JSON，请检查输出（已保存为 .txt）。")
 
 
 def gen_role():
     """基于 lore.json 生成角色剧情拍点 role_story.json。"""
+    # 1. 参数解析
     p = argparse.ArgumentParser(description="从 lore.json 生成角色剧情拍点（role_story.json）")
     p.add_argument("--city", type=str, required=True)
     p.add_argument("--role", type=str, required=True)
@@ -650,6 +781,7 @@ def gen_role():
     if not city or not role:
         raise SystemExit("--city 与 --role 均为必填")
 
+    # 2. 加载 lore 文件
     lore_path = (args.lore or f"{_sanitize_filename(city)}_lore.json").strip()
     if not os.path.exists(lore_path):
         raise SystemExit(f"未找到 lore 文件: {lore_path}。请先运行 get-lore。")
@@ -661,6 +793,7 @@ def gen_role():
         with open(lore_path, "r", encoding="utf-8") as f:
             lore_json = f.read()
 
+    # 3. 生成角色剧情拍点
     prompt = _load_prompt("role-beats.md")
     if prompt is None:
         prompt = (
@@ -668,34 +801,30 @@ def gen_role():
             "字段：role, pov, goal, constraints_used{rules[],motifs[],locations[]}, beats{opening_hook,first_contact,investigation,mid_twist,confrontation,aftershock,cta}。\n"
             "[USER]\n[世界观]\n{lore_json}\n[/世界观]\n[角色]\n{role}\n[/角色]\n[视角]\n{pov}\n[/视角]"
         )
+
     analyst = _make_agents()[1]
     task = Task(description=prompt, expected_output="仅一个 JSON 代码块", agent=analyst)
-    text = str(Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True).kickoff(inputs={
-        "lore_json": lore_json, "role": role, "pov": (args.pov or "第二人称")
+    role_crew = Crew(
+        agents=[analyst],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    text = str(role_crew.kickoff(inputs={
+        "lore_json": lore_json,
+        "role": role,
+        "pov": (args.pov or "第二人称")
     }))
 
-    def _try_parse_obj2(s: str):
-        try:
-            v = json.loads(s)
-            return v if isinstance(v, dict) else None
-        except Exception:
-            return None
-    data = _try_parse_obj2(text)
-    if data is None:
-        import re as _re
-        m = _re.search(r"\{[\s\S]*\}", text)
-        if m:
-            blob = m.group(0).replace("\ufeff", "").replace('“', '"').replace('”', '"')
-            data = _try_parse_obj2(blob)
-
+    # 4. 解析并保存
+    data = _try_parse_json_obj(text)
     out_default = f"{_sanitize_filename(city)}_role_{_sanitize_filename(role)}.json"
     out_path = (args.out or out_default).strip()
+    _save_json_or_fallback(data, out_path, text)
+
     if data is not None:
-        _write_json_file(out_path, data)
         print(f"\n[AI 助手]: 角色剧情拍点已保存: ./{out_path}\n")
     else:
-        with open(out_path.replace(".json", ".txt"), "w", encoding="utf-8") as f:
-            f.write(text)
         raise SystemExit("未能解析为 JSON，请检查输出（已保存为 .txt）。")
 
 
@@ -744,3 +873,545 @@ def validate_role():
         raise SystemExit("验证未通过。")
     else:
         print("[验证] 通过：role_story 与 lore 在软约束下匹配。")
+
+
+def gen_protagonist():
+    """基于 Lore v1 生成主角设计文档 (Protagonist)。"""
+    p = argparse.ArgumentParser(description="生成主角设计文档 (protagonist.md)")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--lore", type=str, required=False)
+    p.add_argument("--out", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    # 加载 Lore v1 文件
+    lore_path = (args.lore or f"{_sanitize_filename(city)}_lore.json").strip()
+    if not os.path.exists(lore_path):
+        raise SystemExit(f"未找到 Lore v1 文件: {lore_path}。请先运行 get-lore。")
+
+    try:
+        lore_obj = _read_json_file(lore_path)
+        lore_content = json.dumps(lore_obj, ensure_ascii=False, indent=2)
+    except Exception:
+        with open(lore_path, "r", encoding="utf-8") as f:
+            lore_content = f.read()
+
+    # 加载 protagonist prompt
+    prompt_path = os.path.join("范文", "protagonist.prompt.md")
+    if os.path.exists(prompt_path):
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            prompt = f.read()
+    else:
+        prompt = (
+            "[SYSTEM]\n你是一位首席叙事设计师。\n"
+            "你的任务：基于《世界书 V1.0》，分析潜在主角，并推荐最佳主线角色。\n"
+            "[USER]\n[世界书 V1.0]\n{world_book_markdown_content}\n[/世界书 V1.0]"
+        )
+
+    # 生成主角分析
+    analyst = _make_agents()[1]
+    task = Task(
+        description=prompt,
+        expected_output="主角分析报告 (Markdown 格式)",
+        agent=analyst
+    )
+    crew = Crew(
+        agents=[analyst],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    result = str(crew.kickoff(inputs={"world_book_markdown_content": lore_content}))
+
+    # 保存为 Markdown
+    out_path = (args.out or f"{_sanitize_filename(city)}_protagonist.md").strip()
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(result)
+
+    print(f"\n[AI 助手]: 主角设计文档已保存: ./{out_path}\n")
+
+
+def gen_lore_v2():
+    """基于 Lore v1 + Protagonist 生成深化世界观 (Lore v2)。"""
+    p = argparse.ArgumentParser(description="生成深化世界观 (lore_v2.md)")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--lore-v1", type=str, required=False)
+    p.add_argument("--protagonist", type=str, required=False)
+    p.add_argument("--out", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    # 加载 Lore v1
+    lore_v1_path = (args.lore_v1 or f"{_sanitize_filename(city)}_lore.json").strip()
+    if not os.path.exists(lore_v1_path):
+        raise SystemExit(f"未找到 Lore v1 文件: {lore_v1_path}。请先运行 get-lore。")
+
+    try:
+        lore_v1_obj = _read_json_file(lore_v1_path)
+        lore_v1_content = json.dumps(lore_v1_obj, ensure_ascii=False, indent=2)
+    except Exception:
+        with open(lore_v1_path, "r", encoding="utf-8") as f:
+            lore_v1_content = f.read()
+
+    # 加载 lore-v2 prompt
+    prompt_path = os.path.join("范文", "lore-v2.prompt.md")
+    if os.path.exists(prompt_path):
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            prompt = f.read()
+    else:
+        prompt = (
+            "[SYSTEM]\n你是一位首席游戏系统设计师。\n"
+            "你的任务：将《世界书 1.0》升级为《世界书 2.0 (系统增强版)》。\n"
+            "[USER]\n[世界书 V1.0]\n{world_book_1_0_markdown_content}\n[/世界书 V1.0]"
+        )
+
+    # 生成 Lore v2
+    analyst = _make_agents()[1]
+    task = Task(
+        description=prompt,
+        expected_output="世界书 2.0 (Markdown 格式，含游戏系统)",
+        agent=analyst
+    )
+    crew = Crew(
+        agents=[analyst],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    result = str(crew.kickoff(inputs={"world_book_1_0_markdown_content": lore_v1_content}))
+
+    # 保存为 Markdown
+    out_path = (args.out or f"{_sanitize_filename(city)}_lore_v2.md").strip()
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(result)
+
+    print(f"\n[AI 助手]: Lore v2 已保存: ./{out_path}\n")
+
+
+def gen_gdd():
+    """基于 Lore v2 + Protagonist 生成 AI 导演任务简报 (GDD)。"""
+    p = argparse.ArgumentParser(description="生成 AI 导演任务简报 (GDD.md)")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--lore-v2", type=str, required=False)
+    p.add_argument("--protagonist", type=str, required=False)
+    p.add_argument("--out", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    # 加载 Lore v2
+    lore_v2_path = (args.lore_v2 or f"{_sanitize_filename(city)}_lore_v2.md").strip()
+    if not os.path.exists(lore_v2_path):
+        raise SystemExit(f"未找到 Lore v2 文件: {lore_v2_path}。请先运行 gen-lore-v2。")
+
+    with open(lore_v2_path, "r", encoding="utf-8") as f:
+        lore_v2_content = f.read()
+
+    # 加载 Protagonist (可选)
+    protagonist_path = (args.protagonist or f"{_sanitize_filename(city)}_protagonist.md").strip()
+    protagonist_content = ""
+    if os.path.exists(protagonist_path):
+        with open(protagonist_path, "r", encoding="utf-8") as f:
+            protagonist_content = f.read()
+
+    # 加载 GDD prompt
+    prompt_path = os.path.join("范文", "GDD.prompt.md")
+    if os.path.exists(prompt_path):
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            prompt = f.read()
+    else:
+        prompt = (
+            "[SYSTEM]\n你是一位首席游戏系统设计师。\n"
+            "你的任务：为主角撰写 AI 导演任务简报 (GDD)。\n"
+            "[USER]\n请使用世界书和角色分析开始撰写 GDD。"
+        )
+
+    # 替换占位符
+    prompt = prompt.replace("{《荔湾广场世界书 2.0 (系统增强版)》的全部 Markdown 内容}", lore_v2_content)
+    prompt = prompt.replace('{《角色分析报告》中关于"保安（主角线）"的全部 Markdown 内容}', protagonist_content)
+
+    # 生成 GDD
+    analyst = _make_agents()[1]
+    task = Task(
+        description=prompt,
+        expected_output="AI 导演任务简报 (Markdown 格式)",
+        agent=analyst
+    )
+    crew = Crew(
+        agents=[analyst],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    result = str(crew.kickoff())
+
+    # 保存为 Markdown
+    out_path = (args.out or f"{_sanitize_filename(city)}_GDD.md").strip()
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(result)
+
+    print(f"\n[AI 助手]: GDD 已保存: ./{out_path}\n")
+
+
+def gen_main_thread():
+    """基于 GDD + Lore v2 生成主线完整故事。"""
+    p = argparse.ArgumentParser(description="生成主线完整故事 (main_thread.md)")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--gdd", type=str, required=False)
+    p.add_argument("--lore-v2", type=str, required=False)
+    p.add_argument("--out", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    # 加载 GDD
+    gdd_path = (args.gdd or f"{_sanitize_filename(city)}_GDD.md").strip()
+    if not os.path.exists(gdd_path):
+        raise SystemExit(f"未找到 GDD 文件: {gdd_path}。请先运行 gen-gdd。")
+
+    with open(gdd_path, "r", encoding="utf-8") as f:
+        gdd_content = f.read()
+
+    # 加载 Lore v2 (可选)
+    lore_v2_path = (args.lore_v2 or f"{_sanitize_filename(city)}_lore_v2.md").strip()
+    lore_v2_content = ""
+    if os.path.exists(lore_v2_path):
+        with open(lore_v2_path, "r", encoding="utf-8") as f:
+            lore_v2_content = f.read()
+
+    # 加载 main-thread prompt
+    prompt_path = os.path.join("范文", "main-thread.prompt.md")
+    if os.path.exists(prompt_path):
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            prompt = f.read()
+    else:
+        prompt = (
+            "[SYSTEM]\n你是 B 站百万粉丝的恐怖故事 UP 主。\n"
+            "基于 GDD 和世界书，生成完整的主线故事。\n"
+            "[USER]\n[GDD]\n{gdd_content}\n[/GDD]\n[世界书]\n{lore_content}\n[/世界书]"
+        )
+
+    # 替换占位符
+    prompt = prompt.replace("{gdd_content}", gdd_content)
+    prompt = prompt.replace("{lore_content}", lore_v2_content)
+
+    # 生成主线故事
+    storyteller = _make_agents()[2]
+    task = Task(
+        description=prompt,
+        expected_output="完整主线故事 (Markdown 格式，≥5000字)",
+        agent=storyteller
+    )
+    crew = Crew(
+        agents=[storyteller],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    result = str(crew.kickoff())
+
+    # 保存为 Markdown
+    out_path = (args.out or f"{_sanitize_filename(city)}_main_thread.md").strip()
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(result)
+
+    print(f"\n[AI 助手]: 主线故事已保存: ./{out_path}\n")
+
+
+def gen_branch():
+    """基于 GDD + Lore v2 生成分支故事。"""
+    p = argparse.ArgumentParser(description="生成分支故事 (branch_X.md)")
+    p.add_argument("--city", type=str, required=True)
+    p.add_argument("--branch-name", type=str, required=True, help="分支名称，如：店主线")
+    p.add_argument("--gdd", type=str, required=False)
+    p.add_argument("--lore-v2", type=str, required=False)
+    p.add_argument("--out", type=str, required=False)
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    branch_name = (args.branch_name or "").strip()
+    if not city or not branch_name:
+        raise SystemExit("--city 和 --branch-name 不能为空")
+
+    # 加载 Lore v2
+    lore_v2_path = (args.lore_v2 or f"{_sanitize_filename(city)}_lore_v2.md").strip()
+    if not os.path.exists(lore_v2_path):
+        raise SystemExit(f"未找到 Lore v2 文件: {lore_v2_path}。")
+
+    with open(lore_v2_path, "r", encoding="utf-8") as f:
+        lore_v2_content = f.read()
+
+    # 加载 branch prompt
+    prompt_path = os.path.join("范文", "branch-1.prompt.md")
+    if os.path.exists(prompt_path):
+        with open(prompt_path, "r", encoding="utf-8") as f:
+            prompt = f.read()
+    else:
+        prompt = (
+            "[SYSTEM]\n你是分支剧情设计师。\n"
+            "基于世界书，为【{branch_name}】生成完整分支故事。\n"
+            "[USER]\n[世界书]\n{lore_content}\n[/世界书]\n[分支角色]\n{branch_name}\n[/分支角色]"
+        )
+
+    # 替换占位符
+    prompt = prompt.replace("{branch_name}", branch_name)
+    prompt = prompt.replace("{lore_content}", lore_v2_content)
+
+    # 生成分支故事
+    storyteller = _make_agents()[2]
+    task = Task(
+        description=prompt,
+        expected_output=f"{branch_name}分支故事 (Markdown 格式)",
+        agent=storyteller
+    )
+    crew = Crew(
+        agents=[storyteller],
+        tasks=[task],
+        process=Process.sequential,
+        verbose=True
+    )
+    result = str(crew.kickoff())
+
+    # 保存为 Markdown
+    out_path = (args.out or f"{_sanitize_filename(city)}_branch_{_sanitize_filename(branch_name)}.md").strip()
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(result)
+
+    print(f"\n[AI 助手]: 分支故事已保存: ./{out_path}\n")
+
+
+def gen_complete():
+    """自动执行完整流程：从 struct.json 开始，依次生成所有文件直到主线故事。
+
+    前提：必须先运行 set-city 和 get-struct
+    执行流程：get-lore → gen-protagonist → gen-lore-v2 → gen-gdd → gen-main-thread
+    """
+    p = argparse.ArgumentParser(
+        description="自动执行完整生成流程（需要先运行 set-city 和 get-struct）",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+示例用法：
+  # 1. 先选择故事
+  set-city --city "杭州"
+  get-struct --city "杭州" --index 1
+
+  # 2. 一键生成所有内容
+  gen-complete --city "杭州"
+
+  # 或指定索引（会自动调用 get-lore）
+  gen-complete --city "杭州" --index 1
+"""
+    )
+    p.add_argument("--city", type=str, required=True, help="城市名称")
+    p.add_argument("--index", type=int, required=False, help="候选故事索引（可选，如未运行 get-lore）")
+    args = p.parse_args()
+
+    city = (args.city or "").strip()
+    if not city:
+        raise SystemExit("--city 不能为空")
+
+    san_city = _sanitize_filename(city)
+
+    print("\n" + "="*60)
+    print(f"🎬 开始完整故事生成流程 - 城市：【{city}】")
+    print("="*60 + "\n")
+
+    # 检查 struct.json 是否存在
+    struct_path = f"{san_city}_struct.json"
+    if not os.path.exists(struct_path):
+        print(f"⚠️  未找到 {struct_path}")
+        print("请先运行：")
+        print(f"  1. set-city --city \"{city}\"")
+        print(f"  2. get-struct --city \"{city}\" --index <编号>")
+        raise SystemExit("\n中止：缺少必要的 struct.json 文件")
+
+    # Step 1: 生成 Lore v1
+    lore_path = f"{san_city}_lore.json"
+    if os.path.exists(lore_path):
+        print(f"✅ 已存在 {lore_path}，跳过生成\n")
+    else:
+        print("📖 Step 1/5: 生成 Lore v1 (世界观基础)...")
+        print("-" * 60)
+        if args.index is None:
+            raise SystemExit("缺少 lore.json 且未指定 --index，请先运行 get-lore 或提供 --index 参数")
+
+        # 调用 get_lore 的逻辑
+        candidates, _ = _ensure_candidates_file(city)
+        picked_title, picked_blurb = _pick_candidate_from_list(candidates, index=args.index)
+        researcher, analyst, _ = _make_agents()
+        raw_material = _gather_raw_materials(city, picked_title, picked_blurb, researcher)
+
+        lore_prompt = _load_prompt("lore.md")
+        if lore_prompt is None:
+            lore_prompt = (
+                "[SYSTEM]\n你是一名'世界观圣经'构建专家。只返回一个 JSON 代码块。\n"
+                "要求：world_truth, rules[], motifs[], locations[], timeline_hints[], allowed_roles[]；全部使用 ASCII 双引号。\n"
+                "[USER]\n[城市]\n{city}\n[/城市]\n[原始素材]\n{raw_material}\n[/原始素材]"
+            )
+        task = Task(description=lore_prompt, expected_output="仅一个 JSON 代码块", agent=analyst)
+        crew = Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True)
+        text = str(crew.kickoff(inputs={"city": city, "raw_material": raw_material}))
+
+        data = _try_parse_json_obj(text)
+        _save_json_or_fallback(data, lore_path, text)
+        print(f"✅ Lore v1 已生成: {lore_path}\n")
+
+    # Step 2: 生成主角设计
+    protagonist_path = f"{san_city}_protagonist.md"
+    if os.path.exists(protagonist_path):
+        print(f"✅ 已存在 {protagonist_path}，跳过生成\n")
+    else:
+        print("👤 Step 2/5: 生成主角设计 (Protagonist)...")
+        print("-" * 60)
+
+        lore_obj = _read_json_file(lore_path)
+        lore_content = json.dumps(lore_obj, ensure_ascii=False, indent=2)
+
+        prompt_path = os.path.join("范文", "protagonist.prompt.md")
+        if os.path.exists(prompt_path):
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                prompt = f.read()
+        else:
+            prompt = (
+                "[SYSTEM]\n你是一位首席叙事设计师。\n"
+                "你的任务：基于《世界书 V1.0》，分析潜在主角，并推荐最佳主线角色。\n"
+                "[USER]\n[世界书 V1.0]\n{world_book_markdown_content}\n[/世界书 V1.0]"
+            )
+
+        analyst = _make_agents()[1]
+        task = Task(description=prompt, expected_output="主角分析报告 (Markdown 格式)", agent=analyst)
+        crew = Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True)
+        result = str(crew.kickoff(inputs={"world_book_markdown_content": lore_content}))
+
+        with open(protagonist_path, "w", encoding="utf-8") as f:
+            f.write(result)
+        print(f"✅ 主角设计已生成: {protagonist_path}\n")
+
+    # Step 3: 生成 Lore v2
+    lore_v2_path = f"{san_city}_lore_v2.md"
+    if os.path.exists(lore_v2_path):
+        print(f"✅ 已存在 {lore_v2_path}，跳过生成\n")
+    else:
+        print("🎮 Step 3/5: 生成 Lore v2 (系统增强版)...")
+        print("-" * 60)
+
+        lore_obj = _read_json_file(lore_path)
+        lore_v1_content = json.dumps(lore_obj, ensure_ascii=False, indent=2)
+
+        prompt_path = os.path.join("范文", "lore-v2.prompt.md")
+        if os.path.exists(prompt_path):
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                prompt = f.read()
+        else:
+            prompt = (
+                "[SYSTEM]\n你是一位首席游戏系统设计师。\n"
+                "你的任务：将《世界书 1.0》升级为《世界书 2.0 (系统增强版)》。\n"
+                "[USER]\n[世界书 V1.0]\n{world_book_1_0_markdown_content}\n[/世界书 V1.0]"
+            )
+
+        analyst = _make_agents()[1]
+        task = Task(description=prompt, expected_output="世界书 2.0 (Markdown 格式，含游戏系统)", agent=analyst)
+        crew = Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True)
+        result = str(crew.kickoff(inputs={"world_book_1_0_markdown_content": lore_v1_content}))
+
+        with open(lore_v2_path, "w", encoding="utf-8") as f:
+            f.write(result)
+        print(f"✅ Lore v2 已生成: {lore_v2_path}\n")
+
+    # Step 4: 生成 GDD
+    gdd_path = f"{san_city}_GDD.md"
+    if os.path.exists(gdd_path):
+        print(f"✅ 已存在 {gdd_path}，跳过生成\n")
+    else:
+        print("🎬 Step 4/5: 生成 GDD (AI导演任务简报)...")
+        print("-" * 60)
+
+        with open(lore_v2_path, "r", encoding="utf-8") as f:
+            lore_v2_content = f.read()
+
+        protagonist_content = ""
+        if os.path.exists(protagonist_path):
+            with open(protagonist_path, "r", encoding="utf-8") as f:
+                protagonist_content = f.read()
+
+        prompt_path = os.path.join("范文", "GDD.prompt.md")
+        if os.path.exists(prompt_path):
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                prompt = f.read()
+        else:
+            prompt = (
+                "[SYSTEM]\n你是一位首席游戏系统设计师。\n"
+                "你的任务：为主角撰写 AI 导演任务简报 (GDD)。\n"
+                "[USER]\n请使用世界书和角色分析开始撰写 GDD。"
+            )
+
+        prompt = prompt.replace("{《荔湾广场世界书 2.0 (系统增强版)》的全部 Markdown 内容}", lore_v2_content)
+        prompt = prompt.replace('{《角色分析报告》中关于"保安（主角线）"的全部 Markdown 内容}', protagonist_content)
+
+        analyst = _make_agents()[1]
+        task = Task(description=prompt, expected_output="AI 导演任务简报 (Markdown 格式)", agent=analyst)
+        crew = Crew(agents=[analyst], tasks=[task], process=Process.sequential, verbose=True)
+        result = str(crew.kickoff())
+
+        with open(gdd_path, "w", encoding="utf-8") as f:
+            f.write(result)
+        print(f"✅ GDD 已生成: {gdd_path}\n")
+
+    # Step 5: 生成主线故事
+    main_thread_path = f"{san_city}_main_thread.md"
+    if os.path.exists(main_thread_path):
+        print(f"✅ 已存在 {main_thread_path}，跳过生成\n")
+    else:
+        print("📝 Step 5/5: 生成主线完整故事...")
+        print("-" * 60)
+
+        with open(gdd_path, "r", encoding="utf-8") as f:
+            gdd_content = f.read()
+
+        with open(lore_v2_path, "r", encoding="utf-8") as f:
+            lore_v2_content = f.read()
+
+        prompt_path = os.path.join("范文", "main-thread.prompt.md")
+        if os.path.exists(prompt_path):
+            with open(prompt_path, "r", encoding="utf-8") as f:
+                prompt = f.read()
+        else:
+            prompt = (
+                "[SYSTEM]\n你是 B 站百万粉丝的恐怖故事 UP 主。\n"
+                "基于 GDD 和世界书，生成完整的主线故事。\n"
+                "[USER]\n[GDD]\n{gdd_content}\n[/GDD]\n[世界书]\n{lore_content}\n[/世界书]"
+            )
+
+        prompt = prompt.replace("{gdd_content}", gdd_content)
+        prompt = prompt.replace("{lore_content}", lore_v2_content)
+
+        storyteller = _make_agents()[2]
+        task = Task(description=prompt, expected_output="完整主线故事 (Markdown 格式，≥5000字)", agent=storyteller)
+        crew = Crew(agents=[storyteller], tasks=[task], process=Process.sequential, verbose=True)
+        result = str(crew.kickoff())
+
+        with open(main_thread_path, "w", encoding="utf-8") as f:
+            f.write(result)
+        print(f"✅ 主线故事已生成: {main_thread_path}\n")
+
+    # 完成总结
+    print("\n" + "="*60)
+    print("🎉 完整流程执行成功！")
+    print("="*60)
+    print("\n生成的文件：")
+    print(f"  1. {lore_path}")
+    print(f"  2. {protagonist_path}")
+    print(f"  3. {lore_v2_path}")
+    print(f"  4. {gdd_path}")
+    print(f"  5. {main_thread_path}")
+    print(f"\n✨ 主线故事已保存至：{main_thread_path}\n")
