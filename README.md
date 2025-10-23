@@ -2,13 +2,90 @@
 
 **一个专业的灵异故事生成工厂** - 基于CrewAI和专业范文模板，自动生成完整的、高质量的灵异故事。
 
+> 🎮 **不只是故事生成器，更是交互式游戏开发工具**  
+> 从世界观设计到AI导演系统，从静态故事到动态游戏，一站式解决方案。
+
+---
+
+## 📌 项目简介
+
+Ghost Story Factory 是一个基于 **Top-Down 叙事设计** 的专业故事生成工具，采用 **世界观 → 角色 → 游戏设计 → 故事** 的分层架构，确保生成内容的一致性和可玩性。
+
+**适用场景：**
+- 📖 内容创作者：快速生成高质量灵异故事文案
+- 🎮 游戏开发者：获得完整的游戏设计文档（GDD + 世界观）
+- 🎬 UP主/播客：获得可直接配音的故事脚本
+- 🔬 叙事研究者：学习专业的故事设计流程
+
+---
+
 ## 🌟 核心特性
 
-- ✅ **自动化生成**：输入城市名，自动生成完整故事（1500-3000字）
-- ✅ **专业范文**：基于35个专业设计模式（范文文件夹）
-- ✅ **分层架构**：阶段1（世界书1.0）→ 阶段2（角色+规则）→ 阶段3（GDD+故事）
+- ✅ **自动化生成**：输入城市名，自动生成完整故事（≥5000字）
+- ✅ **专业范文**：基于35个专业设计模式（[范文文件夹](./范文/)）
+- ✅ **分层架构**：阶段1（世界书1.0）→ 阶段2（主角分析）→ 阶段3（GDD+故事）→ 阶段4（交互层）
 - ✅ **选项交互式设计**：支持生成游戏化的选择点系统
+- ✅ **共鸣度系统**：动态的玩家-世界互动机制
+- ✅ **后果树（Consequence Tree）**：多分支结局设计
 - ✅ **AI做体力活，人类做创意活**
+
+---
+
+## 🎯 核心优势
+
+### 1. **专业的叙事设计流程**
+不是简单的"输入提示词→输出故事"，而是遵循专业游戏叙事设计流程：
+```
+原始素材 → Lore v1（世界观基础） → 主角分析 → Lore v2（系统增强） 
+→ GDD（AI导演任务简报） → 主线故事（≥5000字）
+```
+
+### 2. **可复用的中间产物**
+每个阶段的输出都是独立可用的：
+- **Lore v1/v2**：可用于世界观设定
+- **主角分析**：可用于角色设计
+- **GDD**：可直接用于游戏开发
+- **主线故事**：可直接配音/发布
+
+### 3. **游戏化设计支持**
+不仅生成静态故事，还支持：
+- 🎮 选项式交互设计
+- 📊 共鸣度系统（玩家状态追踪）
+- 🌳 后果树（多分支结局）
+- 🤖 AI导演系统（动态响应）
+
+---
+
+## 🏗️ 架构概览
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Ghost Story Factory                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Stage 1: 候选与结构                                         │
+│  ├─ set-city      → 城市候选列表 (candidates.json)          │
+│  └─ get-struct    → 故事结构框架 (struct.json)              │
+│                                                             │
+│  Stage 2: 世界观基础                                         │
+│  ├─ get-lore         → Lore v1 (lore.json)                 │
+│  └─ gen-protagonist  → 主角设计 (protagonist.md)           │
+│                                                             │
+│  Stage 3: 系统增强                                           │
+│  ├─ gen-lore-v2   → Lore v2 (lore_v2.md) [含游戏系统]       │
+│  └─ gen-gdd       → GDD (GDD.md) [AI导演任务简报]          │
+│                                                             │
+│  Stage 4: 故事生成                                           │
+│  ├─ gen-main-thread → 主线故事 (main_thread.md)            │
+│  └─ gen-branch      → 分支故事 (branch_X.md)               │
+│                                                             │
+│  ⚡ 自动流水线                                                │
+│  └─ gen-complete  → 一键完成 Stage 2-4                      │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**详细架构**：查看 [ARCHITECTURE.md](./ARCHITECTURE.md)
 
 ## 📚 文档索引
 
@@ -286,3 +363,193 @@ uvx --from . validate-role --city "广州" --role "保安"
 ---
 
 所有新增命令均不破坏现有 set-city / get-struct / get-story 契约，仅作为增强。
+
+---
+
+## 📊 示例输出
+
+### 杭州 - 北高峰午夜缆车空厢
+
+**生成的文件：**
+```
+杭州_candidates.json      # 6个候选故事
+杭州_struct.json          # 故事结构框架
+杭州_lore.json            # 世界观基础（JSON）
+杭州_protagonist.md       # 主角分析报告
+杭州_lore_v2.md           # 世界观系统增强版（含共鸣度）
+杭州_GDD.md               # AI导演任务简报
+杭州_main_thread.md       # 完整主线故事（5000+字）
+```
+
+**故事特色：**
+- 🎭 低频象征物："000号车厢"、"00:44时间"
+- 🎬 多感官细节：机油味、钢缆震颤、冰露触感
+- 📖 完整叙事弧：建置→异象→深挖→反转→高潮→余波
+- 🎯 B站UP主风格：第二人称代入、强节奏停顿、可配音
+
+**查看完整示例：** [杭州_story.md](./杭州_story.md)
+
+---
+
+## 🤝 贡献指南
+
+欢迎贡献！您可以：
+
+1. **添加新的范文模板**
+   - 在 `范文/` 文件夹中添加新的 `.design.md`, `.example.md`, `.prompt.md`
+   - 遵循三文件模式（设计-示例-提示词）
+
+2. **改进提示词**
+   - 优化现有的 prompt 模板
+   - 提高生成质量
+
+3. **报告问题**
+   - 在 [Issues](https://github.com/your-username/ghost-story-factory/issues) 提交bug报告
+   - 提供详细的复现步骤
+
+4. **提交新功能**
+   - Fork 本仓库
+   - 创建功能分支
+   - 提交 Pull Request
+
+**代码风格：**
+- 遵循 PEP 8
+- 使用有意义的变量名
+- 添加必要的注释和文档字符串
+
+---
+
+## ❓ 常见问题（FAQ）
+
+### 1. 为什么需要先运行 `set-city` 和 `get-struct`？
+
+这是为了让用户有**选择权**。`set-city` 生成多个候选故事，用户可以选择最感兴趣的一个，而不是由AI随机决定。
+
+### 2. `gen-complete` 和 `generate_full_story.py` 有什么区别？
+
+- **`gen-complete`**：命令行工具，适合分步调试和精细控制
+- **`generate_full_story.py`**：Python脚本，适合一键自动化，会生成到指定输出目录
+
+### 3. 生成的故事质量如何保证？
+
+通过**多层验证**：
+1. Lore v1 提供世界观一致性
+2. 主角分析确保角色合理性
+3. Lore v2 添加游戏系统约束
+4. GDD 提供叙事结构指导
+5. 范文模板提供质量标准
+
+### 4. 可以用于商业项目吗？
+
+**可以**，但请注意：
+- 本项目代码遵循 MIT 许可证
+- AI生成的内容版权归使用者
+- 需自行确保API使用合规（OpenAI/Kimi ToS）
+
+### 5. 支持哪些LLM？
+
+目前支持：
+- ✅ Kimi (Moonshot) - 推荐，长文本支持好
+- ✅ OpenAI (GPT-4o/GPT-4) - 备选
+- ✅ 任何 OpenAI 兼容 API
+
+### 6. 为什么有些命令超时？
+
+**常见原因：**
+- Kimi API 限流（504 Gateway Timeout）
+- 生成内容过长（使用 `gen-complete` 分步生成）
+
+**解决方案：**
+1. 使用 `gen-complete --city "城市名" --index 1`（会自动跳过已生成文件）
+2. 检查 `.env` 中的 API Key 是否有效
+3. 尝试切换到 OpenAI API
+
+### 7. 如何自定义故事风格？
+
+修改 `范文/` 文件夹中的 `.prompt.md` 文件，或在项目根目录创建自定义 prompt：
+- `set-city.md`
+- `get-struct.md`
+- `get-story.md`
+
+---
+
+## 🛠️ 技术栈
+
+| 组件 | 技术 | 用途 |
+|------|------|------|
+| **AI 框架** | [CrewAI](https://github.com/joaomdmoura/crewAI) | 多Agent协作 |
+| **LLM** | Kimi/OpenAI | 内容生成 |
+| **包管理** | [uv](https://github.com/astral-sh/uv) | 快速依赖管理 |
+| **环境配置** | python-dotenv | 环境变量管理 |
+| **语言链** | LangChain | LLM工具链 |
+
+---
+
+## 📜 许可证
+
+本项目采用 **MIT License** 开源。
+
+详见 [LICENSE](./LICENSE) 文件。
+
+---
+
+## 🙏 致谢
+
+- **设计灵感**：Linus Torvalds 的"Good Taste"设计哲学
+- **叙事理论**：《Save the Cat!》、《The Anatomy of Story》
+- **技术支持**：CrewAI 团队、LangChain 社区
+- **范文贡献者**：感谢所有提供专业设计模式的贡献者
+
+---
+
+## 📈 版本历史
+
+### v3.1 (2025-10-24) - 当前版本 🎯
+
+- ✨ 添加自动流水线命令 `gen-complete`
+- ✨ 新增 6 个核心命令（gen-protagonist, gen-lore-v2, gen-gdd等）
+- 📚 完善文档体系（WORKFLOW.md, QUICK_REFERENCE.md等）
+- 🎮 添加交互式游戏引擎（game_engine.py）
+- 📦 完整的范文模板库（35个文件）
+
+### v3.0 (2025-10-23)
+
+- ✨ 添加 Stage 4 交互层设计
+- ✨ 选项交互式游戏支持
+- 📚 范文库初版
+
+### v2.0
+
+- ✨ Top-Down 设计工作流
+- ✨ Lore + Role Beats 系统
+
+### v1.0
+
+- 🎉 初始版本
+- ✅ 基础故事生成功能
+
+**完整更新日志**：查看 [Git Commits](https://github.com/your-username/ghost-story-factory/commits/main)
+
+---
+
+## 📞 联系方式
+
+- **Issues**: [GitHub Issues](https://github.com/your-username/ghost-story-factory/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/your-username/ghost-story-factory/discussions)
+- **Email**: your@email.com
+
+---
+
+## ⭐ Star History
+
+如果这个项目对您有帮助，请给一个 Star ⭐！
+
+---
+
+<p align="center">
+  <strong>用 AI 讲好中国的都市传说故事 🎭👻</strong>
+</p>
+
+<p align="center">
+  Made with ❤️ by <a href="https://github.com/your-username">Your Name</a>
+</p>
