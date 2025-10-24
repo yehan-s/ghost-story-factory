@@ -1,0 +1,19 @@
+{
+  "PR": 20,
+  "GR": 0,
+  "WF": 0,
+  "current_scene": "S2",
+  "timestamp": "01:35",
+  "inventory": [
+    "手电筒",
+    "对讲机"
+  ],
+  "flags": {
+    "手册_已阅读": true,
+    "皮球_监控无画面": true
+  },
+  "consequence_tree": [
+    "S1_C1",
+    "S2_C2"
+  ]
+}

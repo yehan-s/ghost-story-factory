@@ -1,0 +1,15 @@
+{
+  "PR": 15,
+  "GR": 0,
+  "WF": 0,
+  "current_scene": "S1",
+  "timestamp": "00:00",
+  "inventory": [
+    "手电筒",
+    "对讲机"
+  ],
+  "flags": {
+    "test": true
+  },
+  "consequence_tree": []
+}
