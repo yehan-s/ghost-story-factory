@@ -17,6 +17,10 @@
         └───────────────────┘       └───────────────────┘
                   │                           │
         阶段1→2→3（生成）           阶段4（交互运行）
+
+> 运行模式：
+> - 动态模式（LLM 实时生成）→ `play_game_full.py`
+> - 预生成模式（零等待）→ `play_game_pregenerated.py` / `start_pregenerated_game.sh`
 ```
 
 ---
