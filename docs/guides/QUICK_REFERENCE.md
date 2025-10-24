@@ -73,3 +73,17 @@ validate-role --city "杭州" --role "保安"
 
 查看 **[WORKFLOW.md](./WORKFLOW.md)** 获取完整文档。
 
+---
+
+## 🎮 启动游戏（两种模式）
+
+```bash
+# 动态模式（LLM 实时生成）
+python3 play_game_full.py
+
+# 预生成模式（零等待）
+./start_pregenerated_game.sh
+# 或
+python3 play_game_pregenerated.py
+```
+
