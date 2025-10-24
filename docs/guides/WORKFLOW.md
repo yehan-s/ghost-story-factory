@@ -227,6 +227,16 @@ get-story --city "杭州"
 
 ---
 
+## 📚 运行模式提示
+
+> 游玩阶段支持两种模式：
+> - 动态模式（LLM 实时生成）：`python3 play_game_full.py`
+> - 预生成模式（零等待）：`./start_pregenerated_game.sh` 或 `python3 play_game_pregenerated.py`
+
+详见：`docs/PREGENERATION_DESIGN.md`
+
+---
+
 ## 📚 命令参考
 
 ### Stage 1 命令
