@@ -31,3 +31,14 @@ dist/
 
 # Misc
 .python-version
+
+# 运行时生成的文件
+checkpoint.json
+checkpoints/
+
+# 游戏存档
+saves/
+*.save
+
+# 数据库文件（如果不想提交的话可以取消注释）
+# database/*.db
