@@ -13,6 +13,17 @@
 
 ---
 
+## 🎮 运行模式（新增）
+
+项目支持两种游玩模式：
+
+- 动态模式（LLM 实时生成）：`python3 play_game_full.py`
+- 预生成模式（零等待，读取数据库/文件）：`./start_pregenerated_game.sh` 或 `python3 play_game_pregenerated.py`
+
+> 预生成系统设计详见：`docs/PREGENERATION_DESIGN.md`
+
+---
+
 ## 🎮 完整工作流
 
 ### 第一步：生成故事素材（开发阶段）
