@@ -22,15 +22,17 @@ class RuntimeResponseGenerator:
     并自动更新游戏状态
     """
 
-    def __init__(self, gdd_content: str, lore_content: str):
+    def __init__(self, gdd_content: str, lore_content: str, main_story: str = ""):
         """初始化生成器
 
         Args:
             gdd_content: GDD（AI 导演任务简报）内容
             lore_content: Lore v2（世界观）内容
+            main_story: 主线故事内容（可选，用于高质量叙事）
         """
         self.gdd = gdd_content
         self.lore = lore_content
+        self.main_story = main_story
         self.prompt_template = self._load_prompt_template()
 
     def _load_prompt_template(self) -> str:
@@ -55,6 +57,37 @@ class RuntimeResponseGenerator:
 
         # 如果都不存在，返回内置的简化模板
         return self._get_builtin_template()
+
+    def _build_backstory_with_story(self) -> str:
+        """构建包含完整故事的 backstory（混合方案）
+
+        Returns:
+            包含故事背景的 backstory 文本
+        """
+        # 截取主线故事的前 5000 字符（约 6000 tokens）
+        story_excerpt = self.main_story[:5000] if len(self.main_story) > 5000 else self.main_story
+
+        return f"""你是一个专业的恐怖故事作家，已经阅读了完整的故事背景：
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【故事背景】
+{story_excerpt}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+你的任务：
+基于上述故事背景，为玩家的选择生成沉浸式的叙事响应。
+
+你的风格：
+- 第二人称视角（使用"你"）
+- 强节奏停顿，多感官细节
+- 符合故事设定和世界观规则
+- 营造恐怖氛围
+
+重要：
+- 必须遵循故事背景中的设定
+- 不能编造与背景矛盾的内容
+- 保持叙事的连贯性和一致性
+"""
 
     def _get_builtin_template(self) -> str:
         """获取内置模板（当文件不存在时的回退）"""
@@ -121,7 +154,8 @@ class RuntimeResponseGenerator:
         """
         # 延迟导入 CrewAI（避免基础功能依赖）
         try:
-            from crewai import Agent, Task, Crew
+            from crewai import Agent, Task, Crew, LLM
+            import os
         except ImportError:
             print("⚠️  CrewAI 未安装，无法生成响应，返回简单确认")
             # 应用后果
@@ -130,23 +164,46 @@ class RuntimeResponseGenerator:
                 game_state.consequence_tree.append(choice.choice_id)
             return f"你选择了：{choice.choice_text}\n\n（CrewAI 未安装，无法生成完整叙事响应）"
 
+        # 配置 Kimi LLM（响应生成专用模型）
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        # 响应生成：使用高质量模型（可单独配置）
+        kimi_model = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+
+        llm = LLM(
+            model=kimi_model,
+            api_key=kimi_key,
+            base_url=kimi_base
+        )
+
+        print(f"🤖 [响应] 使用模型: {kimi_model}")
+
         # 保存原始状态（用于对比）
         state_before = game_state.to_dict()
 
         # 构建 prompt
         prompt = self._build_prompt(choice, game_state, state_before)
 
-        # 创建 Agent
-        agent = Agent(
-            role="B站百万粉丝的恐怖故事 UP 主",
-            goal="生成沉浸式的叙事响应，营造恐怖氛围",
-            backstory=(
+        # 🎯 混合方案：响应生成使用完整故事背景
+        if self.main_story:
+            backstory = self._build_backstory_with_story()
+            print("📚 [响应] 使用完整故事背景（高质量模式）")
+        else:
+            backstory = (
                 "你精通恐怖氛围营造和细节描写。"
                 "你的文笔风格是：第一人称视角，强节奏停顿，多感官细节，"
                 "符号反复召回，像一个在深夜给观众讲恐怖故事的 UP 主。"
-            ),
+            )
+            print("💡 [响应] 使用精简模式")
+
+        # 创建 Agent（使用 Kimi LLM）
+        agent = Agent(
+            role="B站百万粉丝的恐怖故事 UP 主",
+            goal="生成沉浸式的叙事响应，营造恐怖氛围",
+            backstory=backstory,
             verbose=False,
-            allow_delegation=False
+            allow_delegation=False,
+            llm=llm  # 使用 Kimi LLM
         )
 
         # 创建任务
@@ -184,89 +241,63 @@ class RuntimeResponseGenerator:
         game_state: GameState,
         state_before: Dict[str, Any]
     ) -> str:
-        """构建完整的 prompt"""
-        return f"""
-{self.prompt_template}
+        """构建完整的 prompt（优化版）"""
+        # 计算状态变化
+        pr_change = game_state.PR - state_before.get('PR', 0)
 
----
+        # 提取场景相关内容
+        scene_context = self._extract_scene_context(self.gdd, game_state.current_scene, max_chars=400)
+
+        return f"""
+你是一个专业的恐怖故事作家。根据玩家选择生成沉浸式叙事响应（200-400字）。
 
 ## 玩家选择
+**选择**: {choice.choice_text}
+**类型**: {choice.choice_type.value} | **标签**: {', '.join(choice.tags[:2]) if choice.tags else '无'}
 
-**选项 ID**: {choice.choice_id}
-**选项文本**: {choice.choice_text}
-**选项类型**: {choice.choice_type.value}
-**选项标签**: {', '.join(choice.tags) if choice.tags else '无'}
+## 当前状态
+**场景**: {game_state.current_scene} | **时间**: {game_state.timestamp}
+**PR**: {state_before.get('PR', 0)} → {game_state.PR} ({'+' if pr_change >= 0 else ''}{pr_change})
+**道具**: {', '.join(game_state.inventory[:2]) if game_state.inventory else '无'}
 
-**预定义后果**:
-```json
-{json.dumps(choice.consequences, ensure_ascii=False, indent=2) if choice.consequences else '{}'}
-```
-
----
-
-## 当前游戏状态
-
-**场景**: {game_state.current_scene}
-**时间**: {game_state.timestamp}
-**位置**: 场景 {game_state.current_scene}
-
-**核心状态**:
-- PR（个人共鸣度）: {game_state.PR}/100
-- GR（全局共鸣度）: {game_state.GR}/100
-- WF（世界疲劳值）: {game_state.WF}/10
-
-**玩家资源**:
-- 道具: {', '.join(game_state.inventory) if game_state.inventory else '无'}
-- 标志位: {', '.join(f"{k}={v}" for k, v in game_state.flags.items()) if game_state.flags else '无'}
-
-**后果树**（历史选择）:
-{' → '.join(game_state.consequence_tree[-5:]) if game_state.consequence_tree else '这是第一个选择'}
+## 场景信息
+{scene_context}
 
 ---
 
-## GDD（剧情框架）
+## 写作要求
+1. **第二人称视角**（使用"你"），营造恐怖氛围
+2. **包含细节**：至少 2 种感官描写（视觉/听觉/嗅觉）
+3. **体现后果**：反映选择的影响和状态变化
+4. **暗示下一步**：环境提示，但不替玩家决定
 
-```markdown
-{self.gdd[:2000]}
-... （完整 GDD 内容）
-```
+重要：必须使用"你"而不是"我"，例如：
+- ✅ "你打开手电筒..."
+- ❌ "我打开手电筒..."
 
----
-
-## Lore v2（世界观规则）
-
-```markdown
-{self.lore[:2000]}
-... （完整 Lore 内容）
-```
-
----
-
-## 生成要求
-
-请基于以上信息生成一段 200-500 字的沉浸式叙事响应。
-
-**响应结构**:
-1. **物理反馈**（~100字）：确认玩家行为，描述直接结果
-2. **感官细节**（~150字）：视觉、听觉、嗅觉、触觉，至少3种
-3. **心理暗示**（~100字）：反映共鸣度变化，生理反应
-4. **引导暗示**（~50字）：环境暗示或下一步提示
-
-**必须包含的元素**:
-- [ ] 明确确认玩家的选择行为
-- [ ] 至少 3 种感官描述
-- [ ] 《世界书》标志性元素：土腥味/潮湿/冰冷（至少一个）
-- [ ] 音效标记（如果有）：`[音效: 描述]`
-- [ ] 至少 1 个下一步的环境暗示
-
-**禁止**:
-- 不要替玩家做决定（"你决定..." → "你看到..."）
-- 不要杀死玩家
+请生成叙事响应（Markdown 格式，200-400字）
 - 不要破坏世界观规则
 - 不要使用现代网络梗
 
 现在开始生成叙事响应（只输出Markdown文本，不要包含JSON或其他格式）：
 """
+
+    def _extract_scene_context(self, gdd: str, scene: str, max_chars: int = 400) -> str:
+        """提取当前场景相关的 GDD 片段"""
+        lines = gdd.split('\n')
+        relevant_lines = []
+
+        for i, line in enumerate(lines):
+            if scene.lower() in line.lower() or f"场景{scene[1:]}" in line:
+                relevant_lines.append(line)
+                for j in range(i + 1, min(i + 15, len(lines))):
+                    if lines[j].strip().startswith('#') and lines[j].strip() != line.strip():
+                        break
+                    relevant_lines.append(lines[j])
+                break
+
+        result = '\n'.join(relevant_lines)[:max_chars]
+        return result if result else f"场景 {scene}"
 
     def _add_system_hints(
         self,
@@ -337,6 +368,25 @@ class RuntimeResponseGenerator:
         Returns:
             str: 环境描述文本
         """
+        # 导入 CrewAI 和配置 Kimi LLM
+        try:
+            from crewai import Agent, Task, Crew, LLM
+            import os
+        except ImportError:
+            return "周围很安静……"
+
+        # 配置 Kimi LLM（环境响应专用模型）
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        # 环境响应：使用高质量模型
+        kimi_model = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+
+        llm = LLM(
+            model=kimi_model,
+            api_key=kimi_key,
+            base_url=kimi_base
+        )
+
         prompt = f"""
 你是一个恐怖游戏的 AI 导演。玩家已经在当前场景停留了 {idle_duration} 秒，没有采取任何行动。
 
@@ -359,7 +409,8 @@ class RuntimeResponseGenerator:
             goal="生成营造紧张感的环境描述",
             backstory="你擅长通过细节描写营造时间压力和环境压迫感",
             verbose=False,
-            allow_delegation=False
+            allow_delegation=False,
+            llm=llm  # 使用 Kimi LLM
         )
 
         task = Task(
@@ -389,6 +440,26 @@ class RuntimeResponseGenerator:
         Returns:
             str: 场景转换文本
         """
+        # 导入 CrewAI 和配置 Kimi LLM
+        try:
+            from crewai import Agent, Task, Crew, LLM
+            import os
+        except ImportError:
+            game_state.current_scene = to_scene
+            return f"你从 {from_scene} 来到了 {to_scene}……"
+
+        # 配置 Kimi LLM（场景转换专用模型）
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        # 场景转换：使用高质量模型
+        kimi_model = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+
+        llm = LLM(
+            model=kimi_model,
+            api_key=kimi_key,
+            base_url=kimi_base
+        )
+
         prompt = f"""
 你是一个恐怖游戏的 AI 导演。玩家正在从 {from_scene} 进入 {to_scene}。
 
@@ -410,7 +481,8 @@ class RuntimeResponseGenerator:
             goal="生成流畅的场景转换描述",
             backstory="你擅长营造场景间的连贯性和氛围延续性",
             verbose=False,
-            allow_delegation=False
+            allow_delegation=False,
+            llm=llm  # 使用 Kimi LLM
         )
 
         task = Task(

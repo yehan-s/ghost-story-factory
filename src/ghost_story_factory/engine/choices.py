@@ -139,16 +139,22 @@ class ChoicePointsGenerator:
     根据当前场景和游戏状态，调用 LLM 生成合适的选择点列表
     """
 
-    def __init__(self, gdd_content: str, lore_content: str):
+    def __init__(self, gdd_content: str, lore_content: str, main_story: str = ""):
         """初始化生成器
 
         Args:
             gdd_content: GDD（AI 导演任务简报）内容
             lore_content: Lore v2（世界观）内容
+            main_story: 主线故事内容（可选，用于会话级缓存）
         """
         self.gdd = gdd_content
         self.lore = lore_content
+        self.main_story = main_story
         self.prompt_template = self._load_prompt_template()
+
+        # 会话级缓存
+        self.crew = None  # 持久的 Crew 实例
+        self.session_initialized = False  # 是否已初始化会话
 
     def _load_prompt_template(self) -> str:
         """加载 prompt 模板
@@ -239,15 +245,30 @@ class ChoicePointsGenerator:
         """
         # 延迟导入 CrewAI（避免基础功能依赖）
         try:
-            from crewai import Agent, Task, Crew
+            from crewai import Agent, Task, Crew, LLM
+            import os
         except ImportError:
             print("⚠️  CrewAI 未安装，无法生成选择点，返回默认选择点")
             return self._get_default_choices(current_scene)
 
+        # 配置 Kimi LLM（选择点生成专用模型）
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        # 选择点生成：使用快速模型（可单独配置）
+        kimi_model = os.getenv("KIMI_MODEL_CHOICES") or os.getenv("KIMI_MODEL", "moonshot-v1-32k")
+
+        llm = LLM(
+            model=kimi_model,
+            api_key=kimi_key,
+            base_url=kimi_base
+        )
+
+        print(f"🤖 [选择点] 使用模型: {kimi_model}")
+
         # 构建 prompt
         prompt = self._build_prompt(current_scene, game_state, narrative_context)
 
-        # 创建 Agent
+        # 创建 Agent（使用 Kimi LLM）
         agent = Agent(
             role="选择点设计师",
             goal="生成符合场景的选择点，引导玩家在框架内做出选择",
@@ -257,7 +278,8 @@ class ChoicePointsGenerator:
                 "但实际上所有选择都在设计好的框架内。"
             ),
             verbose=False,
-            allow_delegation=False
+            allow_delegation=False,
+            llm=llm  # 使用 Kimi LLM
         )
 
         # 创建任务
@@ -286,72 +308,287 @@ class ChoicePointsGenerator:
         game_state: GameState,
         narrative_context: Optional[str]
     ) -> str:
-        """构建完整的 prompt"""
+        """构建完整的 prompt（优化版：只发送相关内容）"""
         context = narrative_context or "玩家刚进入该场景。"
 
+        # 提取当前场景相关的 GDD 片段（最多 500 字）
+        scene_gdd = self._extract_scene_context(self.gdd, current_scene, max_chars=500)
+
+        # 提取核心 Lore 规则（最多 300 字）
+        core_lore = self._extract_core_lore(self.lore, max_chars=300)
+
         return f"""
-{self.prompt_template}
+你是一个专业的选择点设计师。请根据当前场景和游戏状态，生成 2-4 个选择点。
 
----
-
-## 当前游戏状态
+## 当前状态
 
 **场景**: {current_scene}
-**叙事上下文**: {context}
-
-**游戏状态**:
-- PR（个人共鸣度）: {game_state.PR}/100
-- GR（全局共鸣度）: {game_state.GR}/100
-- WF（世界疲劳值）: {game_state.WF}/10
-- 时间: {game_state.timestamp}
-- 道具: {', '.join(game_state.inventory) if game_state.inventory else '无'}
-- 标志位: {list(game_state.flags.keys()) if game_state.flags else '无'}
+**上下文**: {context}
+**PR**: {game_state.PR}/100 | **时间**: {game_state.timestamp}
+**道具**: {', '.join(game_state.inventory[:3]) if game_state.inventory else '无'}
 
 ---
 
-## GDD（剧情框架）
+## 场景信息
 
-```markdown
-{self.gdd}
+{scene_gdd}
+
+---
+
+## 核心规则
+
+{core_lore}
+
+---
+
+## 输出要求
+
+**必须**输出 JSON 格式，包含 2-4 个选择：
+
+```json
+{{
+  "scene_id": "{current_scene}",
+  "choices": [
+    {{
+      "id": "A",
+      "text": "选项文本",
+      "tags": ["标签1", "标签2"],
+      "immediate_consequences": {{
+        "resonance": "+10",
+        "flags": {{"flag_name": true}}
+      }}
+    }}
+  ]
+}}
 ```
 
----
-
-## Lore v2（世界观规则）
-
-```markdown
-{self.lore}
-```
-
----
-
-请基于以上信息生成选择点，**必须**输出标准 JSON 格式。
+请生成符合当前场景的选择点。
 """
 
+    def _extract_scene_context(self, gdd: str, scene: str, max_chars: int = 500) -> str:
+        """提取当前场景相关的 GDD 片段
+
+        Args:
+            gdd: 完整 GDD
+            scene: 场景 ID
+            max_chars: 最大字符数
+
+        Returns:
+            str: 场景相关的 GDD 片段
+        """
+        # 简单实现：查找包含场景 ID 的段落
+        lines = gdd.split('\n')
+        relevant_lines = []
+        in_relevant_section = False
+
+        for i, line in enumerate(lines):
+            # 如果找到场景标题
+            if scene.lower() in line.lower() or f"场景{scene[1:]}" in line:
+                in_relevant_section = True
+                relevant_lines.append(line)
+                # 收集后续行
+                for j in range(i + 1, min(i + 20, len(lines))):
+                    if lines[j].strip().startswith('#') and lines[j].strip() != line.strip():
+                        break  # 遇到下一个标题
+                    relevant_lines.append(lines[j])
+                break
+
+        result = '\n'.join(relevant_lines)[:max_chars]
+        return result if result else f"场景 {scene}（无详细信息）"
+
+    def _extract_core_lore(self, lore: str, max_chars: int = 300) -> str:
+        """提取核心 Lore 规则
+
+        Args:
+            lore: 完整 Lore
+            max_chars: 最大字符数
+
+        Returns:
+            str: 核心规则摘要
+        """
+        # 简单实现：提取前几段或关键规则
+        lines = lore.split('\n')
+        core_lines = []
+
+        # 收集包含"规则"、"核心"、"必须"等关键词的行
+        keywords = ['规则', '核心', '必须', '不可', '禁止', '世界观', 'PR', 'GR']
+        for line in lines[:50]:  # 只看前 50 行
+            if any(kw in line for kw in keywords):
+                core_lines.append(line)
+                if len('\n'.join(core_lines)) > max_chars:
+                    break
+
+        result = '\n'.join(core_lines)[:max_chars]
+        return result if result else "恐怖氛围游戏，注重细节和心理描写。"
+
     def _parse_result(self, result_text: str) -> Dict:
-        """解析 LLM 返回结果
+        """解析 LLM 返回结果（超强版：处理各种异常格式）
 
         Args:
             result_text: LLM 返回的文本
 
         Returns:
-            Dict: 解析后的数据
+            Dict: 解析后的数据（标准格式）
         """
+        import re
+
         # 清理文本
         result_text = result_text.strip()
 
-        # 提取 JSON 代码块
+        # 方法1: 提取 JSON 代码块
         if "```json" in result_text:
             start = result_text.find("```json") + 7
             end = result_text.find("```", start)
-            result_text = result_text[start:end].strip()
+            if end != -1:
+                result_text = result_text[start:end].strip()
         elif "```" in result_text:
             start = result_text.find("```") + 3
             end = result_text.find("```", start)
-            result_text = result_text[start:end].strip()
+            if end != -1:
+                result_text = result_text[start:end].strip()
 
-        # 解析 JSON
-        return json.loads(result_text)
+        # 方法2: 查找第一个 { 到对应的结束 } （处理嵌套）
+        first_brace = result_text.find('{')
+        if first_brace != -1:
+            # 使用栈匹配括号
+            brace_count = 0
+            end_pos = first_brace
+            for i in range(first_brace, len(result_text)):
+                if result_text[i] == '{':
+                    brace_count += 1
+                elif result_text[i] == '}':
+                    brace_count -= 1
+                    if brace_count == 0:
+                        end_pos = i + 1
+                        break
+            result_text = result_text[first_brace:end_pos].strip()
+
+        # 清理可能的多余字符
+        result_text = result_text.strip()
+
+        # 尝试解析 JSON
+        try:
+            data = json.loads(result_text)
+            # 标准化格式
+            return self._normalize_format(data)
+        except json.JSONDecodeError as e:
+            # 如果解析失败，尝试修复常见问题
+            print(f"⚠️  首次JSON解析失败: {e}")
+            print(f"📄 原始文本前500字符:\n{result_text[:500]}")
+
+            # 尝试修复：移除注释
+            result_text = re.sub(r'//.*?\n', '\n', result_text)
+            result_text = re.sub(r'/\*.*?\*/', '', result_text, flags=re.DOTALL)
+
+            # 尝试修复：处理 "Extra data" 错误（只取第一个完整JSON）
+            try:
+                # 使用 JSONDecoder 的 raw_decode 只解析第一个对象
+                decoder = json.JSONDecoder()
+                data, idx = decoder.raw_decode(result_text)
+                print(f"✅ 使用 raw_decode 成功解析（忽略了后续数据）")
+                return self._normalize_format(data)
+            except json.JSONDecodeError as e2:
+                print(f"❌ 二次JSON解析仍然失败: {e2}")
+                raise
+
+    def _normalize_format(self, data: Dict) -> Dict:
+        """标准化 JSON 格式（处理 Kimi 可能返回的各种格式）
+
+        Args:
+            data: 原始 JSON 数据
+
+        Returns:
+            Dict: 标准格式 {"scene_id": "...", "choices": [...]}
+        """
+        # 格式1: 标准格式（已经是我们想要的）
+        if "choices" in data and isinstance(data["choices"], list):
+            # 标准化每个 choice 的字段名
+            data["choices"] = [self._normalize_choice_fields(c) for c in data["choices"]]
+            return data
+
+        # 格式2: 单个选择点对象（不是数组）
+        if "choice_id" in data or "choice_text" in data or "id" in data or "text" in data:
+            # 包装成标准格式
+            return {
+                "scene_id": data.get("scene", "unknown"),
+                "choices": [self._normalize_choice_fields(data)]
+            }
+
+        # 格式3: 直接是选择点数组
+        if isinstance(data, list):
+            return {
+                "scene_id": "unknown",
+                "choices": [self._normalize_choice_fields(c) for c in data]
+            }
+
+        # 格式4: 其他格式，尝试提取
+        # 查找所有可能的选择点字段
+        choices = []
+        for key in ["options", "choice_points", "选择点", "选项"]:
+            if key in data and isinstance(data[key], list):
+                choices = data[key]
+                break
+
+        if choices:
+            return {
+                "scene_id": data.get("scene_id", data.get("scene", "unknown")),
+                "choices": [self._normalize_choice_fields(c) for c in choices]
+            }
+
+        # 实在没办法，原样返回
+        print(f"⚠️  无法识别的JSON格式，使用原始数据")
+        return data
+
+    def _normalize_choice_fields(self, choice: Dict) -> Dict:
+        """标准化单个选择点的字段名
+
+        Args:
+            choice: 原始选择点数据
+
+        Returns:
+            Dict: 标准化后的选择点
+        """
+        normalized = {}
+
+        # 字段映射表
+        field_mapping = {
+            # choice_id 的各种可能名称
+            "choice_id": ["choice_id", "id", "option_id", "选项id"],
+            # choice_text 的各种可能名称
+            "choice_text": ["choice_text", "text", "option_text", "content", "选项文本", "内容"],
+            # choice_type 的各种可能名称
+            "choice_type": ["choice_type", "type", "option_type", "类型"],
+            # 其他字段
+            "preconditions": ["preconditions", "pre_conditions", "前置条件"],
+            "consequences": ["consequences", "effects", "后果", "immediate_consequences"],
+            "tags": ["tags", "labels", "标签"],
+            "timeout": ["timeout", "time_limit", "超时"],
+            "can_skip": ["can_skip", "skippable", "可跳过"],
+        }
+
+        # 映射字段
+        for target_field, possible_names in field_mapping.items():
+            for name in possible_names:
+                if name in choice:
+                    normalized[target_field] = choice[name]
+                    break
+
+        # 确保必需字段存在
+        if "choice_id" not in normalized:
+            normalized["choice_id"] = f"choice_{hash(str(choice)) % 10000}"
+
+        if "choice_text" not in normalized:
+            normalized["choice_text"] = choice.get("text", "未知选项")
+
+        if "choice_type" not in normalized:
+            normalized["choice_type"] = "normal"
+
+        # 保留其他未映射的字段
+        for key, value in choice.items():
+            if key not in normalized and key not in sum(field_mapping.values(), []):
+                normalized[key] = value
+
+        return normalized
 
     def _get_default_choices(self, current_scene: str) -> List[Choice]:
         """获取默认选择点（当生成失败时的回退）
