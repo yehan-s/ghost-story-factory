@@ -9,6 +9,8 @@
 
 ### 🚀 快速开始
 - [../README.md](../README.md) - **从这里开始！** 项目主文档
+  - 动态模式：`python3 play_game_full.py`
+  - 预生成模式：`./start_pregenerated_game.sh` / `python3 play_game_pregenerated.py`
 
 ### 📋 规格文档 (Specifications)
 位于 `docs/specs/`
@@ -17,6 +19,7 @@
 |------|------|----------|
 | [SPEC.md](specs/SPEC.md) | 项目原始规格书 | 开发者、贡献者 |
 | [SPEC_TODO.md](specs/SPEC_TODO.md) | 待开发功能完整规格 | 开发者、项目管理 |
+| [PREGENERATION_DESIGN.md](../docs/PREGENERATION_DESIGN.md) | 预生成系统设计 | 工程师、设计师 |
 | [CLI_GAME_ROADMAP.md](specs/CLI_GAME_ROADMAP.md) | **命令行游戏开发路线图** ⭐ | 游戏引擎开发者 |
 
 **推荐阅读顺序**: README → CLI_GAME_ROADMAP（如果要开发游戏引擎）→ SPEC_TODO
@@ -31,6 +34,7 @@
 | [USAGE.md](guides/USAGE.md) | 详细使用说明 | 所有用户 |
 | [WORKFLOW.md](guides/WORKFLOW.md) | 完整工作流程 | 内容创作者 |
 | [QUICK_REFERENCE.md](guides/QUICK_REFERENCE.md) | 命令速查卡 | 经常使用者 |
+| 预生成模式：参见 [PREGENERATION_DESIGN.md](../docs/PREGENERATION_DESIGN.md) | 模式说明 | 所有用户 |
 
 **推荐阅读顺序**: USAGE → WORKFLOW → QUICK_REFERENCE
 
