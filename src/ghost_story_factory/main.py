@@ -900,7 +900,7 @@ def gen_protagonist():
             lore_content = f.read()
 
     # 加载 protagonist prompt
-    prompt_path = os.path.join("范文", "protagonist.prompt.md")
+    prompt_path = os.path.join("templates", "protagonist.prompt.md")
     if os.path.exists(prompt_path):
         with open(prompt_path, "r", encoding="utf-8") as f:
             prompt = f.read()
@@ -960,7 +960,7 @@ def gen_lore_v2():
             lore_v1_content = f.read()
 
     # 加载 lore-v2 prompt
-    prompt_path = os.path.join("范文", "lore-v2.prompt.md")
+    prompt_path = os.path.join("templates", "lore-v2.prompt.md")
     if os.path.exists(prompt_path):
         with open(prompt_path, "r", encoding="utf-8") as f:
             prompt = f.read()
@@ -1023,7 +1023,7 @@ def gen_gdd():
             protagonist_content = f.read()
 
     # 加载 GDD prompt
-    prompt_path = os.path.join("范文", "GDD.prompt.md")
+    prompt_path = os.path.join("templates", "GDD.prompt.md")
     if os.path.exists(prompt_path):
         with open(prompt_path, "r", encoding="utf-8") as f:
             prompt = f.read()
@@ -1034,9 +1034,52 @@ def gen_gdd():
             "[USER]\n请使用世界书和角色分析开始撰写 GDD。"
         )
 
+    # 从 protagonist 中提取主角信息（强约束）
+    protagonist_name = "未知主角"
+    protagonist_role = "未知身份"
+
+    # 尝试提取主角线信息
+    import re
+    if protagonist_content:
+        # 查找"无可争议的主角线"或类似标记
+        main_match = re.search(r'无可争议的主角线[：:]\s*([^\n，,。]+)', protagonist_content)
+        if main_match:
+            protagonist_role = main_match.group(1).strip()
+
+        # 查找主角姓名（如果有）
+        name_match = re.search(r'主角姓名[：:]\s*([^\n，,。]+)', protagonist_content)
+        if name_match:
+            protagonist_name = name_match.group(1).strip()
+        elif re.search(r'姓名[：:]\s*([^\n，,。]+)', protagonist_content):
+            protagonist_name = re.search(r'姓名[：:]\s*([^\n，,。]+)', protagonist_content).group(1).strip()
+
+    # 在prompt中添加明确的主角约束
+    protagonist_constraint = f"""
+[⚠️ 强制约束 - 必须遵守]
+**本次任务的指定主角**：{protagonist_role}
+**主角姓名**：{protagonist_name}
+
+✅ 必须严格遵守：
+1. **主角身份**：必须使用上述指定的主角 "{protagonist_role}"
+   - 这是从【输入 2: 角色分析】中识别出的主角
+   - 不得使用角色分析中未明确指定为主角的其他角色
+
+2. **世界观来源**：必须使用【输入 1: 世界书 2.0】中定义的内容
+   - 地点、规则、异象等必须来自世界书
+   - 基于该主角的职业特点、访问权限、交集点设计剧情
+
+3. **原创性要求**：
+   - templates 仅作为结构、风格、系统设计的参考
+   - 不得复制 templates 中的具体情节、对话、场景描述
+   - 必须基于当前输入进行原创创作
+"""
+
     # 替换占位符
-    prompt = prompt.replace("{《荔湾广场世界书 2.0 (系统增强版)》的全部 Markdown 内容}", lore_v2_content)
-    prompt = prompt.replace('{《角色分析报告》中关于"保安（主角线）"的全部 Markdown 内容}', protagonist_content)
+    prompt = prompt.replace("{lore_content}", lore_v2_content)
+    prompt = prompt.replace("{protagonist_content}", protagonist_content + "\n\n" + protagonist_constraint)
+
+    print(f"\n🎯 已识别主角：{protagonist_role} ({protagonist_name})")
+    print("⚠️  生成过程将强制使用此主角，而非templates中的保安或其他角色\n")
 
     # 生成 GDD
     analyst = _make_agents()[1]
@@ -1090,7 +1133,7 @@ def gen_main_thread():
             lore_v2_content = f.read()
 
     # 加载 main-thread prompt
-    prompt_path = os.path.join("范文", "main-thread.prompt.md")
+    prompt_path = os.path.join("templates", "main-thread.prompt.md")
     if os.path.exists(prompt_path):
         with open(prompt_path, "r", encoding="utf-8") as f:
             prompt = f.read()
@@ -1101,9 +1144,53 @@ def gen_main_thread():
             "[USER]\n[GDD]\n{gdd_content}\n[/GDD]\n[世界书]\n{lore_content}\n[/世界书]"
         )
 
+    # 从 GDD 中提取主角信息（强约束）
+    protagonist_name = "未知主角"
+    protagonist_role = "未知身份"
+
+    import re
+    if gdd_content:
+        # 从GDD中提取主角信息
+        role_match = re.search(r'主角[：:]\s*([^\n，,。]+)', gdd_content)
+        if role_match:
+            protagonist_role = role_match.group(1).strip()
+
+        name_match = re.search(r'姓名[：:]\s*([^\n，,。]+)', gdd_content)
+        if name_match:
+            protagonist_name = name_match.group(1).strip()
+
+        # 也可能在项目代号中
+        project_match = re.search(r'项目代号[：:]\s*[^\n]*?[·•]\s*([^\n，,。]+)', gdd_content)
+        if project_match and protagonist_role == "未知身份":
+            protagonist_role = project_match.group(1).strip()
+
+    # 添加主角约束
+    protagonist_constraint = f"""
+[⚠️ 强制约束 - 必须遵守]
+**本次任务的指定主角**：{protagonist_role}
+**主角姓名**：{protagonist_name}
+
+✅ 必须严格遵守：
+1. **主角身份**：必须使用上述指定的主角 "{protagonist_role}"
+   - 这是从 GDD 中明确定义的主角
+   - 不得使用 GDD 中未指定的其他角色作为主角
+
+2. **场景来源**：必须使用 GDD 中定义的场景和地点
+   - 场景、地点、事件必须来自当前 GDD
+   - 保持第一人称叙述，严格遵循主角视角
+
+3. **原创性要求**：
+   - templates 仅作为叙事风格、节奏、氛围的参考
+   - 不得复制 templates 中的具体情节、对话、描写
+   - 必须基于 GDD 进行原创创作
+"""
+
     # 替换占位符
-    prompt = prompt.replace("{gdd_content}", gdd_content)
+    prompt = prompt.replace("{gdd_content}", gdd_content + "\n\n" + protagonist_constraint)
     prompt = prompt.replace("{lore_content}", lore_v2_content)
+
+    print(f"\n🎯 使用主角：{protagonist_role} ({protagonist_name})")
+    print("⚠️  故事生成将严格遵循GDD中的主角，而非templates示例\n")
 
     # 生成主线故事
     storyteller = _make_agents()[2]
@@ -1152,7 +1239,7 @@ def gen_branch():
         lore_v2_content = f.read()
 
     # 加载 branch prompt
-    prompt_path = os.path.join("范文", "branch-1.prompt.md")
+    prompt_path = os.path.join("templates", "branch-1.prompt.md")
     if os.path.exists(prompt_path):
         with open(prompt_path, "r", encoding="utf-8") as f:
             prompt = f.read()
@@ -1277,7 +1364,7 @@ def gen_complete():
         lore_obj = _read_json_file(lore_path)
         lore_content = json.dumps(lore_obj, ensure_ascii=False, indent=2)
 
-        prompt_path = os.path.join("范文", "protagonist.prompt.md")
+        prompt_path = os.path.join("templates", "protagonist.prompt.md")
         if os.path.exists(prompt_path):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 prompt = f.read()
@@ -1308,7 +1395,7 @@ def gen_complete():
         lore_obj = _read_json_file(lore_path)
         lore_v1_content = json.dumps(lore_obj, ensure_ascii=False, indent=2)
 
-        prompt_path = os.path.join("范文", "lore-v2.prompt.md")
+        prompt_path = os.path.join("templates", "lore-v2.prompt.md")
         if os.path.exists(prompt_path):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 prompt = f.read()
@@ -1344,7 +1431,7 @@ def gen_complete():
             with open(protagonist_path, "r", encoding="utf-8") as f:
                 protagonist_content = f.read()
 
-        prompt_path = os.path.join("范文", "GDD.prompt.md")
+        prompt_path = os.path.join("templates", "GDD.prompt.md")
         if os.path.exists(prompt_path):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 prompt = f.read()
@@ -1355,8 +1442,50 @@ def gen_complete():
                 "[USER]\n请使用世界书和角色分析开始撰写 GDD。"
             )
 
-        prompt = prompt.replace("{《荔湾广场世界书 2.0 (系统增强版)》的全部 Markdown 内容}", lore_v2_content)
-        prompt = prompt.replace('{《角色分析报告》中关于"保安（主角线）"的全部 Markdown 内容}', protagonist_content)
+        # 从 protagonist 中提取主角信息（强约束）
+        protagonist_name = "未知主角"
+        protagonist_role = "未知身份"
+
+        import re
+        if protagonist_content:
+            # 查找"无可争议的主角线"或类似标记
+            main_match = re.search(r'无可争议的主角线[：:]\s*([^\n，,。]+)', protagonist_content)
+            if main_match:
+                protagonist_role = main_match.group(1).strip()
+
+            # 查找主角姓名（如果有）
+            name_match = re.search(r'主角姓名[：:]\s*([^\n，,。]+)', protagonist_content)
+            if name_match:
+                protagonist_name = name_match.group(1).strip()
+            elif re.search(r'姓名[：:]\s*([^\n，,。]+)', protagonist_content):
+                protagonist_name = re.search(r'姓名[：:]\s*([^\n，,。]+)', protagonist_content).group(1).strip()
+
+        # 在prompt中添加明确的主角约束
+        protagonist_constraint = f"""
+[⚠️ 强制约束 - 必须遵守]
+**本次任务的指定主角**：{protagonist_role}
+**主角姓名**：{protagonist_name}
+
+✅ 必须严格遵守：
+1. **主角身份**：必须使用上述指定的主角 "{protagonist_role}"
+   - 这是从【输入 2: 角色分析】中识别出的主角
+   - 不得使用角色分析中未明确指定为主角的其他角色
+
+2. **世界观来源**：必须使用【输入 1: 世界书 2.0】中定义的内容
+   - 地点、规则、异象等必须来自世界书
+   - 基于该主角的职业特点、访问权限、交集点设计剧情
+
+3. **原创性要求**：
+   - templates 仅作为结构、风格、系统设计的参考
+   - 不得复制 templates 中的具体情节、对话、场景描述
+   - 必须基于当前输入进行原创创作
+"""
+
+        # 替换占位符（使用新的通用占位符）
+        prompt = prompt.replace("{lore_content}", lore_v2_content)
+        prompt = prompt.replace("{protagonist_content}", protagonist_content + "\n\n" + protagonist_constraint)
+
+        print(f"🎯 已识别主角：{protagonist_role} ({protagonist_name})\n")
 
         analyst = _make_agents()[1]
         task = Task(description=prompt, expected_output="AI 导演任务简报 (Markdown 格式)", agent=analyst)
@@ -1381,7 +1510,7 @@ def gen_complete():
         with open(lore_v2_path, "r", encoding="utf-8") as f:
             lore_v2_content = f.read()
 
-        prompt_path = os.path.join("范文", "main-thread.prompt.md")
+        prompt_path = os.path.join("templates", "main-thread.prompt.md")
         if os.path.exists(prompt_path):
             with open(prompt_path, "r", encoding="utf-8") as f:
                 prompt = f.read()
@@ -1392,7 +1521,50 @@ def gen_complete():
                 "[USER]\n[GDD]\n{gdd_content}\n[/GDD]\n[世界书]\n{lore_content}\n[/世界书]"
             )
 
-        prompt = prompt.replace("{gdd_content}", gdd_content)
+        # 从 GDD 中提取主角信息（强约束）
+        protagonist_name = "未知主角"
+        protagonist_role = "未知身份"
+
+        import re
+        if gdd_content:
+            # 从GDD中提取主角信息
+            role_match = re.search(r'主角[：:]\s*([^\n，,。]+)', gdd_content)
+            if role_match:
+                protagonist_role = role_match.group(1).strip()
+
+            name_match = re.search(r'姓名[：:]\s*([^\n，,。]+)', gdd_content)
+            if name_match:
+                protagonist_name = name_match.group(1).strip()
+
+            # 也可能在项目代号中
+            project_match = re.search(r'项目代号[：:]\s*[^\n]*?[·•]\s*([^\n，,。]+)', gdd_content)
+            if project_match and protagonist_role == "未知身份":
+                protagonist_role = project_match.group(1).strip()
+
+        # 添加主角约束
+        protagonist_constraint = f"""
+[⚠️ 强制约束 - 必须遵守]
+**本次任务的指定主角**：{protagonist_role}
+**主角姓名**：{protagonist_name}
+
+✅ 必须严格遵守：
+1. **主角身份**：必须使用上述指定的主角 "{protagonist_role}"
+   - 这是从 GDD 中明确定义的主角
+   - 不得使用 GDD 中未指定的其他角色作为主角
+
+2. **场景来源**：必须使用 GDD 中定义的场景和地点
+   - 场景、地点、事件必须来自当前 GDD
+   - 保持第一人称叙述，严格遵循主角视角
+
+3. **原创性要求**：
+   - templates 仅作为叙事风格、节奏、氛围的参考
+   - 不得复制 templates 中的具体情节、对话、描写
+   - 必须基于 GDD 进行原创创作
+"""
+
+        print(f"🎯 使用主角：{protagonist_role} ({protagonist_name})\n")
+
+        prompt = prompt.replace("{gdd_content}", gdd_content + "\n\n" + protagonist_constraint)
         prompt = prompt.replace("{lore_content}", lore_v2_content)
 
         storyteller = _make_agents()[2]

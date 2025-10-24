@@ -3,7 +3,7 @@
 Ghost Story Factory - 交互式游戏引擎
 
 基于生成的故事（GDD、Lore v2）运行一个选项式交互游戏。
-使用阶段4的范文（choice-points, runtime-response, state-management, intent-mapping）。
+使用阶段4的templates（choice-points, runtime-response, state-management, intent-mapping）。
 
 使用方法：
     python game_engine.py --city 武汉 --gdd deliverables/程序-武汉/武汉_gdd.json
@@ -21,7 +21,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-TEMPLATE_DIR = Path(__file__).parent / "范文"
+TEMPLATE_DIR = Path(__file__).parent / "templates"
 
 
 @dataclass
@@ -144,7 +144,7 @@ class GameEngine:
         return json.loads(p.read_text(encoding='utf-8'))
 
     def _load_prompt(self, module_name: str) -> str:
-        """加载范文提示词"""
+        """加载templates提示词"""
         prompt_file = TEMPLATE_DIR / f"{module_name}.prompt.md"
         if not prompt_file.exists():
             return ""

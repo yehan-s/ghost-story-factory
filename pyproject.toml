@@ -24,6 +24,8 @@ dependencies = [
     "langchain-community",
     "python-dotenv",
     "langchain-openai",
+    "pydantic>=2.5.0",
+    "rich>=13.7.0",
 ]
 
 [project.scripts]
@@ -50,6 +52,9 @@ gen-branch = "ghost_story_factory.main:gen_branch"
 get-story = "ghost_story_factory.main:run"
 gen-role = "ghost_story_factory.main:gen_role"
 validate-role = "ghost_story_factory.main:validate_role"
+
+# 🎮 新增: 交互式游戏引擎命令
+ghost-story-play = "ghost_story_factory.engine.game_loop:main"
 
 [project.urls]
 Homepage = "https://github.com/your-username/ghost-story-factory"
