@@ -1,8 +1,8 @@
 ## Ghost Story Factory 使用指南（精简版）
 
-本工具提供两种使用方式：
-- 一键出稿（最省心）
-- 顶层设计工作流 Top‑Down（最稳定、可复用）
+本工具提供两类使用与游玩模式：
+- 生成：一键出稿 / Top‑Down（阶段1-3）
+- 游玩：动态模式（LLM 实时） / 预生成模式（零等待）
 
 建议先用“一键出稿”，满意后再用 Top‑Down 打磨多角色长篇。
 
@@ -118,7 +118,27 @@ uvx --from . get-story --city "广州"
 
 ---
 
-### 8. 最小演示（武汉）
+### 8. 运行游戏（两种模式）
+
+#### 动态模式（LLM 实时生成）
+
+```bash
+python3 play_game_full.py  # 需要 KIMI_API_KEY 或 OPENAI_API_KEY
+```
+
+#### 预生成模式（零等待）
+
+```bash
+./start_pregenerated_game.sh
+# 或
+python3 play_game_pregenerated.py
+```
+
+> 预生成系统设计详见：`docs/PREGENERATION_DESIGN.md`
+
+---
+
+### 9. 最小演示（武汉）
 
 ```bash
 # 一键出稿（最省心）
