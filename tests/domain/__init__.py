@@ -1,2 +1,0 @@
-# Domain model tests
-

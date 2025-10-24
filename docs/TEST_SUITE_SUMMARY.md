@@ -1,7 +1,7 @@
 # TDD & DDD 测试套件总结
 
-**创建日期**: 2025-10-24  
-**测试框架**: pytest  
+**创建日期**: 2025-10-24
+**测试框架**: pytest
 **测试哲学**: TDD (测试驱动开发) + DDD (领域驱动设计)
 
 ---
@@ -217,10 +217,10 @@ def test_<功能>_<预期行为>():
 def test_example():
     # Given (Arrange): 准备测试数据
     config = DialogueGeneratorConfig(...)
-    
+
     # When (Act): 执行被测试的操作
     result = generator.generate()
-    
+
     # Then (Assert): 验证结果
     assert result is not None
 ```
@@ -385,7 +385,7 @@ jobs:
 
 ---
 
-**更新日期**: 2025-10-24  
-**维护者**: Ghost Story Factory Team  
+**更新日期**: 2025-10-24
+**维护者**: Ghost Story Factory Team
 **状态**: 进行中（领域层已完成，应用层和集成测试待实现）
 
