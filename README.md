@@ -132,6 +132,44 @@ gen-complete --city "杭州" --index 1
 
 ---
 
+### 游戏运行模式（新增）
+
+项目现在支持两种运行模式：
+
+- ✅ **动态模式（LLM 实时生成）**：完整 AI 驱动，实时生成所有对话与响应
+- ✅ **预生成模式（零等待）**：先离线生成完整对话树，游玩时直接读取数据库/文件
+
+#### A) 动态模式（完整体验）
+
+```bash
+# 需要 KIMI_API_KEY 或 OPENAI_API_KEY
+python play_game_full.py
+```
+
+特性：
+- LLM 实时生成，剧情自适应
+- 完整的 S1-S6 主线，15-30 分钟
+- 需要网络与 API Key
+
+#### B) 预生成模式（零等待）
+
+```bash
+# 进入主菜单：选择已生成故事 或 触发一次性预生成
+./start_pregenerated_game.sh
+
+# 或直接运行
+python play_game_pregenerated.py
+```
+
+特性：
+- 先生成，再游玩；游玩阶段 0 等待
+- 内容读取自数据库（见 `src/ghost_story_factory/database/`）
+- 适合演示与发行版
+
+> 如何预生成？详见《静态对话预生成系统 - 设计文档》：`docs/PREGENERATION_DESIGN.md`（含命令草案与流程）
+
+---
+
 ### 一键生成完整故事（备选方案）
 
 ```bash
@@ -171,7 +209,7 @@ chmod +x generate_full_story.sh
 
 ---
 
-### 运行交互式游戏（可选）
+### 运行交互式游戏（动态模式）
 
 生成故事后，可以运行交互式游戏引擎：
 
@@ -190,6 +228,22 @@ python game_engine.py \
 - 🎮 多结局系统
 
 **详细说明：** 查看 [GAME_ENGINE.md](./GAME_ENGINE.md)
+
+---
+
+### 运行交互式游戏（预生成模式）
+
+```bash
+# 预生成模式（主菜单：选择故事 或 触发生成）
+./start_pregenerated_game.sh
+
+# 直接运行入口
+python play_game_pregenerated.py
+```
+
+说明：
+- 该模式不需要在游玩时调用 LLM；生成阶段可使用更高质量模型
+- 预生成流程的 CLI 设计详见 `docs/PREGENERATION_DESIGN.md`
 
 ---
 
