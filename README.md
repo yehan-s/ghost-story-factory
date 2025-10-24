@@ -1,8 +1,8 @@
 # Ghost Story Factory v3.1 🎯
 
-**一个专业的灵异故事生成工厂** - 基于CrewAI和专业范文模板，自动生成完整的、高质量的灵异故事。
+**一个专业的灵异故事生成工厂** - 基于CrewAI和专业templates模板，自动生成完整的、高质量的灵异故事。
 
-> 🎮 **不只是故事生成器，更是交互式游戏开发工具**  
+> 🎮 **不只是故事生成器，更是交互式游戏开发工具**
 > 从世界观设计到AI导演系统，从静态故事到动态游戏，一站式解决方案。
 
 ---
@@ -19,10 +19,25 @@ Ghost Story Factory 是一个基于 **Top-Down 叙事设计** 的专业故事生
 
 ---
 
+## 📚 文档索引
+
+| 类型 | 文档 | 说明 |
+|------|------|------|
+| 📖 **使用指南** | [USAGE.md](docs/guides/USAGE.md) | 详细使用说明 |
+| 📖 **工作流程** | [WORKFLOW.md](docs/guides/WORKFLOW.md) | 完整工作流程 |
+| 📖 **命令速查** | [QUICK_REFERENCE.md](docs/guides/QUICK_REFERENCE.md) | 常用命令速查 |
+| 🏗️ **架构设计** | [ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) | 项目整体架构 |
+| 🎮 **游戏引擎** | [GAME_ENGINE.md](docs/architecture/GAME_ENGINE.md) | 交互游戏引擎 |
+| 📋 **开发规格** | [SPEC_TODO.md](docs/specs/SPEC_TODO.md) | 待开发功能规格 |
+| 🚀 **开发路线** | [CLI_GAME_ROADMAP.md](docs/specs/CLI_GAME_ROADMAP.md) | 命令行游戏开发 |
+| 📂 **完整索引** | [docs/INDEX.md](docs/INDEX.md) | **所有文档总览** ⭐ |
+
+---
+
 ## 🌟 核心特性
 
 - ✅ **自动化生成**：输入城市名，自动生成完整故事（≥5000字）
-- ✅ **专业范文**：基于35个专业设计模式（[范文文件夹](./范文/)）
+- ✅ **专业templates**：基于35个专业设计模式（[templates文件夹](./templates/)）
 - ✅ **分层架构**：阶段1（世界书1.0）→ 阶段2（主角分析）→ 阶段3（GDD+故事）→ 阶段4（交互层）
 - ✅ **选项交互式设计**：支持生成游戏化的选择点系统
 - ✅ **共鸣度系统**：动态的玩家-世界互动机制
@@ -36,7 +51,7 @@ Ghost Story Factory 是一个基于 **Top-Down 叙事设计** 的专业故事生
 ### 1. **专业的叙事设计流程**
 不是简单的"输入提示词→输出故事"，而是遵循专业游戏叙事设计流程：
 ```
-原始素材 → Lore v1（世界观基础） → 主角分析 → Lore v2（系统增强） 
+原始素材 → Lore v1（世界观基础） → 主角分析 → Lore v2（系统增强）
 → GDD（AI导演任务简报） → 主线故事（≥5000字）
 ```
 
@@ -94,9 +109,9 @@ Ghost Story Factory 是一个基于 **Top-Down 叙事设计** 的专业故事生
 - **游戏引擎使用指南**：[GAME_ENGINE.md](./GAME_ENGINE.md) 🎮
 - **使用指南（精简版）**：[USAGE.md](./USAGE.md)
 - **项目规格说明（开发者/验收）**：[SPEC.md](./SPEC.md)
-- **范文库说明**：[范文/README.md](./范文/README.md)
-- **范文索引（AI优化）**：[范文/00-index.md](./范文/00-index.md)
-- **架构设计**：[范文/00-architecture.md](./范文/00-architecture.md)
+- **templates库说明**：[templates/README.md](./templates/README.md)
+- **templates索引（AI优化）**：[templates/00-index.md](./templates/00-index.md)
+- **架构设计**：[templates/00-architecture.md](./templates/00-architecture.md)
 
 ## ⚡ 快速开始（推荐）
 
@@ -127,8 +142,11 @@ uv pip install -e .
 # 2. 配置环境变量（创建 .env 文件）
 # KIMI_API_KEY=your_key_here  # 或 OPENAI_API_KEY
 
-# 3. 生成故事（自动执行完整流程）
+# 3. 生成故事（自动执行完整流程，包含主线 + 支线）
 python generate_full_story.py --city 武汉
+
+# 只生成主线，不生成支线
+python generate_full_story.py --city 武汉 --no-branches
 
 # 或使用shell脚本
 chmod +x generate_full_story.sh
@@ -141,11 +159,15 @@ chmod +x generate_full_story.sh
 - ✅ `武汉_lore_v1.md` - 世界书1.0（高保真地基）
 - ✅ `武汉_protagonist.md` - 角色分析
 - ✅ `武汉_lore_v2.md` - 世界书2.0（游戏化规则）🎮
-- ✅ `武汉_gdd.md` - AI导演任务简报 🎮
-- ✅ `武汉_story.md` - **完整故事（⭐最终产物）**
+- ✅ `武汉_gdd.md` - AI导演任务简报（主线）🎮
+- ✅ `武汉_story.md` - **主线故事（⭐最终产物）**
+- 🌿 `武汉_branch_1_gdd.md` - 支线1 GDD（店主线）🎮
+- 🌿 `武汉_branch_1_story.md` - 支线1故事文案 ⭐
+- 🌿 `武汉_branch_2_gdd.md` - 支线2 GDD（顾客线）🎮
+- 🌿 `武汉_branch_2_story.md` - 支线2故事文案 ⭐
 - ✅ `README.md` - 说明文档
 
-**🎮 = 游戏引擎所需文件**
+**🎮 = 游戏引擎所需文件 | 🌿 = 支线内容（可选）**
 
 ---
 
@@ -178,13 +200,13 @@ python game_engine.py \
 ### 方式A：使用新生成器（推荐）🎯
 
 ```bash
-# 完整流程，基于范文模板
+# 完整流程，基于templates模板
 python generate_full_story.py --city 广州 --output deliverables/程序-广州/
 ```
 
 **优点：**
 - ✅ 自动执行阶段1→2→3的完整流程
-- ✅ 使用范文文件夹中的专业提示词
+- ✅ 使用templates文件夹中的专业提示词
 - ✅ 生成所有中间产物（lore、protagonist、GDD等）
 - ✅ 最终输出完整故事
 
@@ -395,8 +417,8 @@ uvx --from . validate-role --city "广州" --role "保安"
 
 欢迎贡献！您可以：
 
-1. **添加新的范文模板**
-   - 在 `范文/` 文件夹中添加新的 `.design.md`, `.example.md`, `.prompt.md`
+1. **添加新的templates模板**
+   - 在 `templates/` 文件夹中添加新的 `.design.md`, `.example.md`, `.prompt.md`
    - 遵循三文件模式（设计-示例-提示词）
 
 2. **改进提示词**
@@ -437,7 +459,7 @@ uvx --from . validate-role --city "广州" --role "保安"
 2. 主角分析确保角色合理性
 3. Lore v2 添加游戏系统约束
 4. GDD 提供叙事结构指导
-5. 范文模板提供质量标准
+5. templates模板提供质量标准
 
 ### 4. 可以用于商业项目吗？
 
@@ -466,7 +488,7 @@ uvx --from . validate-role --city "广州" --role "保安"
 
 ### 7. 如何自定义故事风格？
 
-修改 `范文/` 文件夹中的 `.prompt.md` 文件，或在项目根目录创建自定义 prompt：
+修改 `templates/` 文件夹中的 `.prompt.md` 文件，或在项目根目录创建自定义 prompt：
 - `set-city.md`
 - `get-struct.md`
 - `get-story.md`
@@ -498,7 +520,7 @@ uvx --from . validate-role --city "广州" --role "保安"
 - **设计灵感**：Linus Torvalds 的"Good Taste"设计哲学
 - **叙事理论**：《Save the Cat!》、《The Anatomy of Story》
 - **技术支持**：CrewAI 团队、LangChain 社区
-- **范文贡献者**：感谢所有提供专业设计模式的贡献者
+- **templates贡献者**：感谢所有提供专业设计模式的贡献者
 
 ---
 
@@ -510,13 +532,13 @@ uvx --from . validate-role --city "广州" --role "保安"
 - ✨ 新增 6 个核心命令（gen-protagonist, gen-lore-v2, gen-gdd等）
 - 📚 完善文档体系（WORKFLOW.md, QUICK_REFERENCE.md等）
 - 🎮 添加交互式游戏引擎（game_engine.py）
-- 📦 完整的范文模板库（35个文件）
+- 📦 完整的templates模板库（35个文件）
 
 ### v3.0 (2025-10-23)
 
 - ✨ 添加 Stage 4 交互层设计
 - ✨ 选项交互式游戏支持
-- 📚 范文库初版
+- 📚 templates库初版
 
 ### v2.0
 
