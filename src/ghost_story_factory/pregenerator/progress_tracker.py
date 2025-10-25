@@ -9,8 +9,15 @@ import json
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime, timedelta
-from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
+try:
+    from rich.console import Console
+    from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeRemainingColumn
+    _RICH_AVAILABLE = True
+except Exception:
+    Console = None  # type: ignore
+    Progress = None  # type: ignore
+    SpinnerColumn = TextColumn = BarColumn = TaskProgressColumn = TimeRemainingColumn = object  # type: ignore
+    _RICH_AVAILABLE = False
 
 
 class ProgressTracker:
@@ -23,7 +30,15 @@ class ProgressTracker:
         Args:
             total_estimated_nodes: 预计总节点数
         """
-        self.console = Console()
+        # 控制台：无 rich 时回退到标准输出
+        if _RICH_AVAILABLE:
+            self.console = Console()
+        else:
+            class _StdConsole:
+                def print(self, *args, **kwargs):
+                    # 忽略样式参数
+                    print(*args)
+            self.console = _StdConsole()
         self.total_estimated_nodes = total_estimated_nodes
         self.generated_nodes = 0
         self.start_time = time.time()
@@ -65,20 +80,24 @@ class ProgressTracker:
 
         self.console.print("\n")
 
-        # 创建进度条
-        self.progress = Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TaskProgressColumn(),
-            TimeRemainingColumn(),
-            console=self.console
-        )
-        self.task_id = self.progress.add_task(
-            "[cyan]生成对话树节点...",
-            total=self.total_estimated_nodes
-        )
-        self.progress.start()
+        # 创建进度条（无 rich 时不启用）
+        if _RICH_AVAILABLE:
+            self.progress = Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TaskProgressColumn(),
+                TimeRemainingColumn(),
+                console=self.console
+            )
+            self.task_id = self.progress.add_task(
+                "[cyan]生成对话树节点...",
+                total=self.total_estimated_nodes
+            )
+            self.progress.start()
+        else:
+            self.progress = None
+            self.task_id = None
 
     def update(
         self,
@@ -107,6 +126,9 @@ class ProgressTracker:
                 completed=node_count,
                 description=f"[cyan]深度 {current_depth}/{self.max_depth} | 节点 {node_count} | {current_branch}"
             )
+        elif node_count % 50 == 0:
+            # 简易输出（每 50 节点打印一次）
+            self.console.print(f"[进度] 深度 {current_depth}/{self.max_depth} | 节点 {node_count} | {current_branch}")
 
     def update_total_estimate(self, new_estimate: int):
         """

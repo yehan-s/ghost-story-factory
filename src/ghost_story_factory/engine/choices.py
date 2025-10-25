@@ -6,7 +6,23 @@
 - 关键选择（CRITICAL）：结局分支
 """
 
-from pydantic import BaseModel, Field
+# 兼容模式：pydantic 可选依赖（MVP/最小环境可运行）
+try:
+    from pydantic import BaseModel, Field
+except Exception:
+    class BaseModel:  # type: ignore
+        def __init__(self, **data):
+            for k, v in data.items():
+                setattr(self, k, v)
+        def model_dump(self):
+            return self.__dict__
+    def Field(default=None, description: str = "", default_factory=None, **kwargs):
+        if default_factory is not None and default is None:
+            try:
+                return default_factory()
+            except Exception:
+                return None
+        return default
 from typing import Dict, Any, Optional, List
 from enum import Enum
 from pathlib import Path
@@ -153,8 +169,13 @@ class ChoicePointsGenerator:
         self.prompt_template = self._load_prompt_template()
 
         # 会话级缓存
-        self.crew = None  # 持久的 Crew 实例
+        self.crew = None  # 持久的 Crew 实例（保留占位）
         self.session_initialized = False  # 是否已初始化会话
+        self._llm = None  # 复用 LLM 实例
+        self._kimi_model_choices = None  # 记录模型名用于日志
+        self._scene_memory = {}  # 场景 -> 锚点摘要与规则缓存
+        import os, threading
+        self._sem = threading.Semaphore(int(os.getenv("KIMI_CONCURRENCY_CHOICES", os.getenv("KIMI_CONCURRENCY", "4"))))
 
     def _load_prompt_template(self) -> str:
         """加载 prompt 模板
@@ -251,22 +272,19 @@ class ChoicePointsGenerator:
             print("⚠️  CrewAI 未安装，无法生成选择点，返回默认选择点")
             return self._get_default_choices(current_scene)
 
-        # 配置 Kimi LLM（选择点生成专用模型）
-        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
-        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
-        # 选择点生成：使用快速模型（可单独配置）
-        kimi_model = os.getenv("KIMI_MODEL_CHOICES") or os.getenv("KIMI_MODEL", "moonshot-v1-32k")
+        # 复用 Kimi LLM 实例（选择点生成专用模型）
+        llm = self._get_llm()
+        print(f"🤖 [选择点] 使用模型: {self._kimi_model_choices}")
 
-        llm = LLM(
-            model=kimi_model,
-            api_key=kimi_key,
-            base_url=kimi_base
-        )
-
-        print(f"🤖 [选择点] 使用模型: {kimi_model}")
-
-        # 构建 prompt
+        # 构建 prompt（使用场景记忆缓存/RAG锚点）
         prompt = self._build_prompt(current_scene, game_state, narrative_context)
+        # 在 prompt 尾部加入结局引导与世界书约束，提升通向结局的倾向
+        endings_hint = (
+            "\n\n[结局与规则]\n"
+            "- 至少提供 1 个会推进至关键线索或结局的选项（标记为 'critical'）\n"
+            "- 遵循世界书规则与主线伏笔，避免烂尾\n"
+        )
+        prompt = prompt + endings_hint
 
         # 创建 Agent（使用 Kimi LLM）
         agent = Agent(
@@ -285,22 +303,127 @@ class ChoicePointsGenerator:
         # 创建任务
         task = Task(
             description=prompt,
-            expected_output="JSON 格式的选择点列表",
+            expected_output="严格的 JSON 对象（仅一段），不要额外文本",
             agent=agent
         )
 
-        # 执行
-        crew = Crew(agents=[agent], tasks=[task], verbose=False)
-        result = crew.kickoff()
+        # 执行（带一次重试，二次更严格提示）
+        result_text = self._call_llm_with_retry(
+            agent,
+            task,
+            retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。"
+        )
+
+        # 空响应防护：直接回退到本地默认选择，避免解析报错
+        if not result_text or not str(result_text).strip():
+            return self._get_default_choices(current_scene)
 
         # 解析结果
         try:
-            choices_data = self._parse_result(str(result))
-            return [Choice(**choice) for choice in choices_data['choices']]
+            choices_data = self._parse_result(result_text)
+            # 标准化所有 choice 字段
+            raw_choices = [self._normalize_choice_fields(c) for c in choices_data.get('choices', [])]
+
+            # 强制推进与结局注入策略（避免平台化）：
+            # - 每 N 个场景（默认3）至少提供一个 critical 选项
+            # - 若不存在 critical，则追加一个“直面关键线索”的 critical 选项
+            import os, re
+            force_every = int(os.getenv("FORCE_CRITICAL_INTERVAL", "3"))
+            scene_num = 0
+            m = re.search(r"S(\d+)", str(current_scene))
+            if m:
+                try:
+                    scene_num = int(m.group(1))
+                except Exception:
+                    scene_num = 0
+
+            has_critical = any(str(c.get('choice_type', 'normal')).lower() == 'critical' for c in raw_choices)
+            need_force = (force_every > 0 and scene_num > 0 and (scene_num % force_every == 0))
+
+            if not has_critical and need_force:
+                raw_choices.append({
+                    "choice_id": f"{current_scene}_E1",
+                    "choice_text": "直面关键线索（可能触发结局）",
+                    "choice_type": "critical",
+                    "consequences": {"timestamp": "+12min", "flags": {"结局_线索达成": True}},
+                    "tags": ["主线推进", "关键线索"]
+                })
+
+            # 提升 critical 的时间推进（默认至少 +10min）
+            for c in raw_choices:
+                if str(c.get('choice_type', 'normal')).lower() == 'critical':
+                    cons = c.get('consequences') or {}
+                    ts = str(cons.get('timestamp', '')).strip()
+                    if not ts:
+                        cons['timestamp'] = "+10min"
+                    c['consequences'] = cons
+
+            return [Choice(**choice) for choice in raw_choices]
         except Exception as e:
             print(f"⚠️  解析选择点失败: {e}")
             # 返回默认选择点
             return self._get_default_choices(current_scene)
+
+    def _get_llm(self):
+        """获取（并复用）LLM 实例"""
+        if self._llm is not None:
+            return self._llm
+
+        from crewai import LLM
+        import os
+
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        self._kimi_model_choices = os.getenv("KIMI_MODEL_CHOICES") or os.getenv("KIMI_MODEL", "moonshot-v1-32k")
+
+        self._llm = LLM(
+            model=self._kimi_model_choices,
+            api_key=kimi_key,
+            base_url=kimi_base
+        )
+        return self._llm
+
+    def _get_scene_memory(self, scene: str) -> str:
+        """获取场景锚点摘要与规则（缓存）"""
+        if scene in self._scene_memory:
+            return self._scene_memory[scene]
+
+        # 提取当前场景相关的 GDD 片段（最多 500 字）
+        scene_gdd = self._extract_scene_context(self.gdd, scene, max_chars=500)
+        # 提取核心 Lore 规则（最多 300 字）
+        core_lore = self._extract_core_lore(self.lore, max_chars=300)
+
+        memory = f"{scene_gdd}\n\n[规则摘要]\n{core_lore}"
+        # 控制整体大小（~600-800字），但不做激进截断以保证质量
+        memory = memory[:1200]
+        self._scene_memory[scene] = memory
+        return memory
+
+    def _call_llm_with_retry(self, agent, task, retry_suffix: str = "", max_retries: int = 1) -> str:
+        """执行 LLM 任务，失败后附加严格提示进行一次重试"""
+        from crewai import Crew, Task
+        # 首次
+        crew = Crew(agents=[agent], tasks=[task], verbose=False)
+        with self._sem:
+            result = crew.kickoff()
+        text = str(result)
+        # 解析试探
+        try:
+            _ = self._parse_result(text)
+            return text
+        except Exception:
+            if max_retries <= 0:
+                return text
+        # 重试一次，附加更严格的输出要求
+        strict_task = Task(
+            description=task.description + (retry_suffix or ""),
+            expected_output="严格 JSON（仅一个对象）",
+            agent=agent
+        )
+        crew2 = Crew(agents=[agent], tasks=[strict_task], verbose=False)
+        with self._sem:
+            result2 = crew2.kickoff()
+        return str(result2)
 
     def _build_prompt(
         self,
@@ -310,12 +433,8 @@ class ChoicePointsGenerator:
     ) -> str:
         """构建完整的 prompt（优化版：只发送相关内容）"""
         context = narrative_context or "玩家刚进入该场景。"
-
-        # 提取当前场景相关的 GDD 片段（最多 500 字）
-        scene_gdd = self._extract_scene_context(self.gdd, current_scene, max_chars=500)
-
-        # 提取核心 Lore 规则（最多 300 字）
-        core_lore = self._extract_core_lore(self.lore, max_chars=300)
+        # 使用场景记忆（RAG锚点）
+        scene_memory = self._get_scene_memory(current_scene)
 
         return f"""
 你是一个专业的选择点设计师。请根据当前场景和游戏状态，生成 2-4 个选择点。
@@ -329,15 +448,9 @@ class ChoicePointsGenerator:
 
 ---
 
-## 场景信息
+## 场景锚点与规则（缓存）
 
-{scene_gdd}
-
----
-
-## 核心规则
-
-{core_lore}
+{scene_memory}
 
 ---
 
@@ -362,7 +475,7 @@ class ChoicePointsGenerator:
 }}
 ```
 
-请生成符合当前场景的选择点。
+请生成符合当前场景的选择点。务必只输出一个 JSON 对象，不要包含额外文本。
 """
 
     def _extract_scene_context(self, gdd: str, scene: str, max_chars: int = 500) -> str:
@@ -583,6 +696,17 @@ class ChoicePointsGenerator:
         if "choice_type" not in normalized:
             normalized["choice_type"] = "normal"
 
+        # 后果字段兜底：确保至少有时间推进，避免状态去重导致深度停滞
+        if "consequences" not in normalized or not isinstance(normalized.get("consequences"), dict):
+            normalized["consequences"] = {"timestamp": "+5min"}
+        else:
+            cons = normalized["consequences"]
+            if (
+                not any(k in cons for k in ["timestamp", "time", "scene"]) and
+                not any(k in cons for k in ["PR", "GR", "WF", "flags", "inventory"])  # 完全静态则推进时间
+            ):
+                cons["timestamp"] = "+5min"
+
         # 保留其他未映射的字段
         for key, value in choice.items():
             if key not in normalized and key not in sum(field_mapping.values(), []):
@@ -602,21 +726,21 @@ class ChoicePointsGenerator:
         return [
             Choice(
                 choice_id=f"{current_scene}_C1",
-                choice_text="继续探索",
+                choice_text="沿主线线索继续深入",
                 choice_type=ChoiceType.NORMAL,
-                consequences={"timestamp": "+5min"}
+                consequences={"timestamp": "+6min", "GR": "+3"}
             ),
             Choice(
                 choice_id=f"{current_scene}_C2",
-                choice_text="原地观察",
+                choice_text="原地观察环境细节",
                 choice_type=ChoiceType.NORMAL,
-                consequences={"PR": "+5", "timestamp": "+2min"}
+                consequences={"PR": 5, "timestamp": "+3min"}
             ),
             Choice(
-                choice_id=f"{current_scene}_C3",
-                choice_text="返回中控室",
-                choice_type=ChoiceType.NORMAL,
-                consequences={"timestamp": "+3min"}
+                choice_id=f"{current_scene}_E1",
+                choice_text="直面关键线索（可能触发结局）",
+                choice_type=ChoiceType.CRITICAL,
+                consequences={"timestamp": "+12min", "flags": {"结局_线索达成": True}},
             )
         ]
 

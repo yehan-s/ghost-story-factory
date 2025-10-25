@@ -61,7 +61,18 @@ class DialogueTreeBuilder:
         self.max_depth = 20
         self.min_main_path_depth = 15
         self.max_branches_per_node = 3  # 每个节点最多 3 个选择
-        self.checkpoint_interval = 50  # 每 50 个节点保存一次检查点
+        # 更密集的检查点：小树也能被恢复，避免重跑
+        self.checkpoint_interval = 25
+
+        # 并发与增量检查点
+        import os
+        self.concurrent_workers = int(os.getenv("TREE_BUILDER_CONCURRENCY", "6"))
+        self.incremental_log_path = os.getenv("INCREMENTAL_LOG_PATH", "checkpoints/tree_incremental.jsonl")
+        self._inc_log_file = None
+
+        # 安全阈值：防止极端情况下长时间不收敛
+        self.max_total_nodes = int(os.getenv("MAX_TOTAL_NODES", "300"))
+        self.progress_plateau_limit = int(os.getenv("PROGRESS_PLATEAU_LIMIT", "2"))
 
     def _init_generators(self):
         """初始化 LLM 生成器（复用现有引擎）"""
@@ -115,13 +126,18 @@ class DialogueTreeBuilder:
             dialogue_tree = checkpoint.get("tree", {})
             queue_data = checkpoint.get("queue", [])
             node_counter = checkpoint.get("node_counter", 1)
-            state_registry = checkpoint.get("state_registry", {})
+            state_cache = checkpoint.get("state_cache", {})
+            scene_index = checkpoint.get("scene_index", {})
+            # 兼容旧版本字段
+            if not state_cache and checkpoint.get("state_registry"):
+                state_cache = checkpoint.get("state_registry", {})
 
             # 恢复队列
             queue = deque([(node_data, depth) for node_data, depth in queue_data])
 
             # 恢复状态管理器
-            self.state_manager.state_registry = state_registry
+            self.state_manager.state_cache = state_cache or {}
+            self.state_manager.scene_index = scene_index or {}
 
             print(f"   已恢复 {len(dialogue_tree)} 个节点")
             print(f"   队列中还有 {len(queue)} 个待处理节点")
@@ -161,7 +177,12 @@ class DialogueTreeBuilder:
 
             node_counter = 1
 
-        # BFS 遍历
+        # 打开增量日志
+        self._open_incremental_log()
+
+        # BFS 遍历（批量并发扩展子节点）
+        import concurrent.futures, threading
+        id_lock = threading.Lock()
         while queue:
             current_node_dict, depth = queue.popleft()
             current_node = DialogueNode.from_dict(current_node_dict)
@@ -170,8 +191,10 @@ class DialogueTreeBuilder:
             if self.state_manager.should_prune(current_node.game_state, depth, max_depth):
                 continue
 
-            # 为每个选择生成子节点
-            for choice in current_node.choices[:self.max_branches_per_node]:
+            # 为每个选择生成子节点（并发限制）
+            choices_batch = current_node.choices[:self.max_branches_per_node]
+
+            def _expand_choice(choice):
                 # 创建新状态
                 new_state = self.state_manager.update_state(
                     current_node.game_state,
@@ -184,20 +207,26 @@ class DialogueTreeBuilder:
                 # 检查状态是否已存在（去重）
                 existing_node_id = self.state_manager.get_node_by_state(state_hash)
                 if existing_node_id:
-                    # 复用已有节点
-                    choice["next_node_id"] = existing_node_id
+                    return {
+                        "type": "reuse",
+                        "parent_id": current_node.node_id,
+                        "choice_id": choice.get("choice_id"),
+                        "existing_node_id": existing_node_id
+                    }
 
-                    # 同步更新父节点中的choice（确保next_node_id被保存）
-                    parent_node_id = current_node.node_id
-                    for parent_choice in dialogue_tree[parent_node_id]["choices"]:
-                        if parent_choice.get("choice_id") == choice.get("choice_id"):
-                            parent_choice["next_node_id"] = existing_node_id
-                            break
-                    continue
+                # 近似状态匹配（同场景合并）
+                approx_node_id = self.state_manager.find_approximate(new_state)
+                if approx_node_id:
+                    return {
+                        "type": "reuse",
+                        "parent_id": current_node.node_id,
+                        "choice_id": choice.get("choice_id"),
+                        "existing_node_id": approx_node_id
+                    }
 
                 # 创建新节点
                 child_node = DialogueNode(
-                    node_id=f"node_{node_counter:04d}",
+                    node_id="",  # 暂不分配，主线程统一编号
                     scene=new_state.get("current_scene", current_node.scene),
                     depth=depth + 1,
                     game_state=new_state,
@@ -218,26 +247,66 @@ class DialogueTreeBuilder:
                     # 生成下一批选择
                     child_node.choices = self._generate_choices(child_node)
 
+                return {
+                    "type": "new",
+                    "parent_id": current_node.node_id,
+                    "choice": choice,
+                    "child": child_node
+                }
+
+            # 并发执行扩展
+            results: List[dict] = []
+            with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrent_workers) as executor:
+                futures = [executor.submit(_expand_choice, c) for c in choices_batch]
+                for fut in concurrent.futures.as_completed(futures):
+                    try:
+                        results.append(fut.result())
+                    except Exception as e:
+                        print(f"⚠️  子节点生成异常: {e}")
+
+            # 汇总结果（保证数据一致性）
+            for res in results:
+                if res["type"] == "reuse":
+                    choice_id = res["choice_id"]
+                    existing_node_id = res["existing_node_id"]
+                    parent_node_id = res["parent_id"]
+                    for parent_choice in dialogue_tree[parent_node_id]["choices"]:
+                        if parent_choice.get("choice_id") == choice_id:
+                            parent_choice["next_node_id"] = existing_node_id
+                            break
+                    continue
+
+                child_node: DialogueNode = res["child"]
+                choice = res["choice"]
+
+                # 分配唯一ID（线程安全）
+                with id_lock:
+                    child_node.node_id = f"node_{node_counter:04d}"
+                    node_counter += 1
+
                 # 添加到树
                 dialogue_tree[child_node.node_id] = child_node.to_dict()
-                self.state_manager.register_state(state_hash, child_node.node_id)
+                self.state_manager.register_state(child_node.state_hash, child_node.node_id)
+                self.state_manager.register_scene_index(child_node.game_state, child_node.state_hash)
                 choice["next_node_id"] = child_node.node_id
 
-                # 更新父节点的子节点列表和选择
+                # 记录父子关系
                 parent_node_id = current_node.node_id
                 dialogue_tree[parent_node_id]["children"].append(child_node.node_id)
-
-                # 同步更新父节点中的choice（确保next_node_id被保存）
                 for parent_choice in dialogue_tree[parent_node_id]["choices"]:
                     if parent_choice.get("choice_id") == choice.get("choice_id"):
                         parent_choice["next_node_id"] = child_node.node_id
                         break
 
-                # 加入队列（如果不是结局）
+                # 加入队列
                 if not child_node.is_ending:
                     queue.append((child_node.to_dict(), depth + 1))
 
-                node_counter += 1
+                # 增量日志记录
+                self._append_incremental_log({
+                    "event": "add_node",
+                    "node": child_node.to_dict()
+                })
 
                 # 更新进度
                 self.progress_tracker.update(
@@ -246,25 +315,21 @@ class DialogueTreeBuilder:
                     current_branch=f"{child_node.scene} → {choice.get('choice_text', '')[:20]}..."
                 )
 
-                # 定期保存检查点（包含完整状态）
-                if len(dialogue_tree) % self.checkpoint_interval == 0:
-                    self._save_full_checkpoint(
-                        dialogue_tree,
-                        queue,
-                        node_counter,
-                        checkpoint_path
-                    )
+            # 定期保存检查点（包含完整状态）
+            if len(dialogue_tree) % self.checkpoint_interval == 0:
+                self._save_full_checkpoint(
+                    dialogue_tree,
+                    queue,
+                    node_counter,
+                    checkpoint_path
+                )
 
-        # 完成追踪
-        self.progress_tracker.finish(success=True)
+            # 全局节点上限保护（避免在低质量上下文中无限扩张）
+            if len(dialogue_tree) >= self.max_total_nodes:
+                print(f"⚠️  达到全局节点上限（{self.max_total_nodes}），停止本轮扩展")
+                break
 
-        # 🗑️ 删除检查点文件（生成成功）
-        import os
-        if os.path.exists(checkpoint_path):
-            os.remove(checkpoint_path)
-            print(f"💾 检查点已清理：{checkpoint_path}\n")
-
-        # 验证游戏时长
+        # 验证 + 持续扩展（同一轮）
         print("📊 验证游戏时长...")
         report = self.time_validator.get_validation_report(dialogue_tree)
 
@@ -272,12 +337,223 @@ class DialogueTreeBuilder:
         print(f"   主线深度: {report['main_path_depth']}")
         print(f"   预计时长: {report['estimated_duration_minutes']} 分钟")
         print(f"   结局数量: {report['ending_count']}")
+        print(f"   结局达标: {'是' if report.get('passes_endings_check') else '否'} (≥ {self.time_validator.min_endings})")
 
+        def _passes(r: Dict[str, Any]) -> bool:
+            return (
+                r['passes_duration_check']
+                and r['main_path_depth'] >= self.min_main_path_depth
+                and r.get('passes_endings_check', True)
+            )
+
+        # 允许在同一轮内继续扩展，直至达标或达到尝试上限
+        extend_attempts = int(os.getenv("EXTEND_ON_FAIL_ATTEMPTS", "2"))
+        attempt_idx = 0
+        plateau_rounds = 0
+        last_metrics = (
+            report['main_path_depth'],
+            report['estimated_duration_minutes'],
+            report['ending_count']
+        )
+        while not _passes(report) and attempt_idx < extend_attempts:
+            attempt_idx += 1
+            print(f"⏩ 扩展尝试 {attempt_idx}/{extend_attempts}：继续从叶子节点加深主线/增加时长...")
+
+            # 选取可扩展的叶子（非结局、无子节点、深度未到上限），按深度降序优先加深
+            leaves: List[Any] = []
+            for nid, node in dialogue_tree.items():
+                if not isinstance(node, dict):
+                    continue
+                if node.get("is_ending"):
+                    continue
+                if len(node.get("children", [])) > 0:
+                    continue
+                if int(node.get("depth", 0)) >= self.max_depth:
+                    continue
+                leaves.append((nid, node))
+
+            if not leaves:
+                print("ℹ️  没有可扩展的叶子节点，终止扩展。")
+                break
+
+            leaves.sort(key=lambda x: int(x[1].get("depth", 0)), reverse=True)
+
+            # 基于叶子重建队列并继续 BFS 扩展（顺序执行，保证稳定性）
+            queue = deque([(dialogue_tree[nid], int(node.get("depth", 0))) for nid, node in leaves])
+
+            import threading
+            id_lock = threading.Lock()
+
+            while queue:
+                current_node_dict, depth = queue.popleft()
+                current_node = DialogueNode.from_dict(current_node_dict)
+
+                if self.state_manager.should_prune(current_node.game_state, depth, max_depth):
+                    continue
+
+                choices_batch = current_node.choices[:self.max_branches_per_node]
+
+                for choice in choices_batch:
+                    # 创建新状态
+                    new_state = self.state_manager.update_state(
+                        current_node.game_state,
+                        choice.get("consequences", {})
+                    )
+
+                    # 计算状态哈希与去重/近似合并
+                    state_hash = self.state_manager.get_state_hash(new_state)
+                    existing_node_id = self.state_manager.get_node_by_state(state_hash)
+                    if existing_node_id:
+                        for parent_choice in dialogue_tree[current_node.node_id]["choices"]:
+                            if parent_choice.get("choice_id") == choice.get("choice_id"):
+                                parent_choice["next_node_id"] = existing_node_id
+                                break
+                        continue
+
+                    approx_node_id = self.state_manager.find_approximate(new_state)
+                    if approx_node_id:
+                        for parent_choice in dialogue_tree[current_node.node_id]["choices"]:
+                            if parent_choice.get("choice_id") == choice.get("choice_id"):
+                                parent_choice["next_node_id"] = approx_node_id
+                                break
+                        continue
+
+                    # 创建新节点并生成内容
+                    child_node = DialogueNode(
+                        node_id="",
+                        scene=new_state.get("current_scene", current_node.scene),
+                        depth=depth + 1,
+                        game_state=new_state,
+                        state_hash=state_hash,
+                        parent_id=current_node.node_id,
+                        parent_choice_id=choice.get("choice_id"),
+                        generated_at=datetime.now().isoformat()
+                    )
+
+                    child_node.narrative = self._generate_response(choice, new_state)
+                    child_node.is_ending = self._check_ending(new_state)
+                    if child_node.is_ending:
+                        child_node.ending_type = self._determine_ending_type(new_state)
+                    else:
+                        child_node.choices = self._generate_choices(child_node)
+
+                    with id_lock:
+                        child_node.node_id = f"node_{node_counter:04d}"
+                        node_counter += 1
+
+                    # 挂接到树
+                    dialogue_tree[child_node.node_id] = child_node.to_dict()
+                    self.state_manager.register_state(child_node.state_hash, child_node.node_id)
+                    self.state_manager.register_scene_index(child_node.game_state, child_node.state_hash)
+
+                    for parent_choice in dialogue_tree[current_node.node_id]["choices"]:
+                        if parent_choice.get("choice_id") == choice.get("choice_id"):
+                            parent_choice["next_node_id"] = child_node.node_id
+                            break
+                    dialogue_tree[current_node.node_id]["children"].append(child_node.node_id)
+
+                    # 入队继续扩展
+                    if not child_node.is_ending:
+                        queue.append((child_node.to_dict(), depth + 1))
+
+                    # 增量日志 & 进度
+                    self._append_incremental_log({"event": "add_node", "node": child_node.to_dict()})
+                    self.progress_tracker.update(
+                        current_depth=depth + 1,
+                        node_count=len(dialogue_tree),
+                        current_branch=f"{child_node.scene} → {choice.get('choice_text', '')[:20]}..."
+                    )
+
+            # 扩展一轮后再次验证
+            report = self.time_validator.get_validation_report(dialogue_tree)
+            print("📊 扩展后再次验证...")
+            print(f"   总节点数: {report['total_nodes']}")
+            print(f"   主线深度: {report['main_path_depth']}")
+            print(f"   预计时长: {report['estimated_duration_minutes']} 分钟")
+            print(f"   结局数量: {report['ending_count']}")
+            print(f"   结局达标: {'是' if report.get('passes_endings_check') else '否'} (≥ {self.time_validator.min_endings})")
+
+            # 进展检测：若主线深度/预计时长/结局数量均无提升，计为平台期
+            current_metrics = (
+                report['main_path_depth'],
+                report['estimated_duration_minutes'],
+                report['ending_count']
+            )
+            if current_metrics <= last_metrics:
+                plateau_rounds += 1
+                print(f"ℹ️  本轮无显著进展（平台 {plateau_rounds}/{self.progress_plateau_limit}）")
+                if plateau_rounds >= self.progress_plateau_limit:
+                    print("⚠️  连续多轮无进展，停止扩展以避免死循环")
+                    break
+            else:
+                plateau_rounds = 0
+                last_metrics = current_metrics
+            print(f"   结局达标: {'是' if report.get('passes_endings_check') else '否'} (≥ {self.time_validator.min_endings})")
+
+        # 最终判定
         if not report['passes_duration_check']:
-            raise ValueError(f"游戏时长不足：{report['estimated_duration_minutes']} 分钟 < 15 分钟")
+            if self.test_mode:
+                print(f"⚠️  [测试模式] 时长未达标（{report['estimated_duration_minutes']} 分钟），忽略校验继续")
+            else:
+                # 明确结束本轮追踪，避免误报“生成完成”
+                self.progress_tracker.finish(success=False)
+                # 写入失败摘要
+                try:
+                    from ..utils.logging_utils import get_logger
+                    get_logger()[0].error(
+                        "验证失败：时长不足 est=%.1f < min=%s",
+                        report['estimated_duration_minutes'],
+                        self.time_validator.min_duration_minutes,
+                    )
+                except Exception:
+                    pass
+                raise ValueError(
+                    f"游戏时长不足：{report['estimated_duration_minutes']} 分钟 < {self.time_validator.min_duration_minutes} 分钟"
+                )
 
-        if not report['passes_depth_check']:
-            raise ValueError(f"主线深度不足：{report['main_path_depth']} < 15")
+        if report['main_path_depth'] < self.min_main_path_depth:
+            if self.test_mode:
+                print(f"⚠️  [测试模式] 主线深度未达标（{report['main_path_depth']} < {self.min_main_path_depth}），忽略校验继续")
+            else:
+                # 明确结束本轮追踪
+                self.progress_tracker.finish(success=False)
+                try:
+                    from ..utils.logging_utils import get_logger
+                    get_logger()[0].error(
+                        "验证失败：主线深度不足 depth=%s < min=%s",
+                        report['main_path_depth'],
+                        self.min_main_path_depth,
+                    )
+                except Exception:
+                    pass
+                raise ValueError(f"主线深度不足：{report['main_path_depth']} < {self.min_main_path_depth}")
+
+        # 结局数量门槛
+        if not report.get('passes_endings_check', True):
+            if self.test_mode:
+                print(f"⚠️  [测试模式] 结局数量未达标（{report['ending_count']} < {self.time_validator.min_endings}），忽略校验继续")
+            else:
+                # 明确结束本轮追踪
+                self.progress_tracker.finish(success=False)
+                try:
+                    from ..utils.logging_utils import get_logger
+                    get_logger()[0].error(
+                        "验证失败：结局不足 endings=%s < min=%s",
+                        report['ending_count'],
+                        self.time_validator.min_endings,
+                    )
+                except Exception:
+                    pass
+                raise ValueError(f"结局数量不足：{report['ending_count']} < {self.time_validator.min_endings}")
+
+        # 完成追踪与清理检查点
+        self.progress_tracker.finish(success=True)
+        if os.path.exists(checkpoint_path):
+            os.remove(checkpoint_path)
+            print(f"💾 检查点已清理：{checkpoint_path}\n")
+
+        # 关闭增量日志
+        self._close_incremental_log()
 
         return dialogue_tree
 
@@ -448,14 +724,14 @@ class DialogueTreeBuilder:
                 "choice_id": "A",
                 "choice_text": "继续调查",
                 "choice_type": "normal",
-                "consequences": {"GR": 5},
+                "consequences": {"GR": 5, "time": "+5min"},
                 "preconditions": {}
             },
             {
                 "choice_id": "B",
                 "choice_text": "离开此地",
                 "choice_type": "normal",
-                "consequences": {"PR": -3},
+                "consequences": {"PR": -3, "time": "+5min"},
                 "preconditions": {}
             }
         ]
@@ -492,7 +768,8 @@ class DialogueTreeBuilder:
             "tree": dialogue_tree,
             "queue": queue_data,
             "node_counter": node_counter,
-            "state_registry": self.state_manager.state_registry,
+            "state_cache": self.state_manager.state_cache,
+            "scene_index": self.state_manager.scene_index,
             "max_depth": self.max_depth,
             "min_main_path_depth": self.min_main_path_depth
         }
@@ -506,4 +783,27 @@ class DialogueTreeBuilder:
             json.dump(checkpoint, f, ensure_ascii=False, indent=2)
 
         print(f"💾 [检查点] 已保存 {len(dialogue_tree)} 个节点 → {checkpoint_path}")
+
+    def _open_incremental_log(self):
+        """打开增量 JSONL 日志文件（追加模式）"""
+        from pathlib import Path
+        Path(self.incremental_log_path).parent.mkdir(parents=True, exist_ok=True)
+        self._inc_log_file = open(self.incremental_log_path, 'a', encoding='utf-8')
+
+    def _append_incremental_log(self, record: Dict[str, Any]):
+        """写入一条增量记录"""
+        if not self._inc_log_file:
+            return
+        import json
+        record_with_ts = {"ts": datetime.now().isoformat(), **record}
+        self._inc_log_file.write(json.dumps(record_with_ts, ensure_ascii=False) + "\n")
+        self._inc_log_file.flush()
+
+    def _close_incremental_log(self):
+        """关闭增量日志文件"""
+        try:
+            if self._inc_log_file:
+                self._inc_log_file.close()
+        finally:
+            self._inc_log_file = None
 

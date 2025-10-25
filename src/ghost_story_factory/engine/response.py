@@ -12,7 +12,18 @@ from typing import Optional, Dict, Any
 import json
 
 from .state import GameState
-from .choices import Choice
+try:
+    from .choices import Choice
+except Exception:
+    # 兼容：当 pydantic 不可用时，退化为简单对象
+    class Choice:  # type: ignore
+        def __init__(self, choice_id: str, choice_text: str, choice_type: str = "normal", consequences=None, preconditions=None, tags=None):
+            self.choice_id = choice_id
+            self.choice_text = choice_text
+            self.choice_type = type("ChoiceType", (), {"value": choice_type})() if not hasattr(choice_type, "value") else choice_type
+            self.consequences = consequences or {}
+            self.preconditions = preconditions or {}
+            self.tags = tags or []
 
 
 class RuntimeResponseGenerator:
@@ -34,6 +45,14 @@ class RuntimeResponseGenerator:
         self.lore = lore_content
         self.main_story = main_story
         self.prompt_template = self._load_prompt_template()
+        # 缓存与并发控制
+        self._llm = None
+        self._kimi_model_response = None
+        self._scene_memory = {}
+        self._global_story_summary = None
+        import os, threading
+        self._concurrency = int(os.getenv("KIMI_CONCURRENCY", "4"))
+        self._sem = threading.Semaphore(self._concurrency)
 
     def _load_prompt_template(self) -> str:
         """加载 prompt 模板
@@ -157,32 +176,36 @@ class RuntimeResponseGenerator:
             from crewai import Agent, Task, Crew, LLM
             import os
         except ImportError:
-            print("⚠️  CrewAI 未安装，无法生成响应，返回简单确认")
-            # 应用后果
+            # 离线叙事回退：基于当前状态与场景记忆生成简短沉浸文本
             if apply_consequences and choice.consequences:
                 game_state.update(choice.consequences)
                 game_state.consequence_tree.append(choice.choice_id)
-            return f"你选择了：{choice.choice_text}\n\n（CrewAI 未安装，无法生成完整叙事响应）"
 
-        # 配置 Kimi LLM（响应生成专用模型）
-        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
-        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
-        # 响应生成：使用高质量模型（可单独配置）
-        kimi_model = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+            scene_context = self._get_scene_memory(game_state.current_scene)
+            pr_hint = "你的神经更紧绷了一些。" if game_state.PR >= 50 else "你努力让呼吸平稳下来。"
+            text = (
+                f"你选择了：{choice.choice_text}\n\n"
+                f"昏黄的灯光在潮湿的墙面上跳动，空气里混着土腥味与细微的霉意。\n"
+                f"远处传来水滴声，[音效: 滴——答] 一下比一下清晰。{pr_hint}\n\n"
+                f"场景要点：\n{scene_context}\n"
+            )
+            return text
 
-        llm = LLM(
-            model=kimi_model,
-            api_key=kimi_key,
-            base_url=kimi_base
-        )
-
-        print(f"🤖 [响应] 使用模型: {kimi_model}")
+        # 复用 LLM（响应生成）
+        llm = self._get_llm()
+        print(f"🤖 [响应] 使用模型: {self._kimi_model_response}")
 
         # 保存原始状态（用于对比）
         state_before = game_state.to_dict()
 
         # 构建 prompt
         prompt = self._build_prompt(choice, game_state, state_before)
+        # 增强：在响应提示中加入世界书与伏笔回收要求，引导走向规范化结局
+        prompt += (
+            "\n\n[世界书与收束]\n"
+            "- 不得破坏既定世界观；回收前文伏笔；逐步逼近结局节点\n"
+            "- 如果当前已接近真相/危险阈值，暗示关键抉择临近（不替玩家决定）\n"
+        )
 
         # 🎯 混合方案：响应生成使用完整故事背景
         if self.main_story:
@@ -215,7 +238,9 @@ class RuntimeResponseGenerator:
 
         # 执行
         crew = Crew(agents=[agent], tasks=[task], verbose=False)
-        result = crew.kickoff()
+        # 受限并发执行
+        with self._sem:
+            result = crew.kickoff()
 
         # 应用后果到游戏状态
         if apply_consequences and choice.consequences:
@@ -235,6 +260,37 @@ class RuntimeResponseGenerator:
 
         return response_text
 
+    def _get_llm(self):
+        """获取（并复用）LLM 实例"""
+        if self._llm is not None:
+            return self._llm
+
+        from crewai import LLM
+        import os
+
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        self._kimi_model_response = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+
+        self._llm = LLM(
+            model=self._kimi_model_response,
+            api_key=kimi_key,
+            base_url=kimi_base
+        )
+        return self._llm
+
+    def _get_scene_memory(self, scene: str) -> str:
+        """获取场景锚点与规则（缓存）"""
+        if scene in self._scene_memory:
+            return self._scene_memory[scene]
+
+        scene_ctx = self._extract_scene_context(self.gdd, scene, max_chars=400)
+        core_lore = self._extract_scene_context(self.lore, scene, max_chars=200)
+        memory = f"{scene_ctx}\n\n[规则与约束]\n{core_lore}"
+        memory = memory[:900]
+        self._scene_memory[scene] = memory
+        return memory
+
     def _build_prompt(
         self,
         choice: Choice,
@@ -245,8 +301,8 @@ class RuntimeResponseGenerator:
         # 计算状态变化
         pr_change = game_state.PR - state_before.get('PR', 0)
 
-        # 提取场景相关内容
-        scene_context = self._extract_scene_context(self.gdd, game_state.current_scene, max_chars=400)
+        # 提取场景相关内容（使用场景记忆）
+        scene_context = self._get_scene_memory(game_state.current_scene)
 
         return f"""
 你是一个专业的恐怖故事作家。根据玩家选择生成沉浸式叙事响应（200-400字）。

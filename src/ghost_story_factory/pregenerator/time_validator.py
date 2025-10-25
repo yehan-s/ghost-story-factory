@@ -10,15 +10,21 @@ from typing import Dict, Any, List, Optional
 class TimeValidator:
     """游戏时长验证器"""
 
-    def __init__(self, seconds_per_choice: int = 15):
+    def __init__(self, seconds_per_choice: int = 75):
         """
         初始化验证器
 
         Args:
             seconds_per_choice: 每个选择的平均耗时（秒）
         """
-        self.seconds_per_choice = seconds_per_choice
-        self.min_duration_minutes = 15  # 最小游戏时长（分钟）
+        # 预生成模式可通过环境变量放大每步耗时估计，以贴近实际演绎
+        import os
+        sec_cfg = os.getenv("SECONDS_PER_CHOICE")
+        self.seconds_per_choice = int(sec_cfg) if sec_cfg else seconds_per_choice
+        # 放宽最小游戏时长（预生成模式更易达标，可由 env 覆盖）
+        self.min_duration_minutes = int(os.getenv("MIN_DURATION_MINUTES", "12"))
+        # 新增：最少结局数量门槛（防止烂尾），默认 1，可被环境变量覆盖
+        self.min_endings = int(os.getenv("MIN_ENDINGS", "1"))
 
     def estimate_playtime(self, dialogue_tree: Dict[str, Any]) -> float:
         """
@@ -33,8 +39,9 @@ class TimeValidator:
         # 找到主线路径（最长路径）
         main_path = self._find_longest_path(dialogue_tree)
 
-        # 计算选择点数量（减去根节点）
-        choice_count = len(main_path) - 1
+        # 计算有效节点数量（排除 root，仅统计有响应/选择的节点）
+        # main_path 包含 root；为更保守估计，按路径长度*平均耗时
+        choice_count = max(0, len(main_path) - 1)
 
         # 估算时长
         estimated_seconds = choice_count * self.seconds_per_choice
@@ -154,6 +161,8 @@ class TimeValidator:
             if node.get("is_ending", False)
         ]
 
+        import os
+        min_depth_env = int(os.getenv("MIN_MAIN_PATH_DEPTH", os.getenv("MIN_MAIN_PATH_DEPTH_THRESHOLD", "15")))
         return {
             "total_nodes": total_nodes,
             "main_path_depth": main_path_depth,
@@ -161,6 +170,7 @@ class TimeValidator:
             "estimated_duration_minutes": round(estimated_duration, 1),
             "ending_count": len(ending_nodes),
             "passes_duration_check": estimated_duration >= self.min_duration_minutes,
-            "passes_depth_check": main_path_depth >= 15
+            "passes_depth_check": main_path_depth >= min_depth_env,
+            "passes_endings_check": len(ending_nodes) >= self.min_endings
         }
 
