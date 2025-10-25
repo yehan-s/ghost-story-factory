@@ -42,3 +42,13 @@ saves/
 
 # 数据库文件（如果不想提交的话可以取消注释）
 # database/*.db
+
+# 日志文件
+logs/
+
+# 生成的故事内容（按需提交）
+deliverables/程序-*/
+
+# 数据库文件（开发时生成）
+database/*.db
+database/*.db-journal
