@@ -38,6 +38,7 @@ except ImportError:
                     os.environ[key.strip()] = value.strip()
 
 from ghost_story_factory.pregenerator.tree_builder import DialogueTreeBuilder
+from ghost_story_factory.utils.logging_utils import get_run_logger, get_logger
 
 
 # ==================== 配置参数 ====================
@@ -149,6 +150,7 @@ class SmartParallelGenerator:
             if retry_count < MAX_RETRIES:
                 with self.lock:
                     self.print_status(f"[{char_name}] ⚠️  失败，重试 {retry_count + 1}/{MAX_RETRIES}...")
+                get_logger()[0].warning(f"[{char_name}] 生成失败，重试 {retry_count + 1}/{MAX_RETRIES}: {e}")
 
                 time.sleep(2)  # 等待2秒后重试
                 return self.generate_character_tree(character, retry_count + 1)
@@ -156,6 +158,7 @@ class SmartParallelGenerator:
                 with self.lock:
                     self.failed_count += 1
                     self.print_status(f"[{char_name}] ❌ 生成失败：{e}")
+                get_logger()[0].exception(f"[{char_name}] 生成最终失败")
 
                 return (char_name, None)
 
@@ -273,6 +276,18 @@ def extract_characters(city: str):
 
 
 def main():
+    # 初始化日志
+    logger, log_path = get_run_logger(
+        "generate_smart_parallel",
+        {
+            "city": CITY,
+            "title": STORY_TITLE,
+            "max_concurrent": MAX_CONCURRENT,
+            "test_mode": TEST_MODE,
+        },
+    )
+    print(f"📝 日志文件: {log_path}")
+
     print("╔══════════════════════════════════════════════════════════════════╗")
     print("║          🎯 智能并行生成系统                                    ║")
     print("╚══════════════════════════════════════════════════════════════════╝")
@@ -372,10 +387,14 @@ def main():
             print(f"   ❌ 保存失败：{e}")
             import traceback
             traceback.print_exc()
+            get_logger()[0].exception("保存到数据库失败")
+            print(f"📝 错误日志已写入: {log_path}")
             sys.exit(1)
     else:
         print()
         print("❌ 没有成功生成任何角色的对话树")
+        get_logger()[0].error("没有成功生成任何角色的对话树")
+        print(f"📝 日志文件: {log_path}")
         sys.exit(1)
 
 

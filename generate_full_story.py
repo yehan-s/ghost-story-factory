@@ -24,6 +24,7 @@ from typing import Dict, Any, Optional
 from crewai import Agent, Task, Crew, Process
 from crewai.llm import LLM
 from dotenv import load_dotenv
+from ghost_story_factory.utils.logging_utils import get_run_logger, get_logger
 
 # 加载环境变量
 load_dotenv()
@@ -35,9 +36,21 @@ TEMPLATE_DIR = Path(__file__).parent / "templates"
 class StoryGenerator:
     """完整故事生成器"""
 
-    def __init__(self, city: str, output_dir: Optional[str] = None):
+    def __init__(self, city: str, output_dir: Optional[str] = None, title: Optional[str] = None, synopsis: Optional[str] = None):
         self.city = city
-        self.output_dir = Path(output_dir) if output_dir else Path(f"deliverables/程序-{city}")
+        self.selected_title = (title or "").strip()
+        self.selected_synopsis = (synopsis or "").strip()
+
+        # 产物目录：deliverables/程序-城市/<标题子目录(安全化)>
+        base_dir = Path(output_dir) if output_dir else Path(f"deliverables/程序-{city}")
+        if self.selected_title:
+            import re as _re
+            safe_title = _re.sub(r'[^\w\u4e00-\u9fff]+', '_', self.selected_title)
+            self.output_dir = base_dir / safe_title
+            self._safe_title = safe_title
+        else:
+            self.output_dir = base_dir
+            self._safe_title = ""
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # 构建LLM
@@ -60,8 +73,7 @@ class StoryGenerator:
             return LLM(
                 model=model,
                 api_key=kimi_key,
-                api_base=base,
-                custom_llm_provider="openai",
+                base_url=base,
                 max_tokens=16000,
             )
 
@@ -126,7 +138,10 @@ class StoryGenerator:
 
     def _save_artifact(self, name: str, content: str, format: str = "md"):
         """保存生成的产物"""
-        filename = f"{self.city}_{name}.{format}"
+        if self._safe_title:
+            filename = f"{self.city}_{self._safe_title}_{name}.{format}"
+        else:
+            filename = f"{self.city}_{name}.{format}"
         filepath = self.output_dir / filename
         filepath.write_text(content, encoding='utf-8')
         print(f"✅ 已保存: {filepath}")
@@ -207,6 +222,11 @@ class StoryGenerator:
         print("="*60)
 
         prompt = self._load_prompt("lore-v1")
+        # 直接替换占位符，避免 Crew 的模板变量缺失报错
+        try:
+            prompt = prompt.replace('{raw_text_from_agent_a}', raw_materials)
+        except Exception:
+            pass
 
         task = Task(
             description=prompt,
@@ -243,6 +263,10 @@ class StoryGenerator:
         print("="*60)
 
         prompt = self._load_prompt("protagonist")
+        try:
+            prompt = prompt.replace('{world_book_markdown_content}', lore_v1)
+        except Exception:
+            pass
 
         task = Task(
             description=prompt,
@@ -257,9 +281,10 @@ class StoryGenerator:
             verbose=True,
         )
 
+        # 模板占位符：{world_book_markdown_content}
         result = str(crew.kickoff(inputs={
             "city": self.city,
-            "lore_v1": lore_v1
+            "world_book_markdown_content": lore_v1
         }))
 
         self._save_artifact("protagonist", result, "md")
@@ -277,6 +302,10 @@ class StoryGenerator:
         print("="*60)
 
         prompt = self._load_prompt("lore-v2")
+        try:
+            prompt = prompt.replace('{world_book_1_0_markdown_content}', lore_v1)
+        except Exception:
+            pass
 
         task = Task(
             description=prompt,
@@ -291,9 +320,10 @@ class StoryGenerator:
             verbose=True,
         )
 
+        # 模板占位符：{world_book_1_0_markdown_content}
         result = str(crew.kickoff(inputs={
             "city": self.city,
-            "lore_v1": lore_v1
+            "world_book_1_0_markdown_content": lore_v1
         }))
 
         self._save_artifact("lore_v2", result, "md")
@@ -318,8 +348,17 @@ class StoryGenerator:
         role_match = re.search(r'角色.*?[:：]\s*(.+)', protagonist)
         role = role_match.group(1).strip() if role_match else "主角"
 
+        # 直接填充占位符
+        try:
+            prompt_filled = (prompt
+                .replace('{lore_content}', lore_v2)
+                .replace('{protagonist_content}', protagonist)
+            )
+        except Exception:
+            prompt_filled = prompt
+
         task = Task(
-            description=prompt,
+            description=prompt_filled,
             expected_output="AI导演任务简报，包含场景流程、触发条件、分支设计",
             agent=self.analyst,
         )
@@ -331,11 +370,12 @@ class StoryGenerator:
             verbose=True,
         )
 
+        # 模板占位符：{lore_content}, {protagonist_content}
         result = str(crew.kickoff(inputs={
             "city": self.city,
             "role": role,
-            "protagonist": protagonist,
-            "lore_v2": lore_v2
+            "protagonist_content": protagonist,
+            "lore_content": lore_v2
         }))
 
         self._save_artifact("gdd", result, "md")
@@ -353,9 +393,17 @@ class StoryGenerator:
         print("="*60)
 
         prompt = self._load_prompt("main-thread")
+        # 填充占位符
+        try:
+            prompt_filled = (prompt
+                .replace('{gdd_content}', gdd)
+                .replace('{lore_content}', lore_v2)
+            )
+        except Exception:
+            prompt_filled = prompt
 
         task = Task(
-            description=prompt,
+            description=prompt_filled,
             expected_output="完整的主线故事，1500-3000字，Markdown格式，UP主风格",
             agent=self.writer,
         )
@@ -367,10 +415,11 @@ class StoryGenerator:
             verbose=True,
         )
 
+        # 模板占位符：{gdd_content}, {lore_content}
         result = str(crew.kickoff(inputs={
             "city": self.city,
-            "gdd": gdd,
-            "lore_v2": lore_v2
+            "gdd_content": gdd,
+            "lore_content": lore_v2
         }))
 
         self._save_artifact("story", result, "md")
@@ -647,7 +696,10 @@ class StoryGenerator:
         print(f"\n📁 所有文件已保存至: {self.output_dir}")
         print("\n生成的文件：")
         for artifact in self.artifacts.keys():
-            print(f"  - {self.city}_{artifact}.*")
+            if self._safe_title:
+                print(f"  - {self.city}_{self._safe_title}_{artifact}.*")
+            else:
+                print(f"  - {self.city}_{artifact}.*")
         print(f"  - README.md")
 
     def _generate_readme(self, include_branches: bool = True, branch_roles: list = None):
@@ -734,6 +786,9 @@ class StoryGenerator:
 
 
 def main():
+    # 初始化日志
+    logger, log_path = get_run_logger("generate_full_story")
+    print(f"📝 日志文件: {log_path}")
     parser = argparse.ArgumentParser(
         description="Ghost Story Factory - 完整故事生成器",
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -769,11 +824,34 @@ def main():
         help="不生成支线故事（默认会生成支线1和支线2）"
     )
 
+    # 新增：标题与简介（从预生成菜单中选定的 StorySynopsis 传入）
+    parser.add_argument(
+        "--title",
+        type=str,
+        help="故事标题（用于产物目录/文件前缀与上下文）"
+    )
+    parser.add_argument(
+        "--synopsis",
+        type=str,
+        help="故事简介（可用于上下文增强）"
+    )
+
     args = parser.parse_args()
 
-    # 生成故事
-    generator = StoryGenerator(city=args.city, output_dir=args.output)
-    generator.generate_all(include_branches=not args.no_branches)
+    try:
+        # 生成故事
+        generator = StoryGenerator(city=args.city, output_dir=args.output, title=args.title, synopsis=args.synopsis)
+        generator.generate_all(include_branches=not args.no_branches)
+    except KeyboardInterrupt:
+        print("\n⚠️  生成被用户中断")
+        get_logger()[0].info("生成被用户中断")
+    except Exception as e:
+        print("\n❌ 生成失败")
+        print(f"错误：{e}")
+        import traceback
+        traceback.print_exc()
+        get_logger()[0].exception("生成失败")
+        print(f"📝 错误日志已写入: {log_path}")
 
 
 if __name__ == "__main__":

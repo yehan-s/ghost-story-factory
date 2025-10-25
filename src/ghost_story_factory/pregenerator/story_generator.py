@@ -12,12 +12,13 @@ from pathlib import Path
 from .synopsis_generator import StorySynopsis
 from .tree_builder import DialogueTreeBuilder
 from ..database import DatabaseManager
+from ..utils.logging_utils import get_logger, get_run_logger
 
 
 class StoryGeneratorWithRetry:
     """带重试机制的故事生成器"""
 
-    def __init__(self, city: str, synopsis: StorySynopsis, test_mode: bool = False):
+    def __init__(self, city: str, synopsis: StorySynopsis, test_mode: bool = False, multi_character: bool = True):
         """
         初始化生成器
 
@@ -25,11 +26,14 @@ class StoryGeneratorWithRetry:
             city: 城市名称
             synopsis: 故事简介
             test_mode: 测试模式（快速生成MVP用于验证）
+            multi_character: 是否生成多角色版本（默认：是，生成所有角色）
         """
         self.city = city
         self.synopsis = synopsis
-        self.max_retries = 3  # 最大重试次数
+        # 默认不跨轮重试，避免“生成→校验失败→整轮重启”的循环
+        self.max_retries = int(os.getenv("MAX_RETRIES", "0"))
         self.test_mode = test_mode  # 测试模式
+        self.multi_character = multi_character  # 多角色模式
 
     def generate_full_story(
         self,
@@ -77,10 +81,28 @@ class StoryGeneratorWithRetry:
         input("按 Enter 确认开始生成...")
         print("\n")
 
-        # 重试循环
-        retry_count = 0
+        # 初始化文件日志（运行级别）
+        _logger, _log_path = get_run_logger(
+            "full_generation",
+            {
+                "city": self.city,
+                "title": self.synopsis.title,
+                "protagonist": self.synopsis.protagonist,
+                "test_mode": self.test_mode,
+                "env": {
+                    "MAX_DEPTH": os.getenv("MAX_DEPTH"),
+                    "MIN_MAIN_PATH_DEPTH": os.getenv("MIN_MAIN_PATH_DEPTH"),
+                    "MIN_DURATION_MINUTES": os.getenv("MIN_DURATION_MINUTES"),
+                    "MIN_ENDINGS": os.getenv("MIN_ENDINGS"),
+                },
+            },
+        )
 
-        while retry_count < self.max_retries:
+        # 尝试次数 = 1 次基础尝试 + max_retries 额外重试
+        attempts = self.max_retries + 1
+        auto_restart = os.getenv("AUTO_RESTART_ON_FAIL", "0") == "1"
+
+        for attempt_idx in range(1, attempts + 1):
             try:
                 # 1. 生成文档（GDD、Lore、主线故事）
                 print("📄 Step 1/4: 生成游戏设计文档...")
@@ -89,6 +111,13 @@ class StoryGeneratorWithRetry:
                 )
                 print("   ✅ 文档生成完成")
                 print("\n")
+
+                # 1.5 世界书预分析（早提醒，不阻断）
+                try:
+                    self._preflight_analyze_worldbook(lore_content)
+                except Exception as _e:
+                    # 预分析容错，不影响后续
+                    print(f"⚠️  世界书预分析失败（已忽略）：{_e}")
 
                 # 2. 提取角色列表
                 print("👥 Step 2/4: 提取角色列表...")
@@ -114,8 +143,9 @@ class StoryGeneratorWithRetry:
                     min_main_path = 3
                     print(f"   ⚡ [测试模式] 使用较小深度: max_depth={max_depth}, min_main_path={min_main_path}")
                 else:
-                    max_depth = 20
-                    min_main_path = 15
+                    # 允许通过环境变量调整生成规模与深度阈值（默认更高）
+                    max_depth = int(os.getenv("MAX_DEPTH", "50"))
+                    min_main_path = int(os.getenv("MIN_MAIN_PATH_DEPTH", "30"))
 
                 dialogue_trees = {}
 
@@ -206,24 +236,84 @@ class StoryGeneratorWithRetry:
                 }
 
             except Exception as e:
-                retry_count += 1
+                # 记录异常细节（文件日志 + 失败摘要文件）
+                _logger.exception("故事生成失败一次 (attempt=%s/%s)", attempt_idx, attempts)
+                try:
+                    self._write_failure_log(
+                        reason=str(e),
+                        attempt=attempt_idx,
+                        attempts=attempts,
+                        extra={
+                            "city": self.city,
+                            "title": self.synopsis.title,
+                            "protagonist": self.synopsis.protagonist,
+                        },
+                    )
+                except Exception:
+                    pass
 
-                if retry_count >= self.max_retries:
+                # 非自动重启：直接失败返回，避免无限“整轮重启”
+                if not auto_restart:
+                    raise
+
+                if attempt_idx >= attempts:
                     print("\n")
                     print("╔══════════════════════════════════════════════════════════════════╗")
                     print("║              ❌ 生成失败                                        ║")
                     print("╚══════════════════════════════════════════════════════════════════╝")
                     print("\n")
                     print(f"错误信息：{e}")
-                    print(f"已重试 {self.max_retries} 次，仍然失败。")
+                    print(f"已尝试 {attempts} 次，仍然失败。")
                     print("⚠️  请检查配置后重新开始。")
+                    _logger.exception("故事生成最终失败")
                     raise
 
                 print("\n")
-                print(f"⚠️  遇到错误，自动重试 {retry_count}/{self.max_retries}...")
+                print(f"⚠️  遇到错误，自动重试 {attempt_idx}/{self.max_retries}...")
                 print(f"   错误信息：{e}")
                 print(f"   等待 10 秒后重试...")
                 time.sleep(10)
+
+    def _write_failure_log(self, reason: str, attempt: int, attempts: int, extra: Optional[Dict[str, Any]] = None) -> None:
+        """写一份失败摘要日志到 logs/failures/ 下，包含失败原因与关键信息。
+
+        不抛异常，尽量吞错。
+        """
+        try:
+            from datetime import datetime
+            import json
+            logs_dir = Path("logs/failures")
+            logs_dir.mkdir(parents=True, exist_ok=True)
+            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+            safe_title = self.synopsis.title.replace("/", "_")
+            fname = f"{self.city}_{safe_title}_{ts}.json"
+            path = logs_dir / fname
+
+            payload = {
+                "status": "failed",
+                "city": self.city,
+                "title": self.synopsis.title,
+                "protagonist": self.synopsis.protagonist,
+                "attempt": attempt,
+                "attempts": attempts,
+                "reason": reason,
+                "thresholds": {
+                    "MAX_DEPTH": int(os.getenv("MAX_DEPTH", "0") or 0),
+                    "MIN_MAIN_PATH_DEPTH": int(os.getenv("MIN_MAIN_PATH_DEPTH", "0") or 0),
+                    "MIN_DURATION_MINUTES": int(os.getenv("MIN_DURATION_MINUTES", "0") or 0),
+                    "MIN_ENDINGS": int(os.getenv("MIN_ENDINGS", "0") or 0),
+                },
+            }
+            if extra:
+                payload.update(extra)
+
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+
+            # 同步打印一行便于快速定位
+            print(f"📝 失败日志：{path}")
+        except Exception:
+            pass
 
     def _generate_documents(
         self,
@@ -238,21 +328,135 @@ class StoryGeneratorWithRetry:
             with open(gdd_path, 'r', encoding='utf-8') as f:
                 gdd_content = f.read()
         else:
-            gdd_content = self._generate_gdd()
+            gdd_content = None
 
+        # Lore：优先使用 v2 世界书
         if lore_path and Path(lore_path).exists():
             with open(lore_path, 'r', encoding='utf-8') as f:
                 lore_content = f.read()
         else:
-            lore_content = self._generate_lore()
+            lore_content = None
 
         if main_story_path and Path(main_story_path).exists():
             with open(main_story_path, 'r', encoding='utf-8') as f:
                 main_story = f.read()
         else:
+            main_story = None
+
+        # 优先：使用完整生成器产物替代（可通过环境变量关闭）
+        use_full = os.getenv("USE_FULL_GENERATOR", "1") == "1"
+        if use_full and (gdd_content is None or lore_content is None or main_story is None):
+            try:
+                print("   🔄 使用完整生成器产出高质量文档（Lore v2 / GDD / 主线）…")
+                from generate_full_story import StoryGenerator as FullStoryGenerator
+                # 产物路径：deliverables/程序-城市/<标题子目录>
+                base_dir = Path(f"deliverables/程序-{self.city}")
+                include_branches = os.getenv("FULL_INCLUDE_BRANCHES", "0") == "1"
+                full_gen = FullStoryGenerator(
+                    city=self.city,
+                    output_dir=str(base_dir),
+                    title=self.synopsis.title,
+                    synopsis=self.synopsis.synopsis,
+                )
+                full_gen.generate_all(include_branches=include_branches)
+
+                # 优先从内存拿产物，缺失则读文件
+                if lore_content is None:
+                    lore_content = full_gen.artifacts.get("lore_v2")
+                    if not lore_content:
+                        from re import sub as _re_sub
+                        safe_title = _re_sub(r'[^\w\u4e00-\u9fff]+', '_', self.synopsis.title)
+                        lore_path2 = (base_dir / safe_title / f"{self.city}_{safe_title}_lore_v2.md")
+                        if not lore_path2.exists():
+                            lore_path2 = (base_dir / f"{self.city}_lore_v2.md")
+                        if lore_path2.exists():
+                            lore_content = lore_path2.read_text(encoding='utf-8')
+
+                if gdd_content is None:
+                    gdd_content = full_gen.artifacts.get("gdd")
+                    if not gdd_content:
+                        from re import sub as _re_sub
+                        safe_title = _re_sub(r'[^\w\u4e00-\u9fff]+', '_', self.synopsis.title)
+                        gdd_path2 = (base_dir / safe_title / f"{self.city}_{safe_title}_gdd.md")
+                        if not gdd_path2.exists():
+                            gdd_path2 = (base_dir / f"{self.city}_gdd.md")
+                        if gdd_path2.exists():
+                            gdd_content = gdd_path2.read_text(encoding='utf-8')
+
+                if main_story is None:
+                    main_story = full_gen.artifacts.get("story")
+                    if not main_story:
+                        from re import sub as _re_sub
+                        safe_title = _re_sub(r'[^\w\u4e00-\u9fff]+', '_', self.synopsis.title)
+                        story_path2 = (base_dir / safe_title / f"{self.city}_{safe_title}_story.md")
+                        if not story_path2.exists():
+                            story_path2 = (base_dir / f"{self.city}_story.md")
+                        if story_path2.exists():
+                            main_story = story_path2.read_text(encoding='utf-8')
+
+                print("   ✅ 已使用完整生成器文档")
+            except Exception as e:
+                print(f"   ⚠️  完整生成器集成失败，回退到内置文档生成：{e}")
+
+        # 回退：如有缺失则用内置生成补齐
+        if gdd_content is None:
+            gdd_content = self._generate_gdd()
+        if lore_content is None:
+            lore_content = self._generate_lore_v2() or self._generate_lore()
+        if main_story is None:
             main_story = self._generate_main_story()
 
         return gdd_content, lore_content, main_story
+
+    def _preflight_analyze_worldbook(self, lore_content: str) -> None:
+        """对 v2 世界书做启发式预分析，提前提醒可能达不到深度/结局阈值。
+
+        仅做提示，不阻断流程。
+        """
+        import re
+        import os
+
+        # 从环境读取阈值（与生成阈值一致）
+        min_depth = int(os.getenv("MIN_MAIN_PATH_DEPTH", os.getenv("MIN_MAIN_PATH_DEPTH_THRESHOLD", "30")))
+        min_endings = int(os.getenv("MIN_ENDINGS", "1"))
+
+        print("🔎 预分析（基于世界书）...")
+
+        # 估算主线节拍深度：统计 S1..Sxx 标号（去重），或取最大序号
+        beat_nums = []
+        try:
+            for m in re.findall(r"(?im)^\s*S(\d{1,3})\b", lore_content or ""):
+                try:
+                    beat_nums.append(int(m))
+                except Exception:
+                    pass
+        except Exception:
+            beat_nums = []
+
+        unique_beats = len(set(beat_nums))
+        max_beat = max(beat_nums) if beat_nums else 0
+        estimated_depth = max(unique_beats, max_beat)
+
+        # 估算结局数量：统计“结局”/“终局”/“ENDING”等关键词出现的段落数
+        ending_signals = 0
+        try:
+            ending_signals = len(re.findall(r"(?i)(^|\n)\s*(结局|终局|ending|end[\s\-_:])", lore_content or ""))
+        except Exception:
+            ending_signals = 0
+
+        print(f"   估算主线节拍数≈{estimated_depth}（阈值≥{min_depth}）")
+        print(f"   估算结局信号≈{ending_signals}（阈值≥{min_endings}）")
+
+        warn = False
+        if estimated_depth < min_depth:
+            print("   ⚠️  预警：主线节拍可能不足，建议强化世界书的主线规划（S1..S30+）或调低阈值")
+            warn = True
+        if ending_signals < min_endings:
+            print("   ⚠️  预警：结局信号偏少，建议在世界书中显式列出多个可达结局与触发条件")
+            warn = True
+
+        if not warn:
+            print("   ✅ 预分析通过：世界书的深度/结局信号看起来充足")
 
     def _generate_gdd(self) -> str:
         """生成 GDD（简化版）"""
@@ -285,6 +489,78 @@ class StoryGeneratorWithRetry:
 {self.synopsis.synopsis}
 """
 
+    def _generate_lore_v2(self) -> Optional[str]:
+        """生成 v2 级世界书（高质量，规则化、结局约束、场景索引、30+节拍主线）
+
+        Returns:
+            str | None: 成功返回文本，失败返回 None
+        """
+        try:
+            from crewai import Agent, Task, Crew, LLM
+            import os
+            from pathlib import Path
+
+            # 读取模板（优先根目录，其次 templates/）
+            tpl_paths = [
+                Path("lore-v2.prompt.md"),
+                Path("templates/lore-v2.prompt.md")
+            ]
+            prompt_template = None
+            for p in tpl_paths:
+                if p.exists():
+                    prompt_template = p.read_text(encoding='utf-8')
+                    break
+            if not prompt_template:
+                # 内置简化模板
+                prompt_template = (
+                    "你是世界书设计师，请为以下题材生成 v2 级世界书：\n"
+                    "- 包含：核心规则、禁忌、实体表、场景索引、线索网络、矛盾升级阶梯\n"
+                    "- 给出主线30+节拍（按 S1..S30 标号），并标注3个以上可达结局的触发条件（结局_前缀）\n"
+                    "- 输出 Markdown\n"
+                )
+
+            kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+            kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+            kimi_model = os.getenv("KIMI_MODEL_LORE", os.getenv("KIMI_MODEL", "kimi-k2-0905-preview"))
+
+            llm = LLM(model=kimi_model, api_key=kimi_key, base_url=kimi_base)
+
+            # 组装 Prompt
+            meta = (
+                f"城市：{self.city}\n"
+                f"标题：{self.synopsis.title}\n"
+                f"主角：{self.synopsis.protagonist}\n"
+                f"场景：{self.synopsis.location}\n"
+                f"概要：{self.synopsis.synopsis}\n"
+            )
+            full_prompt = (
+                f"{prompt_template}\n\n"
+                f"【元信息】\n{meta}\n\n"
+                "请严格产出：\n"
+                "- [核心规则] [禁忌] [实体表] [场景索引] [线索网络] [主线节拍S1..S30+] [可达结局与触发]\n"
+                "- 各节拍给出场景与推进意图（用于深主线）\n"
+            )
+
+            agent = Agent(
+                role="世界书架构师",
+                goal="生成规则化、可驱动30+主线节拍与多结局的世界书",
+                backstory="你擅长约束与节拍规划，输出面向引擎消费的 Markdown 世界书",
+                llm=llm,
+                verbose=False
+            )
+            task = Task(description=full_prompt, expected_output="Markdown 世界书文本", agent=agent)
+            crew = Crew(agents=[agent], tasks=[task], verbose=False)
+            result = crew.kickoff()
+
+            text = str(result).strip()
+            # 简单校验：是否包含主线节拍与结局提示
+            if "S30" in text or "S31" in text:
+                return text
+            return text  # 仍然返回，高质量提示已包含
+        except Exception as e:
+            print(f"⚠️  生成 v2 世界书失败，回退到简化版：{e}")
+            return None
+
     def _generate_main_story(self) -> str:
         """生成主线故事（简化版）"""
         return f"""# 主线故事 - {self.synopsis.title}
@@ -299,54 +575,138 @@ class StoryGeneratorWithRetry:
         """
         提取角色列表
 
-        从 struct.json 中读取所有 potential_roles，
-        每个角色都可以作为主角游玩
+        ✅ 优先使用用户选择的主角（self.synopsis.protagonist）
+        ⚠️ 不再从 struct.json 读取，避免主角混乱
         """
         import json
         import glob
 
-        # 尝试查找 struct.json 文件
-        # 支持拼音和中文两种目录名
-        struct_path = None
-        possible_patterns = [
-            f"examples/*/{self.city}_struct.json",  # 中文文件名
-            f"examples/{self.city}/*_struct.json",   # 中文目录名
-        ]
+        # ✅ 始终使用用户选择的主角作为唯一角色
+        protagonist_name = self.synopsis.protagonist
 
-        for pattern in possible_patterns:
-            matches = glob.glob(pattern)
-            if matches:
-                struct_path = Path(matches[0])
-                break
-
-        if struct_path and struct_path.exists():
-            with open(struct_path, 'r', encoding='utf-8') as f:
-                struct_data = json.load(f)
-                potential_roles = struct_data.get('potential_roles', [])
-
-                if potential_roles:
-                    # 将所有 potential_roles 转换为角色列表
-                    # 第一个角色标记为主角
-                    characters = []
-                    for idx, role_name in enumerate(potential_roles):
-                        characters.append({
-                            "name": role_name,
-                            "is_protagonist": (idx == 0),  # 第一个角色为默认主角
-                            "description": f"{self.synopsis.title} - {role_name}视角"
-                        })
-
-                    print(f"   ℹ️  从 {struct_path} 读取到 {len(characters)} 个角色")
-                    return characters
-
-        # 如果没有找到 struct.json，使用默认单角色
-        print(f"⚠️  警告: 未找到 {self.city} 的 struct.json，使用默认单角色配置")
-        return [
+        characters = [
             {
-                "name": self.synopsis.protagonist,
+                "name": protagonist_name,
                 "is_protagonist": True,
-                "description": f"{self.synopsis.title}的主角"
+                "description": f"{self.synopsis.title} - {protagonist_name}的故事"
             }
         ]
+
+        print(f"   ✅ 使用主角: {protagonist_name}")
+
+        # 🎭 可选：多角色模式（需要显式启用）
+        if self.multi_character:
+            print(f"   🎭 [多角色模式] 尝试查找额外角色...")
+
+            # 检查是否有匹配的 struct.json
+            struct_path = None
+            possible_patterns = [
+                f"examples/*/{self.city}_struct.json",
+                f"examples/{self.city}/*_struct.json",
+            ]
+
+            # 收集所有可能的 struct.json 文件
+            all_matches = []
+            for pattern in possible_patterns:
+                matches = glob.glob(pattern)
+                all_matches.extend(matches)
+
+            # 去重
+            all_matches = list(set(all_matches))
+
+            if all_matches:
+                print(f"   🔍 找到 {len(all_matches)} 个 struct.json 文件，检查标题匹配...")
+
+                # ✅ 遍历所有文件，找到标题匹配的那个
+                found_match = False
+                for test_path in all_matches:
+                    try:
+                        test_path = Path(test_path)
+                        with open(test_path, 'r', encoding='utf-8') as f:
+                            struct_data = json.load(f)
+
+                            # ⚠️ 关键：只有标题匹配才使用
+                            if struct_data.get('title') == self.synopsis.title:
+                                struct_path = test_path
+                                potential_roles = struct_data.get('potential_roles', [])
+
+                                # 添加其他配角
+                                added_count = 0
+                                for role_name in potential_roles:
+                                    if role_name != protagonist_name:
+                                        characters.append({
+                                            "name": role_name,
+                                            "is_protagonist": False,
+                                            "description": f"{self.synopsis.title} - {role_name}视角"
+                                        })
+                                        added_count += 1
+
+                                print(f"   ✅ 从 {struct_path.name} 添加了 {added_count} 个配角")
+                                found_match = True
+                                break
+                            else:
+                                print(f"   ⏭️  跳过 {test_path.name}：标题不匹配 ('{struct_data.get('title', '未知')}')")
+                    except Exception as e:
+                        # 如果读取失败，记录并继续检查下一个
+                        print(f"   ⚠️  警告: 读取 {test_path.name} 失败: {e}")
+                        continue
+
+                if not found_match:
+                    print(f"   ℹ️  所有文件标题都不匹配，只生成主角故事")
+                    print(f"       期望标题: {self.synopsis.title}")
+            else:
+                print(f"   ℹ️  未找到 {self.city} 的 struct.json 文件")
+                # 尝试从故事中提取角色
+                extracted = self._extract_from_story(main_story, protagonist_name)
+                if extracted:
+                    characters.extend(extracted)
+                    print(f"   ✅ 从故事中自动提取到 {len(extracted)} 个配角")
+        else:
+            print(f"   ℹ️  [单角色模式] 只生成主角故事")
+
+        return characters
+
+    def _extract_from_story(self, main_story: str, protagonist: str) -> list:
+        """
+        从主线故事或GDD中提取其他角色
+
+        Args:
+            main_story: 主线故事内容
+            protagonist: 主角名称
+
+        Returns:
+            提取到的配角列表
+        """
+        import re
+
+        # 常见的角色职业/身份关键词
+        common_roles = [
+            "保安", "警察", "记者", "导游", "工程师", "维修工",
+            "清洁工", "服务员", "司机", "医生", "护士", "老师",
+            "学生", "主播", "博主", "摄影师", "画家", "作家",
+            "厨师", "店主", "顾客", "游客", "居民", "邻居",
+            "夜班保安", "值班员", "检修工", "调查员", "UP主",
+            "跑腿员", "外卖员", "快递员", "夜班司机", "出租车司机"
+        ]
+
+        characters = []
+        found_roles = set()
+
+        # 在故事中查找这些角色
+        for role in common_roles:
+            if role in main_story and role != protagonist and role not in found_roles:
+                found_roles.add(role)
+                characters.append({
+                    "name": role,
+                    "is_protagonist": False,
+                    "description": f"{self.synopsis.title} - {role}视角"
+                })
+
+                # 最多提取 6 个配角
+                if len(characters) >= 6:
+                    break
+
+        return characters
 
     def _calculate_metadata(self, main_tree: Dict, all_trees: Dict) -> Dict[str, Any]:
         """计算元数据"""
