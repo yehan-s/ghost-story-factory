@@ -46,8 +46,11 @@ class MenuSystem:
         self.console.print("  [bold yellow]2.[/bold yellow] ✨ 生成故事（创建新的故事）")
         self.console.print("  [bold red]q.[/bold red] 🚪 退出")
         self.console.print("\n")
-
-        choice = self.console.input("输入选项 [1/2/q]: ").strip().lower()
+        # 非交互环境下可能抛 EOFError，这里安全降级为退出
+        try:
+            choice = self.console.input("输入选项 [1/2/q]: ").strip().lower()
+        except EOFError:
+            return 'q'
         return choice
 
     def select_story_flow(self) -> Optional[Tuple[Story, Character]]:

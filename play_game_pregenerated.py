@@ -7,6 +7,7 @@
 """
 
 import sys
+import os
 from pathlib import Path
 
 # 添加项目根目录到路径
@@ -18,6 +19,13 @@ from ghost_story_factory.ui.menu import MenuSystem
 from ghost_story_factory.runtime import DialogueTreeLoader
 from ghost_story_factory.engine.game_loop import GameEngine
 from rich.console import Console
+
+
+def _safe_input(prompt: str = "") -> str:
+    try:
+        return input(prompt)
+    except EOFError:
+        return ""
 
 
 def main():
@@ -33,7 +41,7 @@ def main():
     console.print("╚══════════════════════════════════════════════════════════════════╝", style="bold cyan")
     console.print("\n")
 
-    input("按 Enter 开始游戏...")
+    _safe_input("按 Enter 开始游戏...")
 
     # 初始化数据库
     db = DatabaseManager()
@@ -81,7 +89,7 @@ def main():
                     import traceback
                     traceback.print_exc()
 
-                input("\n按 Enter 返回主菜单...")
+                _safe_input("\n按 Enter 返回主菜单...")
 
         elif choice == '2':
             # 生成故事
@@ -89,14 +97,14 @@ def main():
             if story:
                 console.print(f"\n✅ 故事「{story.title}」已生成！\n")
                 console.print("现在可以返回主菜单选择「选择故事」开始游玩")
-                input("\n按 Enter 继续...")
+                _safe_input("\n按 Enter 继续...")
 
         elif choice == 'q':
             console.print("\n再见！👋\n")
             break
         else:
             console.print("\n[red]❌ 无效选择，请重新输入[/red]\n")
-            input("按 Enter 继续...")
+            _safe_input("按 Enter 继续...")
 
     # 关闭数据库
     db.close()
