@@ -18,6 +18,9 @@ from pathlib import Path
 # 添加 src 到路径
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
+# 日志工具
+from ghost_story_factory.utils.logging_utils import get_run_logger, get_logger
+
 # 自动加载 .env 文件
 try:
     from dotenv import load_dotenv
@@ -52,6 +55,19 @@ STORY_TITLE = "断桥残血-MVP测试"
 
 
 def main():
+    # 初始化日志
+    logger, log_path = get_run_logger(
+        "generate_mvp",
+        {
+            "city": CITY,
+            "title": STORY_TITLE,
+            "max_characters": MAX_CHARACTERS,
+            "max_depth": MAX_DEPTH,
+            "min_main_path": MIN_MAIN_PATH,
+        },
+    )
+    print(f"📝 日志文件: {log_path}")
+
     print("╔══════════════════════════════════════════════════════════════════╗")
     print("║          🚀 快速生成 MVP 故事                                    ║")
     print("╚══════════════════════════════════════════════════════════════════╝")
@@ -67,11 +83,9 @@ def main():
     print("用途：测试多角色选择功能")
     print()
 
-    # 检查环境变量
-    if not os.getenv("KIMI_API_KEY"):
-        print("❌ 错误：未设置 KIMI_API_KEY 环境变量")
-        print("请确保 .env 文件存在并包含 KIMI_API_KEY")
-        sys.exit(1)
+    # 检查环境变量（宽松：允许无 key 以跑到生成默认分支）
+    if not os.getenv("KIMI_API_KEY") and not os.getenv("MOONSHOT_API_KEY"):
+        print("⚠️  警告：未设置 KIMI_API_KEY / MOONSHOT_API_KEY，LLM 功能将以降级模式运行（默认选择/默认响应）。")
 
     # MVP 测试使用快速模型（如果用户没有覆盖的话）
     if not os.getenv("KIMI_MODEL_RESPONSE"):
@@ -109,7 +123,10 @@ def main():
 
     print("准备开始生成...")
     print()
-    input("按 Enter 确认开始...")
+    try:
+        input("按 Enter 确认开始...")
+    except EOFError:
+        pass
 
     try:
         result = generator.generate_full_story(
@@ -150,6 +167,7 @@ def main():
 
     except KeyboardInterrupt:
         print("\n\n⚠️  生成被用户中断")
+        get_logger()[0].info("生成被用户中断")
         return 1
 
     except Exception as e:
@@ -163,6 +181,9 @@ def main():
         print("详细错误：")
         import traceback
         traceback.print_exc()
+        # 同步写入日志文件
+        get_logger()[0].exception("生成失败")
+        print(f"📝 错误日志已写入: {log_path}")
         return 1
 
 
