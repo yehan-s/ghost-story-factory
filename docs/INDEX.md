@@ -1,7 +1,7 @@
 # Ghost Story Factory - 文档索引
 
-**最后更新**: 2025-10-24
-**项目版本**: v3.1
+**最后更新**: 2025-10-25
+**项目版本**: v3.0
 
 ---
 
@@ -47,8 +47,9 @@
 |------|------|----------|
 | [ARCHITECTURE.md](architecture/ARCHITECTURE.md) | 项目整体架构 | 开发者、架构师 |
 | [GAME_ENGINE.md](architecture/GAME_ENGINE.md) | 游戏引擎设计 | 游戏引擎开发者 |
+| [NEW_PIPELINE.md](architecture/NEW_PIPELINE.md) | **新架构流程图谱 (v3.0)** ⭐ | 开发者、维护者 |
 
-**推荐阅读顺序**: ARCHITECTURE → GAME_ENGINE
+**推荐阅读顺序**: ARCHITECTURE → NEW_PIPELINE → GAME_ENGINE
 
 ---
 

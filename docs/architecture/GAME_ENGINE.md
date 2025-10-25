@@ -20,7 +20,9 @@
 - 动态模式（LLM 实时生成）：`python3 play_game_full.py`
 - 预生成模式（零等待，读取数据库/文件）：`./start_pregenerated_game.sh` 或 `python3 play_game_pregenerated.py`
 
-> 预生成系统设计详见：`docs/PREGENERATION_DESIGN.md`
+> **📘 详细文档**：
+> - 预生成系统设计：[PREGENERATION_DESIGN.md](../PREGENERATION_DESIGN.md)
+> - **新架构流程图谱（v3.0）**：[NEW_PIPELINE.md](NEW_PIPELINE.md) ⭐
 
 ---
 
