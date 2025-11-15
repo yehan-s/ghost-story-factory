@@ -372,10 +372,10 @@ uv pip install -e .
 
 ## 📖 相关文档
 
-- [templates/README.md](./templates/README.md) - 设计文档总览
-- [templates/00-index.md](./templates/00-index.md) - templates索引与上下文管理
-- [templates/00-architecture.md](./templates/00-architecture.md) - 架构设计
-- [SPEC.md](./SPEC.md) - 项目规范
+- [templates/README.md](../../templates/README.md) - 设计文档总览
+- [templates/00-index.md](../../templates/00-index.md) - templates索引与上下文管理
+- [templates/00-architecture.md](../../templates/00-architecture.md) - 架构设计
+- [SPEC_V3.md](../specs/SPEC_V3.md) - 当前项目规格
 - [USAGE.md](./USAGE.md) - 使用说明
 
 ---
@@ -419,4 +419,3 @@ gen-branch --city "杭州" --branch-name "检修工线"
 ---
 
 **Happy Storytelling! 🎭👻**
-

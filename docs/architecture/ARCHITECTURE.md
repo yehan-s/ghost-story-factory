@@ -295,16 +295,15 @@ templates/ (35个文件，8520行代码)
 
 ## 📖 相关文档
 
-- **快速开始**: [README.md](./README.md)
+- **快速开始**: [项目 README](../../README.md)
 - **游戏引擎**: [GAME_ENGINE.md](./GAME_ENGINE.md)
-- **使用指南**: [USAGE.md](./USAGE.md)
-- **项目规格**: [SPEC.md](./SPEC.md)
-- **templates库**: [templates/README.md](./templates/README.md)
-- **templates索引**: [templates/00-index.md](./templates/00-index.md)
+- **使用指南**: [USAGE.md](../guides/USAGE.md)
+- **项目规格**: [SPEC_V3.md](../specs/SPEC_V3.md)
+- **templates库**: [templates/README.md](../../templates/README.md)
+- **templates索引**: [templates/00-index.md](../../templates/00-index.md)
 
 ---
 
 **版本：** v3.1
 **更新日期：** 2025-10-23
 **架构模式：** 选项交互式 🎯
-

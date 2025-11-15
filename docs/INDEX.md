@@ -17,12 +17,12 @@
 
 | 文档 | 说明 | 适用人群 |
 |------|------|----------|
-| [SPEC.md](specs/SPEC.md) | 项目原始规格书 | 开发者、贡献者 |
+| **[SPEC_V3.md](specs/SPEC_V3.md)** ⭐ | **架构 v3.0 完整规格** | 所有人（推荐） |
 | [SPEC_TODO.md](specs/SPEC_TODO.md) | 待开发功能完整规格 | 开发者、项目管理 |
 | [PREGENERATION_DESIGN.md](../docs/PREGENERATION_DESIGN.md) | 预生成系统设计 | 工程师、设计师 |
-| [CLI_GAME_ROADMAP.md](specs/CLI_GAME_ROADMAP.md) | **命令行游戏开发路线图** ⭐ | 游戏引擎开发者 |
+| [CLI_GAME_ROADMAP.md](specs/CLI_GAME_ROADMAP.md) | **命令行游戏开发路线图** | 游戏引擎开发者 |
 
-**推荐阅读顺序**: README → CLI_GAME_ROADMAP（如果要开发游戏引擎）→ SPEC_TODO
+**推荐阅读顺序**: SPEC_V3 → NEW_PIPELINE → SPEC_TODO
 
 ---
 
@@ -61,23 +61,6 @@
 | [PROTAGONIST_CONSTRAINTS.md](PROTAGONIST_CONSTRAINTS.md) | 主角强约束机制 ⭐ | 开发者、内容创作者 |
 
 **重要**：如果遇到主角生成错误（如使用了"保安"而非真实主角），请阅读此文档
-
----
-
-### 📦 旧文档 (Legacy)
-位于 `docs/legacy/`
-
-这些文档已被新文档替代，仅作历史参考：
-
-| 文档 | 说明 | 替代文档 |
-|------|------|----------|
-| get-story.md | 旧命令说明 | guides/USAGE.md |
-| get-struct.md | 旧命令说明 | guides/USAGE.md |
-| lore.md | 旧设计文档 | templates/lore-v1.design.md |
-| role-beats.md | 旧设计文档 | templates/protagonist.design.md |
-| set-city.md | 旧命令说明 | guides/USAGE.md |
-
-**不建议阅读**，仅供历史追溯。
 
 ---
 
@@ -196,4 +179,3 @@ A: 阅读 [templates/00-index.md](../templates/00-index.md)，了解分层加载
 ---
 
 **最后提醒**: 所有文档都使用相对路径链接，可以在 GitHub 或本地 Markdown 阅读器中正常浏览。
-
