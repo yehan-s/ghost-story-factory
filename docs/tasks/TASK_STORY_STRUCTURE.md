@@ -93,7 +93,7 @@
     - 解析 JSON，应用 schema 校验；
     - 校验失败时抛出明确异常。
 
-- [ ] M2-3 测试：
+- [x] M2-3 测试：
   - `test_skeleton_generator_smoke`：能跑通并返回合法骨架（可用 fake LLM / 伪数据）。
 
 ### M3: TreeBuilder guided 模式（Stage C）
