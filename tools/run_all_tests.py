@@ -13,7 +13,7 @@ from rich.table import Table
 
 
 def run_test(test_name: str, test_file: str) -> tuple:
-    """运行单个测试"""
+    """运行单个脚本型测试文件（如 test_full_flow.py）"""
     console = Console()
 
     console.print(f"\n🧪 运行测试: {test_name}")
@@ -25,7 +25,7 @@ def run_test(test_name: str, test_file: str) -> tuple:
             [sys.executable, test_file],
             capture_output=True,
             text=True,
-            timeout=120
+            timeout=120,
         )
 
         if result.returncode == 0:
@@ -44,6 +44,38 @@ def run_test(test_name: str, test_file: str) -> tuple:
         return (test_name, False, str(e)[:200])
 
 
+def run_pytest_suite(test_name: str, pytest_args) -> tuple:
+    """运行一组 pytest 测试（例如 tests/test_*.py）"""
+    console = Console()
+
+    console.print(f"\n🧪 运行 Pytest 测试: {test_name}")
+    console.print(f"   pytest 参数: {' '.join(pytest_args)}")
+    console.print("─" * 70)
+
+    try:
+        result = subprocess.run(
+            [sys.executable, "-m", "pytest", *pytest_args],
+            capture_output=True,
+            text=True,
+            timeout=300,
+        )
+
+        if result.returncode == 0:
+            console.print(f"✅ {test_name}: 通过\n")
+            return (test_name, True, "")
+        else:
+            console.print(f"❌ {test_name}: 失败\n")
+            console.print(f"错误输出:\n{result.stderr[:500]}\n")
+            return (test_name, False, result.stderr[:200])
+
+    except subprocess.TimeoutExpired:
+        console.print(f"⏰ {test_name}: 超时\n")
+        return (test_name, False, "pytest 测试超时")
+    except Exception as e:
+        console.print(f"❌ {test_name}: 异常 - {e}\n")
+        return (test_name, False, str(e)[:200])
+
+
 def main():
     """主函数"""
     console = Console()
@@ -54,19 +86,33 @@ def main():
     console.print("╚══════════════════════════════════════════════════════════════════╝")
     console.print("\n")
 
-    # 定义测试
-    tests = [
+    results = []
+
+    # 一、脚本型测试（历史测试）
+    script_tests = [
         ("数据库系统测试", "test_database.py"),
         ("完整流程测试", "test_full_flow.py"),
         ("GameEngine集成测试", "test_engine_integration.py"),
     ]
+    for test_name, test_file in script_tests:
+        results.append(run_test(test_name, test_file))
 
-    results = []
-
-    # 运行所有测试
-    for test_name, test_file in tests:
-        result = run_test(test_name, test_file)
-        results.append(result)
+    # 二、Pytest 单元测试（骨架 & guided TreeBuilder）
+    pytest_suites = [
+        (
+            "骨架模型 / SkeletonGenerator / guided TreeBuilder / StoryGenerator 模式 / 文本填充 / 报告单元测试",
+            [
+                "tests/test_skeleton_model.py",
+                "tests/test_skeleton_generator.py",
+                "tests/test_tree_builder_guided.py",
+                "tests/test_text_filler.py",
+                "tests/test_story_report.py",
+                "tests/test_story_generator_modes.py",
+            ],
+        ),
+    ]
+    for test_name, args in pytest_suites:
+        results.append(run_pytest_suite(test_name, args))
 
     # 生成报告
     console.print("\n")
@@ -115,4 +161,3 @@ def main():
 
 if __name__ == "__main__":
     exit(main())
-
