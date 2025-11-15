@@ -110,6 +110,12 @@ def main():
                 "tests/test_story_generator_modes.py",
             ],
         ),
+        (
+            "工具类单元测试 / 生成进度可视化",
+            [
+                "tests/test_view_tree_progress.py",
+            ],
+        ),
     ]
     for test_name, args in pytest_suites:
         results.append(run_pytest_suite(test_name, args))
