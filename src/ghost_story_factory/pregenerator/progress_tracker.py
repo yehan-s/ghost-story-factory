@@ -209,6 +209,56 @@ class ProgressTracker:
 
         return checkpoint.get("tree")
 
+    def load_full_checkpoint(self, checkpoint_path: str) -> Optional[Dict[str, Any]]:
+        """加载完整检查点（与 _save_full_checkpoint 对应）。
+
+        兼容旧版只保存 tree 的检查点：包装为完整结构返回。
+        """
+        checkpoint_file = Path(checkpoint_path)
+        if not checkpoint_file.exists():
+            return None
+        with open(checkpoint_file, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        # 完整结构
+        if isinstance(data, dict) and "tree" in data and "node_counter" in data:
+            # 同步基础指标到 tracker（用于展示）
+            self.generated_nodes = data.get("nodes_count", 0)
+            self.current_depth = data.get("current_depth", 0)
+            self.total_tokens = data.get("total_tokens", 0)
+            self.console.print(
+                f"✅ [green]检查点已加载：{checkpoint_path}[/green]"
+            )
+            self.console.print(
+                f"   已生成 {self.generated_nodes} 个节点，深度 {self.current_depth}"
+            )
+            return data
+
+        # 仅有 tree 的简化结构
+        if isinstance(data, dict) and "root" in data:
+            wrapped = {
+                "generated_at": data.get("generated_at"),
+                "nodes_count": len(data),
+                "current_depth": 0,
+                "total_tokens": 0,
+                "tree": data,
+                "queue": [],
+                "node_counter": len(data),
+                "state_cache": {},
+                "scene_index": {},
+            }
+            self.generated_nodes = wrapped["nodes_count"]
+            self.current_depth = wrapped["current_depth"]
+            self.console.print(
+                f"✅ [green]检查点已加载：{checkpoint_path}（简化结构）[/green]"
+            )
+            self.console.print(
+                f"   已生成 {self.generated_nodes} 个节点"
+            )
+            return wrapped
+
+        return None
+
     def finish(self, success: bool = True):
         """
         完成追踪

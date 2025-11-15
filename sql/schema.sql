@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS stories (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     city_id INTEGER NOT NULL,
     title TEXT NOT NULL,
+    slug TEXT,
     synopsis TEXT NOT NULL,  -- 故事简介
     estimated_duration_minutes INTEGER,  -- 预计游戏时长（分钟）
     total_nodes INTEGER,  -- 对话树节点总数
@@ -61,6 +62,7 @@ CREATE TABLE IF NOT EXISTS generation_metadata (
 
 -- 创建索引优化查询性能
 CREATE INDEX IF NOT EXISTS idx_stories_city ON stories(city_id);
+CREATE INDEX IF NOT EXISTS idx_stories_slug ON stories(slug);
 CREATE INDEX IF NOT EXISTS idx_characters_story ON characters(story_id);
 CREATE INDEX IF NOT EXISTS idx_dialogue_trees_story_char ON dialogue_trees(story_id, character_id);
 CREATE INDEX IF NOT EXISTS idx_metadata_story ON generation_metadata(story_id);

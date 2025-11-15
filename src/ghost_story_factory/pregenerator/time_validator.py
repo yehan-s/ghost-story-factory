@@ -8,22 +8,41 @@ from typing import Dict, Any, List, Optional
 
 
 class TimeValidator:
-    """游戏时长验证器"""
+    """游戏时长 / 深度 / 结局数量验证器"""
 
-    def __init__(self, seconds_per_choice: int = 75):
+    def __init__(
+        self,
+        seconds_per_choice: int = 75,
+        min_main_path_depth: Optional[int] = None,
+    ):
         """
         初始化验证器
 
         Args:
             seconds_per_choice: 每个选择的平均耗时（秒）
+            min_main_path_depth: 主线最小深度阈值（如果为空，则从环境变量读取）
         """
-        # 预生成模式可通过环境变量放大每步耗时估计，以贴近实际演绎
         import os
+
+        # 预生成模式可通过环境变量放大每步耗时估计，以贴近实际演绎
         sec_cfg = os.getenv("SECONDS_PER_CHOICE")
         self.seconds_per_choice = int(sec_cfg) if sec_cfg else seconds_per_choice
+
         # 放宽最小游戏时长（预生成模式更易达标，可由 env 覆盖）
         self.min_duration_minutes = int(os.getenv("MIN_DURATION_MINUTES", "12"))
-        # 新增：最少结局数量门槛（防止烂尾），默认 1，可被环境变量覆盖
+
+        # 主线深度阈值：可显式传入，也可从环境读取
+        if min_main_path_depth is not None:
+            self.min_main_path_depth = int(min_main_path_depth)
+        else:
+            self.min_main_path_depth = int(
+                os.getenv(
+                    "MIN_MAIN_PATH_DEPTH",
+                    os.getenv("MIN_MAIN_PATH_DEPTH_THRESHOLD", "15"),
+                )
+            )
+
+        # 最少结局数量门槛（防止烂尾），默认 1，可被环境变量覆盖
         self.min_endings = int(os.getenv("MIN_ENDINGS", "1"))
 
     def estimate_playtime(self, dialogue_tree: Dict[str, Any]) -> float:
@@ -157,12 +176,11 @@ class TimeValidator:
 
         # 统计结局节点
         ending_nodes = [
-            node_id for node_id, node in dialogue_tree.items()
+            node_id
+            for node_id, node in dialogue_tree.items()
             if node.get("is_ending", False)
         ]
 
-        import os
-        min_depth_env = int(os.getenv("MIN_MAIN_PATH_DEPTH", os.getenv("MIN_MAIN_PATH_DEPTH_THRESHOLD", "15")))
         return {
             "total_nodes": total_nodes,
             "main_path_depth": main_path_depth,
@@ -170,7 +188,6 @@ class TimeValidator:
             "estimated_duration_minutes": round(estimated_duration, 1),
             "ending_count": len(ending_nodes),
             "passes_duration_check": estimated_duration >= self.min_duration_minutes,
-            "passes_depth_check": main_path_depth >= min_depth_env,
-            "passes_endings_check": len(ending_nodes) >= self.min_endings
+            "passes_depth_check": main_path_depth >= self.min_main_path_depth,
+            "passes_endings_check": len(ending_nodes) >= self.min_endings,
         }
-

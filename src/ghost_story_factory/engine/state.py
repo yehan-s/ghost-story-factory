@@ -56,9 +56,9 @@ class GameState:
         for key, value in changes.items():
             if key in ["PR", "GR", "WF"]:
                 # 数值变化（支持 +5, -10 等相对值）
-                if isinstance(value, str) and value[0] in ['+', '-']:
+                if isinstance(value, str) and value[:1] in ['+', '-','＋','－']:
                     current = getattr(self, key)
-                    delta = int(value)
+                    delta = self._parse_signed_int(value)
                     new_value = current + delta
 
                     # 校验边界
@@ -69,8 +69,8 @@ class GameState:
 
                     setattr(self, key, new_value)
                 else:
-                    # 绝对值
-                    setattr(self, key, int(value))
+                    # 绝对值（健壮解析）
+                    setattr(self, key, self._parse_signed_int(value, absolute=True))
 
             elif key == "inventory":
                 # 添加道具（去重）
@@ -152,7 +152,10 @@ class GameState:
         match = re.match(r'([><=]+)(\d+)', str(condition))
         if not match:
             # 如果没有比较符，默认为相等
-            return current_value == int(condition)
+            try:
+                return current_value == int(str(condition))
+            except Exception:
+                return False
 
         operator, threshold = match.groups()
         threshold = int(threshold)
@@ -169,6 +172,43 @@ class GameState:
             return current_value == threshold
         else:
             return False
+
+    @staticmethod
+    def _parse_signed_int(value: Any, absolute: bool = False) -> int:
+        """健壮解析带符号的整数字符串，容忍全角/噪声/小数。
+
+        规则：
+        - 归一化 NFKC（全角转半角），去除不必要空白
+        - 优先提取浮点数（带符号），再四舍五入为 int
+        - 若存在 '+'/'-' 但仅有小数 < 1，则按 +/-1 处理
+        - 若完全无法解析：返回 0（不破坏用户空间）
+        """
+        import unicodedata, re
+        s = str(value)
+        s = unicodedata.normalize("NFKC", s).strip()
+        # 提取第一个带符号的浮点或整数
+        m = re.search(r'[\+\-]?\d+(?:\.\d+)?', s)
+        if m:
+            num_str = m.group(0)
+            try:
+                num_float = float(num_str)
+                # 绝对值场景允许负数吗？保留原符号，按四舍五入
+                parsed = int(round(num_float))
+                # 特殊：+0.x / -0.x 归一到 +/-1 以体现趋势
+                if parsed == 0 and (num_float > 0):
+                    return 1
+                if parsed == 0 and (num_float < 0):
+                    return -1
+                return parsed
+            except Exception:
+                pass
+        # 无法提取数字，按符号给最小步长
+        if s.startswith(('+', '＋')):
+            return 1
+        if s.startswith(('-', '－')):
+            return -1
+        # 绝对值且完全无数字：视为 0（不变）
+        return 0
 
     def _check_time_condition(self, condition: str) -> bool:
         """检查时间条件

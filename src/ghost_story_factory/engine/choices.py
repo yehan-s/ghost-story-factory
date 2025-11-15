@@ -545,8 +545,18 @@ class ChoicePointsGenerator:
         """
         import re
 
-        # 清理文本
+        # 清理文本（归一化与中文标点修复）
         result_text = result_text.strip()
+        try:
+            import unicodedata, re as _re
+            t = unicodedata.normalize("NFKC", result_text)
+            # 修复常见 JSON 病毒：中文分隔号、全角逗号/冒号
+            t = t.replace('，', ',').replace('：', ':').replace('（', '(').replace('）', ')')
+            # 尾随逗号去除
+            t = _re.sub(r',\s*([}\]])', r'\1', t)
+            result_text = t
+        except Exception:
+            pass
 
         # 方法1: 提取 JSON 代码块
         if "```json" in result_text:
@@ -589,9 +599,10 @@ class ChoicePointsGenerator:
             print(f"⚠️  首次JSON解析失败: {e}")
             print(f"📄 原始文本前500字符:\n{result_text[:500]}")
 
-            # 尝试修复：移除注释
+            # 尝试修复：移除注释 / 修复尾随逗号
             result_text = re.sub(r'//.*?\n', '\n', result_text)
             result_text = re.sub(r'/\*.*?\*/', '', result_text, flags=re.DOTALL)
+            result_text = re.sub(r',\s*([}\]])', r'\1', result_text)
 
             # 尝试修复：处理 "Extra data" 错误（只取第一个完整JSON）
             try:

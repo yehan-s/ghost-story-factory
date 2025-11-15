@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import List, Dict, Optional, Any
 
 from .models import City, Story, Character, DialogueTree, GenerationMetadata
+from ..utils.slug import story_slug
 
 
 class DatabaseManager:
@@ -49,6 +50,31 @@ class DatabaseManager:
             schema_sql = f.read()
 
         cursor = self.conn.cursor()
+
+        # 先处理老库迁移：如 stories 存在但无 slug 列，先补列，再创建索引，避免后续 execscript 出错
+        try:
+            exists = cursor.execute(
+                "SELECT name FROM sqlite_master WHERE type='table' AND name='stories'"
+            ).fetchone()
+            if exists:
+                cols = [row[1] for row in cursor.execute("PRAGMA table_info(stories)").fetchall()]
+                if 'slug' not in cols:
+                    try:
+                        cursor.execute("ALTER TABLE stories ADD COLUMN slug TEXT")
+                        print("🆕 迁移：stories 表新增列 slug")
+                    except Exception:
+                        pass
+                # 索引幂等创建
+                try:
+                    cursor.execute("CREATE INDEX IF NOT EXISTS idx_stories_slug ON stories(slug)")
+                except Exception:
+                    pass
+                self.conn.commit()
+        except Exception:
+            # 忽略迁移失败，继续执行 schema（首次建库）
+            pass
+
+        # 执行 schema（首次建库或补齐缺表/索引）
         cursor.executescript(schema_sql)
         self.conn.commit()
 
@@ -228,14 +254,16 @@ class DatabaseManager:
             city_id = self.create_city(city_name)
 
             # 2. 插入故事
+            slug = story_slug(city_name, title)
             cursor.execute("""
                 INSERT INTO stories
-                (city_id, title, synopsis, estimated_duration_minutes,
+                (city_id, title, slug, synopsis, estimated_duration_minutes,
                  total_nodes, max_depth, generation_cost_usd)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, (
                 city_id,
                 title,
+                slug,
                 synopsis,
                 metadata.get('estimated_duration', 0),
                 metadata.get('total_nodes', 0),

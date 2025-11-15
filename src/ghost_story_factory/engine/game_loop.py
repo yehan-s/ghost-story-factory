@@ -317,8 +317,9 @@ class GameEngine:
         # 主循环
         while self.is_running:
             try:
-                # 1. 获取当前节点的选择（从对话树）
-                choices_data = self.dialogue_loader.get_choices(self.current_node_id)
+                # 1. 获取当前节点的选择（从对话树，过滤不可达选项）
+                raw_choices = self.dialogue_loader.get_choices(self.current_node_id)
+                choices_data = [c for c in raw_choices if self.dialogue_loader.can_traverse(c.get("choice_id"))]
 
                 if not choices_data:
                     # 没有选择了，达到结局

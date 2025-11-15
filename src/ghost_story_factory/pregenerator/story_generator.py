@@ -11,8 +11,12 @@ from pathlib import Path
 
 from .synopsis_generator import StorySynopsis
 from .tree_builder import DialogueTreeBuilder
+from .skeleton_generator import SkeletonGenerator
+from .text_filler import NodeTextFiller
+from .story_report import build_story_report
 from ..database import DatabaseManager
 from ..utils.logging_utils import get_logger, get_run_logger
+from ..utils.slug import story_slug
 
 
 class StoryGeneratorWithRetry:
@@ -77,8 +81,8 @@ class StoryGeneratorWithRetry:
             print("✅ [支持] 如果中断，下次可以从断点继续！")
         print("\n")
 
-        # 用户确认
-        input("按 Enter 确认开始生成...")
+        # 用户确认（非交互环境自动继续）
+        self._prompt_continue("按 Enter 确认开始生成...")
         print("\n")
 
         # 初始化文件日志（运行级别）
@@ -90,6 +94,7 @@ class StoryGeneratorWithRetry:
                 "protagonist": self.synopsis.protagonist,
                 "test_mode": self.test_mode,
                 "env": {
+                    "USE_PLOT_SKELETON": os.getenv("USE_PLOT_SKELETON", "1"),
                     "MAX_DEPTH": os.getenv("MAX_DEPTH"),
                     "MIN_MAIN_PATH_DEPTH": os.getenv("MIN_MAIN_PATH_DEPTH"),
                     "MIN_DURATION_MINUTES": os.getenv("MIN_DURATION_MINUTES"),
@@ -119,6 +124,32 @@ class StoryGeneratorWithRetry:
                     # 预分析容错，不影响后续
                     print(f"⚠️  世界书预分析失败（已忽略）：{_e}")
 
+                # 1.8 生成故事骨架（PlotSkeleton，用于结构指导）
+                use_plot_skeleton = os.getenv("USE_PLOT_SKELETON", "1")
+                skeleton = None
+
+                if use_plot_skeleton == "0":
+                    # 显式关闭骨架模式：完全走 v3 行为，不触发 SkeletonGenerator / NodeTextFiller / story_report
+                    print("🧱 Step 1.8: 已禁用骨架模式（USE_PLOT_SKELETON=0），直接使用旧结构模式（v3 TreeBuilder）。")
+                else:
+                    print("🧱 Step 1.8: 生成故事骨架（PlotSkeleton）...")
+                    try:
+                        skeleton = SkeletonGenerator(city=self.city).generate(
+                            title=self.synopsis.title,
+                            synopsis=self.synopsis.synopsis,
+                            lore_v2_text=lore_content,
+                            main_story_text=main_story,
+                        )
+                        print(
+                            f"   ✅ 骨架生成完成：acts={skeleton.num_acts}, "
+                            f"beats={skeleton.num_beats}, critical_beats={skeleton.num_critical_beats}, "
+                            f"ending_beats={skeleton.num_ending_beats}"
+                        )
+                    except Exception as e_skel:
+                        # 容错：骨架生成失败时回退到非 guided 模式
+                        skeleton = None
+                        print(f"⚠️  骨架生成失败，将回退到旧结构模式：{e_skel}")
+
                 # 2. 提取角色列表
                 print("👥 Step 2/4: 提取角色列表...")
                 characters = self._extract_characters(main_story)
@@ -146,6 +177,23 @@ class StoryGeneratorWithRetry:
                     # 允许通过环境变量调整生成规模与深度阈值（默认更高）
                     max_depth = int(os.getenv("MAX_DEPTH", "50"))
                     min_main_path = int(os.getenv("MIN_MAIN_PATH_DEPTH", "30"))
+
+                    # 若处于 v4 骨架模式，则优先使用骨架配置中的最小主线深度，
+                    # 避免 TreeBuilder 与 PlotSkeleton 对“主线深度”存在偏差。
+                    if skeleton is not None:
+                        try:
+                            sk_min_depth = int(skeleton.config.min_main_depth)
+                            if sk_min_depth > 0:
+                                # 取环境阈值与骨架阈值中的较大者，防止过浅
+                                if sk_min_depth > min_main_path:
+                                    print(
+                                        f"   ℹ️  根据骨架提升主线最小深度约束："
+                                        f"{min_main_path} → {sk_min_depth}"
+                                    )
+                                min_main_path = max(min_main_path, sk_min_depth)
+                        except Exception:
+                            # 骨架配置异常时，不影响原有行为
+                            pass
 
                 dialogue_trees = {}
 
@@ -176,7 +224,8 @@ class StoryGeneratorWithRetry:
                         gdd_content=gdd_content,
                         lore_content=lore_content,
                         main_story=main_story,
-                        test_mode=self.test_mode
+                        test_mode=self.test_mode,
+                        plot_skeleton=skeleton,
                     )
 
                     tree = tree_builder.generate_tree(
@@ -200,6 +249,44 @@ class StoryGeneratorWithRetry:
                 print("\n")
                 print("   ✅ 所有对话树生成完成")
                 print("\n")
+
+                # 3.5 基于骨架的节点填充与结构报告（仅在 v4 骨架模式下执行）
+                if skeleton is not None:
+                    print("🧩 Step 3.5: 基于骨架填充节点文本并生成结构报告（v4 模式）...")
+
+                    filler = NodeTextFiller(skeleton=skeleton)
+                    per_char_reports: Dict[str, Any] = {}
+
+                    for char in characters:
+                        char_name = char["name"]
+                        tree = dialogue_trees.get(char_name)
+                        if not isinstance(tree, dict):
+                            continue
+
+                        # 填充节点文本与节拍元数据
+                        dialogue_trees[char_name] = filler.fill(tree)
+
+                        # 生成结构与时长报告
+                        try:
+                            per_char_reports[char_name] = build_story_report(
+                                dialogue_tree=dialogue_trees[char_name],
+                                skeleton=skeleton,
+                            )
+                        except Exception as e_report:
+                            # 报告失败不阻断主流程，只打印提示
+                            print(f"⚠️  结构报告生成失败（角色={char_name}，已忽略）：{e_report}")
+
+                    # 简要输出主角报告的结论，便于人工快速判断
+                    main_char_name = characters[0]["name"]
+                    main_report = per_char_reports.get(main_char_name)
+                    if main_report:
+                        verdict = main_report.get("verdict", {})
+                        print(
+                            "   📊 主角结构验收："
+                            f"depth_ok={verdict.get('depth_ok')}, "
+                            f"duration_ok={verdict.get('duration_ok')}, "
+                            f"endings_ok={verdict.get('endings_ok')}"
+                        )
 
                 # 4. 保存到数据库
                 print("💾 Step 4/4: 保存到数据库...")
@@ -291,8 +378,10 @@ class StoryGeneratorWithRetry:
 
             payload = {
                 "status": "failed",
+                "quality_state": "rejected",
                 "city": self.city,
                 "title": self.synopsis.title,
+                "story_slug": story_slug(self.city, self.synopsis.title),
                 "protagonist": self.synopsis.protagonist,
                 "attempt": attempt,
                 "attempts": attempts,
@@ -323,8 +412,9 @@ class StoryGeneratorWithRetry:
     ) -> tuple:
         """生成或加载文档"""
 
-        # 如果提供了路径，直接加载
+        # 如果提供了路径，直接加载（缓存命中）
         if gdd_path and Path(gdd_path).exists():
+            print(f"   📦 使用缓存 GDD: {gdd_path}")
             with open(gdd_path, 'r', encoding='utf-8') as f:
                 gdd_content = f.read()
         else:
@@ -332,16 +422,46 @@ class StoryGeneratorWithRetry:
 
         # Lore：优先使用 v2 世界书
         if lore_path and Path(lore_path).exists():
+            print(f"   📦 使用缓存 Lore v2: {lore_path}")
             with open(lore_path, 'r', encoding='utf-8') as f:
                 lore_content = f.read()
         else:
             lore_content = None
 
         if main_story_path and Path(main_story_path).exists():
+            print(f"   📦 使用缓存主线: {main_story_path}")
             with open(main_story_path, 'r', encoding='utf-8') as f:
                 main_story = f.read()
         else:
             main_story = None
+
+        # 未显式提供路径时，尝试自动命中 deliverables 缓存
+        try:
+            from re import sub as _re_sub
+            base_dir = Path(f"deliverables/程序-{self.city}")
+            safe_title = _re_sub(r'[^\w\u4e00-\u9fff]+', '_', self.synopsis.title)
+            title_dir = base_dir / safe_title
+
+            def _read_if_missing(current, path, label):
+                if current is not None:
+                    return current
+                if path.exists():
+                    print(f"   📦 自动命中缓存 {label}: {path}")
+                    return path.read_text(encoding='utf-8')
+                return None
+
+            if base_dir.exists():
+                # 先查标题子目录
+                if title_dir.exists():
+                    gdd_content = _read_if_missing(gdd_content, title_dir / f"{self.city}_{safe_title}_gdd.md", "GDD")
+                    lore_content = _read_if_missing(lore_content, title_dir / f"{self.city}_{safe_title}_lore_v2.md", "Lore v2")
+                    main_story = _read_if_missing(main_story, title_dir / f"{self.city}_{safe_title}_story.md", "主线")
+                # 再查城市级文件
+                gdd_content = _read_if_missing(gdd_content, base_dir / f"{self.city}_gdd.md", "GDD")
+                lore_content = _read_if_missing(lore_content, base_dir / f"{self.city}_lore_v2.md", "Lore v2")
+                main_story = _read_if_missing(main_story, base_dir / f"{self.city}_story.md", "主线")
+        except Exception:
+            pass
 
         # 优先：使用完整生成器产物替代（可通过环境变量关闭）
         use_full = os.getenv("USE_FULL_GENERATOR", "1") == "1"
@@ -741,7 +861,18 @@ class StoryGeneratorWithRetry:
         print("✅ 已保存到数据库")
         print("\n")
         print("按 Enter 返回主菜单，选择「选择故事」开始游玩...")
-        input()
+        self._prompt_continue("")
+
+    def _prompt_continue(self, message: str) -> None:
+        """在交互环境提示继续；在非交互环境自动继续。"""
+        if os.getenv("NON_INTERACTIVE", "0") == "1":
+            print("   ↪️ 非交互模式，自动继续")
+            return
+        try:
+            input(message)
+        except EOFError:
+            print("   ↪️ 检测到 EOF（非交互），自动继续")
+            return
 
     def _load_character_checkpoint(self) -> Optional[Dict[str, Any]]:
         """
@@ -837,4 +968,3 @@ class StoryGeneratorWithRetry:
 
         if deleted_count > 0:
             print(f"🗑️  已清理 {deleted_count} 个检查点文件")
-

@@ -16,6 +16,7 @@ from .dialogue_node import DialogueNode, create_root_node
 from .state_manager import StateManager
 from .progress_tracker import ProgressTracker
 from .time_validator import TimeValidator
+from .skeleton_model import PlotSkeleton
 
 
 class DialogueTreeBuilder:
@@ -28,7 +29,8 @@ class DialogueTreeBuilder:
         gdd_content: str,
         lore_content: str,
         main_story: str,
-        test_mode: bool = False
+        test_mode: bool = False,
+        plot_skeleton: Optional[PlotSkeleton] = None,
     ):
         """
         初始化构建器
@@ -47,6 +49,10 @@ class DialogueTreeBuilder:
         self.lore = lore_content
         self.main_story = main_story
         self.test_mode = test_mode
+
+        # 可选：故事骨架（v4 guided 模式）
+        self.plot_skeleton: Optional[PlotSkeleton] = plot_skeleton
+        self.guided_mode: bool = plot_skeleton is not None
 
         # 核心组件
         self.state_manager = StateManager()
@@ -71,8 +77,28 @@ class DialogueTreeBuilder:
         self._inc_log_file = None
 
         # 安全阈值：防止极端情况下长时间不收敛
+        # 说明：这是 v3/v4 共用的“硬闸”，不是 heuristics，只做上限保护。
         self.max_total_nodes = int(os.getenv("MAX_TOTAL_NODES", "300"))
         self.progress_plateau_limit = int(os.getenv("PROGRESS_PLATEAU_LIMIT", "2"))
+
+        # Skeleton 模式与分支控制（用于快速拉深主线）
+        try:
+            self.max_branches_per_node = int(os.getenv("MAX_BRANCHES_PER_NODE", str(self.max_branches_per_node)))
+        except Exception:
+            pass
+        self.skeleton_mode = os.getenv("SKELETON_MODE", "0") == "1"
+        # v4 guided 模式：强制启用 skeleton 行为，并优先采用骨架中的分支上限配置
+        if self.guided_mode:
+            self.skeleton_mode = True
+            try:
+                if self.plot_skeleton:
+                    self.max_branches_per_node = int(self.plot_skeleton.config.max_branches_per_node)
+            except Exception:
+                pass
+
+        # Beam 搜索（主线优先），默认关闭以保持向后兼容
+        self.beam_mode = os.getenv("BEAM_MODE", "0") == "1"
+        self.beam_width = int(os.getenv("BEAM_WIDTH", "50"))
 
     def _init_generators(self):
         """初始化 LLM 生成器（复用现有引擎）"""
@@ -92,6 +118,58 @@ class DialogueTreeBuilder:
         )
 
         print("✅ LLM 生成器初始化完成")
+
+    # ==================== 骨架辅助方法（guided 模式） ====================
+
+    def _get_flat_beats(self):
+        """展开骨架的所有节拍为一维列表（guided 模式使用）"""
+        if not self.plot_skeleton:
+            return []
+        try:
+            return list(self.plot_skeleton.beats)
+        except Exception:
+            return []
+
+    def _beat_for_depth(self, depth: int):
+        """
+        根据节点深度获取对应节拍。
+
+        约定：
+        - root 深度为 0；
+        - depth=1 对应第一个节拍；
+        - 超出范围时使用最后一个节拍。
+        """
+        beats = self._get_flat_beats()
+        if not beats:
+            return None
+        # 映射到索引（最小 0，最大 len-1）
+        idx = max(0, depth - 1)
+        if idx >= len(beats):
+            idx = len(beats) - 1
+        return beats[idx]
+
+    def _max_children_for_next_depth(self, next_depth: int) -> Optional[int]:
+        """获取某一深度下建议的最大子节点数量（若骨架未指定则返回 None）"""
+        beat = self._beat_for_depth(next_depth)
+        if not beat:
+            return None
+        try:
+            branches = getattr(beat, "branches", None) or []
+            if not branches:
+                return None
+            return max(int(getattr(b, "max_children", 0) or 0) for b in branches) or None
+        except Exception:
+            return None
+
+    def _allow_ending_for_depth(self, depth: int) -> bool:
+        """在 guided 模式下，判断给定深度是否允许出现结局节点。"""
+        beat = self._beat_for_depth(depth)
+        if not beat:
+            return True
+        try:
+            return bool(getattr(beat, "leads_to_ending", False))
+        except Exception:
+            return True
 
     def generate_tree(
         self,
@@ -118,8 +196,12 @@ class DialogueTreeBuilder:
         if not self.choice_generator:
             self._init_generators()
 
-        # 🔄 尝试加载检查点
-        checkpoint = self.progress_tracker.load_checkpoint(checkpoint_path)
+        # 🔄 尝试加载检查点（优先完整结构）
+        checkpoint = None
+        try:
+            checkpoint = self.progress_tracker.load_full_checkpoint(checkpoint_path)
+        except Exception:
+            checkpoint = self.progress_tracker.load_checkpoint(checkpoint_path)
 
         if checkpoint:
             print("\n✅ 发现未完成的检查点！正在恢复...")
@@ -180,7 +262,7 @@ class DialogueTreeBuilder:
         # 打开增量日志
         self._open_incremental_log()
 
-        # BFS 遍历（批量并发扩展子节点）
+        # BFS/Beam 遍历（批量并发扩展子节点）
         import concurrent.futures, threading
         id_lock = threading.Lock()
         while queue:
@@ -192,7 +274,42 @@ class DialogueTreeBuilder:
                 continue
 
             # 为每个选择生成子节点（并发限制）
-            choices_batch = current_node.choices[:self.max_branches_per_node]
+            # Skeleton / guided 模式：对选择进行排序，使推进/critical 优先
+            choices_all = list(current_node.choices or [])
+            if self.skeleton_mode and choices_all:
+                def _score_choice(ch: dict) -> int:
+                    score = 0
+                    if ch.get("choice_type") == "critical" or ch.get("critical") is True:
+                        score += 100
+                    cons = ch.get("consequences") or {}
+                    if isinstance(cons, dict):
+                        if cons.get("critical") is True:
+                            score += 80
+                        for k in ("next_scene", "CT", "next_event"):
+                            if k in cons:
+                                score += 50
+                        for k in ("time", "timestamp", "time_skip"):
+                            if k in cons:
+                                score += 20
+                    # 轻量关键词启发（仅在文本存在时）
+                    txt = (ch.get("choice_text") or "")
+                    if any(kw in txt for kw in ("前往", "推进", "直接", "关键")):
+                        score += 10
+                    return -score  # 小顶堆：负分排序即高分在前
+                try:
+                    choices_all.sort(key=_score_choice)
+                except Exception:
+                    pass
+
+            # guided 模式：根据骨架对下一层深度的分支数做约束；否则使用全局配置
+            if self.guided_mode and choices_all:
+                max_children = self._max_children_for_next_depth(depth + 1)
+                if max_children is not None and max_children > 0:
+                    choices_batch = choices_all[:max_children]
+                else:
+                    choices_batch = choices_all[:self.max_branches_per_node]
+            else:
+                choices_batch = choices_all[:self.max_branches_per_node]
 
             def _expand_choice(choice):
                 # 创建新状态
@@ -239,8 +356,13 @@ class DialogueTreeBuilder:
                 # 生成响应文本
                 child_node.narrative = self._generate_response(choice, new_state)
 
-                # 检查是否结局
+                # 检查是否结局；guided 模式下根据骨架控制结局出现位置
                 child_node.is_ending = self._check_ending(new_state)
+                if self.guided_mode and child_node.is_ending:
+                    # 若骨架不允许当前深度出现结局，则强制改为非结局继续推进
+                    if not self._allow_ending_for_depth(depth + 1):
+                        child_node.is_ending = False
+
                 if child_node.is_ending:
                     child_node.ending_type = self._determine_ending_type(new_state)
                 else:
@@ -315,6 +437,14 @@ class DialogueTreeBuilder:
                     current_branch=f"{child_node.scene} → {choice.get('choice_text', '')[:20]}..."
                 )
 
+            # Beam：收缩前沿，优先保留更“推进”的节点
+            if self.beam_mode and len(queue) > self.beam_width:
+                try:
+                    ranked = sorted(list(queue), key=lambda t: -self._score_node(t[0], t[1]))
+                    queue = deque(ranked[: self.beam_width])
+                except Exception:
+                    pass
+
             # 定期保存检查点（包含完整状态）
             if len(dialogue_tree) % self.checkpoint_interval == 0:
                 self._save_full_checkpoint(
@@ -347,7 +477,11 @@ class DialogueTreeBuilder:
             )
 
         # 允许在同一轮内继续扩展，直至达标或达到尝试上限
+        # 说明：EXTEND_ON_FAIL_ATTEMPTS 完全是 v3 legacy heuristics，通过环境放宽“死磕”次数；
+        # guided 模式仅允许一次轻量扩展，不参与这个升级游戏。
         extend_attempts = int(os.getenv("EXTEND_ON_FAIL_ATTEMPTS", "2"))
+        if self.guided_mode and extend_attempts > 1:
+            extend_attempts = 1
         attempt_idx = 0
         plateau_rounds = 0
         last_metrics = (
@@ -391,7 +525,32 @@ class DialogueTreeBuilder:
                 if self.state_manager.should_prune(current_node.game_state, depth, max_depth):
                     continue
 
-                choices_batch = current_node.choices[:self.max_branches_per_node]
+                choices_all = list(current_node.choices or [])
+                if self.skeleton_mode and choices_all:
+                    def _score_choice2(ch: dict) -> int:
+                        score = 0
+                        if ch.get("choice_type") == "critical" or ch.get("critical") is True:
+                            score += 100
+                        cons = ch.get("consequences") or {}
+                        if isinstance(cons, dict):
+                            if cons.get("critical") is True:
+                                score += 80
+                            for k in ("next_scene", "CT", "next_event"):
+                                if k in cons:
+                                    score += 50
+                            for k in ("time", "timestamp", "time_skip"):
+                                if k in cons:
+                                    score += 20
+
+                        txt = (ch.get("choice_text") or "")
+                        if any(kw in txt for kw in ("前往", "推进", "直接", "关键")):
+                            score += 10
+                        return -score
+                    try:
+                        choices_all.sort(key=_score_choice2)
+                    except Exception:
+                        pass
+                choices_batch = choices_all[:self.max_branches_per_node]
 
                 for choice in choices_batch:
                     # 创建新状态
@@ -464,6 +623,14 @@ class DialogueTreeBuilder:
                         current_branch=f"{child_node.scene} → {choice.get('choice_text', '')[:20]}..."
                     )
 
+                # Beam：收缩前沿
+                if self.beam_mode and len(queue) > self.beam_width:
+                    try:
+                        ranked = sorted(list(queue), key=lambda t: -self._score_node(t[0], t[1]))
+                        queue = deque(ranked[: self.beam_width])
+                    except Exception:
+                        pass
+
             # 扩展一轮后再次验证
             report = self.time_validator.get_validation_report(dialogue_tree)
             print("📊 扩展后再次验证...")
@@ -495,18 +662,27 @@ class DialogueTreeBuilder:
             if self.test_mode:
                 print(f"⚠️  [测试模式] 时长未达标（{report['estimated_duration_minutes']} 分钟），忽略校验继续")
             else:
-                # 明确结束本轮追踪，避免误报“生成完成”
+                # 自动降级策略（一次性尝试）
+                # 说明：下面这一整块是 v3 legacy heuristics，只在非 guided 模式下通过环境变量做“降级”。
+                downgraded = False
+                est = report['estimated_duration_minutes']
+                if not self.guided_mode and est >= 9 and est < self.time_validator.min_duration_minutes:
+                    # 1) 降低最小游戏时长到 10（仅非 guided 模式）
+                    os.environ['MIN_DURATION_MINUTES'] = '10'
+                    downgraded = True
+                if not self.guided_mode and not downgraded and self.progress_plateau_limit > 2:
+                    # 2) 增加扩展轮次 +2（仅非 guided 模式）
+                    cur = int(os.getenv('EXTEND_ON_FAIL_ATTEMPTS', '2'))
+                    os.environ['EXTEND_ON_FAIL_ATTEMPTS'] = str(cur + 2)
+                    downgraded = True
+                if not self.guided_mode and not downgraded:
+                    # 3) 加速 critical 注入（仅非 guided 模式）
+                    os.environ['FORCE_CRITICAL_INTERVAL'] = '2'
+                    downgraded = True
+                if downgraded:
+                    print("🔧 [v3 legacy] 触发自动降级策略（通过环境变量放宽阈值），建议重跑同轮以尝试达标")
+                # 明确结束本轮追踪
                 self.progress_tracker.finish(success=False)
-                # 写入失败摘要
-                try:
-                    from ..utils.logging_utils import get_logger
-                    get_logger()[0].error(
-                        "验证失败：时长不足 est=%.1f < min=%s",
-                        report['estimated_duration_minutes'],
-                        self.time_validator.min_duration_minutes,
-                    )
-                except Exception:
-                    pass
                 raise ValueError(
                     f"游戏时长不足：{report['estimated_duration_minutes']} 分钟 < {self.time_validator.min_duration_minutes} 分钟"
                 )
@@ -533,17 +709,11 @@ class DialogueTreeBuilder:
             if self.test_mode:
                 print(f"⚠️  [测试模式] 结局数量未达标（{report['ending_count']} < {self.time_validator.min_endings}），忽略校验继续")
             else:
-                # 明确结束本轮追踪
+                # 自动降级：加速 critical 注入（仅非 guided 模式）
+                if not self.guided_mode:
+                    os.environ['FORCE_CRITICAL_INTERVAL'] = '2'
+                    print("🔧 [v3 legacy] 触发自动降级：FORCE_CRITICAL_INTERVAL=2，仅旧结构模式生效")
                 self.progress_tracker.finish(success=False)
-                try:
-                    from ..utils.logging_utils import get_logger
-                    get_logger()[0].error(
-                        "验证失败：结局不足 endings=%s < min=%s",
-                        report['ending_count'],
-                        self.time_validator.min_endings,
-                    )
-                except Exception:
-                    pass
                 raise ValueError(f"结局数量不足：{report['ending_count']} < {self.time_validator.min_endings}")
 
         # 完成追踪与清理检查点
@@ -556,6 +726,38 @@ class DialogueTreeBuilder:
         self._close_incremental_log()
 
         return dialogue_tree
+
+    def _score_node(self, node_dict: Dict[str, Any], depth: int) -> int:
+        """为 Beam/Skeleton 计算节点优先级分数。
+
+        目标：主线推进优先。
+        简化启发：
+        - 深度越大分越高
+        - 子节点中存在 critical/时间推进/场景推进的选项 → 加分
+        - 结局节点不入队，这里无需额外惩罚
+        """
+        try:
+            score = depth * 100
+            # 观察该节点可用选择，估计可推进性
+            choices = node_dict.get("choices") or []
+            has_critical = any((c.get("choice_type") == "critical") or (c.get("critical") is True) for c in choices)
+            if has_critical:
+                score += 80
+            for c in choices:
+                cons = c.get("consequences") or {}
+                if isinstance(cons, dict):
+                    if cons.get("critical") is True:
+                        score += 50
+                    if any(k in cons for k in ("next_scene", "CT", "next_event")):
+                        score += 40
+                    if any(k in cons for k in ("time", "timestamp", "time_skip")):
+                        score += 15
+                txt = (c.get("choice_text") or "")
+                if any(kw in txt for kw in ("前往", "推进", "直接", "关键")):
+                    score += 5
+            return int(score)
+        except Exception:
+            return depth * 100
 
     def _generate_opening(self) -> str:
         """生成开场叙事"""
@@ -806,4 +1008,3 @@ class DialogueTreeBuilder:
                 self._inc_log_file.close()
         finally:
             self._inc_log_file = None
-

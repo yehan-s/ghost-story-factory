@@ -22,6 +22,9 @@ try:
     from rich.text import Text
     RICH_AVAILABLE = True
 except ImportError:
+    # 回退占位，避免类型注解在无 rich 环境下触发 NameError
+    Console = Markdown = Panel = Table = Progress = BarColumn = TextColumn = Prompt = Confirm = Layout = object  # type: ignore
+    Text = object  # type: ignore
     RICH_AVAILABLE = False
 
 import sys
