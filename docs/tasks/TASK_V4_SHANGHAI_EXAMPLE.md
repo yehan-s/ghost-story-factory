@@ -79,15 +79,15 @@
   - 主线深度目标区间：18–24（对应一个中长篇电台故事，避免过浅的 8 层，也不追求 v3 时代 30+ 的极长结构）；  
   - 预计时长目标区间：20–35 分钟（以 TimeValidator 的 `seconds_per_choice` 估算，保证比当前 10 分钟明显更长，但不至于爆炸）；  
   - 目标结局数量范围：3–6 个（上海示例目前已有约 14 个结局，后续以结构清晰为主，不强行压缩到极少）。  
-- [ ] M2-2 调整 PlotSkeleton 生成策略 / SkeletonConfig：
-  - 优先通过骨架配置中的 `min_main_depth` / `target_main_depth` / `target_endings` 对结构施加约束；  
-  - 避免在 TreeBuilder 后期再“硬凹”深度。  
-- [ ] M2-3 调整 TimeValidator 默认阈值或其与骨架的对齐方式：
-  - 如果骨架给出的 `min_main_depth` 比当前环境阈值更高，应优先使用骨架值；  
-  - `MIN_DURATION_MINUTES` 的默认值可适度放宽，但必须在 Task 中记录理由。  
-- [ ] M2-4 在 guided TreeBuilder 中，必要时微调：  
-  - 每层分支数上限（`max_branches_per_node` + beat-level `branches.max_children`）；  
-  - 结局落点深度控制（通过 `leads_to_ending` 与 `_allow_ending_for_depth` 的组合）。
+- [x] M2-2 调整 PlotSkeleton 生成策略 / SkeletonConfig：
+  - 通过 `SkeletonConfig` 中的 `min_main_depth` / `target_main_depth` / `target_endings` 对结构施加约束；  
+  - 在 v4 guided 模式下，TreeBuilder 不再依赖 `EXTEND_ON_FAIL_ATTEMPTS` 等后期扩展来“硬凹”深度（参见 `tree_builder.py` 中 `guided_mode` 分支与 `TASK_STORY_STRUCTURE` 的 M3-3）。  
+- [x] M2-3 调整 TimeValidator 默认阈值或其与骨架的对齐方式：
+  - `story_report.build_story_report` 在存在骨架时，会将 `skeleton.config.min_main_depth` 传入 `TimeValidator(min_main_path_depth=...)`，优先使用骨架配置的最小主线深度阈值；  
+  - `MIN_DURATION_MINUTES` 默认值保持 12 分钟，后续如需针对上海示例进一步放宽，将在本 Task 中追加记录。  
+- [x] M2-4 在 guided TreeBuilder 中，微调结构控制：  
+  - 每层分支数上限：在 `DialogueTreeBuilder.generate_tree` 中，通过骨架的 `branches.max_children` 与全局 `max_branches_per_node` 共同限制分支数量；  
+  - 结局落点深度：通过 `_allow_ending_for_depth` + `leads_to_ending` 控制 shallow depth 不提前结局，详见 `tests/test_tree_builder_guided.py` 中对 depth=1/2 结局分布的验证。
 
 ### M3: 上海示例故事重新生成与验收
 
