@@ -53,14 +53,14 @@
 
 ### M1: 需求细化与数据源确认
 
-- [ ] M1-1 梳理现有可用数据源：
+- [x] M1-1 梳理现有可用数据源：
   - TreeBuilder full checkpoint 结构（`tree` / `queue` / `state_cache` 等字段）；  
   - 增量日志 JSONL 格式（`event: add_node` + `node: {...}` + `ts`）。  
-- [ ] M1-2 在 Task 中补充一个“典型视图草图”（文字描述即可），说明终端模式与 HTML 模式各展示哪些信息。
+- [x] M1-2 在 Task 中补充一个“典型视图草图”（文字描述即可），说明终端模式与 HTML 模式各展示哪些信息。
 
 ### M2: CLI 工具实现（终端模式 + HTML 报告）
 
-- [ ] M2-1 新增模块 `tools/view_tree_progress.py`：
+- [x] M2-1 新增模块 `tools/view_tree_progress.py`：
   - 支持参数：
     - `--checkpoint`：TreeBuilder checkpoint JSON 路径；  
     - `--log-jsonl`：增量日志 JSONL 路径（可选）；  
@@ -69,19 +69,19 @@
   - 内部逻辑：
     - 解析 checkpoint 的 `tree` 字段（或直接当作树）；  
     - 根据 node 的 `depth` / `is_ending` / `scene` / `narrative` 等字段计算结构统计；  
-    - 如果提供 JSONL，则从中抽出最近若干个 `add_node` 事件作为“最新节点”列表。  
-- [ ] M2-2 终端模式输出：
+    - 如提供 JSONL，则从中抽出最近若干个 `add_node` 事件作为“最新节点”列表。  
+- [x] M2-2 终端模式输出：
   - 用 Rich 打印：总体统计表 / depth 分布表 / 主线路径简要表 / 最近节点列表。  
-- [ ] M2-3 HTML 报告输出：
+- [x] M2-3 HTML 报告输出：
   - 生成一个静态 HTML 文件，包含上述统计表格；  
   - 不依赖外部 JS/CSS 框架，使用简单内联样式即可。
 
 ### M3: 测试 / 集成 / 文档
 
-- [ ] M3-1 单元测试：
+- [x] M3-1 单元测试：
   - 新增 `tests/test_view_tree_progress.py`：  
     - 用临时目录写一个小的 checkpoint/tree JSON 与 JSONL，验证 `view_tree_progress` 中的解析和汇总逻辑（例如 depth 统计 / 结局数 / 主线路径长度）。  
-- [ ] M3-2 集成到统一测试脚本：
+- [x] M3-2 集成到统一测试脚本：
   - 在 `tools/run_all_tests.py` 的 pytest 部分增加 `tests/test_view_tree_progress.py`。  
 - [ ] M3-3 文档更新：
   - 在 `docs/architecture/NEW_PIPELINE.md` 或 `STORY_PIPELINE_V4.md` 中简要提及该工具；  
@@ -110,4 +110,3 @@
 - 通过 `--output-html` 生成的 HTML 报告能在浏览器中打开并清晰展示上述信息；  
 - 新增测试 `tests/test_view_tree_progress.py` 通过，且已纳入 `tools/run_all_tests.py`；  
 - 相关架构/AGENT 文档已更新，明确该工具作为排查生成卡死/结构异常时的第一诊断手段。
-
