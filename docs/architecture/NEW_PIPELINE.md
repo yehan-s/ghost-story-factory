@@ -538,6 +538,38 @@ grep -i warning logs/*.log
 grep "生成节点" logs/*.log | wc -l
 ```
 
+### 使用 view_tree_progress 可视化结构进度
+
+对于长时间运行的生成任务，仅靠日志不够直观。v4 流水线提供了一个辅助工具：
+`tools/view_tree_progress.py`，可以基于 TreeBuilder 的检查点 / JSONL 日志生成结构快照。
+
+典型用法：
+
+```bash
+# 示例：查看上海「深夜电台主播」当前对话树结构进度
+venv/bin/python tools/view_tree_progress.py \
+  --checkpoint checkpoints/上海_深夜电台主播_tree.json \
+  --log-jsonl checkpoints/tree_incremental.jsonl
+```
+
+终端输出包括：
+
+- 总体统计：总节点数 / 最大深度 / 结局数量  
+- 各层分布：每层 depth 上的节点数与结局数  
+- 一条主线路径：root → ... → 某个深层节点（包含场景与叙事摘要）  
+- 最近若干个新增节点（按时间/深度排序）
+
+如需在浏览器查看，可生成 HTML 报告：
+
+```bash
+venv/bin/python tools/view_tree_progress.py \
+  --checkpoint checkpoints/上海_深夜电台主播_tree.json \
+  --log-jsonl checkpoints/tree_incremental.jsonl \
+  --output-html checkpoints/tree_progress.html
+```
+
+然后用浏览器打开 `checkpoints/tree_progress.html` 即可。
+
 ---
 
 ## 🧱 v4 骨架优先流水线（设计与当前进展）
