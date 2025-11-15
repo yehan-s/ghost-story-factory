@@ -20,9 +20,9 @@
 
 ### 1.1 目标
 
-- [ ] 定义 `PlotSkeleton` 数据模型及其校验规则；
-- [ ] 实现 `SkeletonGenerator`，可稳定生成符合约束的骨架；
-- [ ] 将 `DialogueTreeBuilder` 改造为可接受骨架指导的 guided 模式；
+- [x] 定义 `PlotSkeleton` 数据模型及其校验规则；
+- [x] 实现 `SkeletonGenerator`，可稳定生成符合约束的骨架；
+- [x] 将 `DialogueTreeBuilder` 改造为可接受骨架指导的 guided 模式；
 - [ ] 在 guided 模式下，生成对话树结构满足：
   - 主线深度在配置范围内；
   - 结局数量合理；
@@ -42,7 +42,7 @@
 
 **目的**：把“好结构”具体化为可编码的数据结构和检查逻辑。
 
-- [ ] M1-1 定义 `PlotSkeleton` 模型（Python + JSON Schema 草稿）
+- [x] M1-1 定义 `PlotSkeleton` 模型（Python + JSON Schema 草稿）
   - 文件位置建议：
     - `src/ghost_story_factory/pregenerator/skeleton_model.py`
   - 内容：
@@ -52,7 +52,7 @@
       `is_critical_branch_point`, `leads_to_ending`
     - Branch: `branch_type`, `max_children`, `notes`
 
-- [ ] M1-2 结构指标脚本 `tools/check_structure_metrics.py`
+- [x] M1-2 结构指标脚本 `tools/check_structure_metrics.py`
   - 输入：骨架或对话树 JSON；
   - 输出：
     - 主线深度；
@@ -60,7 +60,7 @@
     - 每幕节点数 / beats 数量；
     - critical 节点位置。
 
-- [ ] M1-3 为指标定义默认阈值（配置化）：
+- [x] M1-3 为指标定义默认阈值（配置化）：
   - `MIN_MAIN_DEPTH`、`TARGET_MAIN_DEPTH` 范围；
   - `MIN_ENDINGS` / `MAX_ENDINGS`；
   - 至少 1–2 个 critical 节点落在 act II / act III。
@@ -69,7 +69,7 @@
 
 **目的**：独立的骨架生成阶段，只负责输出结构，不掺和文案。
 
-- [ ] M2-1 新增模板 `templates/plot-skeleton.prompt.md`
+- [x] M2-1 新增模板 `templates/plot-skeleton.prompt.md`
   - 输入占位：
     - `city`
     - `synopsis`
@@ -79,7 +79,7 @@
     - 单个 ```json 代码块；
     - 严格遵守 `PlotSkeleton` 结构。
 
-- [ ] M2-2 新增模块 `src/ghost_story_factory/pregenerator/skeleton_generator.py`
+- [x] M2-2 新增模块 `src/ghost_story_factory/pregenerator/skeleton_generator.py`
   - 类 `SkeletonGenerator`：
 
     ```python
@@ -100,45 +100,51 @@
 
 **目的**：让 `DialogueTreeBuilder` 不再“自己瞎长”，而是按骨架行事。
 
-- [ ] M3-1 扩展 `DialogueTreeBuilder` 接口
+- [x] M3-1 扩展 `DialogueTreeBuilder` 接口
   - 在构造函数中加入 `plot_skeleton: Optional[Dict[str, Any]]`；
   - 在 `generate_tree()` 里根据 `self.plot_skeleton` 决定是否进入 guided 模式。
 
-- [ ] M3-2 guided 模式调度逻辑
+- [x] M3-2 guided 模式调度逻辑
   - 基于 depth / beat 映射，给每个节点分配“所属 beat”；
   - 根据 beat 的 `is_critical_branch_point` / `branch_type`：
     - 控制该节点允许的 `max_branches_per_node`；
     - 决定是否可以生成结局节点。
 
-- [ ] M3-3 与现有 heuristics 的关系
+- [x] M3-3 与现有 heuristics 的关系
   - guided 模式下：
-    - 忽略 `EXTEND_ON_FAIL_ATTEMPTS` 类扩展轮参数；
-    - `TimeValidator` 只做最终 sanity check；
+    - 不依赖多轮 `EXTEND_ON_FAIL_ATTEMPTS` 扩展；最多只允许一次轻量扩展；
+    - 不在 guided 模式下通过修改 env (`MIN_DURATION_MINUTES` / `EXTEND_ON_FAIL_ATTEMPTS` / `FORCE_CRITICAL_INTERVAL`) 来“死磕”；
+    - `TimeValidator` 主要用于最终 sanity check；
     - `depth_booster` / `depth_orchestrator` 不主动调用。
 
-- [ ] M3-4 回退策略
+- [x] M3-4 回退策略
   - 如果骨架模式在开发早期不稳定，可通过环境变量关闭：
     - `USE_PLOT_SKELETON=0` → 回退到 v3 行为。
 
-### M4: 节点文本填充（Stage D）
+### M4: 节点文本填充（Stage D）+ 验收报告
 
 **目的**：在结构锁定前提下生成节点叙事与选项文案。
 
-- [ ] M4-1 设计节点填充 API
+- [x] M4-1 设计节点填充 API
 
   ```python
-  def fill_dialogue_texts(tree, skeleton, docs, llm) -> dict:
-      ...
+  class NodeTextFiller:
+      def __init__(self, skeleton: Optional[PlotSkeleton]): ...
+      def fill(self, dialogue_tree: Dict[str, Any]) -> Dict[str, Any]:
+          ...
   ```
 
-- [ ] M4-2 文本生成策略
-  - 基于 beat 类型 / tension 控制文本长度；
-  - 对 critical 分支强制选项差异化；
-  - 对 micro 分支只做气氛微调。
+- [x] M4-2 文本生成策略（第一阶段）
+  - 基于 beat 信息（beat_type / tension_level / act_index）为节点追加元数据；
+  - 对 narrative 为空或全空白的节点填充简单占位文本（不覆盖已有叙事）；
+  - 作为后续更复杂 LLM 文本填充/润色的基础设施。
 
-- [ ] M4-3 验收脚本
-  - 利用 `TimeValidator` + 结构指标脚本，生成一份结构+时长综合报告；
-  - 作为人工评审入口。
+- [x] M4-3 验收脚本
+  - 新增 `story_report.build_story_report(tree, skeleton)` 用于生成结构 + 时长综合报告；
+  - 新增 CLI 工具 `tools/report_story_structure.py`：
+    - 通过 `--tree-json` / `--skeleton-json` 加载数据；
+    - 使用 `TimeValidator` + PlotSkeleton 指标，输出人类可读报告；
+  - 作为人工评审入口和回归检查工具。
 
 ---
 
@@ -168,4 +174,8 @@
 - 至少 1–2 个故事通过人工结构评审：
   - 分支层级清晰，critical 节点位置合理；
   - 不出现明显“随机乱树”的观感。
-
+- 后续若对故事结构/节奏/分支策略做改动，应优先通过以下链路落地：
+  - 修改 `PlotSkeleton` / SkeletonGenerator 的配置与骨架设计；
+  - 调整 guided `DialogueTreeBuilder` 的骨架映射规则；
+  - 只在必要时触碰 v3 legacy heuristics（env 降级），并在 ADR/Task 中说明原因。  
+  即：**结构问题优先在 v4 骨架层解决，v3 模式仅作为兼容/排错路径使用。**
