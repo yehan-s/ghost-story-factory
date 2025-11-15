@@ -629,6 +629,7 @@ except Exception:
 - **新流程详解**: `docs/architecture/NEW_PIPELINE.md`
 - **游戏引擎**: `docs/architecture/GAME_ENGINE.md`
 - **并行生成**: `docs/PARALLEL_GENERATION.md`
+- **骨架模式 v4 草案**: `docs/architecture/STORY_PIPELINE_V4.md`
 
 ### 9.3 规格文档
 
@@ -641,6 +642,7 @@ except Exception:
 - **命令清单**: `docs/COMMANDS.md`
 - **环境配置**: `ENV_EXAMPLE.md`
 - **总览索引**: `docs/INDEX.md`
+- **架构决策 ADR**: `docs/architecture/ADR-001-plot-skeleton-pipeline.md`
 
 ---
 

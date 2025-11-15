@@ -302,6 +302,12 @@ templates/ (35个文件，8520行代码)
 - **templates库**: [templates/README.md](../../templates/README.md)
 - **templates索引**: [templates/00-index.md](../../templates/00-index.md)
 
+### 🔭 后续架构演进
+
+- **预生成流水线 v3.0**: [NEW_PIPELINE.md](./NEW_PIPELINE.md)
+- **故事生成流水线 v4 草案（骨架模式）**: [STORY_PIPELINE_V4.md](./STORY_PIPELINE_V4.md)
+- **架构决策 ADR**: [ADR-001-plot-skeleton-pipeline.md](./ADR-001-plot-skeleton-pipeline.md)
+
 ---
 
 **版本：** v3.1

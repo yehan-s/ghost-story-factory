@@ -45,9 +45,10 @@
 
 | 文档 | 说明 | 适用人群 |
 |------|------|----------|
-| [ARCHITECTURE.md](architecture/ARCHITECTURE.md) | 项目整体架构 | 开发者、架构师 |
+| [ARCHITECTURE.md](architecture/ARCHITECTURE.md) | 项目整体架构（v3.x 总览） | 开发者、架构师 |
 | [GAME_ENGINE.md](architecture/GAME_ENGINE.md) | 游戏引擎设计 | 游戏引擎开发者 |
-| [NEW_PIPELINE.md](architecture/NEW_PIPELINE.md) | **新架构流程图谱 (v3.0)** ⭐ | 开发者、维护者 |
+| [NEW_PIPELINE.md](architecture/NEW_PIPELINE.md) | **预生成流水线 v3.0 流程图谱** ⭐ | 开发者、维护者 |
+| [STORY_PIPELINE_V4.md](architecture/STORY_PIPELINE_V4.md) | 故事生成流水线 v4（骨架模式草案） | 架构师、核心开发 |
 
 **推荐阅读顺序**: ARCHITECTURE → NEW_PIPELINE → GAME_ENGINE
 
@@ -61,6 +62,25 @@
 | [PROTAGONIST_CONSTRAINTS.md](PROTAGONIST_CONSTRAINTS.md) | 主角强约束机制 ⭐ | 开发者、内容创作者 |
 
 **重要**：如果遇到主角生成错误（如使用了"保安"而非真实主角），请阅读此文档
+
+---
+
+### 🧠 架构决策 (ADR)
+位于 `docs/architecture/`
+
+| 文档 | 说明 |
+|------|------|
+| [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | 采用「骨架优先」的新故事生成流水线的架构决策 |
+
+---
+
+### 📌 任务与 Roadmap
+
+| 文档 | 说明 |
+|------|------|
+| [SPEC_TODO.md](specs/SPEC_TODO.md) | 待开发功能规格与里程碑 |
+| [CLI_GAME_ROADMAP.md](specs/CLI_GAME_ROADMAP.md) | 命令行游戏开发路线图 |
+| [TASK_STORY_STRUCTURE.md](tasks/TASK_STORY_STRUCTURE.md) | 新故事结构化流水线（骨架模式）的实施任务拆解 |
 
 ---
 
