@@ -56,14 +56,20 @@
 
 **目的**：明确当前上海示例故事在 v4 流水线下的真实结构表现，并固定测量与数据路径。
 
-- [ ] M1-1 明确并记录当前示例 story 的身份：
+- [x] M1-1 明确并记录当前示例 story 的身份：
   - 城市：上海（cities.name="上海"）；  
   - 故事：标题 `午夜频率·虹口电台`；  
   - StoryGenerator 配置：`USE_PLOT_SKELETON=1` / `MAX_RETRIES=0` / `AUTO_RESTART_ON_FAIL=0`。  
-- [ ] M1-2 编写（或文档化）导出对话树的最小脚本：
+- [x] M1-2 编写（或文档化）导出对话树的最小脚本：
   - 从 SQLite 中导出主角「深夜电台主播」的对话树为 `checkpoints/story_<id>_上海_深夜电台主播_tree.json`；  
   - 保证脚本幂等、可重复。  
-- [ ] M1-3 使用 `tools/report_story_structure.py` 对该树跑一次验收，记录当前指标（节点数/主线深度/时长/结局数以及 verdict）。
+- [x] M1-3 使用 `tools/report_story_structure.py` 对该树跑一次验收，记录当前指标（节点数/主线深度/时长/结局数以及 verdict）。
+  - 当前基线（story_id=2，主角「深夜电台主播」）：  
+    - 总节点数 ≈ 67（stories.total_nodes=98，主角树部分为 67）；  
+    - 主线深度 ≈ 8；  
+    - 预计时长 ≈ 10.0 分钟；  
+    - 结局数量 ≈ 14；  
+    - 验收 verdict：`depth_ok=False` / `duration_ok=False` / `endings_ok=True` / `passes=False`。
 
 ### M2: 骨架配置与 TimeValidator 对齐
 
@@ -136,4 +142,3 @@
   - 至少通过一次人工结构评审（分支层级清晰，无明显“随机乱树”感）。  
 - 上海示例故事的生成与验收流程已经被固化为脚本或文档步骤，后续可重复执行用于回归。  
 - 相关 Task/Spec/Architecture 文档已更新，将“上海示例故事”标注为 v4 骨架流水线的第一个正式结构样本。
-
