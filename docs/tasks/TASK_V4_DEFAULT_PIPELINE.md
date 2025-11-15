@@ -25,12 +25,12 @@
 
 ### 1.1 目标
 
-- [ ] StoryGeneratorWithRetry 的主路径显式以 v4 为核心（骨架生成 + guided TreeBuilder + 文本填充 + story_report）；
-- [ ] v3 TreeBuilder heuristics 降级为兼容路径（仅在骨架不可用或显式关闭 v4 时启用）；
-- [ ] 提供明确的开关/配置，让运行者可以：
+- [x] StoryGeneratorWithRetry 的主路径显式以 v4 为核心（骨架生成 + guided TreeBuilder + 文本填充 + story_report）；
+- [x] v3 TreeBuilder heuristics 降级为兼容路径（仅在骨架不可用或显式关闭 v4 时启用）；
+- [x] 提供明确的开关/配置，让运行者可以：
   - 强制启用 v4 骨架模式；
   - 临时回退到 v3 模式（用于排查或对比）。
-- [ ] 更新相关文档（SPEC / NEW_PIPELINE / STORY_PIPELINE_V4）以反映“v4 为默认”。
+- [x] 更新相关文档（SPEC / NEW_PIPELINE / STORY_PIPELINE_V4）以反映“v4 为默认”。
 
 ### 1.2 非目标
 
