@@ -103,8 +103,12 @@ class ActConfig:
 class SkeletonConfig:
     """骨架全局配置（深度 / 结局等约束）"""
 
-    min_main_depth: int = 20
-    target_main_depth: int = 30
+    # 默认按中长篇都市恐怖故事的规模设计：
+    # - 主线最小深度 ~18
+    # - 目标主线深度 ~24
+    # 可通过骨架 JSON 或环境进一步调整。
+    min_main_depth: int = 18
+    target_main_depth: int = 24
     target_endings: int = 3
     max_branches_per_node: int = 3
 
@@ -199,4 +203,3 @@ class PlotSkeleton:
     @property
     def num_ending_beats(self) -> int:
         return sum(1 for b in self.beats if b.leads_to_ending)
-

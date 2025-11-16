@@ -168,32 +168,33 @@ class StoryGeneratorWithRetry:
                 # 3. 生成对话树（最耗时）
                 print("🌳 Step 3/4: 生成对话树（主要耗时步骤）...")
 
-                # 测试模式：使用更小的深度
+                # 允许通过环境变量调整生成规模与深度阈值
                 if self.test_mode:
-                    max_depth = 5
-                    min_main_path = 3
-                    print(f"   ⚡ [测试模式] 使用较小深度: max_depth={max_depth}, min_main_path={min_main_path}")
+                    # 测试模式：默认使用较小/中等深度，但仍遵守骨架配置
+                    max_depth = int(os.getenv("MAX_DEPTH", "12"))
+                    min_main_path = int(os.getenv("MIN_MAIN_PATH_DEPTH", "6"))
+                    print(f"   ⚡ [测试模式] 使用深度配置: max_depth={max_depth}, min_main_path={min_main_path}")
                 else:
-                    # 允许通过环境变量调整生成规模与深度阈值（默认更高）
+                    # 正式模式：默认更高的深度阈值
                     max_depth = int(os.getenv("MAX_DEPTH", "50"))
                     min_main_path = int(os.getenv("MIN_MAIN_PATH_DEPTH", "30"))
 
-                    # 若处于 v4 骨架模式，则优先使用骨架配置中的最小主线深度，
-                    # 避免 TreeBuilder 与 PlotSkeleton 对“主线深度”存在偏差。
-                    if skeleton is not None:
-                        try:
-                            sk_min_depth = int(skeleton.config.min_main_depth)
-                            if sk_min_depth > 0:
-                                # 取环境阈值与骨架阈值中的较大者，防止过浅
-                                if sk_min_depth > min_main_path:
-                                    print(
-                                        f"   ℹ️  根据骨架提升主线最小深度约束："
-                                        f"{min_main_path} → {sk_min_depth}"
-                                    )
-                                min_main_path = max(min_main_path, sk_min_depth)
-                        except Exception:
-                            # 骨架配置异常时，不影响原有行为
-                            pass
+                # 若处于 v4 骨架模式，则优先使用骨架配置中的最小主线深度，
+                # 避免 TreeBuilder 与 PlotSkeleton 对“主线深度”存在偏差。
+                if skeleton is not None:
+                    try:
+                        sk_min_depth = int(skeleton.config.min_main_depth)
+                        if sk_min_depth > 0:
+                            # 取环境阈值与骨架阈值中的较大者，防止过浅
+                            if sk_min_depth > min_main_path:
+                                print(
+                                    f"   ℹ️  根据骨架提升主线最小深度约束："
+                                    f"{min_main_path} → {sk_min_depth}"
+                                )
+                            min_main_path = max(min_main_path, sk_min_depth)
+                    except Exception:
+                        # 骨架配置异常时，不影响原有行为
+                        pass
 
                 dialogue_trees = {}
 

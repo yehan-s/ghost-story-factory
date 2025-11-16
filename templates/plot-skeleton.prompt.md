@@ -29,8 +29,8 @@
 {
   "title": "故事标题",
   "config": {
-    "min_main_depth": 30,
-    "target_main_depth": 36,
+    "min_main_depth": 18,
+    "target_main_depth": 24,
     "target_endings": 3,
     "max_branches_per_node": 3
   },
@@ -67,9 +67,9 @@
 
 - `title`: 故事标题（可以微调，使其更戏剧化）
 - `config`:
-  - `min_main_depth`: 主线最小深度（建议 30-34，用于保证结构不会太浅）
-  - `target_main_depth`: 目标主线深度（建议 36-42，用于保证剧情有足够展开）
-  - `target_endings`: 目标结局数量（建议 3-5）
+  - `min_main_depth`: 主线最小深度（建议 18–22，用于保证结构不会太浅）
+  - `target_main_depth`: 目标主线深度（建议 24–30，用于保证剧情有足够展开）
+  - `target_endings`: 目标结局数量（建议 3–5）
   - `max_branches_per_node`: 单节点最大分支数（通常 2 或 3）
 - `acts`: 至少 3 幕（Act I / Act II / Act III），也可以增加一个短的 Act 0 或尾声
   - `beats`: 每幕 3-8 个节拍
@@ -97,7 +97,7 @@
 2. **主线深度与结局**
    - 设计时假定「每个节拍大致对应 1 层主线路径上的选择节点」。
    - `min_main_depth` 与 `target_main_depth` 请结合故事规模合理设定：
-     - 都市恐怖长篇：建议 `min_main_depth >= 30`，`target_main_depth >= 36`，避免主线过短。
+     - 都市恐怖长篇：建议 `min_main_depth >= 18`，`target_main_depth >= 24`，避免主线过短，同时控制体量在可游玩范围内。
    - `target_endings` 建议 3-5 个：
      - 至少一个「真相大白」类结局；
      - 至少一个「失败 / 崩溃」类结局；
