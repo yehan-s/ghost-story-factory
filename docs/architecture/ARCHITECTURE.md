@@ -1,3 +1,16 @@
+# Ghost Story Factory 架构总览（v3 legacy + v4 骨架流水线）
+
+> 说明：
+> - v4 骨架流水线已通过 `ADR-001` / `ADR-002` 确认为**默认故事生成路径**；
+> - 本文件主体仍以 v3.1 架构为主（作为历史/兼容参考）；
+> - v4 的详细设计与当前实现请参考：
+>   - `docs/architecture/NEW_PIPELINE.md`
+>   - `docs/architecture/STORY_PIPELINE_V4.md`
+>   - `docs/architecture/ADR-001-plot-skeleton-pipeline.md`
+>   - `docs/architecture/ADR-002-v4-default-pipeline.md`
+
+---
+
 # Ghost Story Factory v3.1 - 完整架构
 
 ## 📐 整体架构图
