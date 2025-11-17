@@ -174,8 +174,19 @@ class ChoicePointsGenerator:
         self._llm = None  # 复用 LLM 实例
         self._kimi_model_choices = None  # 记录模型名用于日志
         self._scene_memory = {}  # 场景 -> 锚点摘要与规则缓存
+
+        # LLM 并发控制（选择点生成通常高频，限制并发避免打爆接口）
         import os, threading
-        self._sem = threading.Semaphore(int(os.getenv("KIMI_CONCURRENCY_CHOICES", os.getenv("KIMI_CONCURRENCY", "4"))))
+        self._sem = threading.Semaphore(
+            int(os.getenv("KIMI_CONCURRENCY_CHOICES", os.getenv("KIMI_CONCURRENCY", "4")))
+        )
+
+        # JSON 解析遥测计数（仅用于诊断选择点质量问题，不影响运行逻辑）
+        self._json_total_calls: int = 0
+        self._json_ok_first_try: int = 0
+        self._json_ok_after_fix: int = 0
+        self._json_salvaged: int = 0
+        self._json_failures: int = 0
 
     def _load_prompt_template(self) -> str:
         """加载 prompt 模板
@@ -248,11 +259,64 @@ class ChoicePointsGenerator:
 5. 不给玩家"跳出框架"的选项
 """
 
+    def _extract_llm_text(self, result: Any) -> str:
+        """
+        从 CrewAI / LLM 调用结果中尽量抽取真实的文本输出。
+
+        说明：
+        - 不同版本的 CrewAI 可能返回：
+          - 纯字符串；
+          - 带 .raw_output / .raw / .output / .text 属性的对象；
+          - 带 tasks_output / tasks_output_json 的列表结构。
+        - 这里统一做一层“防傻”封装，最大化拿到真正的模型输出，用于后续 JSON 解析。
+        """
+        # 已经是字符串的情况
+        if isinstance(result, str):
+            return result
+
+        # 常见属性优先
+        for attr in ("raw_output", "raw", "output", "text"):
+            try:
+                if hasattr(result, attr):
+                    val = getattr(result, attr)
+                    if isinstance(val, str) and val.strip():
+                        return val
+            except Exception:
+                continue
+
+        # 任务列表形式（如 tasks_output / tasks_output_json）
+        for container_attr in ("tasks_output", "tasks_output_json"):
+            try:
+                if hasattr(result, container_attr):
+                    container = getattr(result, container_attr)
+                    if isinstance(container, list) and container:
+                        first = container[0]
+                        if isinstance(first, str) and first.strip():
+                            return first
+                        for attr in ("raw_output", "raw", "output", "text"):
+                            if hasattr(first, attr):
+                                val = getattr(first, attr)
+                                if isinstance(val, str) and val.strip():
+                                    return val
+            except Exception:
+                continue
+
+        # 兜底：退回到 str()
+        try:
+            return str(result or "")
+        except Exception:
+            return ""
+
     def generate_choices(
         self,
         current_scene: str,
         game_state: GameState,
-        narrative_context: Optional[str] = None
+        narrative_context: Optional[str] = None,
+        beat_type: Optional[str] = None,
+        tension_level: Optional[int] = None,
+        is_critical_beat: Optional[bool] = None,
+        beat_leads_to_ending: Optional[bool] = None,
+        recent_choices: Optional[List[str]] = None,
     ) -> List[Choice]:
         """生成选择点
 
@@ -276,8 +340,17 @@ class ChoicePointsGenerator:
         llm = self._get_llm()
         print(f"🤖 [选择点] 使用模型: {self._kimi_model_choices}")
 
-        # 构建 prompt（使用场景记忆缓存/RAG锚点）
-        prompt = self._build_prompt(current_scene, game_state, narrative_context)
+        # 构建 prompt（使用场景记忆缓存/RAG锚点 + 骨架节拍信息 + 最近一轮选择，避免重复）
+        prompt = self._build_prompt(
+            current_scene=current_scene,
+            game_state=game_state,
+            narrative_context=narrative_context,
+            beat_type=beat_type,
+            tension_level=tension_level,
+            is_critical_beat=is_critical_beat,
+             beat_leads_to_ending=beat_leads_to_ending,
+            recent_choices=recent_choices,
+        )
         # 在 prompt 尾部加入结局引导与世界书约束，提升通向结局的倾向
         endings_hint = (
             "\n\n[结局与规则]\n"
@@ -311,7 +384,7 @@ class ChoicePointsGenerator:
         result_text = self._call_llm_with_retry(
             agent,
             task,
-            retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。"
+            retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。",
         )
 
         # 空响应防护：直接回退到本地默认选择，避免解析报错
@@ -323,6 +396,29 @@ class ChoicePointsGenerator:
             choices_data = self._parse_result(result_text)
             # 标准化所有 choice 字段
             raw_choices = [self._normalize_choice_fields(c) for c in choices_data.get('choices', [])]
+
+            # 若当前节拍允许结局出现，但所有选项都没有结局 flag，则注入一个保底结局选项
+            allow_ending_here = bool(beat_leads_to_ending)
+            if allow_ending_here:
+                has_ending_flag = any(
+                    isinstance(c.get("consequences"), dict)
+                    and isinstance(c["consequences"].get("flags"), dict)
+                    and any(str(k).startswith("结局_") for k in c["consequences"]["flags"].keys())
+                    for c in raw_choices
+                )
+                if not has_ending_flag:
+                    raw_choices.append(
+                        {
+                            "choice_id": f"{current_scene}_END",
+                            "choice_text": "接受这一轮故事的结局",
+                            "choice_type": "critical",
+                            "consequences": {
+                                "timestamp": "+10min",
+                                "flags": {"结局_自动收束": True},
+                            },
+                            "tags": ["结局", "主线收束"],
+                        }
+                    )
 
             # 强制推进与结局注入策略（避免平台化）：
             # - 每 N 个场景（默认3）至少提供一个 critical 选项
@@ -358,7 +454,22 @@ class ChoicePointsGenerator:
                         cons['timestamp'] = "+10min"
                     c['consequences'] = cons
 
-            return [Choice(**choice) for choice in raw_choices]
+            choices_objs = [Choice(**choice) for choice in raw_choices]
+
+            # 将 JSON 解析遥测写入统一日志，便于 offline 分析
+            try:
+                from ..utils.logging_utils import get_logger  # type: ignore
+                logger, _ = get_logger()
+                logger.info(
+                    "choice_json_metrics scene=%s metrics=%s",
+                    current_scene,
+                    self.get_json_metrics(),
+                )
+            except Exception:
+                # 日志记录失败不影响主流程
+                pass
+
+            return choices_objs
         except Exception as e:
             print(f"⚠️  解析选择点失败: {e}")
             # 返回默认选择点
@@ -406,10 +517,10 @@ class ChoicePointsGenerator:
         crew = Crew(agents=[agent], tasks=[task], verbose=False)
         with self._sem:
             result = crew.kickoff()
-        text = str(result)
-        # 解析试探
+        text = self._extract_llm_text(result)
+        # 解析试探（不计入 JSON 遥测，只用于判断是否需要重试）
         try:
-            _ = self._parse_result(text)
+            _ = self._parse_result(text, record_metrics=False)
             return text
         except Exception:
             if max_retries <= 0:
@@ -423,40 +534,81 @@ class ChoicePointsGenerator:
         crew2 = Crew(agents=[agent], tasks=[strict_task], verbose=False)
         with self._sem:
             result2 = crew2.kickoff()
-        return str(result2)
+        return self._extract_llm_text(result2)
 
     def _build_prompt(
         self,
         current_scene: str,
         game_state: GameState,
-        narrative_context: Optional[str]
+        narrative_context: Optional[str],
+        beat_type: Optional[str] = None,
+        tension_level: Optional[int] = None,
+        is_critical_beat: Optional[bool] = None,
+        beat_leads_to_ending: Optional[bool] = None,
+        recent_choices: Optional[List[str]] = None,
     ) -> str:
-        """构建完整的 prompt（优化版：只发送相关内容）"""
+        """构建完整的 prompt（只发送相关内容 + 骨架节拍 + 去重复约束）"""
         context = narrative_context or "玩家刚进入该场景。"
-        # 使用场景记忆（RAG锚点）
+        # 使用场景记忆（RAG 锚点）
         scene_memory = self._get_scene_memory(current_scene)
 
+        # 骨架节拍信息：提示当前节拍的叙事职责
+        beat_lines: List[str] = []
+        if beat_type:
+            beat_map = {
+                "setup": "设定节拍：以信息收集 / 安全试探为主，暂不急着爆发冲突。",
+                "escalation": "升级节拍：请让选项整体更冒险或更深入，引导玩家推进冲突。",
+                "twist": "反转节拍：至少给出一个明显颠覆玩家预期的选项。",
+                "climax": "高潮节拍：至少一个选项要直接指向核心冲突或结局走向。",
+                "aftermath": "收束节拍：以后果结算与余波为主，逐步收拢线索。",
+            }
+            beat_desc = beat_map.get(beat_type, "")
+            if beat_desc:
+                beat_lines.append(f"- 节拍类型: {beat_type}（{beat_desc}）")
+            else:
+                beat_lines.append(f"- 节拍类型: {beat_type}")
+        if tension_level is not None:
+            beat_lines.append(f"- 紧张度等级: {tension_level}/10")
+        if is_critical_beat is not None:
+            beat_lines.append(f"- 是否关键分支点: {'是' if is_critical_beat else '否'}")
+        if beat_leads_to_ending is not None:
+            beat_lines.append(f"- 是否允许结局出现: {'是' if beat_leads_to_ending else '否'}")
+        beat_block = "\n".join(beat_lines) if beat_lines else "（骨架未提供额外节拍信息，可按常规推进。）"
+
+        # 最近一轮已出现的选项（用于负例约束，避免重复）
+        recent_block = ""
+        if recent_choices:
+            filtered = [c for c in recent_choices if c]
+            if filtered:
+                items = "\n".join(f"- {txt}" for txt in filtered[:4])
+                recent_block = (
+                    "\n\n## 最近一轮已出现的选项（请避免简单重复这些具体做法）\n"
+                    f"{items}\n"
+                )
+
+        inventory_str = ", ".join(game_state.inventory[:3]) if game_state.inventory else "无"
+
         return f"""
-你是一个专业的选择点设计师。请根据当前场景和游戏状态，生成 2-4 个选择点。
+你是一个专业的选择点设计师。请根据当前场景、游戏状态和骨架节拍信息，生成 2-4 个高质量选择点。
 
 ## 当前状态
 
 **场景**: {current_scene}
 **上下文**: {context}
 **PR**: {game_state.PR}/100 | **时间**: {game_state.timestamp}
-**道具**: {', '.join(game_state.inventory[:3]) if game_state.inventory else '无'}
+**道具**: {inventory_str}
 
----
+## 骨架节拍信息
+{beat_block}
 
 ## 场景锚点与规则（缓存）
 
 {scene_memory}
-
----
+{recent_block}
 
 ## 输出要求
 
-**必须**输出 JSON 格式，包含 2-4 个选择：
+1. 严格输出一个 JSON 对象，字段结构如下：
 
 ```json
 {{
@@ -475,7 +627,15 @@ class ChoicePointsGenerator:
 }}
 ```
 
-请生成符合当前场景的选择点。务必只输出一个 JSON 对象，不要包含额外文本。
+2. 生成 2-4 个彼此差异明显的选项，避免只是改写同一种行为。
+3. 若上文给出了“最近一轮已出现的选项”，不要简单重复其中的具体行为或措辞。
+4. 至少提供一个更激进 / 更保守 / 更超自然的分支，用于制造明显分歧。
+5. 选项必须与当前场景和世界规则高度相关，不要无视场景直接跳转到无关地点或事件。
+6. 如果骨架节拍信息中标记“允许结局出现”，至少有 1 个选项应当在后果中显式写出结局 flag，例如：
+   - `"flags": {"结局_白娘子觉醒": true}` 或 `"flags": {"结局_玩家被镇桥": true}`；
+   这类选项通常为 `choice_type: "critical"`，用于在结构上收束当前故事轮回。
+
+请只输出上述格式的 JSON，不要包含任何解释性文字或额外段落。
 """
 
     def _extract_scene_context(self, gdd: str, scene: str, max_chars: int = 500) -> str:
@@ -534,7 +694,7 @@ class ChoicePointsGenerator:
         result = '\n'.join(core_lines)[:max_chars]
         return result if result else "恐怖氛围游戏，注重细节和心理描写。"
 
-    def _parse_result(self, result_text: str) -> Dict:
+    def _parse_result(self, result_text: str, record_metrics: bool = True) -> Dict:
         """解析 LLM 返回结果（超强版：处理各种异常格式）
 
         Args:
@@ -544,6 +704,9 @@ class ChoicePointsGenerator:
             Dict: 解析后的数据（标准格式）
         """
         import re
+
+        if record_metrics:
+            self._json_total_calls += 1
 
         # 清理文本（归一化与中文标点修复）
         result_text = result_text.strip()
@@ -575,7 +738,7 @@ class ChoicePointsGenerator:
         if first_brace != -1:
             # 使用栈匹配括号
             brace_count = 0
-            end_pos = first_brace
+            end_pos = None
             for i in range(first_brace, len(result_text)):
                 if result_text[i] == '{':
                     brace_count += 1
@@ -584,14 +747,30 @@ class ChoicePointsGenerator:
                     if brace_count == 0:
                         end_pos = i + 1
                         break
-            result_text = result_text[first_brace:end_pos].strip()
+            # 只有在括号成功配对时才截取子串；否则保留原文本，交给后续修复/挽救逻辑
+            if end_pos is not None:
+                result_text = result_text[first_brace:end_pos].strip()
 
         # 清理可能的多余字符
         result_text = result_text.strip()
 
+        # 针对常见键名断行 / 变体做一次轻量修复，再尝试解析 JSON
+        try:
+            # 修复类似 "immediate_\nconsequences" → "immediate_consequences"
+            result_text = re.sub(
+                r'"immediate_\s*consequences"\s*:',
+                '"immediate_consequences":',
+                result_text,
+                flags=re.IGNORECASE,
+            )
+        except Exception:
+            pass
+
         # 尝试解析 JSON
         try:
             data = json.loads(result_text)
+            if record_metrics:
+                self._json_ok_first_try += 1
             # 标准化格式
             return self._normalize_format(data)
         except json.JSONDecodeError as e:
@@ -604,16 +783,90 @@ class ChoicePointsGenerator:
             result_text = re.sub(r'/\*.*?\*/', '', result_text, flags=re.DOTALL)
             result_text = re.sub(r',\s*([}\]])', r'\1', result_text)
 
-            # 尝试修复：处理 "Extra data" 错误（只取第一个完整JSON）
+            # 尝试修复：处理 "Extra data" 错误（只取第一个完整 JSON）
             try:
                 # 使用 JSONDecoder 的 raw_decode 只解析第一个对象
                 decoder = json.JSONDecoder()
                 data, idx = decoder.raw_decode(result_text)
-                print(f"✅ 使用 raw_decode 成功解析（忽略了后续数据）")
+                print("✅ 使用 raw_decode 成功解析（忽略了后续数据）")
+                if record_metrics:
+                    self._json_ok_after_fix += 1
                 return self._normalize_format(data)
             except json.JSONDecodeError as e2:
                 print(f"❌ 二次JSON解析仍然失败: {e2}")
-                raise
+
+                # 最后尝试：从 choices 数组中尽量提取前几个完整选项，构造最小可用结构
+                try:
+                    choices_pos = result_text.find('"choices"')
+                    if choices_pos != -1:
+                        bracket_start = result_text.find("[", choices_pos)
+                    else:
+                        bracket_start = -1
+                    salvaged_choices = []
+                    if bracket_start != -1:
+                        i = bracket_start + 1
+                        n = len(result_text)
+                        while i < n:
+                            # 跳过空白和逗号
+                            while i < n and result_text[i] in " \t\r\n,":
+                                i += 1
+                            if i >= n or result_text[i] != "{":
+                                break
+                            # 匹配单个对象的花括号
+                            brace_count = 0
+                            start_obj = i
+                            j = i
+                            while j < n:
+                                if result_text[j] == "{":
+                                    brace_count += 1
+                                elif result_text[j] == "}":
+                                    brace_count -= 1
+                                    if brace_count == 0:
+                                        j += 1
+                                        break
+                                j += 1
+                            if brace_count != 0:
+                                # 最后一个对象也残了，直接丢弃
+                                break
+                            obj_str = result_text[start_obj:j]
+                            try:
+                                obj = json.loads(obj_str)
+                                salvaged_choices.append(obj)
+                            except Exception:
+                                # 解析失败则停止，避免引入垃圾
+                                break
+                            i = j
+
+                    if salvaged_choices:
+                        print(f"✅ 从损坏 JSON 中成功挽救 {len(salvaged_choices)} 个 choices")
+                        if record_metrics:
+                            self._json_salvaged += 1
+                        # 简单提取 scene_id（若存在）
+                        scene_id_match = re.search(r'"scene_id"\s*:\s*"([^"]+)"', result_text)
+                        scene_id = scene_id_match.group(1) if scene_id_match else "unknown"
+                        data = {
+                            "scene_id": scene_id,
+                            "choices": salvaged_choices,
+                        }
+                        return self._normalize_format(data)
+                except Exception:
+                    # 挽救失败则继续走失败统计与兜底路径
+                    pass
+
+                if record_metrics:
+                    self._json_failures += 1
+                # 不再抛出异常，交由上层回退到默认选择点，避免打断生成流程
+                return self._normalize_format({"scene_id": "unknown", "choices": []})
+
+    def get_json_metrics(self) -> Dict[str, int]:
+        """返回本次会话内 JSON 解析相关的遥测数据"""
+        return {
+            "total_calls": self._json_total_calls,
+            "ok_first_try": self._json_ok_first_try,
+            "ok_after_fix": self._json_ok_after_fix,
+            "salvaged": self._json_salvaged,
+            "failures": self._json_failures,
+        }
 
     def _normalize_format(self, data: Dict) -> Dict:
         """标准化 JSON 格式（处理 Kimi 可能返回的各种格式）
@@ -786,4 +1039,3 @@ def save_choices_to_file(choices: List[Choice], filepath: str) -> None:
 
     with open(filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-

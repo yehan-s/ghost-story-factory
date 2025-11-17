@@ -97,7 +97,7 @@ def main():
     for test_name, test_file in script_tests:
         results.append(run_test(test_name, test_file))
 
-    # 二、Pytest 单元测试（骨架 & guided TreeBuilder）
+    # 二、Pytest 单元测试（骨架 & guided TreeBuilder + 工具）
     pytest_suites = [
         (
             "骨架模型 / SkeletonGenerator / guided TreeBuilder / StoryGenerator 模式 / 文本填充 / 报告单元测试",
@@ -114,6 +114,13 @@ def main():
             "工具类单元测试 / 生成进度可视化",
             [
                 "tests/test_view_tree_progress.py",
+            ],
+        ),
+        (
+            "选择点 LLM 封装与 BMAD 启发式评估单元测试",
+            [
+                "tests/test_choices_llm_wrapper.py",
+                "tests/test_choice_evaluator_bmad.py",
             ],
         ),
     ]
