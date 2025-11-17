@@ -41,6 +41,8 @@ class NodeInfo:
     is_ending: bool
     narrative: str
     parent_id: Optional[str]
+    # 当前节点中“在全局出现次数 >1 的选项文本”数量，用于标记重复度高的节点
+    repeated_choice_count: int = 0
     ts: Optional[datetime] = None
 
 
@@ -144,6 +146,39 @@ def summarize_tree(
             "main_path": [],
             "recent_nodes": [],
         }
+
+    # 选择点重复度统计：按全局出现次数标记“高重复”选项
+    # 统计每个节点的选项文本，以及全局每个文本出现的次数
+    choice_texts_per_node: Dict[str, List[str]] = {}
+    global_choice_counts: Dict[str, int] = {}
+    try:
+        for nid, node in tree.items():
+            if not isinstance(node, dict):
+                continue
+            choices = node.get("choices") or []
+            if not isinstance(choices, list):
+                continue
+            texts_for_node: List[str] = []
+            for ch in choices:
+                if not isinstance(ch, dict):
+                    continue
+                text = str(ch.get("choice_text", "")).strip()
+                if not text:
+                    continue
+                texts_for_node.append(text)
+                global_choice_counts[text] = global_choice_counts.get(text, 0) + 1
+            if texts_for_node:
+                choice_texts_per_node[str(node.get("node_id", nid))] = texts_for_node
+    except Exception:
+        choice_texts_per_node = {}
+        global_choice_counts = {}
+
+    # 为每个节点打上 repeated_choice_count 标记
+    if global_choice_counts:
+        for nid, info in index.items():
+            texts = choice_texts_per_node.get(nid) or []
+            repeated = sum(1 for t in texts if global_choice_counts.get(t, 0) > 1)
+            info.repeated_choice_count = repeated
 
     # 总体统计
     depths: Dict[int, List[NodeInfo]] = {}
@@ -252,6 +287,7 @@ def render_terminal(report: Dict[str, Any]) -> None:
     table_main.add_column("节点 ID")
     table_main.add_column("场景")
     table_main.add_column("是否结局")
+    table_main.add_column("重复选项数")
     table_main.add_column("叙事摘要", overflow="fold", max_width=60)
     for n in main_path:
         nar = (n.get("narrative") or "").strip()
@@ -262,6 +298,7 @@ def render_terminal(report: Dict[str, Any]) -> None:
             n.get("node_id", ""),
             n.get("scene", ""),
             "是" if n.get("is_ending") else "",
+            str(n.get("repeated_choice_count", 0)),
             nar,
         )
     console.print("[bold]一条主线路径（基于最长 parent 链）：[/bold]")
@@ -275,6 +312,7 @@ def render_terminal(report: Dict[str, Any]) -> None:
     table_recent.add_column("节点 ID")
     table_recent.add_column("场景")
     table_recent.add_column("是否结局")
+    table_recent.add_column("重复选项数")
     table_recent.add_column("叙事摘要", overflow="fold", max_width=60)
     for n in recent_nodes:
         ts = n.get("ts")
@@ -293,6 +331,7 @@ def render_terminal(report: Dict[str, Any]) -> None:
             n.get("node_id", ""),
             n.get("scene", ""),
             "是" if n.get("is_ending") else "",
+            str(n.get("repeated_choice_count", 0)),
             nar,
         )
     console.print("[bold]最近生成的节点（按时间/深度）：[/bold]")
@@ -330,6 +369,7 @@ def render_html(report: Dict[str, Any], output_path: Path) -> None:
             f"<td>{esc(n.get('node_id', ''))}</td>"
             f"<td>{esc(n.get('scene', ''))}</td>"
             f"<td>{'是' if n.get('is_ending') else ''}</td>"
+            f"<td>{n.get('repeated_choice_count', 0)}</td>"
             f"<td>{esc(nar)}</td>"
             "</tr>"
         )
@@ -351,6 +391,7 @@ def render_html(report: Dict[str, Any], output_path: Path) -> None:
             f"<td>{esc(n.get('node_id', ''))}</td>"
             f"<td>{esc(n.get('scene', ''))}</td>"
             f"<td>{'是' if n.get('is_ending') else ''}</td>"
+            f"<td>{n.get('repeated_choice_count', 0)}</td>"
             f"<td>{esc(nar)}</td>"
             "</tr>"
         )
@@ -390,13 +431,13 @@ def render_html(report: Dict[str, Any], output_path: Path) -> None:
 
   <h2>一条主线路径（基于最长 parent 链）</h2>
   <table>
-    <tr><th>深度</th><th>节点 ID</th><th>场景</th><th>是否结局</th><th>叙事摘要</th></tr>
+    <tr><th>深度</th><th>节点 ID</th><th>场景</th><th>是否结局</th><th>重复选项数</th><th>叙事摘要</th></tr>
     {''.join(rows_main)}
   </table>
 
   <h2>最近生成的节点</h2>
   <table>
-    <tr><th>时间</th><th>深度</th><th>节点 ID</th><th>场景</th><th>是否结局</th><th>叙事摘要</th></tr>
+    <tr><th>时间</th><th>深度</th><th>节点 ID</th><th>场景</th><th>是否结局</th><th>重复选项数</th><th>叙事摘要</th></tr>
     {''.join(rows_recent)}
   </table>
 </body>

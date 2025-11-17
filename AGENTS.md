@@ -287,6 +287,7 @@ Ghost Story Factory 是一个**交互式灵异故事工厂**，包含两大能�
 - 测试与工具：
   - `tools/run_all_tests.py`
   - `tools/check_structure_metrics.py`
+  - `tools/view_tree_progress.py`（生成过程中或中断后，用于诊断对话树深度/结局分布与“高重复选项”节点）
   - `tests/test_skeleton_model.py`
   - `tests/test_tree_builder_guided.py`
   - 其它 `test_*.py` 脚本（集成测试）

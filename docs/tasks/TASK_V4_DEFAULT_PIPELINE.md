@@ -88,10 +88,10 @@
 - [x] M3-2 在 `docs/tasks/TASK_STORY_STRUCTURE.md` 中增加一小节，标注：
   - v4 已升级为默认流水线；
   - 后续对结构相关的改动应优先考虑骨架 + guided 模式。
-- [ ] M3-3（可选）提供一张简单的差异图：
+- [x] M3-3（可选）提供一张简单的差异图：
   - v3：文档 → TreeBuilder(v3) → TimeValidator → DB；
   - v4：文档 → PlotSkeleton → TreeBuilder(v4 guided) → NodeTextFiller → story_report → DB；
-  - 并标明回退诊断路径。
+  - 并标明回退诊断路径（发生结构异常时，可通过 `USE_PLOT_SKELETON=0` 暂时切回 v3，对比结构差异，并结合 `tools/view_tree_progress.py` / `tools/report_story_structure.py` 做诊断）。
 
 ### M4: 自动化回归保障 v4 默认化
 

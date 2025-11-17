@@ -83,7 +83,7 @@
     - 用临时目录写一个小的 checkpoint/tree JSON 与 JSONL，验证 `view_tree_progress` 中的解析和汇总逻辑（例如 depth 统计 / 结局数 / 主线路径长度）。  
 - [x] M3-2 集成到统一测试脚本：
   - 在 `tools/run_all_tests.py` 的 pytest 部分增加 `tests/test_view_tree_progress.py`。  
-- [ ] M3-3 文档更新：
+- [x] M3-3 文档更新：
   - 在 `docs/architecture/NEW_PIPELINE.md` 或 `STORY_PIPELINE_V4.md` 中简要提及该工具；  
   - 在 `AGENTS.md` 的“重要工具”或对应部分补一条：生成卡死/怀疑结构异常时，先用 `tools/view_tree_progress.py` 诊断。
 
