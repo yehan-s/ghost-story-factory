@@ -59,6 +59,24 @@ class DialogueTreeBuilder:
         self.progress_tracker = ProgressTracker()
         self.time_validator = TimeValidator()
 
+        # guided 模式下：优先用骨架配置对 TimeValidator 做一次对齐，
+        # 让“主线深度 / 结局数量”的判定来源收敛到 PlotSkeleton，而不是环境变量。
+        if self.plot_skeleton is not None:
+            try:
+                cfg_min_depth = int(self.plot_skeleton.config.min_main_depth)
+                if cfg_min_depth > 0:
+                    self.time_validator.min_main_path_depth = cfg_min_depth
+            except Exception:
+                # 骨架里没给出合理的深度约束时，保持原来的环境配置
+                pass
+            try:
+                cfg_target_endings = int(self.plot_skeleton.config.target_endings)
+                if cfg_target_endings > 0:
+                    self.time_validator.min_endings = cfg_target_endings
+            except Exception:
+                # 同理，target_endings 异常时不强行覆盖
+                pass
+
         # LLM 生成器（延迟初始化，复用现有的）
         self.choice_generator = None
         self.response_generator = None
@@ -99,6 +117,18 @@ class DialogueTreeBuilder:
         # Beam 搜索（主线优先），默认关闭以保持向后兼容
         self.beam_mode = os.getenv("BEAM_MODE", "0") == "1"
         self.beam_width = int(os.getenv("BEAM_WIDTH", "50"))
+
+        # 导演上下文（DirectorContext）：记录最近若干步的选择 / 响应 / 节拍信息，
+        # 供 Choice / Response Prompt 避免重复并保持节奏一致。
+        self.director_context = {
+            "recent_choices": [],   # 最近若干次选择文本
+            "recent_responses": [], # 最近若干段响应叙事
+            "recent_beats": [],     # 最近若干个节拍元数据
+        }
+        try:
+            self.director_context_window = int(os.getenv("DIRECTOR_CONTEXT_WINDOW", "5"))
+        except Exception:
+            self.director_context_window = 5
 
     def _init_generators(self):
         """初始化 LLM 生成器（复用现有引擎）"""
@@ -191,6 +221,11 @@ class DialogueTreeBuilder:
         """
         self.max_depth = max_depth
         self.min_main_path_depth = min_main_path_depth
+        # TimeValidator 的主线深度阈值也跟调用参数保持一致，避免与环境变量产生分裂
+        try:
+            self.time_validator.min_main_path_depth = int(min_main_path_depth)
+        except Exception:
+            pass
 
         # 初始化生成器
         if not self.choice_generator:
@@ -318,6 +353,18 @@ class DialogueTreeBuilder:
                     choice.get("consequences", {})
                 )
 
+                # 记录最近一次选择文本及本轮所有选项文本，供后续节点在 Prompt 中做“去重复”约束
+                try:
+                    new_state["last_choice_text"] = choice.get("choice_text", "")
+                    all_texts = [
+                        c.get("choice_text", "")
+                        for c in choices_all
+                        if isinstance(c, dict)
+                    ]
+                    new_state["last_choices_texts"] = [t for t in all_texts if t]
+                except Exception:
+                    pass
+
                 # 计算状态哈希
                 state_hash = self.state_manager.get_state_hash(new_state)
 
@@ -355,6 +402,22 @@ class DialogueTreeBuilder:
 
                 # 生成响应文本
                 child_node.narrative = self._generate_response(choice, new_state)
+
+                # 更新导演上下文（最近选择 / 响应 / 节拍）
+                try:
+                    beat_meta = None
+                    if self.guided_mode and self.plot_skeleton is not None:
+                        beat = self._beat_for_depth(depth + 1)
+                        if beat is not None:
+                            beat_meta = {
+                                "depth": depth + 1,
+                                "beat_type": getattr(beat, "beat_type", None),
+                                "tension_level": getattr(beat, "tension_level", None),
+                                "is_critical": getattr(beat, "is_critical_branch_point", None),
+                            }
+                    self._update_director_context(choice, child_node, beat_meta)
+                except Exception:
+                    pass
 
                 # 检查是否结局；guided 模式下根据骨架控制结局出现位置
                 child_node.is_ending = self._check_ending(new_state)
@@ -658,24 +721,32 @@ class DialogueTreeBuilder:
             print(f"   结局达标: {'是' if report.get('passes_endings_check') else '否'} (≥ {self.time_validator.min_endings})")
 
         # 最终判定
+        # 说明：
+        # - v3 兼容模式（非 guided）：仍作为硬性 gating，未达标时抛异常；
+        # - v4 guided 模式：TimeValidator 只做 sanity check，未达标时打印告警，
+        #   由上层基于 story_report 决定是否视为“合格故事”，不再在此处直接终止流水线。
+        strict_mode = (not self.test_mode) and (not self.guided_mode)
+
         if not report['passes_duration_check']:
-            if self.test_mode:
-                print(f"⚠️  [测试模式] 时长未达标（{report['estimated_duration_minutes']} 分钟），忽略校验继续")
+            if not strict_mode:
+                print(
+                    f"⚠️  [结构告警] 预计时长未达标："
+                    f"{report['estimated_duration_minutes']} 分钟 < {self.time_validator.min_duration_minutes} 分钟"
+                )
             else:
-                # 自动降级策略（一次性尝试）
-                # 说明：下面这一整块是 v3 legacy heuristics，只在非 guided 模式下通过环境变量做“降级”。
+                # 自动降级策略（一次性尝试，仅 v3 legacy）
                 downgraded = False
                 est = report['estimated_duration_minutes']
-                if not self.guided_mode and est >= 9 and est < self.time_validator.min_duration_minutes:
+                if est >= 9 and est < self.time_validator.min_duration_minutes:
                     # 1) 降低最小游戏时长到 10（仅非 guided 模式）
                     os.environ['MIN_DURATION_MINUTES'] = '10'
                     downgraded = True
-                if not self.guided_mode and not downgraded and self.progress_plateau_limit > 2:
+                if not downgraded and self.progress_plateau_limit > 2:
                     # 2) 增加扩展轮次 +2（仅非 guided 模式）
                     cur = int(os.getenv('EXTEND_ON_FAIL_ATTEMPTS', '2'))
                     os.environ['EXTEND_ON_FAIL_ATTEMPTS'] = str(cur + 2)
                     downgraded = True
-                if not self.guided_mode and not downgraded:
+                if not downgraded:
                     # 3) 加速 critical 注入（仅非 guided 模式）
                     os.environ['FORCE_CRITICAL_INTERVAL'] = '2'
                     downgraded = True
@@ -688,10 +759,13 @@ class DialogueTreeBuilder:
                 )
 
         if report['main_path_depth'] < self.min_main_path_depth:
-            if self.test_mode:
-                print(f"⚠️  [测试模式] 主线深度未达标（{report['main_path_depth']} < {self.min_main_path_depth}），忽略校验继续")
+            if not strict_mode:
+                print(
+                    f"⚠️  [结构告警] 主线深度未达标："
+                    f"{report['main_path_depth']} < {self.min_main_path_depth}"
+                )
             else:
-                # 明确结束本轮追踪
+                # 明确结束本轮追踪（仅 v3 兼容路径）
                 self.progress_tracker.finish(success=False)
                 try:
                     from ..utils.logging_utils import get_logger
@@ -706,13 +780,15 @@ class DialogueTreeBuilder:
 
         # 结局数量门槛
         if not report.get('passes_endings_check', True):
-            if self.test_mode:
-                print(f"⚠️  [测试模式] 结局数量未达标（{report['ending_count']} < {self.time_validator.min_endings}），忽略校验继续")
+            if not strict_mode:
+                print(
+                    f"⚠️  [结构告警] 结局数量未达标："
+                    f"{report['ending_count']} < {self.time_validator.min_endings}"
+                )
             else:
-                # 自动降级：加速 critical 注入（仅非 guided 模式）
-                if not self.guided_mode:
-                    os.environ['FORCE_CRITICAL_INTERVAL'] = '2'
-                    print("🔧 [v3 legacy] 触发自动降级：FORCE_CRITICAL_INTERVAL=2，仅旧结构模式生效")
+                # 自动降级：加速 critical 注入（仅 v3 legacy）
+                os.environ['FORCE_CRITICAL_INTERVAL'] = '2'
+                print("🔧 [v3 legacy] 触发自动降级：FORCE_CRITICAL_INTERVAL=2，仅旧结构模式生效")
                 self.progress_tracker.finish(success=False)
                 raise ValueError(f"结局数量不足：{report['ending_count']} < {self.time_validator.min_endings}")
 
@@ -828,8 +904,61 @@ class DialogueTreeBuilder:
             state.flags = node.game_state.get("flags", {})
             state.time = node.game_state.get("time", "00:00")
 
+            # 构造简化叙事上下文：上一节点叙事 + 最近一次选择，作为“避免重复”的提示
+            last_narrative = node.narrative or ""
+            last_choice = ""
+            try:
+                # 在 game_state 中查找上一选择文本（由 _expand_choice 写入）
+                last_choice = node.game_state.get("last_choice_text", "")
+            except Exception:
+                last_choice = ""
+
+            narrative_context = last_narrative
+            if last_choice:
+                narrative_context = f"{last_narrative}\n\n[上一选择] {last_choice}"
+
+            # 最近一轮已出现的选项文本（上一层节点写入到 game_state）
+            recent_choices: List[str] = []
+            try:
+                recent_raw = node.game_state.get("last_choices_texts") or []
+                if isinstance(recent_raw, list):
+                    recent_choices = [str(x) for x in recent_raw if x]
+            except Exception:
+                recent_choices = []
+
+            # guided 模式下：根据节点深度查找下一层对应的骨架节拍信息
+            beat_type = None
+            tension_level = None
+            is_critical = None
+            beat_leads_to_ending = None
+            if self.guided_mode and self.plot_skeleton is not None:
+                try:
+                    beat = self._beat_for_depth(node.depth + 1)
+                    if beat is not None:
+                        beat_type = getattr(beat, "beat_type", None)
+                        tension_level = getattr(beat, "tension_level", None)
+                        is_critical = getattr(beat, "is_critical_branch_point", None)
+                except Exception:
+                    beat_type = None
+                    tension_level = None
+                    is_critical = None
+                try:
+                    if beat is not None:
+                        beat_leads_to_ending = getattr(beat, "leads_to_ending", None)
+                except Exception:
+                    beat_leads_to_ending = None
+
             # 调用生成器（注意参数顺序：scene, state）
-            choices = self.choice_generator.generate_choices(node.scene, state)
+            choices = self.choice_generator.generate_choices(
+                node.scene,
+                state,
+                narrative_context=narrative_context,
+                beat_type=beat_type,
+                tension_level=tension_level,
+                is_critical_beat=is_critical,
+                beat_leads_to_ending=beat_leads_to_ending,
+                recent_choices=recent_choices,
+            )
 
             # 转换为字典格式
             return [
@@ -877,12 +1006,51 @@ class DialogueTreeBuilder:
             )
 
             # 调用生成器
-            response = self.response_generator.generate_response(choice_obj, state)
+            response = self.response_generator.generate_response(
+                choice_obj,
+                state,
+                apply_consequences=False,
+                director_context=self.director_context,
+            )
             return response
 
         except Exception as e:
             print(f"⚠️  响应生成失败：{e}")
             return f"你选择了{choice.get('choice_text', '')}，故事继续发展..."
+
+    def _update_director_context(
+        self,
+        choice: Dict[str, Any],
+        node: DialogueNode,
+        beat_meta: Optional[Dict[str, Any]] = None,
+    ) -> None:
+        """更新导演上下文（最近若干步的选择 / 响应 / 节拍）。
+
+        说明：
+        - 这是一个纯粹的“摘要”结构，不参与状态判定；
+        - 仅供 Choice/Response Prompt 用于避免重复和保持节奏一致。
+        """
+        try:
+            txt = str(choice.get("choice_text", "") or "").strip()
+            if txt:
+                self.director_context["recent_choices"].append(txt)
+
+            nar = str(node.narrative or "").strip()
+            if nar:
+                self.director_context["recent_responses"].append(nar)
+
+            if beat_meta:
+                self.director_context["recent_beats"].append(beat_meta)
+
+            # 窗口裁剪
+            w = max(1, int(self.director_context_window or 5))
+            for key in ("recent_choices", "recent_responses", "recent_beats"):
+                seq = self.director_context.get(key) or []
+                if len(seq) > w:
+                    self.director_context[key] = seq[-w:]
+        except Exception:
+            # 完全不影响主流程
+            pass
 
     def _check_ending(self, state: Dict[str, Any]) -> bool:
         """检查是否到达结局"""

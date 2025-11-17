@@ -40,6 +40,61 @@ def build_story_report(
     tv = TimeValidator(min_main_path_depth=min_depth_override)
     tree_report = tv.get_validation_report(dialogue_tree)
 
+    # 选择点质量基础指标（与结构解耦，只做统计）
+    choice_metrics: Dict[str, Any] = {}
+    try:
+        total_nodes_with_choices = 0
+        total_choices = 0
+        choice_counts = []
+        texts = []
+
+        # 默认兜底选项的典型文案（用于估算默认选项占比）
+        default_texts = {
+            "沿主线线索继续深入",
+            "原地观察环境细节",
+            "直面关键线索（可能触发结局）",
+            "继续调查",
+            "离开此地",
+        }
+        default_choice_count = 0
+
+        for node in dialogue_tree.values():
+            choices = node.get("choices") or []
+            if not isinstance(choices, list):
+                continue
+            if choices:
+                total_nodes_with_choices += 1
+                choice_counts.append(len(choices))
+            for ch in choices:
+                text = str(ch.get("choice_text", "")).strip()
+                if not text:
+                    continue
+                texts.append(text)
+                if text in default_texts:
+                    default_choice_count += 1
+
+        total_choices = len(texts)
+        unique_count = len(set(texts)) if texts else 0
+        avg_choices = (sum(choice_counts) / len(choice_counts)) if choice_counts else 0.0
+        repetition_rate = 0.0
+        if total_choices > 0 and unique_count >= 0:
+            repetition_rate = 1.0 - (unique_count / float(total_choices))
+
+        default_ratio = (default_choice_count / float(total_choices)) if total_choices else 0.0
+
+        choice_metrics = {
+            "total_nodes_with_choices": total_nodes_with_choices,
+            "total_choices": total_choices,
+            "avg_choices_per_node": avg_choices,
+            "unique_choice_texts": unique_count,
+            "repetition_rate": repetition_rate,
+            "default_choice_count": default_choice_count,
+            "default_choice_ratio": default_ratio,
+        }
+    except Exception:
+        # 指标失败不影响主流程
+        choice_metrics = {}
+
     # 骨架指标（可选）
     skeleton_report: Dict[str, Any] = {}
     if skeleton is not None:
@@ -75,5 +130,6 @@ def build_story_report(
     return {
         "tree_metrics": tree_report,
         "skeleton_metrics": skeleton_report,
+        "choice_metrics": choice_metrics,
         "verdict": verdict,
     }

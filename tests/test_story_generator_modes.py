@@ -330,3 +330,105 @@ def test_story_generator_uses_v4_pipeline_when_enabled(monkeypatch):
     assert isinstance(main_tree, dict)
     # root 节点 narrative 应包含我们标记的 “[filled]”
     assert "[filled]" in main_tree["root"]["narrative"]
+
+
+def test_story_generator_stage_docs_skips_tree_and_db(monkeypatch):
+    """stage='docs' 时，只生成文档，不应触发 Skeleton/TreeBuilder/DB。"""
+
+    captured = _patch_common_lightweight(monkeypatch)
+
+    # SkeletonGenerator 若被调用则视为错误
+    class FailSkeletonGenerator:
+        def __init__(self, *args, **kwargs) -> None:
+            raise AssertionError("SkeletonGenerator 不应在 stage=docs 被调用")
+
+    monkeypatch.setenv("USE_PLOT_SKELETON", "1")
+    monkeypatch.setattr(sg, "SkeletonGenerator", FailSkeletonGenerator)
+
+    synopsis = _make_dummy_synopsis()
+    gen = sg.StoryGeneratorWithRetry(
+        city="测试城",
+        synopsis=synopsis,
+        test_mode=True,
+        multi_character=False,
+    )
+
+    result = gen.generate_full_story(stage="docs")
+
+    assert result["stage"] == "docs"
+    assert result["city"] == "测试城"
+    assert result["title"] == synopsis.title
+    assert "gdd" in result and "lore" in result and "main_story" in result
+
+    # TreeBuilder 与 DB 都不应被触发
+    assert "tree_builder_plot_skeleton" not in captured
+    assert "db_city_name" not in captured
+
+
+def test_story_generator_stage_skeleton_runs_without_tree(monkeypatch):
+    """stage='skeleton' 时，应生成骨架，但不进入 TreeBuilder/DB。"""
+
+    captured = _patch_common_lightweight(monkeypatch)
+
+    # Dummy SkeletonGenerator：返回最小骨架，同时记录调用
+    class DummySkeletonGenerator:
+        def __init__(self, city: str) -> None:
+            captured["skeleton_city_stage"] = city
+
+        def generate(self, title: str, synopsis: str, lore_v2_text: str, main_story_text: str) -> PlotSkeleton:
+            captured["skeleton_generate_stage"] = {
+                "title": title,
+                "synopsis": synopsis,
+            }
+            data = {
+                "title": title,
+                "config": {
+                    "min_main_depth": 3,
+                    "target_main_depth": 5,
+                    "target_endings": 1,
+                    "max_branches_per_node": 1,
+                },
+                "acts": [
+                    {
+                        "index": 1,
+                        "label": "Act I",
+                        "beats": [
+                            {
+                                "id": "A1_B1",
+                                "act_index": 1,
+                                "beat_type": "setup",
+                                "tension_level": 3,
+                                "is_critical_branch_point": False,
+                                "leads_to_ending": False,
+                                "branches": [],
+                            }
+                        ],
+                    }
+                ],
+                "metadata": {"city": "测试城"},
+            }
+            return PlotSkeleton.from_dict(data)
+
+    monkeypatch.setenv("USE_PLOT_SKELETON", "1")
+    monkeypatch.setattr(sg, "SkeletonGenerator", DummySkeletonGenerator)
+
+    synopsis = _make_dummy_synopsis()
+    gen = sg.StoryGeneratorWithRetry(
+        city="测试城",
+        synopsis=synopsis,
+        test_mode=True,
+        multi_character=False,
+    )
+
+    result = gen.generate_full_story(stage="skeleton")
+
+    assert result["stage"] == "skeleton"
+    assert result["city"] == "测试城"
+    assert result["title"] == synopsis.title
+    assert result.get("skeleton") is not None
+
+    # SkeletonGenerator 应被调用
+    assert "skeleton_generate_stage" in captured
+    # TreeBuilder 与 DB 仍不应被触发
+    assert "tree_builder_plot_skeleton" not in captured
+    assert "db_city_name" not in captured

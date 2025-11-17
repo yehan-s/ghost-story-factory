@@ -149,3 +149,40 @@ def test_guided_respects_max_branches_and_ending_depth(tmp_path, monkeypatch):
 
     # 所有结局都不应出现在 depth=1
     assert all(depth >= 2 for _, depth in endings)
+
+
+def test_guided_uses_skeleton_thresholds_for_validator(tmp_path, monkeypatch):
+    """guided 模式下，TimeValidator 应与调用参数和骨架配置对齐：
+    - min_main_path_depth 由 generate_tree 传入的参数决定；
+    - min_endings 默认对齐骨架 config.target_endings。
+    """
+    skeleton = _build_simple_skeleton()
+
+    inc_log = tmp_path / "tree_incremental.jsonl"
+    monkeypatch.setenv("INCREMENTAL_LOG_PATH", str(inc_log))
+
+    builder = DummyDialogueTreeBuilder(
+        city="测试城",
+        synopsis="测试 synopsis",
+        gdd_content="GDD",
+        lore_content="LORE",
+        main_story="STORY",
+        test_mode=True,
+        plot_skeleton=skeleton,
+    )
+
+    checkpoint_path = tmp_path / "checkpoint_thresholds.json"
+
+    # 显式传入一个与骨架 config 略有不同的主线最小深度，确保覆盖覆写逻辑
+    tree = builder.generate_tree(
+        max_depth=4,
+        min_main_path_depth=2,
+        checkpoint_path=str(checkpoint_path),
+    )
+
+    assert "root" in tree
+    # generate_tree 调用后，TreeBuilder 与 TimeValidator 的深度阈值应保持一致
+    assert builder.min_main_path_depth == 2
+    assert builder.time_validator.min_main_path_depth == 2
+    # 结局数量门槛应默认对齐骨架配置
+    assert builder.time_validator.min_endings == skeleton.config.target_endings

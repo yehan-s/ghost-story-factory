@@ -43,7 +43,8 @@ class StoryGeneratorWithRetry:
         self,
         gdd_path: Optional[str] = None,
         lore_path: Optional[str] = None,
-        main_story_path: Optional[str] = None
+        main_story_path: Optional[str] = None,
+        stage: str = "full",
     ) -> Dict[str, Any]:
         """
         生成完整故事（支持断点续传！）
@@ -85,6 +86,14 @@ class StoryGeneratorWithRetry:
         self._prompt_continue("按 Enter 确认开始生成...")
         print("\n")
 
+        # 规范化 stage（允许通过 env STORY_STAGE 覆盖默认值；显式参数优先）
+        stage_mode = (stage or "full").strip().lower()
+        env_stage = os.getenv("STORY_STAGE")
+        if env_stage and stage == "full":
+            stage_mode = env_stage.strip().lower()
+        if stage_mode not in ("full", "docs", "skeleton", "tree"):
+            stage_mode = "full"
+
         # 初始化文件日志（运行级别）
         _logger, _log_path = get_run_logger(
             "full_generation",
@@ -124,6 +133,17 @@ class StoryGeneratorWithRetry:
                     # 预分析容错，不影响后续
                     print(f"⚠️  世界书预分析失败（已忽略）：{_e}")
 
+                # 若仅需文档阶段（Stage A），在此直接返回
+                if stage_mode == "docs":
+                    return {
+                        "stage": "docs",
+                        "city": self.city,
+                        "title": self.synopsis.title,
+                        "gdd": gdd_content,
+                        "lore": lore_content,
+                        "main_story": main_story,
+                    }
+
                 # 1.8 生成故事骨架（PlotSkeleton，用于结构指导）
                 use_plot_skeleton = os.getenv("USE_PLOT_SKELETON", "1")
                 skeleton = None
@@ -149,6 +169,18 @@ class StoryGeneratorWithRetry:
                         # 容错：骨架生成失败时回退到非 guided 模式
                         skeleton = None
                         print(f"⚠️  骨架生成失败，将回退到旧结构模式：{e_skel}")
+
+                # 若仅需文档 + 骨架阶段（Stage B），在此直接返回
+                if stage_mode == "skeleton":
+                    return {
+                        "stage": "skeleton",
+                        "city": self.city,
+                        "title": self.synopsis.title,
+                        "gdd": gdd_content,
+                        "lore": lore_content,
+                        "main_story": main_story,
+                        "skeleton": skeleton.to_dict() if skeleton is not None else None,
+                    }
 
                 # 2. 提取角色列表
                 print("👥 Step 2/4: 提取角色列表...")
@@ -179,19 +211,18 @@ class StoryGeneratorWithRetry:
                     max_depth = int(os.getenv("MAX_DEPTH", "50"))
                     min_main_path = int(os.getenv("MIN_MAIN_PATH_DEPTH", "30"))
 
-                # 若处于 v4 骨架模式，则优先使用骨架配置中的最小主线深度，
-                # 避免 TreeBuilder 与 PlotSkeleton 对“主线深度”存在偏差。
+                # 若处于 v4 骨架模式，则主线最小深度以骨架配置为准，
+                # 环境变量只在缺省时提供一个兜底值，避免 v3 阈值“绑架”新流水线。
                 if skeleton is not None:
                     try:
                         sk_min_depth = int(skeleton.config.min_main_depth)
                         if sk_min_depth > 0:
-                            # 取环境阈值与骨架阈值中的较大者，防止过浅
-                            if sk_min_depth > min_main_path:
+                            if sk_min_depth != min_main_path:
                                 print(
-                                    f"   ℹ️  根据骨架提升主线最小深度约束："
+                                    "   ℹ️  guided 模式下使用骨架主线最小深度约束："
                                     f"{min_main_path} → {sk_min_depth}"
                                 )
-                            min_main_path = max(min_main_path, sk_min_depth)
+                            min_main_path = sk_min_depth
                     except Exception:
                         # 骨架配置异常时，不影响原有行为
                         pass
@@ -228,6 +259,16 @@ class StoryGeneratorWithRetry:
                         test_mode=self.test_mode,
                         plot_skeleton=skeleton,
                     )
+
+                    # 在完整预生成流水线中，使用更密集的检查点，降低失败重跑成本。
+                    # 默认每 10 个节点落一次检查点，可通过 PREGEN_CHECKPOINT_INTERVAL 覆盖。
+                    try:
+                        import os as _os
+                        interval = int(_os.getenv("PREGEN_CHECKPOINT_INTERVAL", "10"))
+                        if interval > 0:
+                            tree_builder.checkpoint_interval = interval
+                    except Exception:
+                        pass
 
                     tree = tree_builder.generate_tree(
                         max_depth=max_depth,
@@ -296,6 +337,18 @@ class StoryGeneratorWithRetry:
                 # 计算元数据
                 main_tree = dialogue_trees[characters[0]['name']]  # 主角的树
                 metadata = self._calculate_metadata(main_tree, dialogue_trees)
+
+                # 如果有骨架与结构报告，则在元数据中附加结构质量标记（仅用于上层与日志，不影响 DB schema）
+                if skeleton is not None:
+                    main_char_name = characters[0]["name"]
+                    main_report = per_char_reports.get(main_char_name) if 'per_char_reports' in locals() else None
+                    if isinstance(main_report, dict):
+                        verdict = main_report.get("verdict", {}) or {}
+                        # 轻量质量状态：通过 → accepted，否则 warning（由上层或人工决定是否采信）
+                        quality_state = "accepted" if verdict.get("passes") else "warning"
+                        metadata.setdefault("structure", {})
+                        metadata["structure"]["report"] = main_report
+                        metadata["structure"]["quality_state"] = quality_state
 
                 story_id = db.save_story(
                     city_name=self.city,

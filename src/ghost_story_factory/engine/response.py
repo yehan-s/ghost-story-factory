@@ -159,7 +159,8 @@ class RuntimeResponseGenerator:
         self,
         choice: Choice,
         game_state: GameState,
-        apply_consequences: bool = True
+        apply_consequences: bool = True,
+        director_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """生成玩家选择后的叙事响应
 
@@ -198,8 +199,8 @@ class RuntimeResponseGenerator:
         # 保存原始状态（用于对比）
         state_before = game_state.to_dict()
 
-        # 构建 prompt
-        prompt = self._build_prompt(choice, game_state, state_before)
+        # 构建 prompt（加入导演上下文以增强连续性）
+        prompt = self._build_prompt(choice, game_state, state_before, director_context=director_context)
         # 增强：在响应提示中加入世界书与伏笔回收要求，引导走向规范化结局
         prompt += (
             "\n\n[世界书与收束]\n"
@@ -236,11 +237,17 @@ class RuntimeResponseGenerator:
             agent=agent
         )
 
-        # 执行
+        # 执行（增加防护，避免单次 LLM 故障直接中断整轮生成）
         crew = Crew(agents=[agent], tasks=[task], verbose=False)
         # 受限并发执行
-        with self._sem:
-            result = crew.kickoff()
+        try:
+            with self._sem:
+                result = crew.kickoff()
+            raw_text = str(result)
+        except Exception as e:
+            # 退回到本地兜底响应，避免整个 TreeBuilder 跑崩
+            print(f"⚠️  响应生成失败，使用默认叙事兜底：{e}")
+            raw_text = f"你选择了「{choice.choice_text}」，故事继续在黑暗中推进……"
 
         # 应用后果到游戏状态
         if apply_consequences and choice.consequences:
@@ -248,12 +255,9 @@ class RuntimeResponseGenerator:
             # 记录后果树
             game_state.consequence_tree.append(choice.choice_id)
 
-        # 返回响应文本
-        response_text = str(result)
-
-        # 添加系统提示（如果状态发生变化）
+        # 返回响应文本（附带系统提示）
         response_text = self._add_system_hints(
-            response_text,
+            raw_text,
             state_before,
             game_state.to_dict()
         )
@@ -295,7 +299,8 @@ class RuntimeResponseGenerator:
         self,
         choice: Choice,
         game_state: GameState,
-        state_before: Dict[str, Any]
+        state_before: Dict[str, Any],
+        director_context: Optional[Dict[str, Any]] = None,
     ) -> str:
         """构建完整的 prompt（优化版）"""
         # 计算状态变化
@@ -303,6 +308,27 @@ class RuntimeResponseGenerator:
 
         # 提取场景相关内容（使用场景记忆）
         scene_context = self._get_scene_memory(game_state.current_scene)
+        # 导演上下文摘要：最近几步的选择 / 响应 / 节拍，用于保持节奏与避免重复。
+        ctx_lines = []
+        if director_context:
+            recent_choices = director_context.get("recent_choices") or []
+            recent_responses = director_context.get("recent_responses") or []
+            recent_beats = director_context.get("recent_beats") or []
+            if recent_choices:
+                ctx_lines.append("最近几个关键选择：")
+                for t in recent_choices[-3:]:
+                    ctx_lines.append(f"- {t}")
+            if recent_beats:
+                ctx_lines.append("\n最近几个节拍：")
+                for b in recent_beats[-3:]:
+                    bt = b.get("beat_type")
+                    tl = b.get("tension_level")
+                    ctx_lines.append(f"- depth={b.get('depth')}, type={bt}, tension={tl}")
+            if recent_responses:
+                ctx_lines.append("\n最近一段响应摘要（供你保持语气与节奏一致，不要照抄原文）：")
+                last_resp = str(recent_responses[-1])[:180]
+                ctx_lines.append(last_resp + ("..." if len(last_resp) == 180 else ""))
+        ctx_block = "\n".join(ctx_lines) if ctx_lines else "（暂无历史上下文，可按常规节奏书写。）"
 
         return f"""
 你是一个专业的恐怖故事作家。根据玩家选择生成沉浸式叙事响应（200-400字）。
@@ -318,6 +344,9 @@ class RuntimeResponseGenerator:
 
 ## 场景信息
 {scene_context}
+
+## 最近几步的叙事上下文（请用于保持连贯性，避免简单重复）
+{ctx_block}
 
 ---
 
@@ -588,4 +617,3 @@ def format_response_with_state(
         formatted += f"\n- 🎒 道具: {', '.join(game_state.inventory)}"
 
     return formatted
-
