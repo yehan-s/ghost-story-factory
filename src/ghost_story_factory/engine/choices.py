@@ -267,7 +267,7 @@ class ChoicePointsGenerator:
       "consequences": {
         "PR": "+5",
         "items": ["道具1"],
-        "flags": {"flag1": true}
+        "flags": {"flag1": "value"}
       },
       "tags": ["保守", "安全"],
       "timeout": null,
@@ -519,8 +519,10 @@ class ChoicePointsGenerator:
             try:
                 from ..utils.logging_utils import get_logger  # type: ignore
                 logger, _ = get_logger()
-                snippet_prompt = (prompt[:400] + "…") if "prompt" in locals() and len(prompt) > 400 else prompt
-                snippet_output = (result_text[:400] + "…") if result_text and len(result_text) > 400 else result_text
+                # 安全获取 prompt 和 result_text（可能尚未定义）
+                prompt_text = locals().get('prompt', '<prompt not yet constructed>')
+                snippet_prompt = (prompt_text[:400] + "…") if len(str(prompt_text)) > 400 else prompt_text
+                snippet_output = (result_text[:400] + "…") if len(result_text) > 400 else result_text
                 logger.warning(
                     "[ChoicePointsGenerator] LLM Error | scene=%s error=%s | prompt_snippet=%s | output_snippet=%s",
                     current_scene,
