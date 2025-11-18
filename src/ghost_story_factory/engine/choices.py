@@ -188,6 +188,10 @@ class ChoicePointsGenerator:
         self._json_salvaged: int = 0
         self._json_failures: int = 0
 
+        # 当某次调用暴露出上游 LLM / CrewAI 的系统性错误（例如 format specifier 相关异常）时，
+        # 本轮故事生成中可以禁用选择点 LLM，避免重复触发同一错误并浪费时间。
+        self._llm_disabled_for_choices: bool = False
+
     def _load_prompt_template(self) -> str:
         """加载 prompt 模板
 
@@ -328,6 +332,12 @@ class ChoicePointsGenerator:
         Returns:
             List[Choice]: 选择点列表
         """
+        # 如果在本轮生成过程中已经判定 LLM 不可靠，则直接退回默认选项，
+        # 避免在后续节点上反复触发相同的上游错误。
+        if self._llm_disabled_for_choices:
+            print("⚠️  选择点 LLM 已在本轮中禁用，使用默认选择点。")
+            return self._get_default_choices(current_scene)
+
         # 延迟导入 CrewAI（避免基础功能依赖）
         try:
             from crewai import Agent, Task, Crew, LLM
@@ -336,63 +346,66 @@ class ChoicePointsGenerator:
             print("⚠️  CrewAI 未安装，无法生成选择点，返回默认选择点")
             return self._get_default_choices(current_scene)
 
-        # 复用 Kimi LLM 实例（选择点生成专用模型）
-        llm = self._get_llm()
-        print(f"🤖 [选择点] 使用模型: {self._kimi_model_choices}")
+        # 本次调用的原始 LLM 输出，用于错误时日志记录
+        result_text: str = ""
 
-        # 构建 prompt（使用场景记忆缓存/RAG锚点 + 骨架节拍信息 + 最近一轮选择，避免重复）
-        prompt = self._build_prompt(
-            current_scene=current_scene,
-            game_state=game_state,
-            narrative_context=narrative_context,
-            beat_type=beat_type,
-            tension_level=tension_level,
-            is_critical_beat=is_critical_beat,
-             beat_leads_to_ending=beat_leads_to_ending,
-            recent_choices=recent_choices,
-        )
-        # 在 prompt 尾部加入结局引导与世界书约束，提升通向结局的倾向
-        endings_hint = (
-            "\n\n[结局与规则]\n"
-            "- 至少提供 1 个会推进至关键线索或结局的选项（标记为 'critical'）\n"
-            "- 遵循世界书规则与主线伏笔，避免烂尾\n"
-        )
-        prompt = prompt + endings_hint
-
-        # 创建 Agent（使用 Kimi LLM）
-        agent = Agent(
-            role="选择点设计师",
-            goal="生成符合场景的选择点，引导玩家在框架内做出选择",
-            backstory=(
-                "你精通叙事设计和玩家心理学。"
-                "你擅长设计有意义的选择点，让玩家感觉'我在控制剧情'，"
-                "但实际上所有选择都在设计好的框架内。"
-            ),
-            verbose=False,
-            allow_delegation=False,
-            llm=llm  # 使用 Kimi LLM
-        )
-
-        # 创建任务
-        task = Task(
-            description=prompt,
-            expected_output="严格的 JSON 对象（仅一段），不要额外文本",
-            agent=agent
-        )
-
-        # 执行（带一次重试，二次更严格提示）
-        result_text = self._call_llm_with_retry(
-            agent,
-            task,
-            retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。",
-        )
-
-        # 空响应防护：直接回退到本地默认选择，避免解析报错
-        if not result_text or not str(result_text).strip():
-            return self._get_default_choices(current_scene)
-
-        # 解析结果
         try:
+            # 复用 Kimi LLM 实例（选择点生成专用模型）
+            llm = self._get_llm()
+            print(f"🤖 [选择点] 使用模型: {self._kimi_model_choices}")
+
+            # 构建 prompt（使用场景记忆缓存/RAG锚点 + 骨架节拍信息 + 最近一轮选择，避免重复）
+            prompt = self._build_prompt(
+                current_scene=current_scene,
+                game_state=game_state,
+                narrative_context=narrative_context,
+                beat_type=beat_type,
+                tension_level=tension_level,
+                is_critical_beat=is_critical_beat,
+                beat_leads_to_ending=beat_leads_to_ending,
+                recent_choices=recent_choices,
+            )
+            # 在 prompt 尾部加入结局引导与世界书约束，提升通向结局的倾向
+            endings_hint = (
+                "\n\n[结局与规则]\n"
+                "- 至少提供 1 个会推进至关键线索或结局的选项（标记为 'critical'）\n"
+                "- 遵循世界书规则与主线伏笔，避免烂尾\n"
+            )
+            prompt = prompt + endings_hint
+
+            # 创建 Agent（使用 Kimi LLM）
+            agent = Agent(
+                role="选择点设计师",
+                goal="生成符合场景的选择点，引导玩家在框架内做出选择",
+                backstory=(
+                    "你精通叙事设计和玩家心理学。"
+                    "你擅长设计有意义的选择点，让玩家感觉'我在控制剧情'，"
+                    "但实际上所有选择都在设计好的框架内。"
+                ),
+                verbose=False,
+                allow_delegation=False,
+                llm=llm,  # 使用 Kimi LLM
+            )
+
+            # 创建任务
+            task = Task(
+                description=prompt,
+                expected_output="严格的 JSON 对象（仅一段），不要额外文本",
+                agent=agent,
+            )
+
+            # 执行（带一次重试，二次更严格提示）
+            result_text = self._call_llm_with_retry(
+                agent,
+                task,
+                retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。",
+            )
+
+            # 空响应防护：直接回退到本地默认选择，避免解析报错
+            if not result_text or not str(result_text).strip():
+                return self._get_default_choices(current_scene)
+
+            # 解析结果
             choices_data = self._parse_result(result_text)
             # 标准化所有 choice 字段
             raw_choices = [self._normalize_choice_fields(c) for c in choices_data.get('choices', [])]
@@ -471,8 +484,29 @@ class ChoicePointsGenerator:
 
             return choices_objs
         except Exception as e:
-            print(f"⚠️  解析选择点失败: {e}")
-            # 返回默认选择点
+            # 这里兜底所有选择点生成相关异常（包括 LLM 调用 / JSON 解析错误），
+            # 避免在 TreeBuilder 中频繁看到底层格式化错误（如 Invalid format specifier ' true'）。
+            msg = str(e)
+            if "Invalid format specifier" in msg:
+                # 视为上游 LLM / 框架级错误，本轮后续节点直接禁用选择点 LLM。
+                self._llm_disabled_for_choices = True
+            # 将错误上下文（场景 / prompt 片段 / 原始输出片段）写入统一日志，便于后续诊断
+            try:
+                from ..utils.logging_utils import get_logger  # type: ignore
+                logger, _ = get_logger()
+                snippet_prompt = (prompt[:400] + "…") if "prompt" in locals() and len(prompt) > 400 else prompt
+                snippet_output = (result_text[:400] + "…") if result_text and len(result_text) > 400 else result_text
+                logger.warning(
+                    "choice_llm_error scene=%s error=%s prompt_snippet=%s output_snippet=%s",
+                    current_scene,
+                    msg,
+                    snippet_prompt,
+                    snippet_output,
+                )
+            except Exception:
+                # 日志记录失败不影响主流程
+                pass
+            print(f"⚠️  选择点生成失败，已回退默认选项: {e}")
             return self._get_default_choices(current_scene)
 
     def _get_llm(self):

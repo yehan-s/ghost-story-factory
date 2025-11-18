@@ -91,3 +91,43 @@ def test_evaluate_with_poor_structure_and_repetition_dict_input():
     # 多样性维度：只有一个选项，但至少给出 0 或中性评分
     assert 0.0 <= dims["diversity"]["score"] <= 8.0
 
+
+def test_evaluate_detects_critical_in_consequences_flag():
+    """
+    即便 choice_type 仍为 normal，
+    只要 consequences.critical=True，也应被视为 critical 选项。
+    """
+    evaluator = ChoiceQualityEvaluator()
+    state = _make_state()
+
+    choices = [
+        Choice(
+            choice_id="A",
+            choice_text="谨慎地观察周围，不立刻回应“白娘子”的呼唤。",
+            choice_type=ChoiceType.NORMAL,
+            consequences={"timestamp": "+1min"},
+        ),
+        Choice(
+            choice_id="B",
+            choice_text="把“白娘子汤”一饮而尽，让自己与湖底频率彻底绑定。",
+            choice_type=ChoiceType.NORMAL,
+            consequences={
+                "timestamp": "+5min",
+                "critical": True,
+                "flags": {"mask_1987": True},
+            },
+        ),
+    ]
+
+    beat_info = {"beat_type": "setup", "leads_to_ending": False}
+
+    result = evaluator.evaluate(
+        scene_id="S1",
+        choices=choices,
+        game_state=state,
+        beat_info=beat_info,
+    )
+
+    dims = {d["name"]: d for d in result["dimensions"]}
+    # 结构维度的说明应标记存在 critical
+    assert "存在critical=True" in dims["structure"]["comment"]

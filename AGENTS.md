@@ -327,4 +327,27 @@ Ghost Story Factory 是一个**交互式灵异故事工厂**，包含两大能�
      - 代码实现一组；
      - 测试新增/修改一组（可以和实现合并，但不要把无关改动混在一个 commit 里）。
 
+### 4.5 Git 提交规范（Commit Message）
+
+所有提交必须使用统一的前缀风格：
+
+- 使用 `type: <subject>` 形式，常见 `type` 包括：
+  - `feat`: 新功能 / 新能力落地（包括 CLI、生成器、引擎能力等）；
+  - `fix`: 明确的 bug 修复；
+  - `docs`: 纯文档变更（SPEC / ADR / TASK / README 等）；
+  - `refactor`: 重构，行为不变、结构调整；
+  - `chore`: 杂项（脚本、CI、依赖更新、数据库快照等）；
+  - `test`: 只改测试；
+  - `style`: 纯格式/排版调整，不改变行为。
+- Task / Issue 号放在 `type` 之后作为 scope 或补充信息，而不是替代 `type`：
+  - ✅ `feat(choice-eval): BMAD 选择点评估器与离线诊断 CLI`
+  - ✅ `docs(task_story_structure): 更新 STORY_PIPELINE_V4 与 TASK_STORY_STRUCTURE.md`
+  - ❌ `[TASK_CHOICE_EVAL_BMAD] BMAD 选择点评估器与离线诊断 CLI`（缺少 type）
+- 一条提交只做一件有意义的事情：
+  - 新功能落地：`feat(...)` + 对应测试（必要时可以在同一个 commit）；
+  - 文档补全：`docs(...)`；
+  - 数据库快照：`chore(db): 更新故事与测试数据库快照`（不要混入代码改动）。
+
+后续所有自动化或由 Codex 生成的 commit message 必须遵守上述规范。
+
 只要在这个项目里遵守以上约定，就能在不制造新坑的前提下，把 v4 骨架流水线一点点演进到可用状态。  

@@ -105,6 +105,28 @@ class ChoiceQualityEvaluator:
                 cons = getattr(c, "consequences", None)
             return cons or {}
 
+        def _is_critical(c: Choice | Dict[str, Any]) -> bool:
+            """
+            判断一个选项是否可视为 critical。
+
+            兼容逻辑：
+            - 首选 choice_type == \"critical\"；
+            - 若后果中显式存在 consequences[\"critical\"] = True 也视为 critical；
+            - 预留：若 flags 中以后出现以 \"critical\" 开头的标记，同样可视为 critical。
+            """
+            ctype = _get_type(c).lower()
+            if ctype == "critical":
+                return True
+            cons = _get_consequences(c)
+            if not cons:
+                return False
+            if bool(cons.get("critical")):
+                return True
+            flags = cons.get("flags") or {}
+            if any(str(k).lower().startswith("critical") for k in flags.keys()):
+                return True
+            return False
+
         # 预处理
         texts = [_get_text(c) for c in choices]
         texts_non_empty = [t for t in texts if t]
@@ -122,7 +144,7 @@ class ChoiceQualityEvaluator:
             suggestions.append("该节点选项数量超过 4 个，可能导致选择瘫痪。")
 
         # 检查是否存在 critical 选项
-        has_critical = any(_get_type(c).lower() == "critical" for c in choices)
+        has_critical = any(_is_critical(c) for c in choices)
         if has_critical:
             structure_score += 0.5
         else:

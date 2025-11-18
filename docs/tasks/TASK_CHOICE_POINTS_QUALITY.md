@@ -129,6 +129,44 @@
   - 与 `TASK_PROGRESS_VISUALIZATION.md` 的工作协同：
     - 在生成进度可视化（HTML/终端）中标记“重复度高”的节点，便于肉眼扫出问题段。
 
+### M4: 节点级质量问题的离线修复流程（避免在 TreeBuilder 中死磕）
+
+**目的**：当某些节点的选择点因为 LLM/JSON 问题质量不佳时，不在 TreeBuilder 主循环里“现场死磕”，而是通过离线工具有计划地修复，兼顾稳定性与质量。
+
+- [ ] M4-1 明确运行时与离线修复的职责边界
+  - 运行时（TreeBuilder.generate_tree）：
+    - 捕获所有 ChoicePointsGenerator 的异常（包括 LLM 内部格式化错误，如 `Invalid format specifier ' true'`）；
+    - 记录清晰日志（包括场景 ID / 节点 ID / 异常摘要）；
+    - 立即退回 `_get_default_choices()` 确保结构可继续生成，不在主循环中多次重试单节点。
+  - 离线修复阶段：
+    - 通过工具扫描对话树，识别“默认选择占比过高 / BMAD 评分显著偏低”的节点或幕；
+    - 针对这些节点重新调用 ChoicePointsGenerator，生成更高质量的选择集合，并回写树。
+
+- [ ] M4-2 在 `tools/repair_dialogue_trees.py` 中实现节点级离线修复流程
+  - 输入：
+    - 对话树 JSON（或 checkpoint）；
+    - 可选过滤条件：`scene_id` / `min_repetition_rate` / `bmad_score_threshold` 等。
+  - 行为：
+    - 扫描选择点质量指标（可复用 `story_report` 与 BMAD 结果，见 `TASK_CHOICE_EVAL_BMAD.md`）；
+    - 对满足条件的节点：
+      - 重新构造 `GameState` 与节拍信息；
+      - 调用 ChoicePointsGenerator.generate_choices（脱离 TreeBuilder 主循环）；
+      - 用新 choices 替换节点中的旧 choices（必要时保留快照）。
+  - 输出：
+    - 修复后的新树 JSON；
+    - 简要报告：修复节点数 / 每个节点前后质量差异摘要。
+
+- [ ] M4-3 与 BMAD 评估器集成
+  - 在离线修复前后，对目标节点调用 `ChoiceQualityEvaluator.evaluate`：
+    - 比较修复前后的 `overall_score` 与各维度（structure / diversity / pacing / lore）评分；
+    - 在修复报告中记录这些差异，用于验证该次修复对质量的实际提升。
+
+- [ ] M4-4 文档化“不要在 TreeBuilder 中死磕单节点”的准则
+  - 在本 Task 与 `TASK_STORY_STRUCTURE.md` 中补充说明：
+    - 节点级质量问题（包括 LLM 格式化错误 / JSON 半残 / BMAD 低分）优先通过离线修复链路解决；
+    - TreeBuilder 主循环只负责结构生成与基础兜底，不在其中堆叠多轮重试和复杂 heuristics；
+    - 任何需要“多次重试单个节点”的需求，应转化为离线 repair 工具或专门的诊断脚本，而不是注入到 BFS 生成逻辑中。
+
 ---
 
 ## 3. 依赖与协作

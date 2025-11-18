@@ -101,6 +101,70 @@ def _try_parse_json(text: str) -> Dict[str, Any]:
     raise ValueError("无法从骨架生成结果中解析出合法 JSON")
 
 
+def _validate_skeleton(skeleton: PlotSkeleton) -> None:
+    """
+    对生成的 PlotSkeleton 做基础结构校验。
+
+    目的：
+    - 确保骨架与自身 config 至少在几个关键指标上自洽；
+    - 避免明显“过浅 / 无结局 / 只有一幕”的骨架直接进入 v4 主路径。
+
+    说明：
+    - 真正“打回”的情况只保留在不可用骨架（例如完全无结局）的极端场景；
+    - 大多数自相矛盾的配置（如 min_main_depth 远大于实际 beats）在这里被自动收敛，
+      以骨架自身结构为准，不再轻易回退到 v3。
+    """
+    errors = []
+
+    # 1) 幕数至少 3 幕（与 prompt 约定一致）
+    if skeleton.num_acts < 3:
+        errors.append(f"幕数过少: num_acts={skeleton.num_acts} < 3")
+
+    cfg = skeleton.config
+
+    # 2) 节拍总数不应明显低于配置的主线最小深度
+    try:
+        min_depth = int(cfg.min_main_depth)
+    except Exception:
+        min_depth = 0
+    if min_depth > 0 and skeleton.num_beats < min_depth:
+        # 与其直接判错，不如让配置向骨架实际节拍数收敛，
+        # 避免“纸面 18 层、实际 12 层”的虚高要求。
+        new_min_depth = max(4, skeleton.num_beats)
+        cfg.min_main_depth = new_min_depth
+        # target_main_depth 至少不小于 min_main_depth
+        try:
+            if cfg.target_main_depth < cfg.min_main_depth:
+                cfg.target_main_depth = cfg.min_main_depth
+        except Exception:
+            pass
+
+    # 3) 允许落到结局的节拍数量应不少于 target_endings
+    try:
+        target_endings = int(cfg.target_endings)
+    except Exception:
+        target_endings = 0
+    if target_endings > 0 and skeleton.num_ending_beats < target_endings:
+        if skeleton.num_ending_beats <= 0:
+            # 完全没有结局节拍，这种骨架对引擎来说不可用
+            errors.append(
+                f"结局节拍数量为 0，target_endings={target_endings}"
+            )
+        else:
+            # 否则让 target_endings 向实际结局节拍收敛，
+            # 保证“至少每个结局节拍能支撑一个结局”。
+            cfg.target_endings = skeleton.num_ending_beats
+
+    # 4) 结局节拍的分布建议（暂不作为硬错误）：
+    #    - Act I 不宜大量结局落点；
+    #    - 最后一幕最好包含至少一个结局节拍。
+    # 这些更适合作为 story_report / 诊断工具中的 warning，这里先不做 gating。
+
+    if errors:
+        # 统一抛出异常，由上层打印并回退 v3
+        raise ValueError("PlotSkeleton 不满足基础结构约束: " + "; ".join(errors))
+
+
 class SkeletonGenerator:
     """故事骨架生成器"""
 
@@ -165,5 +229,5 @@ class SkeletonGenerator:
 
         data = _try_parse_json(result)
         skeleton = PlotSkeleton.from_dict(data)
+        _validate_skeleton(skeleton)
         return skeleton
-

@@ -1,7 +1,7 @@
 # TASK: 选择点 BMAD 评估器（多评委离线打分）
 
-版本: v0.2  
-状态: 部分完成（启发式路径 + CLI 已落地）  
+版本: v0.3  
+状态: 部分完成（启发式路径 + CLI + 按幕聚合指标已落地）  
 关联 ADR:  
 - `docs/architecture/ADR-003-v4-workflow-staging-and-agents.md`  
 
@@ -122,6 +122,36 @@
   - 新增 `tests/test_choice_evaluator_bmad.py`：
     - 使用手工构造的一组选项，直接调用评估器的启发式路径（不依赖 LLM），验证输出结构与基本评分逻辑；
   - 将该测试文件纳入 `tools/run_all_tests.py` 的 Pytest 部分。
+
+### M4: 故事级按幕聚合与结构报告集成
+
+- [x] M4-1 在 `build_story_report` 中引入按幕聚合的 BMAD 选择点质量指标：
+  - 为有骨架的故事计算按 `act_index` 聚合的平均 overall_score 与各维度平均分；
+  - 输出结构示例：
+    ```json
+    {
+      "choice_quality_by_act": {
+        "acts": [
+          {
+            "act_index": 1,
+            "label": "Act I",
+            "num_nodes_evaluated": 12,
+            "avg_overall_score": 7.3,
+            "dimensions": [
+              {"name": "structure", "avg_score": 7.8},
+              {"name": "diversity", "avg_score": 7.1},
+              {"name": "pacing", "avg_score": 6.9},
+              {"name": "lore", "avg_score": 7.0}
+            ]
+          }
+        ]
+      }
+    }
+    ```
+  - 要求：
+    - 仅在传入 `PlotSkeleton` 且能确定 act_index 时启用；
+    - 评估失败不阻断主流程，不影响 verdict；
+    - 计算代价与故事幕数线性相关，适合在每次完整生成后作为离线诊断。
 
 ---
 
