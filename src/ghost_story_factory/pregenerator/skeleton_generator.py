@@ -21,10 +21,15 @@ try:
     from ..utils.llm_client import LLMClient, create_llm_client, LLMClientError
     _USE_LLM_CLIENT = True
 except ImportError:
-    # 兼容：如果 LLMClient 不可用，回退到 Crew
+    _USE_LLM_CLIENT = False
+
+# CrewAI 导入（总是尝试导入，用于回退路径）
+try:
     from crewai import Agent, Task, Crew
     from crewai.llm import LLM
-    _USE_LLM_CLIENT = False
+    _CREWAI_AVAILABLE = True
+except ImportError:
+    _CREWAI_AVAILABLE = False
 
 # templates 目录：项目根目录下的 templates/
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates"
@@ -53,6 +58,9 @@ def _build_default_llm():
             # 继续下面的 Crew 回退逻辑
 
     # 回退路径：使用 CrewAI
+    if not _CREWAI_AVAILABLE:
+        raise RuntimeError("CrewAI 不可用，且 LLMClient 创建失败")
+
     kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
     if kimi_key:
         base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
@@ -310,6 +318,9 @@ class SkeletonGenerator:
         Returns:
             str: LLM 返回的文本
         """
+        if not _CREWAI_AVAILABLE:
+            raise RuntimeError("CrewAI 不可用，无法使用回退路径")
+
         logger.info("[SkeletonGenerator] 使用 CrewAI 调用 LLM（回退路径）")
 
         agent = Agent(
