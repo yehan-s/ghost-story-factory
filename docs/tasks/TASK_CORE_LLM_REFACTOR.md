@@ -1,8 +1,9 @@
 # TASK: 核心结构化 LLM 调用重构（去 Crew，直连 LLM 客户端）
 
-版本: v0.1  
-状态: 草案（新建）  
-关联 ADR:  
+版本: v0.1
+状态: ✅ M1-M3 已完成（2025-11-18）
+关联 GitHub Issue: [#8](https://github.com/yehan-s/ghost-story-factory/issues/8)
+关联 ADR:
 - `docs/architecture/ADR-004-core-llm-refactor.md`  
 
 ---
