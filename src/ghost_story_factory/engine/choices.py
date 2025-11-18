@@ -30,6 +30,20 @@ import json
 
 from .state import GameState
 
+# 导入新的 LLMClient（替代 CrewAI）
+try:
+    from ..utils.llm_client import LLMClient, create_llm_client, LLMClientError
+    _USE_LLM_CLIENT = True
+except ImportError:
+    _USE_LLM_CLIENT = False
+
+# CrewAI 导入（总是尝试导入，用于回退路径）
+try:
+    from crewai import Agent, Task, Crew, LLM as CrewLLM
+    _CREWAI_AVAILABLE = True
+except ImportError:
+    _CREWAI_AVAILABLE = False
+
 
 class ChoiceType(str, Enum):
     """选择点类型"""
@@ -155,13 +169,14 @@ class ChoicePointsGenerator:
     根据当前场景和游戏状态，调用 LLM 生成合适的选择点列表
     """
 
-    def __init__(self, gdd_content: str, lore_content: str, main_story: str = ""):
+    def __init__(self, gdd_content: str, lore_content: str, main_story: str = "", llm=None):
         """初始化生成器
 
         Args:
             gdd_content: GDD（AI 导演任务简报）内容
             lore_content: Lore v2（世界观）内容
             main_story: 主线故事内容（可选，用于会话级缓存）
+            llm: 可选，自定义 LLM 实例（LLMClient 或 crewai.LLM）；不传则自动创建
         """
         self.gdd = gdd_content
         self.lore = lore_content
@@ -171,9 +186,17 @@ class ChoicePointsGenerator:
         # 会话级缓存
         self.crew = None  # 持久的 Crew 实例（保留占位）
         self.session_initialized = False  # 是否已初始化会话
-        self._llm = None  # 复用 LLM 实例
+        self._llm = llm  # 复用 LLM 实例（可能是 LLMClient 或 CrewLLM）
         self._kimi_model_choices = None  # 记录模型名用于日志
         self._scene_memory = {}  # 场景 -> 锚点摘要与规则缓存
+
+        # 判断使用模式
+        if self._llm is None:
+            # 未传入 llm，根据可用性自动选择
+            self.use_llm_client = _USE_LLM_CLIENT
+        else:
+            # 传入了 llm，判断类型
+            self.use_llm_client = isinstance(self._llm, LLMClient) if _USE_LLM_CLIENT else False
 
         # LLM 并发控制（选择点生成通常高频，限制并发避免打爆接口）
         import os, threading
@@ -338,21 +361,13 @@ class ChoicePointsGenerator:
             print("⚠️  选择点 LLM 已在本轮中禁用，使用默认选择点。")
             return self._get_default_choices(current_scene)
 
-        # 延迟导入 CrewAI（避免基础功能依赖）
-        try:
-            from crewai import Agent, Task, Crew, LLM
-            import os
-        except ImportError:
-            print("⚠️  CrewAI 未安装，无法生成选择点，返回默认选择点")
-            return self._get_default_choices(current_scene)
-
         # 本次调用的原始 LLM 输出，用于错误时日志记录
         result_text: str = ""
 
         try:
-            # 复用 Kimi LLM 实例（选择点生成专用模型）
+            # 获取 LLM 实例（LLMClient 或 CrewLLM）
             llm = self._get_llm()
-            print(f"🤖 [选择点] 使用模型: {self._kimi_model_choices}")
+            print(f"🤖 [选择点] 使用模型: {self._kimi_model_choices} | 模式: {'LLMClient' if self.use_llm_client else 'CrewAI'}")
 
             # 构建 prompt（使用场景记忆缓存/RAG锚点 + 骨架节拍信息 + 最近一轮选择，避免重复）
             prompt = self._build_prompt(
@@ -373,33 +388,43 @@ class ChoicePointsGenerator:
             )
             prompt = prompt + endings_hint
 
-            # 创建 Agent（使用 Kimi LLM）
-            agent = Agent(
-                role="选择点设计师",
-                goal="生成符合场景的选择点，引导玩家在框架内做出选择",
-                backstory=(
-                    "你精通叙事设计和玩家心理学。"
-                    "你擅长设计有意义的选择点，让玩家感觉'我在控制剧情'，"
-                    "但实际上所有选择都在设计好的框架内。"
-                ),
-                verbose=False,
-                allow_delegation=False,
-                llm=llm,  # 使用 Kimi LLM
-            )
+            # 根据模式选择调用方式
+            if self.use_llm_client:
+                # 新路径：使用 LLMClient
+                result_text = self._call_llm_with_llm_client(prompt)
+            else:
+                # 回退路径：使用 CrewAI
+                if not _CREWAI_AVAILABLE:
+                    print("⚠️  CrewAI 不可用，返回默认选择点")
+                    return self._get_default_choices(current_scene)
 
-            # 创建任务
-            task = Task(
-                description=prompt,
-                expected_output="严格的 JSON 对象（仅一段），不要额外文本",
-                agent=agent,
-            )
+                # 创建 Agent
+                agent = Agent(
+                    role="选择点设计师",
+                    goal="生成符合场景的选择点，引导玩家在框架内做出选择",
+                    backstory=(
+                        "你精通叙事设计和玩家心理学。"
+                        "你擅长设计有意义的选择点，让玩家感觉'我在控制剧情'，"
+                        "但实际上所有选择都在设计好的框架内。"
+                    ),
+                    verbose=False,
+                    allow_delegation=False,
+                    llm=llm,
+                )
 
-            # 执行（带一次重试，二次更严格提示）
-            result_text = self._call_llm_with_retry(
-                agent,
-                task,
-                retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。",
-            )
+                # 创建任务
+                task = Task(
+                    description=prompt,
+                    expected_output="严格的 JSON 对象（仅一段），不要额外文本",
+                    agent=agent,
+                )
+
+                # 执行（带一次重试，二次更严格提示）
+                result_text = self._call_llm_with_retry(
+                    agent,
+                    task,
+                    retry_suffix="\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。",
+                )
 
             # 空响应防护：直接回退到本地默认选择，避免解析报错
             if not result_text or not str(result_text).strip():
@@ -510,22 +535,36 @@ class ChoicePointsGenerator:
             return self._get_default_choices(current_scene)
 
     def _get_llm(self):
-        """获取（并复用）LLM 实例"""
+        """获取（并复用）LLM 实例（LLMClient 或 CrewLLM）"""
         if self._llm is not None:
             return self._llm
 
-        from crewai import LLM
         import os
+
+        # 优先使用 LLMClient
+        if self.use_llm_client and _USE_LLM_CLIENT:
+            try:
+                self._llm = create_llm_client()
+                self._kimi_model_choices = self._llm.default_model
+                return self._llm
+            except Exception as e:
+                print(f"⚠️  创建 LLMClient 失败：{e}，回退到 CrewAI")
+                # 继续下面的 CrewAI 路径
+
+        # 回退路径：使用 CrewAI
+        if not _CREWAI_AVAILABLE:
+            raise RuntimeError("CrewAI 不可用，且 LLMClient 创建失败")
 
         kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
         kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
         self._kimi_model_choices = os.getenv("KIMI_MODEL_CHOICES") or os.getenv("KIMI_MODEL", "moonshot-v1-32k")
 
-        self._llm = LLM(
+        self._llm = CrewLLM(
             model=self._kimi_model_choices,
             api_key=kimi_key,
             base_url=kimi_base
         )
+        self.use_llm_client = False  # 标记为 CrewAI 模式
         return self._llm
 
     def _get_scene_memory(self, scene: str) -> str:
@@ -545,8 +584,10 @@ class ChoicePointsGenerator:
         return memory
 
     def _call_llm_with_retry(self, agent, task, retry_suffix: str = "", max_retries: int = 1) -> str:
-        """执行 LLM 任务，失败后附加严格提示进行一次重试"""
-        from crewai import Crew, Task
+        """执行 LLM 任务，失败后附加严格提示进行一次重试（CrewAI 模式）"""
+        if not _CREWAI_AVAILABLE:
+            raise RuntimeError("CrewAI 不可用，无法使用回退路径")
+
         # 首次
         crew = Crew(agents=[agent], tasks=[task], verbose=False)
         with self._sem:
@@ -569,6 +610,49 @@ class ChoicePointsGenerator:
         with self._sem:
             result2 = crew2.kickoff()
         return self._extract_llm_text(result2)
+
+    def _call_llm_with_llm_client(self, prompt: str, max_retries: int = 1) -> str:
+        """使用 LLMClient 调用 LLM，带重试机制（新路径）
+
+        Args:
+            prompt: 完整 prompt
+            max_retries: 最大重试次数
+
+        Returns:
+            str: LLM 返回的文本
+        """
+        if not _USE_LLM_CLIENT:
+            raise RuntimeError("LLMClient 不可用")
+
+        retry_suffix = "\n\n重要：仅输出一个 JSON 对象，不要任何解释或额外文本。"
+
+        # 首次调用
+        with self._sem:
+            try:
+                result = self._llm.call(prompt=prompt, max_tokens=16000, temperature=0.7)
+            except LLMClientError as e:
+                print(f"⚠️  LLMClient 调用失败: {e}")
+                raise
+
+        # 解析试探（不计入 JSON 遥测，只用于判断是否需要重试）
+        try:
+            _ = self._parse_result(result, record_metrics=False)
+            return result
+        except Exception:
+            if max_retries <= 0:
+                return result
+
+        # 重试一次，附加更严格的输出要求
+        strict_prompt = prompt + retry_suffix
+        with self._sem:
+            try:
+                result2 = self._llm.call(prompt=strict_prompt, max_tokens=16000, temperature=0.7)
+            except LLMClientError as e:
+                print(f"⚠️  LLMClient 重试调用失败: {e}")
+                # 返回首次结果，让上层处理
+                return result
+
+        return result2
 
     def _build_prompt(
         self,
