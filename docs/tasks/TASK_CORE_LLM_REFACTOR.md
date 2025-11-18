@@ -58,7 +58,7 @@
 
 ### M1: 设计与实现 LLMClient
 
-- [ ] M1-1 定义基础接口与配置：
+- [x] M1-1 定义基础接口与配置：
 
   ```python
   class LLMClient:
@@ -74,12 +74,12 @@
           ...
   ```
 
-- [ ] M1-2 支持至少 Kimi / OpenAI 两种 provider：
+- [x] M1-2 支持至少 Kimi / OpenAI 两种 provider：
   - 从环境变量读取对应的 `API_KEY` / `BASE_URL` / 默认模型名；  
   - 以最小依赖（requests 或官方 SDK）实现；  
   - 统一错误处理与超时策略（例如：超时重试一次、记录错误日志）。
 
-- [ ] M1-3 日志与诊断：
+- [x] M1-3 日志与诊断：
   - 使用 `logging_utils.get_logger()` 在每次 call 时记录：  
     - provider / model / 请求 ID；  
     - prompt snippet（截断到 400–800 字符）；  
@@ -88,11 +88,11 @@
 
 ### M2: SkeletonGenerator 重构
 
-- [ ] M2-1 在 `SkeletonGenerator` 中注入 LLMClient：
+- [x] M2-1 在 `SkeletonGenerator` 中注入 LLMClient：
   - 替换现有的 `Agent/Task/Crew/LLM` 调用为 `LLMClient.call()`；  
   - 保留 `_load_prompt` 与 `_try_parse_json` / `PlotSkeleton.from_dict` / `_validate_skeleton` 逻辑不变。
 
-- [ ] M2-2 验证骨架生成路径：
+- [x] M2-2 验证骨架生成路径：
   - 在不依赖真实 LLM 的情况下，用 Dummy client（返回固化 JSON）跑现有 `tests/test_skeleton_generator.py`；  
   - 在真实环境下，用一两个故事生成骨架，确认：  
     - 日志中有完整 prompt/response 片段；  
@@ -100,18 +100,18 @@
 
 ### M3: ChoicePointsGenerator 重构
 
-- [ ] M3-1 将 `ChoicePointsGenerator.generate_choices()` 内部对 Crew 的依赖替换为 LLMClient 调用：  
+- [x] M3-1 将 `ChoicePointsGenerator.generate_choices()` 内部对 Crew 的依赖替换为 LLMClient 调用：  
   - prompt 仍由 `_build_prompt` 生成；  
   - `result_text = client.call(prompt, model=self._kimi_model_choices, ...)`；  
   - 继续使用 `_parse_result` 与 `_normalize_choice_fields`；  
   - 保持 JSON 遥测统计（`get_json_metrics`）不变。
 
-- [ ] M3-2 错误处理与日志：
+- [x] M3-2 错误处理与日志：
   - 对 JSON 解析错误/半残输出继续做 salvage；  
   - 对 LLM 调用异常（包括网络/配额/格式问题）记录详细日志；  
   - 对需要 fallback 的情况（退回默认 choices）在日志中显式标记，便于后续分析。
 
-- [ ] M3-3 测试与回归：
+- [x] M3-3 测试与回归：
   - 扩展 `tests/test_choices_llm_wrapper.py`：  
     - 增加模拟 LLMClient 的 fake，实现常见错误路径（空输出、半残 JSON、异常抛出）；  
     - 验证 generate_choices 总是返回结构合理的 Choice 列表且不抛异常到上层。  
