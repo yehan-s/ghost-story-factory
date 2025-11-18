@@ -522,15 +522,17 @@ class ChoicePointsGenerator:
                 snippet_prompt = (prompt[:400] + "…") if "prompt" in locals() and len(prompt) > 400 else prompt
                 snippet_output = (result_text[:400] + "…") if result_text and len(result_text) > 400 else result_text
                 logger.warning(
-                    "choice_llm_error scene=%s error=%s prompt_snippet=%s output_snippet=%s",
+                    "[ChoicePointsGenerator] LLM Error | scene=%s error=%s | prompt_snippet=%s | output_snippet=%s",
                     current_scene,
                     msg,
                     snippet_prompt,
                     snippet_output,
                 )
-            except Exception:
-                # 日志记录失败不影响主流程
-                pass
+                # 额外：输出到控制台，确保可见性
+                print(f"⚠️  [日志] 选择点错误详情: scene={current_scene}, error={msg[:100]}")
+            except Exception as log_err:
+                # 日志记录失败时，至少输出到控制台
+                print(f"⚠️  [日志失败] 无法记录选择点错误: {log_err}")
             print(f"⚠️  选择点生成失败，已回退默认选项: {e}")
             return self._get_default_choices(current_scene)
 
@@ -738,7 +740,7 @@ class ChoicePointsGenerator:
       "tags": ["标签1", "标签2"],
       "immediate_consequences": {{
         "resonance": "+10",
-        "flags": {{"flag_name": true}}
+        "flags": {{"flag_name": "value"}}
       }}
     }}
   ]
