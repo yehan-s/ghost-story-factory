@@ -1,8 +1,13 @@
 # ADR-004: 核心结构化 LLM 调用从 Crew 重构为轻量客户端
 
-- 状态: Draft  
-- 日期: 2025-11-17  
-- 作者: yehan（由 Codex 协助起草）  
+- 状态: Accepted (M1-M4 全部完成, 2025-12-13)
+- 日期: 2025-11-17
+- 作者: yehan（由 Codex 协助起草）
+- 里程碑:
+  - M1: LLMClient 实现 (已完成)
+  - M2: SkeletonGenerator 重构 (已完成)
+  - M3: ChoicePointsGenerator 重构 (已完成)
+  - M4: RuntimeResponseGenerator 重构 (已完成，见 ADR-006)  
 
 ---
 
