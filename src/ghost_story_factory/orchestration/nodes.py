@@ -242,6 +242,8 @@ def stage_tree(state: StoryPipelineState) -> StoryPipelineState:
 
     使用 DialogueTreeBuilder + LLMClient 生成完整对话树。
     内部调用 ChoicePointsGenerator 和 RuntimeResponseGenerator。
+
+    M2 增强：收集 JSON 稳定性指标 + 导演上下文
     """
     telemetry = NodeTelemetry(node_name="stage_tree", start_time=time.time())
     logger.info("[LangGraph] stage_tree: 开始")
@@ -286,6 +288,7 @@ def stage_tree(state: StoryPipelineState) -> StoryPipelineState:
                 pass
 
         dialogue_trees = {}
+        last_director_context = None
 
         for char in characters:
             char_name = char["name"]
@@ -313,15 +316,55 @@ def stage_tree(state: StoryPipelineState) -> StoryPipelineState:
             telemetry.llm_calls += 1
             telemetry.llm_successes += 1
 
+            # M2: 收集 JSON 稳定性指标
+            try:
+                if hasattr(tree_builder, "choice_generator") and tree_builder.choice_generator:
+                    json_metrics = tree_builder.choice_generator.get_json_metrics()
+                    telemetry.merge_json_metrics(json_metrics)
+                    logger.info(
+                        f"[LangGraph] stage_tree: '{char_name}' JSON 指标: "
+                        f"total={json_metrics.get('total_calls', 0)}, "
+                        f"ok={json_metrics.get('ok_first_try', 0)}, "
+                        f"salvaged={json_metrics.get('salvaged', 0)}, "
+                        f"failures={json_metrics.get('failures', 0)}"
+                    )
+            except Exception as e:
+                logger.debug(f"[LangGraph] stage_tree: JSON 指标收集失败: {e}")
+
+            # M2: 保存导演上下文（用于诊断）
+            try:
+                if hasattr(tree_builder, "director_context"):
+                    last_director_context = tree_builder.director_context.copy()
+            except Exception:
+                pass
+
             logger.info(f"[LangGraph] stage_tree: '{char_name}' 完成 ({len(tree)} 节点)")
 
         telemetry.status = "success"
         telemetry.end_time = time.time()
 
+        # M2: 汇总 JSON 稳定性指标到 state
+        state["json_metrics"] = telemetry.to_dict().get("json_metrics", {})
+
+        # M2: 保存最后一个 builder 的导演上下文
+        if last_director_context:
+            state["director_context"] = last_director_context
+
         logger.info(
             f"[LangGraph] stage_tree: 全部完成 "
             f"({len(dialogue_trees)} 角色, 耗时 {telemetry.end_time - telemetry.start_time:.2f}s)"
         )
+
+        # M2: 日志记录 JSON 稳定性汇总
+        json_summary = telemetry.to_dict().get("json_metrics", {})
+        if json_summary.get("total_calls", 0) > 0:
+            logger.info(
+                f"[LangGraph] stage_tree: JSON 稳定性汇总: "
+                f"total={json_summary['total_calls']}, "
+                f"ok_first={json_summary['ok_first_try']}, "
+                f"salvaged={json_summary['salvaged']}, "
+                f"failures={json_summary['failures']}"
+            )
 
         state["dialogue_trees"] = dialogue_trees
         state["tree_stage_status"] = "success"
@@ -433,6 +476,21 @@ def stage_report(state: StoryPipelineState) -> StoryPipelineState:
             "pipeline": "langgraph",  # 标记使用 LangGraph 流水线
         }
 
+        # M2: 添加 JSON 稳定性指标到 metadata
+        json_metrics = state.get("json_metrics", {})
+        if json_metrics:
+            metadata["json_stability"] = json_metrics
+            logger.info(
+                f"[LangGraph] stage_report: JSON 稳定性指标已写入 metadata: "
+                f"total={json_metrics.get('total_calls', 0)}, "
+                f"success_rate={_calc_json_success_rate(json_metrics):.1f}%"
+            )
+
+        # M2: 添加遥测摘要到 metadata
+        telemetry_summary = state.get("telemetry", {})
+        if telemetry_summary:
+            metadata["telemetry"] = telemetry_summary
+
         # 添加结构报告
         if plot_skeleton is not None and per_char_reports:
             main_report = per_char_reports.get(characters[0]["name"])
@@ -483,3 +541,17 @@ def stage_report(state: StoryPipelineState) -> StoryPipelineState:
         state["telemetry"]["stage_report"] = telemetry.to_dict()
 
         return state
+
+
+# ============================================================
+# M2: 辅助函数
+# ============================================================
+
+def _calc_json_success_rate(metrics: Dict[str, Any]) -> float:
+    """计算 JSON 解析成功率"""
+    total = metrics.get("total_calls", 0)
+    if total == 0:
+        return 100.0
+    ok = metrics.get("ok_first_try", 0) + metrics.get("ok_after_fix", 0)
+    salvaged = metrics.get("salvaged", 0)
+    return (ok + salvaged) / total * 100

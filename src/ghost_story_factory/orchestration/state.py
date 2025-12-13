@@ -48,8 +48,12 @@ class StoryPipelineState(TypedDict, total=False):
     report_stage_status: str           # "pending" | "success" | "failed"
     report_error: Optional[str]        # 错误信息
 
+    # ========== 导演上下文 (M2) ==========
+    director_context: Dict[str, Any]   # recent_choices, recent_responses, recent_beats
+
     # ========== 遥测 ==========
     telemetry: Dict[str, Any]          # 节点级遥测数据
+    json_metrics: Dict[str, Any]       # JSON 稳定性指标（M2 增强）
 
 
 @dataclass
@@ -67,6 +71,21 @@ class NodeTelemetry:
     llm_failures: int = 0
     total_tokens: int = 0
 
+    # JSON 稳定性指标 (M2 增强)
+    json_total_calls: int = 0
+    json_ok_first_try: int = 0
+    json_ok_after_fix: int = 0
+    json_salvaged: int = 0
+    json_failures: int = 0
+
+    def merge_json_metrics(self, metrics: Dict[str, int]) -> None:
+        """合并来自生成器的 JSON 指标"""
+        self.json_total_calls += metrics.get("total_calls", 0)
+        self.json_ok_first_try += metrics.get("ok_first_try", 0)
+        self.json_ok_after_fix += metrics.get("ok_after_fix", 0)
+        self.json_salvaged += metrics.get("salvaged", 0)
+        self.json_failures += metrics.get("failures", 0)
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "node_name": self.node_name,
@@ -79,6 +98,14 @@ class NodeTelemetry:
             "llm_successes": self.llm_successes,
             "llm_failures": self.llm_failures,
             "total_tokens": self.total_tokens,
+            # JSON 稳定性指标 (M2)
+            "json_metrics": {
+                "total_calls": self.json_total_calls,
+                "ok_first_try": self.json_ok_first_try,
+                "ok_after_fix": self.json_ok_after_fix,
+                "salvaged": self.json_salvaged,
+                "failures": self.json_failures,
+            },
         }
 
 
@@ -160,6 +187,14 @@ def create_initial_state(
         report_stage_status="pending",
         report_error=None,
 
+        # 导演上下文 (M2)
+        director_context={
+            "recent_choices": [],
+            "recent_responses": [],
+            "recent_beats": [],
+        },
+
         # 遥测
         telemetry={},
+        json_metrics={},
     )

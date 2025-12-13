@@ -151,6 +151,24 @@ def _print_telemetry_summary(state: StoryPipelineState) -> None:
     print(f"  总耗时: {total_duration:.2f}s")
     print()
 
+    # M2: JSON 稳定性指标
+    json_metrics = state.get("json_metrics", {})
+    if json_metrics.get("total_calls", 0) > 0:
+        print("  📈 JSON 稳定性指标:")
+        print(f"      总调用: {json_metrics.get('total_calls', 0)}")
+        print(f"      一次成功: {json_metrics.get('ok_first_try', 0)}")
+        print(f"      修复后成功: {json_metrics.get('ok_after_fix', 0)}")
+        print(f"      挽救成功: {json_metrics.get('salvaged', 0)}")
+        print(f"      失败: {json_metrics.get('failures', 0)}")
+        # 计算成功率
+        total = json_metrics.get('total_calls', 0)
+        ok = json_metrics.get('ok_first_try', 0) + json_metrics.get('ok_after_fix', 0)
+        salvaged = json_metrics.get('salvaged', 0)
+        if total > 0:
+            success_rate = (ok + salvaged) / total * 100
+            print(f"      成功率: {success_rate:.1f}%")
+        print()
+
     # 最终状态
     if state.get("story_id"):
         print(f"  📦 story_id: {state['story_id']}")
