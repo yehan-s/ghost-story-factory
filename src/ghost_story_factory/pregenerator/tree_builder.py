@@ -17,6 +17,7 @@ from .state_manager import StateManager
 from .progress_tracker import ProgressTracker
 from .time_validator import TimeValidator
 from .skeleton_model import PlotSkeleton
+from ..utils.logging_utils import get_logger
 
 
 class DialogueTreeBuilder:
@@ -129,6 +130,12 @@ class DialogueTreeBuilder:
             self.director_context_window = int(os.getenv("DIRECTOR_CONTEXT_WINDOW", "5"))
         except Exception:
             self.director_context_window = 5
+
+        # 初始化 logger（用于详细的节点生成日志）
+        try:
+            self.logger, _ = get_logger()
+        except Exception:
+            self.logger = None  # Fallback: 无 logger 时不阻塞
 
     def _init_generators(self):
         """初始化 LLM 生成器（复用现有引擎）"""
@@ -245,6 +252,19 @@ class DialogueTreeBuilder:
         except Exception:
             pass
 
+        # 记录生成开始（包含关键参数）
+        if self.logger:
+            self.logger.info(
+                "开始生成对话树",
+                extra={
+                    "city": self.city,
+                    "max_depth": self.max_depth,
+                    "guided_mode": self.guided_mode,
+                    "concurrent_workers": self.concurrent_workers,
+                    "checkpoint_path": checkpoint_path
+                }
+            )
+
         # 初始化生成器
         if not self.choice_generator:
             self._init_generators()
@@ -318,9 +338,25 @@ class DialogueTreeBuilder:
         # BFS/Beam 遍历（批量并发扩展子节点）
         import concurrent.futures, threading
         id_lock = threading.Lock()
+        iterations = 0  # BFS 迭代计数器
         while queue:
+            iterations += 1
             current_node_dict, depth = queue.popleft()
             current_node = DialogueNode.from_dict(current_node_dict)
+
+            # 记录 BFS 迭代信息
+            if self.logger and iterations % 10 == 1:  # 每 10 轮记录一次，避免日志过多
+                self.logger.info(
+                    f"[BFS] 第 {iterations} 轮迭代",
+                    extra={
+                        "iteration": iterations,
+                        "queue_size": len(queue),
+                        "tree_size": len(dialogue_tree),
+                        "current_depth": depth,
+                        "current_node_id": current_node.node_id,
+                        "current_scene": current_node.scene
+                    }
+                )
 
             # 检查终止条件
             if self.state_manager.should_prune(current_node.game_state, depth, max_depth):
@@ -459,13 +495,36 @@ class DialogueTreeBuilder:
 
             # 并发执行扩展
             results: List[dict] = []
+            failed_choices: List[dict] = []  # 记录失败的选择
             with concurrent.futures.ThreadPoolExecutor(max_workers=self.concurrent_workers) as executor:
-                futures = [executor.submit(_expand_choice, c) for c in choices_batch]
+                futures = {executor.submit(_expand_choice, c): c for c in choices_batch}  # 保存 choice 映射
                 for fut in concurrent.futures.as_completed(futures):
+                    original_choice = futures[fut]  # 获取对应的 choice
                     try:
                         results.append(fut.result())
                     except Exception as e:
-                        print(f"⚠️  子节点生成异常: {e}")
+                        # 记录失败的选择及其错误信息
+                        failed_choices.append({
+                            "choice": original_choice,
+                            "error": str(e),
+                            "error_type": type(e).__name__
+                        })
+
+                        # 详细的错误日志记录
+                        if self.logger:
+                            self.logger.error(
+                                f"[并发失败] 子节点生成异常（将跳过该分支）",
+                                extra={
+                                    "parent_id": current_node.node_id,
+                                    "parent_depth": depth,
+                                    "parent_scene": current_node.scene,
+                                    "choice_id": original_choice.get("choice_id"),
+                                    "choice_text": original_choice.get("choice_text", "")[:50],
+                                    "error_type": type(e).__name__,
+                                    "error_message": str(e)
+                                },
+                                exc_info=True  # 包含堆栈跟踪
+                            )
 
             # 汇总结果（保证数据一致性）
             for res in results:
@@ -516,6 +575,21 @@ class DialogueTreeBuilder:
                     current_depth=depth + 1,
                     node_count=len(dialogue_tree),
                     current_branch=f"{child_node.scene} → {choice.get('choice_text', '')[:20]}..."
+                )
+
+            # 记录批次失败统计
+            if failed_choices and self.logger:
+                self.logger.warning(
+                    f"[批次完成] 本批次有 {len(failed_choices)}/{len(choices_batch)} 个选择生成失败",
+                    extra={
+                        "parent_id": current_node.node_id,
+                        "parent_depth": depth,
+                        "parent_scene": current_node.scene,
+                        "success_count": len(results),
+                        "failure_count": len(failed_choices),
+                        "failed_choice_ids": [fc["choice"].get("choice_id") for fc in failed_choices],
+                        "error_types": list(set(fc["error_type"] for fc in failed_choices))
+                    }
                 )
 
             # Beam：收缩前沿，优先保留更“推进”的节点
