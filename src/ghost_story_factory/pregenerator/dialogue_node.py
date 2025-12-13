@@ -8,6 +8,11 @@ from dataclasses import dataclass, field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
+# 延迟导入避免循环依赖
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .state_hasher import StateHasher
+
 
 @dataclass
 class DialogueNode:
@@ -74,29 +79,55 @@ class DialogueNode:
         )
 
 
-def create_root_node(scene: str = "S1") -> DialogueNode:
+def compute_state_hash(game_state: Dict[str, Any]) -> str:
+    """
+    计算节点的状态哈希
+
+    使用 StateHasher 计算游戏状态的哈希值，用于节点去重。
+
+    Args:
+        game_state: 游戏状态字典
+
+    Returns:
+        MD5 哈希字符串（32字符）
+
+    Example:
+        >>> state = {"PR": 45, "current_scene": "S3", "inventory": []}
+        >>> hash_value = compute_state_hash(state)
+        >>> len(hash_value)
+        32
+    """
+    from .state_hasher import quick_hash
+    return quick_hash(game_state)
+
+
+def create_root_node(scene: str = "S1", compute_hash: bool = True) -> DialogueNode:
     """
     创建根节点
 
     Args:
         scene: 初始场景
+        compute_hash: 是否自动计算状态哈希（默认True）
 
     Returns:
         根节点
     """
+    game_state = {
+        "PR": 5,  # 初始恐惧值
+        "GR": 0,  # 初始获得真相值
+        "WF": 0,  # 初始世界熟悉度
+        "current_scene": scene,
+        "inventory": [],
+        "flags": {},
+        "time": "00:00"
+    }
+
     return DialogueNode(
         node_id="root",
         scene=scene,
         depth=0,
-        game_state={
-            "PR": 5,  # 初始恐惧值
-            "GR": 0,  # 初始获得真相值
-            "WF": 0,  # 初始世界熟悉度
-            "current_scene": scene,
-            "inventory": [],
-            "flags": {},
-            "time": "00:00"
-        },
+        game_state=game_state,
+        state_hash=compute_state_hash(game_state) if compute_hash else None,
         generated_at=datetime.now().isoformat()
     )
 
