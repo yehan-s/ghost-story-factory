@@ -201,6 +201,24 @@ class DialogueTreeBuilder:
         except Exception:
             return True
 
+    def _approx_merge_scope(self, depth: int) -> Optional[str]:
+        """guided 模式下近似合并的分桶键。
+
+        约束：必须包含 depth/beat 信息，避免跨深度合并把结构压扁。
+        legacy（非 guided）返回 None，保持旧行为。
+        """
+        if not self.guided_mode or self.plot_skeleton is None:
+            return None
+
+        beat = self._beat_for_depth(depth)
+        beat_id = None
+        try:
+            beat_id = getattr(beat, "id", None) if beat is not None else None
+        except Exception:
+            beat_id = None
+
+        return f"depth={depth}|beat={beat_id or ''}"
+
     def generate_tree(
         self,
         max_depth: int = 20,
@@ -379,7 +397,7 @@ class DialogueTreeBuilder:
                     }
 
                 # 近似状态匹配（同场景合并）
-                approx_node_id = self.state_manager.find_approximate(new_state)
+                approx_node_id = self.state_manager.find_approximate(new_state, scope=self._approx_merge_scope(depth + 1))
                 if approx_node_id:
                     return {
                         "type": "reuse",
@@ -472,7 +490,7 @@ class DialogueTreeBuilder:
                 # 添加到树
                 dialogue_tree[child_node.node_id] = child_node.to_dict()
                 self.state_manager.register_state(child_node.state_hash, child_node.node_id)
-                self.state_manager.register_scene_index(child_node.game_state, child_node.state_hash)
+                self.state_manager.register_scene_index(child_node.game_state, child_node.state_hash, scope=self._approx_merge_scope(child_node.depth))
                 choice["next_node_id"] = child_node.node_id
 
                 # 记录父子关系
@@ -632,7 +650,7 @@ class DialogueTreeBuilder:
                                 break
                         continue
 
-                    approx_node_id = self.state_manager.find_approximate(new_state)
+                    approx_node_id = self.state_manager.find_approximate(new_state, scope=self._approx_merge_scope(depth + 1))
                     if approx_node_id:
                         for parent_choice in dialogue_tree[current_node.node_id]["choices"]:
                             if parent_choice.get("choice_id") == choice.get("choice_id"):
@@ -666,7 +684,7 @@ class DialogueTreeBuilder:
                     # 挂接到树
                     dialogue_tree[child_node.node_id] = child_node.to_dict()
                     self.state_manager.register_state(child_node.state_hash, child_node.node_id)
-                    self.state_manager.register_scene_index(child_node.game_state, child_node.state_hash)
+                    self.state_manager.register_scene_index(child_node.game_state, child_node.state_hash, scope=self._approx_merge_scope(child_node.depth))
 
                     for parent_choice in dialogue_tree[current_node.node_id]["choices"]:
                         if parent_choice.get("choice_id") == choice.get("choice_id"):
@@ -902,7 +920,7 @@ class DialogueTreeBuilder:
             state.current_scene = node.scene
             state.inventory = node.game_state.get("inventory", [])
             state.flags = node.game_state.get("flags", {})
-            state.time = node.game_state.get("time", "00:00")
+            state.timestamp = node.game_state.get("time", "00:00")
 
             # 构造简化叙事上下文：上一节点叙事 + 最近一次选择，作为“避免重复”的提示
             last_narrative = node.narrative or ""
@@ -992,7 +1010,7 @@ class DialogueTreeBuilder:
             state.current_scene = new_state.get("current_scene", "S1")
             state.inventory = new_state.get("inventory", [])
             state.flags = new_state.get("flags", {})
-            state.time = new_state.get("time", "00:00")
+            state.timestamp = new_state.get("time", "00:00")
 
             # 创建简化的 Choice 对象
             from ..engine.choices import Choice

@@ -11,6 +11,11 @@ view_tree_progress 工具测试
 
 from pathlib import Path
 from typing import Dict, Any
+import sys
+
+# Add project root to path
+project_root = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(project_root))
 
 from tools.view_tree_progress import summarize_tree
 

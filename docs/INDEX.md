@@ -68,8 +68,16 @@
 ### 🧠 架构决策 (ADR)
 位于 `docs/architecture/`
 
-| 文档 | 说明 |
-|------|------|
+| 文档 | 状态 | 说明 |
+|------|------|------|
+| [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | Accepted | 采用「骨架优先」的新故事生成流水线 |
+| [ADR-002-v4-default-pipeline.md](architecture/ADR-002-v4-default-pipeline.md) | Accepted | v4 骨架流水线升级为默认生成路径（v3 仅回退） |
+| [ADR-003-v4-workflow-staging-and-agents.md](architecture/ADR-003-v4-workflow-staging-and-agents.md) | Draft | v4 分阶段入口与 Agent 编排收敛 |
+| [ADR-004-core-llm-refactor.md](architecture/ADR-004-core-llm-refactor.md) | Draft | 核心结构化 LLM 调用从 Crew 重构为 LLMClient |
+| [ADR-005-langgraph-agent-orchestration.md](architecture/ADR-005-langgraph-agent-orchestration.md) | Draft | 用 LangGraph 收敛 Agent 编排（保留 LLMClient 与 v4） |
+| [ADR-006-response-llmclient-and-guided-approx-merge-scope.md](architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md) | Accepted | 响应默认走 LLMClient + guided 近似合并按 depth/beat 分桶 |
+
+------|------|
 | [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | 采用「骨架优先」的新故事生成流水线的架构决策 |
 
 ---

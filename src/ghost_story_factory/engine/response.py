@@ -1,23 +1,38 @@
 """运行时响应生成器
 
 根据玩家选择生成动态叙事响应：
-- 场景描述（第一人称，氛围营造）
-- 实体交互（根据 PR 触发不同 Tier）
+- 场景描述（第二人称，氛围营造）
 - 后果反馈（PR/GR/WF 变化的叙事化表达）
 - 下一步引导（暗示可用选择点）
+
+v4 约束：
+- 核心 LLM I/O 默认走 LLMClient（可观测、可控超时），CrewAI 仅作为回退路径。
+- 失败时必须兜底返回文本，不能让整轮生成崩溃。
 """
+
+from __future__ import annotations
 
 from pathlib import Path
 from typing import Optional, Dict, Any
-import json
+
+import os
 
 from .state import GameState
+
+# Choice 兼容导入
 try:
     from .choices import Choice
 except Exception:
-    # 兼容：当 pydantic 不可用时，退化为简单对象
     class Choice:  # type: ignore
-        def __init__(self, choice_id: str, choice_text: str, choice_type: str = "normal", consequences=None, preconditions=None, tags=None):
+        def __init__(
+            self,
+            choice_id: str,
+            choice_text: str,
+            choice_type: str = "normal",
+            consequences=None,
+            preconditions=None,
+            tags=None,
+        ):
             self.choice_id = choice_id
             self.choice_text = choice_text
             self.choice_type = type("ChoiceType", (), {"value": choice_type})() if not hasattr(choice_type, "value") else choice_type
@@ -26,134 +41,156 @@ except Exception:
             self.tags = tags or []
 
 
+# LLMClient（新路径）
+try:
+    from ..utils.llm_client import LLMClient, create_llm_client, LLMClientError
+    _USE_LLM_CLIENT = True
+except Exception:
+    _USE_LLM_CLIENT = False
+
+
+# CrewAI（回退路径）
+try:
+    from crewai import Agent, Task, Crew, LLM as CrewLLM
+    _CREWAI_AVAILABLE = True
+except Exception:
+    _CREWAI_AVAILABLE = False
+
+
 class RuntimeResponseGenerator:
     """运行时响应生成器
 
-    基于玩家的选择，调用 LLM 生成沉浸式的叙事响应，
-    并自动更新游戏状态
+    目标：生成一段连贯、沉浸、可控长度的叙事文本。
+
+    约束：
+    - 默认使用 LLMClient（避免 CrewAI 黑盒错误，提升日志可观测性）。
+    - LLM 不可用时回退（CrewAI -> 本地兜底），确保主流程不崩。
     """
 
     def __init__(self, gdd_content: str, lore_content: str, main_story: str = ""):
-        """初始化生成器
-
-        Args:
-            gdd_content: GDD（AI 导演任务简报）内容
-            lore_content: Lore v2（世界观）内容
-            main_story: 主线故事内容（可选，用于高质量叙事）
-        """
         self.gdd = gdd_content
         self.lore = lore_content
         self.main_story = main_story
+
         self.prompt_template = self._load_prompt_template()
+
         # 缓存与并发控制
-        self._llm = None
+        self._crew_llm = None
+        self._llm_client: Optional[LLMClient] = None
         self._kimi_model_response = None
-        self._scene_memory = {}
-        self._global_story_summary = None
-        import os, threading
+        self._scene_memory: Dict[str, str] = {}
+
+        import threading
+
         self._concurrency = int(os.getenv("KIMI_CONCURRENCY", "4"))
         self._sem = threading.Semaphore(self._concurrency)
 
+        # 默认：响应生成走 LLMClient。需要时可回退 CrewAI。
+        self.use_llmclient_response = os.getenv("USE_LLMCLIENT_RESPONSE", "1") == "1"
+
+        # 收紧输出 token，避免 180s×2 的“卡死式失败”
+        try:
+            self.response_max_tokens = int(os.getenv("RESPONSE_MAX_TOKENS", "900"))
+        except Exception:
+            self.response_max_tokens = 900
+
+        # 温度参数（保持可控）
+        try:
+            self.response_temperature = float(os.getenv("RESPONSE_TEMPERATURE", "0.7"))
+        except Exception:
+            self.response_temperature = 0.7
+
+        # 是否拼接主线故事摘录（质量 vs 性能）
+        self.use_main_story_excerpt = os.getenv("RESPONSE_USE_MAIN_STORY", "1") == "1"
+        try:
+            self.main_story_excerpt_chars = int(os.getenv("RESPONSE_STORY_EXCERPT_CHARS", "2000"))
+        except Exception:
+            self.main_story_excerpt_chars = 2000
+
     def _load_prompt_template(self) -> str:
-        """加载 prompt 模板
-
-        优先从项目根目录加载，如果不存在则从 templates 目录加载
-
-        Returns:
-            str: Prompt 模板内容
-        """
-        # 尝试从项目根目录加载
         root_prompt = Path("runtime-response.prompt.md")
         if root_prompt.exists():
-            with open(root_prompt, 'r', encoding='utf-8') as f:
-                return f.read()
+            return root_prompt.read_text(encoding="utf-8")
 
-        # 回退到 templates 目录
         template_prompt = Path("templates/runtime-response.prompt.md")
         if template_prompt.exists():
-            with open(template_prompt, 'r', encoding='utf-8') as f:
-                return f.read()
+            return template_prompt.read_text(encoding="utf-8")
 
-        # 如果都不存在，返回内置的简化模板
         return self._get_builtin_template()
 
-    def _build_backstory_with_story(self) -> str:
-        """构建包含完整故事的 backstory（混合方案）
-
-        Returns:
-            包含故事背景的 backstory 文本
-        """
-        # 截取主线故事的前 5000 字符（约 6000 tokens）
-        story_excerpt = self.main_story[:5000] if len(self.main_story) > 5000 else self.main_story
-
-        return f"""你是一个专业的恐怖故事作家，已经阅读了完整的故事背景：
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【故事背景】
-{story_excerpt}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-你的任务：
-基于上述故事背景，为玩家的选择生成沉浸式的叙事响应。
-
-你的风格：
-- 第二人称视角（使用"你"）
-- 强节奏停顿，多感官细节
-- 符合故事设定和世界观规则
-- 营造恐怖氛围
-
-重要：
-- 必须遵循故事背景中的设定
-- 不能编造与背景矛盾的内容
-- 保持叙事的连贯性和一致性
-"""
-
     def _get_builtin_template(self) -> str:
-        """获取内置模板（当文件不存在时的回退）"""
         return """
 你是一个专业的"选项式灵异游戏 AI 导演"，负责为玩家的每一次选择生成恰当的、沉浸式的实时响应。
 
-## 你的核心职责
-
-1. 读取玩家选择
-2. 读取游戏状态
-3. 生成分层响应（物理/感官/心理/引导）
-4. 更新游戏状态
-
-## 响应生成规则
-
-### 第一层：物理反馈（~100字）
-- 明确确认玩家的行为
-- 描述直接的物理结果
-- 使用具体的动作动词
-
-### 第二层：感官细节（~150字）
-- 包含至少3种感官（视觉/听觉/嗅觉/触觉）
-- 使用音效标记：`[音效: 描述]`
-- 包含《世界书》的标志性元素："土腥味" / "潮湿" / "冰冷"
-
-### 第三层：心理暗示（~100字）
-- 反映共鸣度的变化
-- 使用生理反应暗示恐惧程度
-- 包含系统提示：`[系统: 共鸣度 X% → Y%]`
-
-### 第四层：引导暗示（~50字）
-- 自由探索期：使用软引导（环境暗示）
-- 关键节点：使用硬引导（明确选项）
-- 提供至少1个可行的下一步
-
-## 输出格式
-
-输出 Markdown 格式的叙事文本（200-500字）。
-
-## 禁止事项
-
-- ❌ 替玩家做决定
-- ❌ 破坏《世界书》的规则
-- ❌ 跳过场景
-- ❌ 无理由提升/降低共鸣度
-- ❌ 杀死玩家（失败应转为新分支）
+## 输出要求
+- Markdown 格式，200-400字
+- 第二人称视角（使用"你"）
+- 至少 2 种感官描写（视觉/听觉/嗅觉/触觉）
+- 不替玩家做决定
+- 不破坏世界观规则
 """
+
+    def _get_llm_client(self) -> Optional[LLMClient]:
+        """获取（并复用）LLMClient。
+
+        注意：LLMClient 初始化可能因缺少 API Key 失败；此处必须吞掉错误并回退。
+        """
+        if not self.use_llmclient_response or not _USE_LLM_CLIENT:
+            return None
+        if self._llm_client is not None:
+            return self._llm_client
+
+        try:
+            self._llm_client = create_llm_client()
+            self._kimi_model_response = getattr(self._llm_client, "default_model", None)
+            return self._llm_client
+        except Exception:
+            self._llm_client = None
+            return None
+
+    def _get_crew_llm(self):
+        """获取（并复用）CrewAI LLM（仅回退路径使用）。"""
+        if self._crew_llm is not None:
+            return self._crew_llm
+
+        if not _CREWAI_AVAILABLE:
+            return None
+
+        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
+        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
+        self._kimi_model_response = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
+
+        self._crew_llm = CrewLLM(
+            model=self._kimi_model_response,
+            api_key=kimi_key,
+            base_url=kimi_base,
+        )
+        return self._crew_llm
+
+    def _build_backstory_excerpt(self) -> str:
+        """构建主线故事摘录（用于提升连贯性，但要控制长度）。"""
+        if not self.main_story or not self.use_main_story_excerpt:
+            return ""
+        excerpt = self.main_story[: self.main_story_excerpt_chars]
+        return (
+            "\n\n[故事背景摘录]\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+            f"{excerpt}\n"
+            "━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        )
+
+    def _call_llmclient(self, prompt: str) -> str:
+        client = self._get_llm_client()
+        if client is None:
+            raise RuntimeError("LLMClient 不可用")
+
+        with self._sem:
+            return client.call(
+                prompt=prompt,
+                model=None,
+                max_tokens=self.response_max_tokens,
+                temperature=self.response_temperature,
+            )
 
     def generate_response(
         self,
@@ -162,26 +199,14 @@ class RuntimeResponseGenerator:
         apply_consequences: bool = True,
         director_context: Optional[Dict[str, Any]] = None,
     ) -> str:
-        """生成玩家选择后的叙事响应
+        """生成玩家选择后的叙事响应。
 
-        Args:
-            choice: 玩家选择的选项
-            game_state: 当前游戏状态
-            apply_consequences: 是否自动应用后果到游戏状态（默认 True）
-
-        Returns:
-            str: Markdown 格式的叙事响应文本
+        返回值必须始终是字符串，任何失败都要兜底。
         """
-        # 延迟导入 CrewAI（避免基础功能依赖）
-        try:
-            from crewai import Agent, Task, Crew, LLM
-            import os
-        except ImportError:
-            # 离线叙事回退：基于当前状态与场景记忆生成简短沉浸文本
-            if apply_consequences and choice.consequences:
-                game_state.update(choice.consequences)
-                game_state.consequence_tree.append(choice.choice_id)
-
+        # 保存原始状态（用于系统提示）
+        state_before = game_state.to_dict()
+        # 本地兜底响应（最坏情况）
+        def _offline_fallback() -> str:
             scene_context = self._get_scene_memory(game_state.current_scene)
             pr_hint = "你的神经更紧绷了一些。" if game_state.PR >= 50 else "你努力让呼吸平稳下来。"
             text = (
@@ -192,96 +217,61 @@ class RuntimeResponseGenerator:
             )
             return text
 
-        # 复用 LLM（响应生成）
-        llm = self._get_llm()
-        print(f"🤖 [响应] 使用模型: {self._kimi_model_response}")
-
-        # 保存原始状态（用于对比）
-        state_before = game_state.to_dict()
-
         # 构建 prompt（加入导演上下文以增强连续性）
         prompt = self._build_prompt(choice, game_state, state_before, director_context=director_context)
-        # 增强：在响应提示中加入世界书与伏笔回收要求，引导走向规范化结局
         prompt += (
             "\n\n[世界书与收束]\n"
             "- 不得破坏既定世界观；回收前文伏笔；逐步逼近结局节点\n"
             "- 如果当前已接近真相/危险阈值，暗示关键抉择临近（不替玩家决定）\n"
         )
 
-        # 🎯 混合方案：响应生成使用完整故事背景
-        if self.main_story:
-            backstory = self._build_backstory_with_story()
-            print("📚 [响应] 使用完整故事背景（高质量模式）")
-        else:
-            backstory = (
-                "你精通恐怖氛围营造和细节描写。"
-                "你的文笔风格是：第一人称视角，强节奏停顿，多感官细节，"
-                "符号反复召回，像一个在深夜给观众讲恐怖故事的 UP 主。"
-            )
-            print("💡 [响应] 使用精简模式")
+        # LLMClient 默认路径
+        full_prompt = self.prompt_template + self._build_backstory_excerpt() + "\n\n" + prompt
+        raw_text: str = ""
+        if self.use_llmclient_response and _USE_LLM_CLIENT:
+            try:
+                raw_text = self._call_llmclient(full_prompt)
+            except (LLMClientError, Exception):
+                raw_text = ""
 
-        # 创建 Agent（使用 Kimi LLM）
-        agent = Agent(
-            role="B站百万粉丝的恐怖故事 UP 主",
-            goal="生成沉浸式的叙事响应，营造恐怖氛围",
-            backstory=backstory,
-            verbose=False,
-            allow_delegation=False,
-            llm=llm  # 使用 Kimi LLM
-        )
+        # CrewAI 回退路径
+        if not raw_text.strip() and _CREWAI_AVAILABLE:
+            try:
+                llm = self._get_crew_llm()
+                if llm is not None:
+                    agent = Agent(
+                        role="B站百万粉丝的恐怖故事 UP 主",
+                        goal="生成沉浸式的叙事响应，营造恐怖氛围",
+                        backstory="你精通恐怖氛围营造和细节描写。",
+                        verbose=False,
+                        allow_delegation=False,
+                        llm=llm,
+                    )
+                    task = Task(
+                        description=full_prompt,
+                        expected_output="第二人称叙事文本（Markdown 格式，200-400字）",
+                        agent=agent,
+                    )
+                    crew = Crew(agents=[agent], tasks=[task], verbose=False)
+                    with self._sem:
+                        result = crew.kickoff()
+                    raw_text = str(result)
+            except Exception:
+                raw_text = ""
 
-        # 创建任务
-        task = Task(
-            description=prompt,
-            expected_output="第一人称叙事文本（Markdown 格式，200-500字）",
-            agent=agent
-        )
+        # 最终兜底
+        if not raw_text.strip():
+            raw_text = _offline_fallback()
 
-        # 执行（增加防护，避免单次 LLM 故障直接中断整轮生成）
-        crew = Crew(agents=[agent], tasks=[task], verbose=False)
-        # 受限并发执行
-        try:
-            with self._sem:
-                result = crew.kickoff()
-            raw_text = str(result)
-        except Exception as e:
-            # 退回到本地兜底响应，避免整个 TreeBuilder 跑崩
-            print(f"⚠️  响应生成失败，使用默认叙事兜底：{e}")
-            raw_text = f"你选择了「{choice.choice_text}」，故事继续在黑暗中推进……"
+        # 应用后果到游戏状态（由调用方控制）
+        if apply_consequences and getattr(choice, "consequences", None):
+            try:
+                game_state.update(choice.consequences)
+                game_state.consequence_tree.append(choice.choice_id)
+            except Exception:
+                pass
 
-        # 应用后果到游戏状态
-        if apply_consequences and choice.consequences:
-            game_state.update(choice.consequences)
-            # 记录后果树
-            game_state.consequence_tree.append(choice.choice_id)
-
-        # 返回响应文本（附带系统提示）
-        response_text = self._add_system_hints(
-            raw_text,
-            state_before,
-            game_state.to_dict()
-        )
-
-        return response_text
-
-    def _get_llm(self):
-        """获取（并复用）LLM 实例"""
-        if self._llm is not None:
-            return self._llm
-
-        from crewai import LLM
-        import os
-
-        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
-        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
-        self._kimi_model_response = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
-
-        self._llm = LLM(
-            model=self._kimi_model_response,
-            api_key=kimi_key,
-            base_url=kimi_base
-        )
-        return self._llm
+        return self._add_system_hints(raw_text, state_before, game_state.to_dict())
 
     def _get_scene_memory(self, scene: str) -> str:
         """获取场景锚点与规则（缓存）"""
@@ -302,13 +292,10 @@ class RuntimeResponseGenerator:
         state_before: Dict[str, Any],
         director_context: Optional[Dict[str, Any]] = None,
     ) -> str:
-        """构建完整的 prompt（优化版）"""
-        # 计算状态变化
-        pr_change = game_state.PR - state_before.get('PR', 0)
-
-        # 提取场景相关内容（使用场景记忆）
+        """构建完整 prompt（沿用现有结构，便于保持行为稳定）。"""
+        pr_change = game_state.PR - state_before.get("PR", 0)
         scene_context = self._get_scene_memory(game_state.current_scene)
-        # 导演上下文摘要：最近几步的选择 / 响应 / 节拍，用于保持节奏与避免重复。
+
         ctx_lines = []
         if director_context:
             recent_choices = director_context.get("recent_choices") or []
@@ -330,12 +317,21 @@ class RuntimeResponseGenerator:
                 ctx_lines.append(last_resp + ("..." if len(last_resp) == 180 else ""))
         ctx_block = "\n".join(ctx_lines) if ctx_lines else "（暂无历史上下文，可按常规节奏书写。）"
 
+        # choice_type 兼容（pydantic enum 或 str）
+        try:
+            choice_type_val = choice.choice_type.value  # type: ignore[attr-defined]
+        except Exception:
+            choice_type_val = str(getattr(choice, "choice_type", "normal"))
+
+        tags = getattr(choice, "tags", None) or []
+        tag_text = ", ".join(tags[:2]) if tags else "无"
+
         return f"""
 你是一个专业的恐怖故事作家。根据玩家选择生成沉浸式叙事响应（200-400字）。
 
 ## 玩家选择
 **选择**: {choice.choice_text}
-**类型**: {choice.choice_type.value} | **标签**: {', '.join(choice.tags[:2]) if choice.tags else '无'}
+**类型**: {choice_type_val} | **标签**: {tag_text}
 
 ## 当前状态
 **场景**: {game_state.current_scene} | **时间**: {game_state.timestamp}
@@ -356,250 +352,153 @@ class RuntimeResponseGenerator:
 3. **体现后果**：反映选择的影响和状态变化
 4. **暗示下一步**：环境提示，但不替玩家决定
 
-重要：必须使用"你"而不是"我"，例如：
-- ✅ "你打开手电筒..."
-- ❌ "我打开手电筒..."
-
-请生成叙事响应（Markdown 格式，200-400字）
-- 不要破坏世界观规则
-- 不要使用现代网络梗
-
-现在开始生成叙事响应（只输出Markdown文本，不要包含JSON或其他格式）：
+请生成叙事响应（Markdown 格式，200-400字），只输出 Markdown 文本：
 """
 
     def _extract_scene_context(self, gdd: str, scene: str, max_chars: int = 400) -> str:
-        """提取当前场景相关的 GDD 片段"""
-        lines = gdd.split('\n')
+        lines = gdd.split("\n")
         relevant_lines = []
 
         for i, line in enumerate(lines):
             if scene.lower() in line.lower() or f"场景{scene[1:]}" in line:
                 relevant_lines.append(line)
                 for j in range(i + 1, min(i + 15, len(lines))):
-                    if lines[j].strip().startswith('#') and lines[j].strip() != line.strip():
+                    if lines[j].strip().startswith("#") and lines[j].strip() != line.strip():
                         break
                     relevant_lines.append(lines[j])
                 break
 
-        result = '\n'.join(relevant_lines)[:max_chars]
+        result = "\n".join(relevant_lines)[:max_chars]
         return result if result else f"场景 {scene}"
 
-    def _add_system_hints(
-        self,
-        response_text: str,
-        state_before: Dict[str, Any],
-        state_after: Dict[str, Any]
-    ) -> str:
-        """在响应文本后添加系统提示
-
-        Args:
-            response_text: 原始响应文本
-            state_before: 之前的状态
-            state_after: 之后的状态
-
-        Returns:
-            str: 添加了系统提示的文本
-        """
+    def _add_system_hints(self, response_text: str, state_before: Dict[str, Any], state_after: Dict[str, Any]) -> str:
         hints = []
 
-        # PR 变化
-        if state_before['PR'] != state_after['PR']:
-            pr_change = state_after['PR'] - state_before['PR']
-            sign = '+' if pr_change > 0 else ''
-            hints.append(f"PR {sign}{pr_change} → 当前 {state_after['PR']}")
+        if state_before.get("PR") != state_after.get("PR"):
+            pr_change = state_after.get("PR", 0) - state_before.get("PR", 0)
+            sign = "+" if pr_change > 0 else ""
+            hints.append(f"PR {sign}{pr_change} → 当前 {state_after.get('PR')}")
 
-        # GR 变化
-        if state_before['GR'] != state_after['GR']:
-            gr_change = state_after['GR'] - state_before['GR']
-            sign = '+' if gr_change > 0 else ''
-            hints.append(f"GR {sign}{gr_change} → 当前 {state_after['GR']}")
+        if state_before.get("GR") != state_after.get("GR"):
+            gr_change = state_after.get("GR", 0) - state_before.get("GR", 0)
+            sign = "+" if gr_change > 0 else ""
+            hints.append(f"GR {sign}{gr_change} → 当前 {state_after.get('GR')}")
 
-        # WF 变化
-        if state_before['WF'] != state_after['WF']:
-            wf_change = state_after['WF'] - state_before['WF']
-            sign = '+' if wf_change > 0 else ''
-            hints.append(f"WF {sign}{wf_change} → 当前 {state_after['WF']}")
+        if state_before.get("WF") != state_after.get("WF"):
+            wf_change = state_after.get("WF", 0) - state_before.get("WF", 0)
+            sign = "+" if wf_change > 0 else ""
+            hints.append(f"WF {sign}{wf_change} → 当前 {state_after.get('WF')}")
 
         # 道具变化
-        new_items = set(state_after['inventory']) - set(state_before['inventory'])
+        before_inv = set(state_before.get("inventory", []) or [])
+        after_inv = set(state_after.get("inventory", []) or [])
+        new_items = list(after_inv - before_inv)
         if new_items:
             hints.append(f"获得道具：{'、'.join(new_items)}")
 
-        # 场景变化
-        if state_before['current_scene'] != state_after['current_scene']:
-            hints.append(f"进入场景：{state_after['current_scene']}")
+        if state_before.get("current_scene") != state_after.get("current_scene"):
+            hints.append(f"进入场景：{state_after.get('current_scene')}")
 
-        # 如果有变化，添加系统提示
-        if hints:
-            system_hint = "\n\n**【系统提示】**\n"
-            for hint in hints:
-                system_hint += f"- {hint}\n"
+        if not hints:
+            return response_text
 
-            response_text += system_hint
+        system_hint = "\n\n**【系统提示】**\n" + "\n".join(f"- {h}" for h in hints) + "\n"
+        return response_text + system_hint
 
-        return response_text
-
-    def generate_ambient_response(
-        self,
-        game_state: GameState,
-        idle_duration: int = 30
-    ) -> str:
-        """生成环境循环描述（当玩家长时间无动作时）
-
-        Args:
-            game_state: 当前游戏状态
-            idle_duration: 玩家已经空闲的秒数
-
-        Returns:
-            str: 环境描述文本
-        """
-        # 导入 CrewAI 和配置 Kimi LLM
-        try:
-            from crewai import Agent, Task, Crew, LLM
-            import os
-        except ImportError:
-            return "周围很安静……"
-
-        # 配置 Kimi LLM（环境响应专用模型）
-        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
-        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
-        # 环境响应：使用高质量模型
-        kimi_model = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
-
-        llm = LLM(
-            model=kimi_model,
-            api_key=kimi_key,
-            base_url=kimi_base
+    def generate_ambient_response(self, game_state: GameState, idle_duration: int = 30) -> str:
+        """生成环境循环描述（尽量复用 LLMClient，失败时兜底）。"""
+        prompt = (
+            f"玩家已经在当前场景停留了 {idle_duration} 秒，没有采取任何行动。\n\n"
+            f"当前游戏状态：\n- 场景：{game_state.current_scene}\n- 时间：{game_state.timestamp}\n- PR：{game_state.PR}/100\n\n"
+            "请生成一段 50-100 字的环境循环描述，包含时间压力与环境压迫感。\n"
+            "只输出文本。"
         )
 
-        prompt = f"""
-你是一个恐怖游戏的 AI 导演。玩家已经在当前场景停留了 {idle_duration} 秒，没有采取任何行动。
+        full_prompt = self.prompt_template + "\n\n" + prompt
 
-当前游戏状态：
-- 场景：{game_state.current_scene}
-- 时间：{game_state.timestamp}
-- PR：{game_state.PR}/100
-- 位置：场景 {game_state.current_scene}
+        if self.use_llmclient_response and _USE_LLM_CLIENT:
+            try:
+                return self._call_llmclient(full_prompt)
+            except Exception:
+                pass
 
-请生成一段 50-100 字的环境循环描述，包含：
-1. 时间流逝的提示
-2. 环境压力的暗示（土腥味/荧光灯/滴水声等）
-3. 催促玩家行动的暗示
+        if _CREWAI_AVAILABLE:
+            try:
+                llm = self._get_crew_llm()
+                if llm is None:
+                    raise RuntimeError("CrewAI LLM 不可用")
+                agent = Agent(
+                    role="环境描述专家",
+                    goal="生成营造紧张感的环境描述",
+                    backstory="你擅长通过细节描写营造时间压力和环境压迫感",
+                    verbose=False,
+                    allow_delegation=False,
+                    llm=llm,
+                )
+                task = Task(
+                    description=prompt,
+                    expected_output="简短的环境描述（50-100字）",
+                    agent=agent,
+                )
+                crew = Crew(agents=[agent], tasks=[task], verbose=False)
+                with self._sem:
+                    return str(crew.kickoff())
+            except Exception:
+                pass
 
-不要替玩家做决定，只描述环境。
-"""
+        return "周围很安静……"
 
-        agent = Agent(
-            role="环境描述专家",
-            goal="生成营造紧张感的环境描述",
-            backstory="你擅长通过细节描写营造时间压力和环境压迫感",
-            verbose=False,
-            allow_delegation=False,
-            llm=llm  # 使用 Kimi LLM
+    def generate_scene_transition(self, from_scene: str, to_scene: str, game_state: GameState) -> str:
+        """生成场景转换文本（尽量复用 LLMClient，失败时兜底）。"""
+        prompt = (
+            f"玩家正在从 {from_scene} 进入 {to_scene}。\n\n"
+            f"当前游戏状态：\n- 时间：{game_state.timestamp}\n- PR：{game_state.PR}/100\n\n"
+            "请生成一段 100-200 字的场景转换描述，包含感官细节与氛围延续。\n"
+            "只输出 Markdown 文本。"
         )
 
-        task = Task(
-            description=prompt,
-            expected_output="简短的环境描述（50-100字）",
-            agent=agent
-        )
+        full_prompt = self.prompt_template + "\n\n" + prompt
 
-        crew = Crew(agents=[agent], tasks=[task], verbose=False)
-        result = crew.kickoff()
+        text = ""
+        if self.use_llmclient_response and _USE_LLM_CLIENT:
+            try:
+                text = self._call_llmclient(full_prompt)
+            except Exception:
+                text = ""
 
-        return str(result)
+        if not text.strip() and _CREWAI_AVAILABLE:
+            try:
+                llm = self._get_crew_llm()
+                if llm is None:
+                    raise RuntimeError("CrewAI LLM 不可用")
+                agent = Agent(
+                    role="场景转换专家",
+                    goal="生成流畅的场景转换描述",
+                    backstory="你擅长营造场景间的连贯性和氛围延续性",
+                    verbose=False,
+                    allow_delegation=False,
+                    llm=llm,
+                )
+                task = Task(
+                    description=prompt,
+                    expected_output="场景转换描述（100-200字）",
+                    agent=agent,
+                )
+                crew = Crew(agents=[agent], tasks=[task], verbose=False)
+                with self._sem:
+                    text = str(crew.kickoff())
+            except Exception:
+                text = ""
 
-    def generate_scene_transition(
-        self,
-        from_scene: str,
-        to_scene: str,
-        game_state: GameState
-    ) -> str:
-        """生成场景转换的过渡文本
+        if not text.strip():
+            text = f"你从 {from_scene} 来到了 {to_scene}……"
 
-        Args:
-            from_scene: 离开的场景
-            to_scene: 进入的场景
-            game_state: 当前游戏状态
-
-        Returns:
-            str: 场景转换文本
-        """
-        # 导入 CrewAI 和配置 Kimi LLM
-        try:
-            from crewai import Agent, Task, Crew, LLM
-            import os
-        except ImportError:
-            game_state.current_scene = to_scene
-            return f"你从 {from_scene} 来到了 {to_scene}……"
-
-        # 配置 Kimi LLM（场景转换专用模型）
-        kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
-        kimi_base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
-        # 场景转换：使用高质量模型
-        kimi_model = os.getenv("KIMI_MODEL_RESPONSE") or os.getenv("KIMI_MODEL", "kimi-k2-0905-preview")
-
-        llm = LLM(
-            model=kimi_model,
-            api_key=kimi_key,
-            base_url=kimi_base
-        )
-
-        prompt = f"""
-你是一个恐怖游戏的 AI 导演。玩家正在从 {from_scene} 进入 {to_scene}。
-
-当前游戏状态：
-- 时间：{game_state.timestamp}
-- PR：{game_state.PR}/100
-
-请生成一段 100-200 字的场景转换描述，包含：
-1. 离开当前场景的动作
-2. 移动过程中的感官细节
-3. 进入新场景的第一印象
-4. 符合《世界书》氛围：土腥味/潮湿/冰冷
-
-使用第一人称视角，Markdown 格式。
-"""
-
-        agent = Agent(
-            role="场景转换专家",
-            goal="生成流畅的场景转换描述",
-            backstory="你擅长营造场景间的连贯性和氛围延续性",
-            verbose=False,
-            allow_delegation=False,
-            llm=llm  # 使用 Kimi LLM
-        )
-
-        task = Task(
-            description=prompt,
-            expected_output="场景转换描述（100-200字）",
-            agent=agent
-        )
-
-        crew = Crew(agents=[agent], tasks=[task], verbose=False)
-        result = crew.kickoff()
-
-        # 更新游戏状态的场景
         game_state.current_scene = to_scene
+        return text
 
-        return str(result)
 
-
-# 工具函数
-
-def format_response_with_state(
-    response_text: str,
-    game_state: GameState
-) -> str:
-    """格式化响应文本，添加状态显示
-
-    Args:
-        response_text: 响应文本
-        game_state: 游戏状态
-
-    Returns:
-        str: 格式化后的文本
-    """
+def format_response_with_state(response_text: str, game_state: GameState) -> str:
+    """格式化响应文本，添加状态显示"""
     formatted = f"""
 {response_text}
 

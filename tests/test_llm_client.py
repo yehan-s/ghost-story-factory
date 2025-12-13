@@ -14,7 +14,7 @@ from unittest.mock import Mock, patch, MagicMock
 import json
 
 # 导入被测模块
-from src.ghost_story_factory.utils.llm_client import (
+from ghost_story_factory.utils.llm_client import (
     LLMClient,
     LLMClientError,
     LLMTimeoutError,
@@ -257,12 +257,84 @@ class TestLLMClientCall:
         with pytest.raises(LLMTimeoutError, match="超时"):
             client.call(prompt="Test prompt")
 
+    @patch("requests.post")
+    @patch("time.sleep")
+    def test_progressive_timeout_and_backoff_defaults(self, mock_sleep, mock_post, monkeypatch):
+        """测试默认渐进式超时与指数退避"""
+        # 清理相关环境变量，使用默认阶梯 [60,120,180]，默认重试 2 次
+        for key in ["LLM_TIMEOUT", "LLM_TIMEOUTS", "LLM_MAX_RETRIES"]:
+            monkeypatch.delenv(key, raising=False)
+        monkeypatch.setenv("KIMI_API_KEY", "test-key")
+
+        import requests
+
+        # 前两次超时，第三次成功
+        mock_response_success = Mock()
+        mock_response_success.ok = True
+        mock_response_success.json.return_value = {
+            "choices": [{"message": {"content": "Success after backoff"}}]
+        }
+
+        mock_post.side_effect = [
+            requests.Timeout("Request timeout 1"),
+            requests.Timeout("Request timeout 2"),
+            mock_response_success,
+        ]
+
+        client = LLMClient(provider="kimi")
+        result = client.call(prompt="Test prompt")
+
+        assert result == "Success after backoff"
+        assert mock_post.call_count == 3
+
+        # 验证每次尝试的超时值
+        timeouts = [call.kwargs["timeout"] for call in mock_post.call_args_list]
+        assert timeouts == [60, 120, 180]
+
+        # 验证指数退避的延迟：2s -> 4s
+        delays = [args.args[0] for args in mock_sleep.call_args_list]
+        assert delays == [2.0, 4.0]
+
+    @patch("requests.post")
+    @patch("time.sleep")
+    def test_single_timeout_keeps_legacy_retry_default(self, mock_sleep, mock_post, monkeypatch):
+        """测试仅设置 LLM_TIMEOUT 时保持旧的 1 次重试行为"""
+        monkeypatch.setenv("KIMI_API_KEY", "test-key")
+        monkeypatch.setenv("LLM_TIMEOUT", "180")
+        monkeypatch.delenv("LLM_MAX_RETRIES", raising=False)
+        monkeypatch.delenv("LLM_TIMEOUTS", raising=False)
+
+        import requests
+
+        mock_response_success = Mock()
+        mock_response_success.ok = True
+        mock_response_success.json.return_value = {
+            "choices": [{"message": {"content": "Success with legacy retry"}}]
+        }
+
+        mock_post.side_effect = [
+            requests.Timeout("Request timeout 1"),
+            mock_response_success,
+        ]
+
+        client = LLMClient(provider="kimi")
+        result = client.call(prompt="Test prompt")
+
+        assert result == "Success with legacy retry"
+        assert mock_post.call_count == 2
+
+        timeouts = [call.kwargs["timeout"] for call in mock_post.call_args_list]
+        assert timeouts == [180, 180]
+
+        delays = [args.args[0] for args in mock_sleep.call_args_list]
+        assert delays == [2.0]
+
 
 class TestLLMClientLogging:
     """测试日志记录"""
 
     @patch("requests.post")
-    @patch("src.ghost_story_factory.utils.llm_client.logger")
+    @patch("ghost_story_factory.utils.llm_client.logger")
     def test_logging_on_success(self, mock_logger, mock_post, monkeypatch):
         """测试成功调用时的日志"""
         monkeypatch.setenv("KIMI_API_KEY", "test-key")
@@ -283,7 +355,7 @@ class TestLLMClientLogging:
         assert mock_logger.debug.call_count >= 2  # 至少有 prompt 和 response snippet
 
     @patch("requests.post")
-    @patch("src.ghost_story_factory.utils.llm_client.logger")
+    @patch("ghost_story_factory.utils.llm_client.logger")
     def test_logging_on_error(self, mock_logger, mock_post, monkeypatch):
         """测试错误时的日志"""
         monkeypatch.setenv("KIMI_API_KEY", "test-key")
@@ -310,7 +382,9 @@ class TestLLMClientFactory:
 
     def test_create_kimi_client_priority(self, monkeypatch):
         """测试优先创建 Kimi 客户端"""
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
         monkeypatch.setenv("KIMI_API_KEY", "kimi-key")
+        monkeypatch.setenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
         monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
 
         client = create_llm_client()
@@ -319,8 +393,10 @@ class TestLLMClientFactory:
 
     def test_create_openai_client_fallback(self, monkeypatch):
         """测试回退到 OpenAI 客户端"""
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
         monkeypatch.delenv("KIMI_API_KEY", raising=False)
         monkeypatch.delenv("MOONSHOT_API_KEY", raising=False)
+        monkeypatch.delenv("KIMI_API_BASE", raising=False)
         monkeypatch.setenv("OPENAI_API_KEY", "openai-key")
 
         client = create_llm_client()
@@ -338,8 +414,10 @@ class TestLLMClientFactory:
 
     def test_create_no_api_key_raises(self, monkeypatch):
         """测试没有可用 API Key 时抛出异常"""
+        monkeypatch.delenv("LLM_PROVIDER", raising=False)
         monkeypatch.delenv("KIMI_API_KEY", raising=False)
         monkeypatch.delenv("MOONSHOT_API_KEY", raising=False)
+        monkeypatch.delenv("KIMI_API_BASE", raising=False)
         monkeypatch.delenv("OPENAI_API_KEY", raising=False)
 
         with pytest.raises(ValueError, match="未检测到可用的 API Key"):

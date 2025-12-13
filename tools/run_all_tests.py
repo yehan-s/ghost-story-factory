@@ -121,6 +121,8 @@ def main():
             [
                 "tests/test_choices_llm_wrapper.py",
                 "tests/test_choice_evaluator_bmad.py",
+                "tests/test_response_llmclient.py",
+                "tests/test_state_manager_scope.py",
             ],
         ),
     ]
