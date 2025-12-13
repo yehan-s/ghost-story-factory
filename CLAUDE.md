@@ -338,7 +338,17 @@ MIN_ENDINGS=3            # Min number of endings
    - Fixes guided mode structure collapse (depth/beat scoping)
    - Timeout optimization (RESPONSE_MAX_TOKENS)
 
-3. **Task Document**: `docs/tasks/TASK_CORE_LLM_REFACTOR.md`
+3. **ADR-005**: `docs/architecture/ADR-005-langgraph-agent-orchestration.md`
+   - ✅ Status: Accepted (M1-M2 completed, 2025-12-13)
+   - LangGraph orchestration layer with node-level telemetry
+   - JSON stability metrics tracking (100% success rate)
+   - Environment variable: `USE_LANGGRAPH_PIPELINE=1` (experimental)
+   - Key achievements:
+     - Node-level telemetry collection
+     - Guided mode structure validation
+     - 10 LLM calls: 9 first-time success, 1 salvage success, 0 failures
+
+4. **Task Document**: `docs/tasks/TASK_CORE_LLM_REFACTOR.md`
    - M1: LLMClient implementation ✅
    - M2: SkeletonGenerator refactoring ✅
    - M3: ChoicePointsGenerator refactoring ✅
