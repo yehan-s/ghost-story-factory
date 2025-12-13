@@ -26,6 +26,7 @@ dependencies = [
     "langchain-openai",
     "pydantic>=2.5.0",
     "rich>=13.7.0",
+    "langgraph>=1.0.0",  # ADR-005: Agent orchestration
 ]
 
 [project.scripts]

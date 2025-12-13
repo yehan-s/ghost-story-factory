@@ -57,6 +57,41 @@ class StoryGeneratorWithRetry:
         Returns:
             生成结果
         """
+        # ========== ADR-005: LangGraph 路径开关 ==========
+        from ..orchestration.graph import should_use_langgraph, run_story_pipeline
+
+        if should_use_langgraph():
+            print("\n")
+            print("╔══════════════════════════════════════════════════════════════════╗")
+            print("║              🔄 使用 LangGraph 流水线 (ADR-005)                  ║")
+            print("╚══════════════════════════════════════════════════════════════════╝")
+            print()
+
+            result = run_story_pipeline(
+                city=self.city,
+                synopsis_title=self.synopsis.title,
+                synopsis_text=self.synopsis.synopsis,
+                synopsis_protagonist=self.synopsis.protagonist,
+                synopsis_location=self.synopsis.location,
+                synopsis_duration=self.synopsis.estimated_duration,
+                test_mode=self.test_mode,
+                gdd_path=gdd_path,
+                lore_path=lore_path,
+                main_story_path=main_story_path,
+            )
+
+            # 转换为旧接口格式
+            if result.get("story_id"):
+                return {
+                    "story_id": result["story_id"],
+                    "title": self.synopsis.title,
+                    "metadata": result.get("metadata", {}),
+                    "characters": result.get("characters", []),
+                }
+            else:
+                raise RuntimeError(f"LangGraph 流水线失败: {result.get('report_error') or result.get('tree_error') or result.get('skeleton_error') or result.get('docs_error')}")
+
+        # ========== 旧路径 ==========
         print("\n")
         print("╔══════════════════════════════════════════════════════════════════╗")
         if self.test_mode:
@@ -226,6 +261,13 @@ class StoryGeneratorWithRetry:
                     except Exception:
                         # 骨架配置异常时，不影响原有行为
                         pass
+
+                # 测试模式的深度约束必须可达：避免 min_main_path_depth > max_depth 导致无意义长跑/超时
+                if self.test_mode and min_main_path > max_depth:
+                    print(
+                        f\"   ⚠️  [测试模式] 主线最小深度约束不可达：min_main_path={min_main_path} > max_depth={max_depth}，已裁剪为 {max_depth}\"
+                    )
+                    min_main_path = max_depth
 
                 dialogue_trees = {}
 
