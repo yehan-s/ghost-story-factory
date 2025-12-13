@@ -1,10 +1,11 @@
 # TASK: 核心结构化 LLM 调用重构（去 Crew，直连 LLM 客户端）
 
 版本: v0.1
-状态: ✅ M1-M3 已完成（2025-11-18）
+状态: ✅ 已完成（M1-M4，2025-12-13）
 关联 GitHub Issue: [#8](https://github.com/yehan-s/ghost-story-factory/issues/8)
 关联 ADR:
-- `docs/architecture/ADR-004-core-llm-refactor.md`  
+- `docs/architecture/ADR-004-core-llm-refactor.md`
+- `docs/architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md` (M4 具体实施)  
 
 ---
 
@@ -117,15 +118,23 @@
     - 增加模拟 LLMClient 的 fake，实现常见错误路径（空输出、半残 JSON、异常抛出）；  
     - 验证 generate_choices 总是返回结构合理的 Choice 列表且不抛异常到上层。  
 
-### M4: RuntimeResponseGenerator 渐进重构（可选扩展）
+### M4: RuntimeResponseGenerator 重构（已完成，见 ADR-006）
 
-- [ ] M4-1 为响应生成部分新增基于 LLMClient 的实现：  
-  - 与骨架/选择点路径一致，记录 prompt/response 片段；  
-  - 允许通过环境变量选择使用 Crew 版或 LLMClient 版响应生成。  
+- [x] M4-1 为响应生成部分新增基于 LLMClient 的实现（默认启用）：
+  - `RuntimeResponseGenerator.generate_response(...)` 默认走 LLMClient，写入统一 request/response 日志；
+  - 通过环境变量 `USE_LLMCLIENT_RESPONSE=0` 可回退到 CrewAI（仅作为兼容路径）；
+  - 若两者都不可用，回退到本地兜底叙事（不崩溃）。
 
-- [ ] M4-2 增量迁移：  
-  - 在部分故事/模式下切换到 LLMClient 版响应生成，观察故事整体质量与日志情况；  
-  - 保留 Crew 版作为回退路径，直到新实现稳定。
+- [x] M4-2 收紧响应生成的 token 上限以降低超时：
+  - 新增 `RESPONSE_MAX_TOKENS`（默认建议 800-1200），并允许覆盖；
+  - 响应目标为 200-400 字，避免默认 16000 导致超时/成本暴涨。
+
+- [x] M4-3 回归与验证：
+  - 新增单元测试覆盖 LLMClient 路径（fake client + 不触发真实网络）；
+  - `tools/run_all_tests.py` 纳入该测试；
+  - 至少一次真实长跑中，确认响应生成不再触发 CrewAI 黑盒错误，并显著减少超时。
+
+**详细设计见**: `docs/architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md`
 
 ---
 
