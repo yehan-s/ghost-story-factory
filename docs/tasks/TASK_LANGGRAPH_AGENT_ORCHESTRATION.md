@@ -1,10 +1,10 @@
 # TASK: LangGraph 接管 Agent 编排（保留 LLMClient + v4 骨架）
 
-> **⚠️ 任务状态**: 本任务为计划草案，待 ADR-006 (Response LLMClient) 稳定后再启动实施。
-> **前置条件**: ADR-004/006 代码稳定运行，节点级遥测可用。
+> **✅ 任务状态**: ADR-006 已完成，M1 实施中。
+> **前置条件**: ✅ ADR-004/006 代码已实现，开始 LangGraph 集成。
 
 版本: v0.1
-状态: 草案（待 ADR-006 稳定后启动）
+状态: 🚧 进行中（M1 实施中，2025-12-13）
 关联 ADR:
 - `docs/architecture/ADR-005-langgraph-agent-orchestration.md`
 - `docs/architecture/ADR-003-v4-workflow-staging-and-agents.md`
