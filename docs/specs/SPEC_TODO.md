@@ -1,16 +1,48 @@
 # Ghost Story Factory - 待开发功能规格书
 
-**文档版本**: v1.4
+**文档版本**: v1.5
 **创建日期**: 2025-10-24
-**最后更新**: 2025-10-25
-**项目状态**: ✅ 生产就绪 - 架构 v3.0 已完成
+**最后更新**: 2025-12-13
+**项目状态**: ✅ v0.1.0 已发布 | 🚀 v0.2.0 开发中
+
+**当前开发重点**: 🎯 **P2: 静态对话预生成系统** (v0.2.0 Milestone)
+- GitHub Milestone: [v0.2.0 - 预生成系统与体验优化](https://github.com/yehan-s/ghost-story-factory/milestone/2)
+- 目标交付日期: 2025-03-15
+- 核心 Issues: [#9](https://github.com/yehan-s/ghost-story-factory/issues/9), [#10](https://github.com/yehan-s/ghost-story-factory/issues/10), [#11](https://github.com/yehan-s/ghost-story-factory/issues/11)
 
 > 💡 **规格说明**：完整规格请查看 `docs/specs/SPEC_V3.md`
 > 📋 **架构文档**：详细架构请查看 `docs/architecture/NEW_PIPELINE.md`
 
 ---
 
-## 🎉 最新进展 (2025-10-25)
+## 🎉 最新进展
+
+### ✅ v0.1.0 正式发布！(2025-12-13)
+
+**发布日期**: 2025-12-13
+**核心里程碑**: 完成 Phase 1-2 核心游戏引擎 + ADR-004/005/006 架构重构
+
+#### 主要特性
+1. ✅ **交互式游戏引擎**（GameEngine/GameState/ChoicePointsGenerator/RuntimeResponseGenerator）
+2. ✅ **CLI UI 美化**（rich 库 + 交互式菜单）
+3. ✅ **多结局系统**（补完/旁观/迷失）
+4. ✅ **ADR-005: LangGraph 编排层**（节点级遥测 + JSON 稳定性 100%）
+5. ✅ **并行生成能力**（智能动态队列）
+6. ✅ **集中式日志系统**（时间戳文件 + 堆栈跟踪）
+
+#### 架构改进
+- ADR-004: LLMClient 架构重构（替代 CrewAI）
+- ADR-005: LangGraph 编排层 ✅ (M1-M2 completed)
+- ADR-006: Response 生成 LLMClient 迁移
+
+#### 版本信息
+- GitHub Release: [v0.1.0](https://github.com/yehan-s/ghost-story-factory/releases/tag/v0.1.0)
+- Changelog: [CHANGELOG.md](../../CHANGELOG.md)
+- Closed Milestone: [v0.1.0 - 核心游戏引擎](https://github.com/yehan-s/ghost-story-factory/milestone/1)
+
+---
+
+## 🎉 历史进展 (2025-10-25)
 
 ### ✅ 架构 v3.0 完成！
 

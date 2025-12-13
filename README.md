@@ -1,9 +1,32 @@
-# Ghost Story Factory v3.1 🎯
+# Ghost Story Factory
 
-**一个专业的灵异故事生成工厂** - 基于CrewAI和专业templates模板，自动生成完整的、高质量的灵异故事。
+[![Version](https://img.shields.io/badge/version-v0.1.0-blue.svg)](https://github.com/yehan-s/ghost-story-factory/releases/tag/v0.1.0)
+[![Python](https://img.shields.io/badge/python-3.12+-green.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-orange.svg)](LICENSE)
+
+**一个专业的灵异故事生成工厂** - 基于 LLMClient 和专业 templates 模板，自动生成完整的、高质量的灵异故事。
 
 > 🎮 **不只是故事生成器，更是交互式游戏开发工具**
-> 从世界观设计到AI导演系统，从静态故事到动态游戏，一站式解决方案。
+> 从世界观设计到 AI 导演系统，从静态故事到动态游戏，一站式解决方案。
+
+## 📦 v0.1.0 新特性 (2025-10-25)
+
+**核心游戏引擎**
+- ✅ 交互式游戏引擎（Dynamic Mode + Pregenerated Mode）
+- ✅ CLI UI 美化（rich 库，交互式菜单）
+- ✅ 多结局系统（补完/旁观/迷失）
+
+**架构重构**
+- ✅ ADR-004/006: LLMClient 架构（替代 CrewAI）
+- ✅ ADR-005: LangGraph 编排层（JSON 稳定性 100%）
+- ✅ 节点级遥测与诊断系统
+
+**工程优化**
+- ✅ 并行生成能力（智能动态队列）
+- ✅ 集中式日志系统（时间戳文件 + 堆栈跟踪）
+- ✅ 单元测试覆盖率 >80%
+
+📖 完整变更日志：[CHANGELOG.md](CHANGELOG.md)
 
 ---
 

@@ -1,9 +1,9 @@
 # ADR-005: 用 LangGraph 收敛 Agent 编排，保留 LLMClient 与 v4 骨架主路径
 
-> **✅ 文档状态**: ADR-006 已完成，本 ADR 进入实施阶段。
+> **✅ 文档状态**: ADR-006 已完成，本 ADR M1-M2 已完成。
 > **前置条件**: ✅ ADR-004 M1-M4 完成 + ✅ ADR-006 代码已实现
 
-- 状态: In Progress (M1 实施中, 2025-12-13)
+- 状态: **Accepted** (M1-M2 完成, 2025-12-13)
 - 日期: 2025-11-20
 - 作者: yehan（由 Codex 协助起草）
 - 关联: ADR-001/002（v4 骨架与默认流水线）、ADR-003（工作流分阶段 & Agent 编排收敛）、ADR-004（核心 LLM 重构为 LLMClient）
