@@ -14,17 +14,53 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from crewai import Agent, Task, Crew
-from crewai.llm import LLM
-
 from .skeleton_model import PlotSkeleton
+
+# 导入新的 LLMClient（替代 CrewAI）
+try:
+    from ..utils.llm_client import LLMClient, create_llm_client, LLMClientError
+    _USE_LLM_CLIENT = True
+except ImportError:
+    _USE_LLM_CLIENT = False
+
+# CrewAI 导入（总是尝试导入，用于回退路径）
+try:
+    from crewai import Agent, Task, Crew
+    from crewai.llm import LLM
+    _CREWAI_AVAILABLE = True
+except ImportError:
+    _CREWAI_AVAILABLE = False
 
 # templates 目录：项目根目录下的 templates/
 TEMPLATE_DIR = Path(__file__).resolve().parents[3] / "templates"
 
+# 日志
+try:
+    from ..utils.logging_utils import get_logger
+    logger, _ = get_logger()
+except ImportError:
+    import logging
+    logger = logging.getLogger(__name__)
 
-def _build_default_llm() -> LLM:
-    """构建默认 LLM（优先 Kimi，回退 OpenAI）"""
+
+def _build_default_llm():
+    """构建默认 LLM（优先 Kimi，回退 OpenAI）
+
+    返回：
+        LLMClient（新路径）或 crewai.LLM（回退路径）
+    """
+    if _USE_LLM_CLIENT:
+        # 新路径：使用 LLMClient
+        try:
+            return create_llm_client()
+        except Exception as e:
+            logger.error(f"创建 LLMClient 失败：{e}，回退到 CrewAI")
+            # 继续下面的 Crew 回退逻辑
+
+    # 回退路径：使用 CrewAI
+    if not _CREWAI_AVAILABLE:
+        raise RuntimeError("CrewAI 不可用，且 LLMClient 创建失败")
+
     kimi_key = os.getenv("KIMI_API_KEY") or os.getenv("MOONSHOT_API_KEY")
     if kimi_key:
         base = os.getenv("KIMI_API_BASE", "https://api.moonshot.cn/v1")
@@ -168,16 +204,22 @@ def _validate_skeleton(skeleton: PlotSkeleton) -> None:
 class SkeletonGenerator:
     """故事骨架生成器"""
 
-    def __init__(self, city: str, llm: Optional[LLM] = None) -> None:
+    def __init__(self, city: str, llm=None) -> None:
         """
         初始化骨架生成器
 
         Args:
             city: 城市名称
-            llm: 可选，自定义 LLM 实例；不传则使用默认构建
+            llm: 可选，自定义 LLM 实例（LLMClient 或 crewai.LLM）；不传则使用默认构建
         """
         self.city = city
         self.llm = llm or _build_default_llm()
+        self.use_llm_client = isinstance(self.llm, LLMClient) if _USE_LLM_CLIENT else False
+
+        logger.info(
+            f"[SkeletonGenerator] 初始化 | city={city} | "
+            f"模式={'LLMClient' if self.use_llm_client else 'CrewAI'}"
+        )
 
     def generate(
         self,
@@ -197,6 +239,10 @@ class SkeletonGenerator:
 
         Returns:
             PlotSkeleton 对象
+
+        Raises:
+            ValueError: 骨架验证失败
+            LLMClientError: LLM 调用失败（新路径）
         """
         raw_prompt = _load_prompt()
 
@@ -207,6 +253,75 @@ class SkeletonGenerator:
             .replace("{{LORE_V2}}", _shorten(lore_v2_text))
             .replace("{{MAIN_STORY}}", _shorten(main_story_text))
         )
+
+        logger.info(
+            f"[SkeletonGenerator] 开始生成骨架 | city={self.city} | "
+            f"title={title} | prompt_length={len(prompt)}"
+        )
+
+        # 根据模式选择调用方式
+        if self.use_llm_client:
+            result = self._generate_with_llm_client(prompt)
+        else:
+            result = self._generate_with_crew(prompt)
+
+        # 解析和验证（两种模式共用）
+        logger.info(f"[SkeletonGenerator] LLM 返回 | result_length={len(result)}")
+
+        data = _try_parse_json(result)
+        logger.info(f"[SkeletonGenerator] JSON 解析成功 | keys={list(data.keys())}")
+
+        skeleton = PlotSkeleton.from_dict(data)
+        logger.info(
+            f"[SkeletonGenerator] 骨架构建成功 | "
+            f"num_acts={skeleton.num_acts} | num_beats={skeleton.num_beats} | "
+            f"num_ending_beats={skeleton.num_ending_beats}"
+        )
+
+        _validate_skeleton(skeleton)
+        logger.info("[SkeletonGenerator] 骨架验证通过")
+
+        return skeleton
+
+    def _generate_with_llm_client(self, prompt: str) -> str:
+        """使用 LLMClient 生成（新路径）
+
+        Args:
+            prompt: 完整 prompt
+
+        Returns:
+            str: LLM 返回的文本
+        """
+        if not _USE_LLM_CLIENT:
+            raise RuntimeError("LLMClient 不可用")
+
+        logger.info("[SkeletonGenerator] 使用 LLMClient 调用 LLM")
+
+        try:
+            result = self.llm.call(
+                prompt=prompt,
+                model=None,  # 使用默认模型
+                max_tokens=16000,
+                temperature=0.7,
+            )
+            return result
+        except LLMClientError as e:
+            logger.error(f"[SkeletonGenerator] LLMClient 调用失败: {e}")
+            raise
+
+    def _generate_with_crew(self, prompt: str) -> str:
+        """使用 CrewAI 生成（回退路径）
+
+        Args:
+            prompt: 完整 prompt
+
+        Returns:
+            str: LLM 返回的文本
+        """
+        if not _CREWAI_AVAILABLE:
+            raise RuntimeError("CrewAI 不可用，无法使用回退路径")
+
+        logger.info("[SkeletonGenerator] 使用 CrewAI 调用 LLM（回退路径）")
 
         agent = Agent(
             role="故事结构设计师",
@@ -227,7 +342,4 @@ class SkeletonGenerator:
         crew = Crew(agents=[agent], tasks=[task], verbose=False)
         result = str(crew.kickoff())
 
-        data = _try_parse_json(result)
-        skeleton = PlotSkeleton.from_dict(data)
-        _validate_skeleton(skeleton)
-        return skeleton
+        return result

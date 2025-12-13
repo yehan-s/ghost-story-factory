@@ -1,7 +1,7 @@
 # TASK: 提升选择点生成质量（JSON稳健性 + 去重复）
 
-版本: v0.1  
-状态: 草案（新建）  
+版本: v0.2  
+状态: M1-M4 已完成 (2025-11-20)  
 关联 ADR:  
 - `docs/architecture/ADR-001-plot-skeleton-pipeline.md`（骨架优先流水线）  
 - `docs/architecture/NEW_PIPELINE.md`（整体预生成架构）  
@@ -133,7 +133,7 @@
 
 **目的**：当某些节点的选择点因为 LLM/JSON 问题质量不佳时，不在 TreeBuilder 主循环里“现场死磕”，而是通过离线工具有计划地修复，兼顾稳定性与质量。
 
-- [ ] M4-1 明确运行时与离线修复的职责边界
+- [x] M4-1 明确运行时与离线修复的职责边界
   - 运行时（TreeBuilder.generate_tree）：
     - 捕获所有 ChoicePointsGenerator 的异常（包括 LLM 内部格式化错误，如 `Invalid format specifier ' true'`）；
     - 记录清晰日志（包括场景 ID / 节点 ID / 异常摘要）；
@@ -142,7 +142,7 @@
     - 通过工具扫描对话树，识别“默认选择占比过高 / BMAD 评分显著偏低”的节点或幕；
     - 针对这些节点重新调用 ChoicePointsGenerator，生成更高质量的选择集合，并回写树。
 
-- [ ] M4-2 在 `tools/repair_dialogue_trees.py` 中实现节点级离线修复流程
+- [x] M4-2 在 `tools/repair_dialogue_trees.py` 中实现节点级离线修复流程
   - 输入：
     - 对话树 JSON（或 checkpoint）；
     - 可选过滤条件：`scene_id` / `min_repetition_rate` / `bmad_score_threshold` 等。
@@ -156,12 +156,12 @@
     - 修复后的新树 JSON；
     - 简要报告：修复节点数 / 每个节点前后质量差异摘要。
 
-- [ ] M4-3 与 BMAD 评估器集成
+- [x] M4-3 与 BMAD 评估器集成
   - 在离线修复前后，对目标节点调用 `ChoiceQualityEvaluator.evaluate`：
     - 比较修复前后的 `overall_score` 与各维度（structure / diversity / pacing / lore）评分；
     - 在修复报告中记录这些差异，用于验证该次修复对质量的实际提升。
 
-- [ ] M4-4 文档化“不要在 TreeBuilder 中死磕单节点”的准则
+- [x] M4-4 文档化“不要在 TreeBuilder 中死磕单节点”的准则
   - 在本 Task 与 `TASK_STORY_STRUCTURE.md` 中补充说明：
     - 节点级质量问题（包括 LLM 格式化错误 / JSON 半残 / BMAD 低分）优先通过离线修复链路解决；
     - TreeBuilder 主循环只负责结构生成与基础兜底，不在其中堆叠多轮重试和复杂 heuristics；
