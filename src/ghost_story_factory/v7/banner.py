@@ -22,8 +22,7 @@ _BANNER_LINES: List[str] = [
     " ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ",
 ]
 
-_SUBTITLE = "鬼  夜  班"
-_TAGLINE = "—— 选一座城,开始你的班 ——"
+_SUBTITLE = "G H O S T   S T O R I E S"
 
 
 def render_banner_lines(width: int = 60) -> List[str]:
@@ -41,8 +40,6 @@ def render_banner_lines(width: int = 60) -> List[str]:
     out.append("")
     out.append(_center(_SUBTITLE, width))
     out.append("")
-    out.append(_center(_TAGLINE, width))
-    out.append("")
     return out
 
 
@@ -53,13 +50,11 @@ def banner_pieces(width: int = 60) -> dict:
         {
           "ascii_lines": [像素字 6 行,已居中],
           "subtitle": 居中后的副标题,
-          "tagline": 居中后的 tagline,
         }
     """
     return {
         "ascii_lines": [_center(line, width) for line in _BANNER_LINES],
         "subtitle": _center(_SUBTITLE, width),
-        "tagline": _center(_TAGLINE, width),
     }
 
 
@@ -93,6 +88,4 @@ def render_banner_rich(width: int = 60) -> str:
         lines.append(f"[bold red]{_center(line, width)}[/]")
     lines.append("")
     lines.append(f"[bold yellow]{_center(_SUBTITLE, width)}[/]")
-    lines.append("")
-    lines.append(f"[dim]{_center(_TAGLINE, width)}[/]")
     return "\n".join(lines)

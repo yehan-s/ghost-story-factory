@@ -89,24 +89,10 @@ Header { background: #1a0000; color: #ff8080; }
 
 #intro-subtitle {
     height: auto;
-    padding: 1 2 0 2;
+    padding: 1 2 1 2;
     text-align: center;
     color: #ffaa00;
     text-style: bold;
-}
-
-#intro-tagline {
-    height: auto;
-    padding: 0 2 1 2;
-    color: #707070;
-    text-align: center;
-}
-
-#intro-summary {
-    height: auto;
-    padding: 0 2;
-    color: #707070;
-    text-align: center;
 }
 
 #intro-prompt {
@@ -125,11 +111,9 @@ class IntroScreen(Screen):
 
     入场序列(GHOST_FAST=1 一次性显示):
       0.0s  雾纹一闪
-      0.4s  像素字逐行渐进 + 颜色从暗红到亮红
-      1.5s  副标题"鬼  夜  班"
-      2.1s  tagline
-      2.6s  存档摘要
-      3.0s  按钮显现并开始呼吸闪烁
+      0.4s  像素字 GHOST 逐行渐进
+      1.4s  副标题 "G H O S T   S T O R I E S"
+      2.4s  按钮显现并开始呼吸闪烁
     """
 
     BINDINGS = [
@@ -144,7 +128,6 @@ class IntroScreen(Screen):
         yield Static("", id="intro-fog")
         yield Static("", id="intro-banner")
         yield Static("", id="intro-subtitle")
-        yield Static("", id="intro-tagline")
         yield Static("", id="intro-prompt")
         yield Footer()
 
@@ -160,7 +143,6 @@ class IntroScreen(Screen):
             for _ in self._pieces["ascii_lines"]:
                 self._reveal_next_ascii_line()
             self._show_subtitle()
-            self._show_tagline()
             self._show_prompt()
             return
 
@@ -170,9 +152,8 @@ class IntroScreen(Screen):
         for i in range(len(self._pieces["ascii_lines"])):
             self.set_timer(0.45 + i * 0.10, self._reveal_next_ascii_line)
         self.set_timer(1.4, self._show_subtitle)
-        self.set_timer(2.0, self._show_tagline)
-        self.set_timer(2.6, self._show_prompt)
-        self.set_timer(2.8, self._start_pulse)
+        self.set_timer(2.4, self._show_prompt)
+        self.set_timer(2.6, self._start_pulse)
 
     # --- 阶段 ---
 
@@ -195,11 +176,6 @@ class IntroScreen(Screen):
     def _show_subtitle(self) -> None:
         self.query_one("#intro-subtitle", Static).update(
             f"[bold yellow]{self._pieces['subtitle']}[/]"
-        )
-
-    def _show_tagline(self) -> None:
-        self.query_one("#intro-tagline", Static).update(
-            f"[dim]{self._pieces['tagline']}[/]"
         )
 
     def _show_prompt(self) -> None:

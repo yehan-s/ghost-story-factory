@@ -75,11 +75,9 @@ def screen_intro(sm: SaveManager) -> bool:
     入场序列(GHOST_FAST=1 跳过 sleep):
       T=0.0s    清屏 + 黑屏 0.3s
       T=0.3s    顶部一行雾纹 0.4s 后被换行盖掉
-      T=0.7s    像素字 6 行渐进出现(每行 0.10s)
-      T=1.5s    副标题"鬼  夜  班"打字机
-      T=2.0s    tagline 打字机
-      T=2.5s    存档摘要(若有)灰色打字机
-      T=3.0s    "按 Enter 开始" 呼吸闪烁 2 次后定亮
+      T=0.7s    像素字 GHOST 6 行渐进出现(每行 0.10s)
+      T=1.5s    副标题 "G H O S T   S T O R I E S" 打字机
+      T=2.5s    "按 Enter 开始" 呼吸闪烁 2 次后定亮
     """
     pieces = banner_pieces(60)
 
@@ -98,19 +96,13 @@ def screen_intro(sm: SaveManager) -> bool:
     print()
     pause(0.25)
 
-    # T=1.5:副标题打字机(每个汉字慢一点)
-    type_text(pieces["subtitle"], delay=0.07,
+    # T=1.5:副标题打字机
+    type_text(pieces["subtitle"], delay=0.05,
               color_fn=lambda c: bold(yellow(c)))
-    pause(0.3)
+    pause(0.4)
     print()
 
-    # T=2.0:tagline 打字机
-    type_text(pieces["tagline"], delay=0.035,
-              color_fn=lambda c: dim(c))
-    pause(0.3)
-    print()
-
-    # T=3.0:呼吸闪烁按钮
+    # T=2.5:呼吸闪烁按钮
     prompt = "  按 Enter 开始    q 退出  "
     pulse_text(
         prompt,
