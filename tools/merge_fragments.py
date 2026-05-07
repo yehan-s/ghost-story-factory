@@ -33,7 +33,6 @@ STORY_META = {
         "PR": 0,
         "GR": 0,
         "shifts_completed": 0,
-        "shifts_skipped": 0,
         "inv": [],
         "flags": {},
         "skipped_landmarks": [],

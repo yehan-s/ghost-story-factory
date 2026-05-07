@@ -171,8 +171,11 @@ class State:
             lm = str(effects["landmark_skipped"])
             if lm not in self.skipped_landmarks:
                 self.skipped_landmarks.append(lm)
-                notes.append(f"绕开 {lm}")
-                events.append({"type": "landmark_skipped", "key": lm})
+                # 同步漏卡计数(取代 tree.json 中冗余的 effects.shifts_skipped: 1)
+                self.shifts_skipped += 1
+                notes.append(f"绕开 {lm}(漏卡 +1)")
+                events.append({"type": "landmark_skipped", "key": lm,
+                               "current": self.shifts_skipped})
         if "puzzle_add" in effects:
             piece = str(effects["puzzle_add"])
             if piece not in self.puzzle_pieces:

@@ -114,6 +114,12 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
     for lm in effects.get("visited_landmarks_add", []) or []:
         if lm not in new_vl:
             new_vl.append(lm)
+    # landmark_skipped(单个,player.py 约定):append 到 list 并同步 shifts_skipped +1
+    if "landmark_skipped" in effects:
+        lm = str(effects["landmark_skipped"])
+        if lm not in new_skl:
+            new_skl.append(lm)
+            new_sk += 1
     for lm in effects.get("skipped_landmarks_add", []) or []:
         if lm not in new_skl:
             new_skl.append(lm)

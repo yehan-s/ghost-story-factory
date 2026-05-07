@@ -11,7 +11,6 @@
     "PR": 0,
     "GR": 0,
     "shifts_completed": 0,
-    "shifts_skipped": 0,
     "inv": [],
     "flags": {},
     "skipped_landmarks": [],
@@ -1763,7 +1762,6 @@
           "text": "假装没看见,加快脚步。",
           "next": "n_s1_walk_past",
           "effects": {
-            "shifts_skipped": 0,
             "landmark_visited": "S1"
           }
         },
@@ -1771,7 +1769,6 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S1",
             "flags": {
               "s1_aborted": true
@@ -2229,7 +2226,6 @@
           "text": "直接跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S1",
             "flags": {
               "s1_aborted": true
@@ -2258,7 +2254,6 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": -8,
-            "shifts_skipped": 1,
             "landmark_skipped": "S1",
             "flags": {
               "s1_fled": true
@@ -2387,7 +2382,6 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S2",
             "flags": {
               "s2_aborted": true
@@ -2651,7 +2645,6 @@
           "text": "丢下《异常事件记录表》,跑下山。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S2",
             "PR": -8,
             "flags": {
@@ -2937,7 +2930,6 @@
           "text": "退回门口,打卡走人。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S3",
             "flags": {
               "s3_aborted": true
@@ -3403,7 +3395,6 @@
           "text": "不进去,绕路走。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S4",
             "flags": {
               "s4_aborted": true
@@ -3887,7 +3878,6 @@
           "text": "退出旧楼,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S5",
             "flags": {
               "s5_aborted": true
@@ -4402,7 +4392,6 @@
           "text": "上去打卡,跳下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S6",
             "flags": {
               "s6_aborted": true
