@@ -189,10 +189,10 @@
 ## tag 标记
 
 ```bash
-git tag pass2-task1-complete 3b649fe
+git tag pass2-task1-complete a15fcb3
 ```
 
-(Task 5.1 docs commit 是本期最终 commit,tag 落在此)
+(Task 5.1 最终 docs commit,本期完工)
 
 ---
 
