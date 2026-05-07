@@ -1723,6 +1723,11 @@
         {
           "label": "第三把长椅旁的报亭",
           "text": "报亭关着,玻璃窗上贴着 1985 年 10 月 19 日的《杭州日报》头版——\n\n「**林副科长投湖自尽 · 27 笔贪污案告破**」\n\n但报纸的纸**是新的**,墨水还有点发亮。\n\n报亭老板的座位空着。\n\n座位上摆着一杯**温的**普洱茶。\n\n你翻到报纸内页 —— 同一天的第三版,有一行不起眼的标注:**1987 · 红衣 13 号**,死于柳浪闻莺。",
+          "effects": {
+            "flags": {
+              "know.read_newspaper_1985_10_19": true
+            }
+          },
           "_foreshadow_clue": [
             {
               "slot": "1987_red_dress_truth",
@@ -1925,7 +1930,8 @@
             ],
             "flags": {
               "oneshot.s1_book_grabbed": true,
-              "oneshot.s1_book_seen": true
+              "oneshot.s1_book_seen": true,
+              "know.linmou_badge": true
             }
           }
         },
@@ -4540,27 +4546,23 @@
           "text": "[05] 直接去湖边。",
           "next": "n_l1985_lake_jump",
           "require": {
-            "flags": {
-              "l_intent_release": true
-            }
-          }
-        },
-        {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
-          "require": {
-            "flags": {
-              "l_intent_regret": true
-            }
-          }
-        },
-        {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
-          "require": {
-            "flags": {
-              "l_intent_grievance": true
-            }
+            "any_of": [
+              {
+                "flags": {
+                  "l_intent_release": true
+                }
+              },
+              {
+                "flags": {
+                  "l_intent_regret": true
+                }
+              },
+              {
+                "flags": {
+                  "l_intent_grievance": true
+                }
+              }
+            ]
           }
         }
       ]
@@ -6777,7 +6779,8 @@
           "text": "再翻几页。",
           "effects": {
             "flags": {
-              "know.archive_visited": true
+              "know.archive_visited": true,
+              "know.linmou_archive_1985": true
             },
             "PR": 2,
             "stay": true
@@ -6815,7 +6818,10 @@
           "next": "n_npc_drowned_official",
           "effects": {
             "PR": 20,
-            "puzzle_add": "piece_linmou_full"
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "know.linmou_corruption": true
+            }
           },
           "require": {
             "inv_has": [

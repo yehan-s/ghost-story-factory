@@ -1758,7 +1758,8 @@
           "text": "再翻几页。",
           "effects": {
             "flags": {
-              "know.archive_visited": true
+              "know.archive_visited": true,
+              "know.linmou_archive_1985": true
             },
             "PR": 2,
             "stay": true
@@ -1796,7 +1797,10 @@
           "next": "n_npc_drowned_official",
           "effects": {
             "PR": 20,
-            "puzzle_add": "piece_linmou_full"
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "know.linmou_corruption": true
+            }
           },
           "require": {
             "inv_has": [
