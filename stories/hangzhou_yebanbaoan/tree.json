@@ -2257,13 +2257,7 @@
           "text": "把沾血泥的湿巾收好,继续走。",
           "next": "n_landmark_picker",
           "effects": {
-            "inv_add": [
-              "铁锈湖泥湿巾"
-            ],
-            "puzzle_add": "piece_blood_mud",
-            "flags": {
-              "oneshot.s1_kept_mud": true
-            }
+            "puzzle_add": "piece_blood_mud"
           }
         }
       ]
@@ -3498,13 +3492,7 @@
           "text": "把毛笔收进背包。",
           "next": "n_s4_arrive",
           "effects": {
-            "inv_add": [
-              "血毛笔"
-            ],
-            "puzzle_add": "piece_yang_brush",
-            "flags": {
-              "oneshot.s4_kept_brush": true
-            }
+            "puzzle_add": "piece_yang_brush"
           }
         }
       ]
@@ -3713,13 +3701,8 @@
           "effects": {
             "GR": 25,
             "PR": 20,
-            "inv_add": [
-              "羊公会欠条"
-            ],
             "flags": {
-              "yang_debt": true,
-              "marked_lamb": true,
-              "oneshot.s4_self_debt": true
+              "marked_lamb": true
             }
           }
         }
@@ -5242,14 +5225,7 @@
           "text": "把电视抢过来。",
           "next": "n_scene_27th_floor_corridor",
           "effects": {
-            "GR": 12,
-            "inv_add": [
-              "14 寸黑白电视",
-              "1987 录像带"
-            ],
-            "flags": {
-              "took_red_girl_tv": true
-            }
+            "GR": 12
           }
         }
       ]
