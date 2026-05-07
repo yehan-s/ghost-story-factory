@@ -1,0 +1,43 @@
+{
+  "_comment": "6 母题 × 视/听/嗅 18 条锚点。Phase 4 内容创作直接查表。",
+  "_source": "docs/team-reviews/2026-05-07-dramatic-reaction.md § 6",
+  "version": 1,
+  "anchors": {
+    "hangzhou_constant": {
+      "_label": "杭州常数",
+      "visual": "西湖水汽",
+      "audio": "远处轮渡汽笛",
+      "scent": "桂花潮味"
+    },
+    "scapegoat": {
+      "_label": "替死",
+      "visual": "旧棉袄",
+      "audio": "煤炉灰",
+      "scent": "樟脑丸味"
+    },
+    "time_loop": {
+      "_label": "时间循环",
+      "visual": "搪瓷盆碰撞",
+      "audio": "老式挂钟滴答",
+      "scent": "磁带倒带声"
+    },
+    "datafication": {
+      "_label": "数据化",
+      "visual": "G-273 工牌反光",
+      "audio": "打卡机咔哒",
+      "scent": "荧光灯频闪"
+    },
+    "thirteen_curse": {
+      "_label": "十三诅咒",
+      "visual": "平海街 13 号门牌",
+      "audio": "13 路公交报站",
+      "scent": "旧日历撕到 13"
+    },
+    "folklore": {
+      "_label": "民间传闻",
+      "visual": "苏堤夜雾",
+      "audio": "雷峰塔风铃 / 灵隐钟声远闻",
+      "scent": "石阶湿气"
+    }
+  }
+}
