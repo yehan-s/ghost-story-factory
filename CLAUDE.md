@@ -2,6 +2,31 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 开发任务工作流(强制)
+
+收到任何"开发任务"指令时,助手必须先调用 `script-review-team` skill,
+等评审报告产出且用户放行后,才能进入实际编码或方案撰写。
+
+**判定为"开发任务"的关键词**(任一即触发):
+- 实现 / 添加 / 改造 / 重构 / 重写 / 扩展 / 集成 / 迁移
+- 设计 / 规划 / 方案 / 架构
+- 修 / 修复(影响 ≥ 10 行,或跨文件)
+
+**例外(可直接动手,不调用 skill)**:
+- 拼写修复 / 注释更新
+- 单文件 < 10 行的 bug 修复
+- 配置文件调整(.env / pyproject.toml 字段)
+- 纯重命名 / 格式化
+- 创建/修改本 skill 自身的文件(`.claude/skills/script-review-team/`)
+
+用户输入"跳过团队"显式覆盖,助手必须确认一次再跳过。
+
+Skill 定义:`.claude/skills/script-review-team/SKILL.md`
+完整设计:`docs/superpowers/specs/2026-05-07-script-review-team-skill-design.md`
+评审历史:`docs/team-reviews/INDEX.md`
+
+---
+
 ## Project Overview
 
 Ghost Story Factory is an AI-powered horror story generation system with two modes:
