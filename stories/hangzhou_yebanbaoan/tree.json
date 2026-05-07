@@ -1722,7 +1722,7 @@
         {
           "if": {
             "flags": {
-              "s1_post_forum": true
+              "arc.s1_post_forum": true
             },
             "PR_min": 25
           },
@@ -1754,7 +1754,7 @@
             "PR": 5,
             "landmark_visited": "S1",
             "flags": {
-              "s1_post_forum": true
+              "arc.s1_post_forum": true
             }
           }
         },
@@ -1771,7 +1771,7 @@
           "effects": {
             "landmark_skipped": "S1",
             "flags": {
-              "s1_aborted": true
+              "oneshot.s1_aborted": true
             }
           },
           "require": {
@@ -1869,7 +1869,7 @@
             "PR": 3,
             "flags": {
               "s1_touched_coat": true,
-              "s1_hand_shaking": true
+              "oneshot.s1_hand_shaking": true
             }
           }
         }
@@ -1881,7 +1881,7 @@
         {
           "if": {
             "flags": {
-              "s1_book_seen": true
+              "oneshot.s1_book_seen": true
             }
           },
           "text": "你又把手伸进风衣口袋。\n\n那本黑色帆布封面的账本还在那里——\n\n但它现在比刚才薄了一点。\n\n好像里面的某些页,自己出去了。"
@@ -1896,7 +1896,7 @@
             "PR": 5,
             "puzzle_add": "piece_account",
             "flags": {
-              "s1_book_seen": true
+              "oneshot.s1_book_seen": true
             }
           }
         },
@@ -1909,8 +1909,8 @@
               "林副科长账本残页"
             ],
             "flags": {
-              "s1_book_grabbed": true,
-              "s1_book_seen": true,
+              "oneshot.s1_book_grabbed": true,
+              "oneshot.s1_book_seen": true,
               "linmou_marked": true
             }
           }
@@ -1923,7 +1923,7 @@
             "GR": 5,
             "flags": {
               "s1_signed_book": true,
-              "s1_book_seen": true
+              "oneshot.s1_book_seen": true
             }
           }
         },
@@ -1932,8 +1932,8 @@
           "next": "n_s1_close",
           "effects": {
             "flags": {
-              "s1_book_seen": true,
-              "s1_book_returned": true
+              "oneshot.s1_book_seen": true,
+              "oneshot.s1_book_returned": true
             }
           }
         }
@@ -1964,8 +1964,8 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s1_post_forum": true,
-              "s1_auto_posted": true
+              "arc.s1_post_forum": true,
+              "oneshot.s1_auto_posted": true
             }
           }
         },
@@ -1976,7 +1976,7 @@
             "PR": -3,
             "flags": {
               "s1_revisit_close": true,
-              "s1_panic": true
+              "oneshot.s1_panic": true
             }
           }
         },
@@ -2002,7 +2002,7 @@
           "next": "n_npc_predecessor_voice",
           "effects": {
             "flags": {
-              "s1_radio_answered": true
+              "oneshot.s1_radio_answered": true
             }
           }
         },
@@ -2046,7 +2046,7 @@
             "PR": -5,
             "GR": 8,
             "flags": {
-              "s1_eyes_attacked": true
+              "oneshot.s1_eyes_attacked": true
             }
           }
         }
@@ -2109,7 +2109,7 @@
           "effects": {
             "PR": -3,
             "flags": {
-              "s1_marked_wait": true,
+              "oneshot.s1_marked_wait": true,
               "s1_revisit_close": true
             }
           }
@@ -2136,7 +2136,7 @@
           "effects": {
             "flags": {
               "s1_revisit_wet_shoes": true,
-              "s1_saw_coin": true
+              "oneshot.s1_saw_coin": true
             }
           }
         }
@@ -2152,7 +2152,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s1_post_forum": true
+              "arc.s1_post_forum": true
             }
           }
         },
@@ -2162,7 +2162,7 @@
           "effects": {
             "PR": 3,
             "flags": {
-              "s1_post_deleted": true
+              "oneshot.s1_post_deleted": true
             }
           }
         },
@@ -2185,7 +2185,7 @@
               "前任电话号码"
             ],
             "flags": {
-              "s1_phone_lost": true
+              "oneshot.s1_phone_lost": true
             }
           }
         }
@@ -2201,7 +2201,7 @@
           "effects": {
             "PR": -3,
             "flags": {
-              "s1_observed_back": true
+              "oneshot.s1_observed_back": true
             }
           }
         },
@@ -2211,7 +2211,7 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s1_running": true
+              "oneshot.s1_running": true
             }
           }
         },
@@ -2228,7 +2228,7 @@
           "effects": {
             "landmark_skipped": "S1",
             "flags": {
-              "s1_aborted": true
+              "oneshot.s1_aborted": true
             }
           }
         }
@@ -2245,7 +2245,7 @@
             "PR": 10,
             "GR": 5,
             "flags": {
-              "s1_jumped_lake": true
+              "oneshot.s1_jumped_lake": true
             }
           }
         },
@@ -2256,7 +2256,7 @@
             "PR": -8,
             "landmark_skipped": "S1",
             "flags": {
-              "s1_fled": true
+              "oneshot.s1_fled": true
             }
           }
         },
@@ -2266,7 +2266,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s1_faced_it": true
+              "oneshot.s1_faced_it": true
             }
           }
         }
@@ -2292,7 +2292,7 @@
             ],
             "puzzle_add": "piece_blood_mud",
             "flags": {
-              "s1_kept_mud": true
+              "oneshot.s1_kept_mud": true
             }
           }
         }
@@ -5053,7 +5053,7 @@
         {
           "if": {
             "flags": {
-              "s1_book_grabbed": true
+              "oneshot.s1_book_grabbed": true
             }
           },
           "text": "你抱着账本想跑——\n\n但风衣站起来了。\n\n它没有头,但它有**手**——\n\n两只米色的、湿的手,从袖口伸出来。\n\n它没追你。\n\n它对你说话——声音从风衣领口里直接冒出来,像广播:\n\n「赵某。账本是我的。\n  你想要它,可以。\n  但你要回答我一个问题。」"
@@ -6301,7 +6301,7 @@
         {
           "if": {
             "flags": {
-              "s1_jumped_lake": true
+              "oneshot.s1_jumped_lake": true
             }
           },
           "text": "你跳进西湖。\n\n你以为水会淹没你。\n\n水没有。\n\n你在湖底,可以呼吸。\n\n8 口 1987 年冷冻舱浮在水里,像 8 个透明灯笼。\n\n每口舱里,躺着一个你。"
@@ -7203,7 +7203,7 @@
         {
           "if": {
             "flags": {
-              "s1_post_forum": true,
+              "arc.s1_post_forum": true,
               "s4_posted_blood_face": true
             }
           },
