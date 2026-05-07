@@ -169,52 +169,186 @@
   "npcs": {
     "linmou_coat": {
       "label": "无头风衣 · 林某",
+      "real_name": "林副科长(1985 投湖)",
+      "death_year": 1985,
       "initial_location": "S1",
+      "related_foreshadows": [
+        "1985_linmou_other26",
+        "1986_lin_coin",
+        "1986_no_eighth"
+      ],
+      "key_items": [
+        "林副科长账本残页",
+        "1986 林字硬币",
+        "米色风衣"
+      ],
+      "dialog_topics": [
+        "27 笔账",
+        "另一签字人",
+        "钱塘江第 8 工人"
+      ],
       "_description": "湖滨第三把绿色长椅旁。穿米色风衣,无头。"
     },
     "old_grandma": {
       "label": "老婆婆 · 1959 粮票",
+      "real_name": "叶某外婆(1959 自缢)",
+      "death_year": 1959,
       "initial_location": "S4",
+      "related_foreshadows": [
+        "1991_grandma_link"
+      ],
+      "key_items": [
+        "1959-043 粮票"
+      ],
+      "dialog_topics": [
+        "留下小学",
+        "203 琴房",
+        "童谣"
+      ],
       "_description": "羊血弄 2 号门口的吊膀婆婆。"
     },
     "yeh_1991": {
       "label": "叶某 · 1991-04-23",
+      "real_name": "叶某(11 岁,1991 琴房自缢)",
+      "death_year": 1991,
       "initial_location": "S5",
+      "related_foreshadows": [
+        "1991_yeh_classmate",
+        "1991_grandma_link"
+      ],
+      "key_items": [
+        "1991 请假条",
+        "1991 钢丝绳",
+        "1991 班级合照"
+      ],
+      "dialog_topics": [
+        "同桌赵某",
+        "外婆",
+        "童谣 1959-043"
+      ],
       "_description": "留下小学 203 琴房,坐在最后一排弹童谣。"
     },
     "redgirl_1996": {
       "label": "红衣女孩 · 何小燕",
+      "real_name": "何小燕(9 岁,1996-08-23 货梯失踪)",
+      "death_year": 1996,
       "initial_location": "S2",
+      "related_foreshadows": [
+        "1996_red_girl_truth"
+      ],
+      "key_items": [
+        "14 寸黑白电视",
+        "27 楼通道钥匙"
+      ],
+      "dialog_topics": [
+        "万象城货梯",
+        "继父",
+        "1996 录像带"
+      ],
       "_description": "柳浪闻莺 308 阶,抱 14 寸黑白电视。"
     },
     "predecessor_g272": {
       "label": "前任 G-272(频段)",
+      "real_name": "12 任 G-273 最后一任(2013 数据化)",
+      "death_year": 2013,
       "initial_location": null,
+      "related_foreshadows": [
+        "G272_predecessor_identity"
+      ],
+      "key_items": [
+        "G-272 工牌",
+        "27F 铜钥匙"
+      ],
+      "dialog_topics": [
+        "27 楼",
+        "11 年班",
+        "数据化"
+      ],
       "_description": "只在对讲机里。但你听够 3 次,他可能会出现。"
     },
     "seven_workers": {
       "label": "7 工人(钱塘江)",
+      "real_name": "1986-08-17 归航沉船死者",
+      "death_year": 1986,
       "initial_location": null,
+      "related_foreshadows": [
+        "1986_no_eighth",
+        "1986_lin_coin"
+      ],
+      "key_items": [
+        "7 顶柳条安全帽",
+        "1986 林字硬币"
+      ],
+      "dialog_topics": [
+        "第 8 张船票",
+        "归航帽",
+        "林某的债"
+      ],
       "_description": "1986 年沉船。只有夜班 ≥4 才看得见 S6 井底。"
     },
     "lake_red_dress_13": {
       "label": "13 号红衣替死鬼",
+      "real_name": "1987 最后的 13 号替死鬼",
+      "death_year": 1987,
       "initial_location": "S2",
+      "related_foreshadows": [
+        "1987_red_dress_truth"
+      ],
+      "key_items": [],
+      "dialog_topics": [
+        "数到 1987",
+        "请勿打扰",
+        "13 的诅咒"
+      ],
       "_description": "柳浪闻莺 308 阶上,数到 1987 就消失。"
     },
     "stone_grandpa": {
       "label": "九溪石碑老人",
+      "real_name": "(待说明)",
+      "death_year": null,
       "initial_location": "S3",
+      "related_foreshadows": [],
+      "key_items": [
+        "铜锈片",
+        "铜锈护符"
+      ],
+      "dialog_topics": [
+        "裂钟",
+        "敲钟 7 下",
+        "1924 塔砖"
+      ],
       "_description": "理安寺裂钟旁拐杖老人 — 只夜里出现。"
     },
     "broadcast_voice": {
       "label": "夜班论坛 · 匿名楼层",
+      "real_name": "(数据化的多任 G-273 残响)",
+      "death_year": null,
       "initial_location": null,
+      "related_foreshadows": [
+        "G272_predecessor_identity"
+      ],
+      "key_items": [],
+      "dialog_topics": [
+        "雪花频道",
+        "数据化",
+        "下一任"
+      ],
       "_description": "夜班论坛的水楼,只在你发帖后回应。"
     },
     "archive_keeper": {
       "label": "档案守门人",
+      "real_name": "(待说明 · 第 12 任档案管理员)",
+      "death_year": null,
       "initial_location": null,
+      "related_foreshadows": [
+        "8_self_roster"
+      ],
+      "key_items": [],
+      "dialog_topics": [
+        "合卷",
+        "G-273 档案",
+        "签字人"
+      ],
       "_description": "遗失档案室的看守者。访问 ≥2 次才出现。"
     }
   },
@@ -329,68 +463,406 @@
   "foreshadows": {
     "1985_linmou_other26": {
       "title": "26 笔贪污的另一签字人",
+      "year": 1985,
+      "theme": "杭州常数",
       "summary_locked": "档案显示 27 笔贪污,只 13 笔指向林某。剩下 14 笔的另一签字人是谁?为何从未被追责?",
       "summary_resolved": "另一签字人是杭州常数当年的『内部人』。林某是替罪羊。",
       "explained_by_character": "linmou_1985",
-      "explained_by_ending": null
+      "explained_by_ending": null,
+      "shards": [
+        {
+          "id": "account_book",
+          "label": "林某账本残页",
+          "text": "残页上写着「**第 13 笔 · 林**」 —— 但 14-27 笔全是另一种笔迹。"
+        },
+        {
+          "id": "archive_signature",
+          "label": "档案室签字对比",
+          "text": "档案室藏着 1985 年原始审计单。**第二个签字人**的签名被人涂掉。涂痕**新于** 2024 年。"
+        },
+        {
+          "id": "predecessor_hint",
+          "label": "前任的暗示",
+          "text": "对讲机里前任说:「林某只是**第 13 笔**。其余 14 笔的人,**还在编制内**。」"
+        }
+      ]
     },
     "1986_lin_coin": {
       "title": "1986 林字硬币的来源",
+      "year": 1986,
+      "theme": "替死鬼",
       "summary_locked": "钱塘江沉船 7 工人之一手里捏着一枚『林』字硬币 — 林某 1985 年才投湖,这枚硬币怎么会到 1986 年的工人手上?",
       "summary_resolved": "硬币是林某死后『欠下的债』,杭州常数允许他以鬼身归还。",
       "explained_by_character": "linmou_1985",
-      "explained_by_ending": null
+      "explained_by_ending": null,
+      "shards": [
+        {
+          "id": "coin_obtained",
+          "label": "工人手里的硬币",
+          "text": "S6 工人之一把硬币塞给你,温度异常 —— 像是**刚从活人手里拿出来**。"
+        },
+        {
+          "id": "coin_inscription",
+          "label": "硬币背面",
+          "text": "硬币背面刻着「**1986·林**」—— 但这种『年份+姓』组合,1986 年还没流通。"
+        },
+        {
+          "id": "radio_explanation",
+          "label": "对讲机的解释",
+          "text": "前任在对讲机里说:「林某用鬼身**还过债**。1986 年那枚硬币,是他给的『信物』。」"
+        }
+      ]
     },
     "1986_no_eighth": {
       "title": "为何只有 7 顶帽子",
+      "year": 1986,
+      "theme": "替死鬼",
       "summary_locked": "联庄站盾构井明明卖了 8 张归航船票,沉船时只 7 个工人。第 8 个买票没上船的人去哪了?",
       "summary_resolved": "第 8 个是林某的鬼,他在 1986 年用鬼身买了票。",
       "explained_by_character": "worker_1986",
-      "explained_by_ending": null
+      "explained_by_ending": null,
+      "shards": [
+        {
+          "id": "ticket_stub",
+          "label": "归航船票票根",
+          "text": "S6 井底有 8 张票根碎片。第 8 张的存根**没有签名**,只有指纹 —— 比对像**死人的**。"
+        },
+        {
+          "id": "seven_helmets",
+          "label": "7 顶柳条安全帽",
+          "text": "工人魂魄共 7 顶帽子,**没有第 8 顶**。但 8 张票卖出了。"
+        },
+        {
+          "id": "worker_testimony",
+          "label": "工人证词",
+          "text": "工人说:「我们 7 个上船,**第 8 个站岸边**没动。后来听说,他**早就死了**。」"
+        }
+      ]
     },
     "1987_red_dress_truth": {
       "title": "308 阶上的红衣是谁",
+      "year": 1987,
+      "theme": "13 的诅咒",
       "summary_locked": "柳浪闻莺 308 阶台阶上有个数到 1987 就消失的红衣女人。她不是 1996 年的红衣女孩。",
       "summary_resolved": "她是 1987 年最后的『13 号替死鬼』,数到 1987 是她死亡的那一年。",
       "explained_by_character": "red_victim_13",
-      "explained_by_ending": "E_BAD_1987"
+      "explained_by_ending": "E_BAD_1987",
+      "shards": [
+        {
+          "id": "stair_count",
+          "label": "台阶尽头",
+          "text": "数到 308,你身后有声音说「**1987**」 —— 不是你的声音。"
+        },
+        {
+          "id": "newspaper_1987",
+          "label": "1987 旧报纸",
+          "text": "S1 报亭贴的 1987 年报纸 —— 同一天,有个**红衣 13 号**死于柳浪闻莺。"
+        },
+        {
+          "id": "do_not_disturb",
+          "label": "请勿打扰告示",
+          "text": "S2 灯柱旁的「**请勿打扰 · 1987**」告示 —— 是给**她**的,提醒**别再数**了。"
+        }
+      ]
     },
     "1991_yeh_classmate": {
       "title": "11 岁的你与叶某",
+      "year": 1991,
+      "theme": "时间循环",
       "summary_locked": "1991 班级合照第三排第二个孩子和你长得一模一样。你 11 岁那年并没有上过留下小学。",
       "summary_resolved": "11 岁的『你』是叶某的同桌 — 杭州常数让多个时间线的你都在场。",
       "explained_by_character": "yeh_1991",
-      "explained_by_ending": "E_TRUE"
+      "explained_by_ending": "E_TRUE",
+      "shards": [
+        {
+          "id": "class_photo",
+          "label": "1991 班级合照",
+          "text": "S5 琴凳里的合照。**第三排第二个孩子**,和 11 岁的你**完全一样**。"
+        },
+        {
+          "id": "school_record",
+          "label": "学籍记录对比",
+          "text": "档案室翻 1991 年学籍 —— 那个孩子叫『**赵某**』,出生年月**和你完全一致**,但籍贯写的是**杭州**(你籍贯是别处)。"
+        },
+        {
+          "id": "yeh_diary",
+          "label": "叶某日记",
+          "text": "「同桌赵某今天没来。听说他**搬走了**。可我看见他**还在**走廊里看我。」"
+        }
+      ]
     },
     "1991_grandma_link": {
       "title": "外婆与 1959-043 磁带",
+      "year": 1991,
+      "theme": "时间循环",
       "summary_locked": "叶某的童谣磁带编号 1959-043 — 1959 年同一间琴房有过一次自缢,编号档案室收着。",
       "summary_resolved": "外婆 1959 年也死在那间琴房,叶某的死是『循环回归』。",
       "explained_by_character": "yeh_1991",
-      "explained_by_ending": null
+      "explained_by_ending": null,
+      "shards": [
+        {
+          "id": "tape_label",
+          "label": "磁带编号 1959-043",
+          "text": "磁带上贴着「**1959-043**」编号 —— 1959 年的事,1991 年磁带上为何有?"
+        },
+        {
+          "id": "archive_1959",
+          "label": "档案室 1959 卷宗",
+          "text": "档案室 1959 年卷宗:**留下小学 203 琴房自缢一例**,死者是叶某外婆。"
+        },
+        {
+          "id": "song_reprise",
+          "label": "童谣回响",
+          "text": "叶某弹的童谣,**和 1959 年磁带录音一字不差** —— 但叶某 1991 年才学会。"
+        }
+      ]
     },
     "1996_red_girl_truth": {
       "title": "红衣女孩到底是谁",
+      "year": 1996,
+      "theme": "数据化",
       "summary_locked": "她抱着 14 寸黑白电视,屏幕里是她自己。1996-08-23,万象城货梯,有个孩子失踪。",
       "summary_resolved": "她叫何小燕。被她的『继父』在货梯里推下,杭州常数把她数据化保留。",
       "explained_by_character": "red_girl_1996",
-      "explained_by_ending": "E_TRUTH"
+      "explained_by_ending": "E_TRUTH",
+      "shards": [
+        {
+          "id": "tv_screen",
+          "label": "14 寸电视屏",
+          "text": "电视屏里**是她自己** —— 在万象城货梯里被一个戴帽子的男人**推下去**。"
+        },
+        {
+          "id": "missing_report",
+          "label": "1996-08-23 失踪通报",
+          "text": "档案室 1996 年报案记录:**何小燕**, 9 岁,母再婚,**继父**报警,最终结案『**离家出走**』。"
+        },
+        {
+          "id": "freight_lift_key",
+          "label": "27 楼通道钥匙",
+          "text": "她给你的钥匙 —— 钥匙柄上刻着「**B3 · 货梯**」,1996 年款。"
+        }
+      ]
     },
     "G272_predecessor_identity": {
       "title": "前任 G-273 的真身",
+      "year": 2024,
+      "theme": "数据化",
       "summary_locked": "对讲机里那个声音,自称记了 11 年班。但夜班保安岗位每 2 年换一次,11 年应是 5-6 任前。",
       "summary_resolved": "他是 12 任 G-273 的最后一任,数据化以后留在了对讲频段。",
       "explained_by_character": "predecessor_2009",
-      "explained_by_ending": "E_DATA"
+      "explained_by_ending": "E_DATA",
+      "shards": [
+        {
+          "id": "first_call",
+          "label": "对讲机第一次接通",
+          "text": "声音说:「这里是 **G-272**。我接班 **11 年**了。」 —— 但岗位 2 年一换。"
+        },
+        {
+          "id": "self_voice",
+          "label": "对讲机第 5 次接通",
+          "text": "对讲机里传来**你自己的声音** —— 一字不差,但**没人录过**。"
+        },
+        {
+          "id": "g272_badge",
+          "label": "G-272 工牌",
+          "text": "S7 区墙上挂着 **G-272 工牌**。工牌照片**和你长得一模一样**。"
+        }
+      ]
     },
     "8_self_roster": {
       "title": "8 棺里的『另一个你』",
+      "year": 2024,
+      "theme": "杭州常数",
       "summary_locked": "S7 终局区有 8 口棺材,每口里都有一个不同年份的『你』。他们是谁?",
       "summary_resolved": "8 个棺材是 8 个时间线分支的你,每个对应一个能成为夜班保安的『候补』。",
       "explained_by_character": null,
-      "explained_by_ending": "E_TRUE"
+      "explained_by_ending": "E_TRUE",
+      "shards": [
+        {
+          "id": "coffin_count",
+          "label": "8 口冰棺",
+          "text": "S7 走廊尽头,8 口冰棺并排。每口刻着年份:**1929 / 1959 / 1985 / 1986 / 1987 / 1991 / 1996 / 2024**。"
+        },
+        {
+          "id": "coffin_face",
+          "label": "冰棺里的脸",
+          "text": "你揭开 2024 那口的盖 —— **是你自己**。但你**还活着**站在棺前。"
+        },
+        {
+          "id": "constant_hum",
+          "label": "常数嗡鸣",
+          "text": "8 口棺同时**轻微震动**,像有 8 个心跳**同步**。这是『杭州常数』的频率。"
+        }
+      ]
     }
   },
+  "deductions": {
+    "1986_eighth_passenger": {
+      "title": "第 8 张归航船票的主人",
+      "requires_resolved": [
+        "1986_no_eighth",
+        "1986_lin_coin"
+      ],
+      "summary": "林某 1985 年投湖,1986 年用鬼身买了第 8 张归航船票 —— 但他**没上船**。所以只有 7 顶帽子。第 8 个『工人』,是站在岸边的他自己。"
+    },
+    "loop_constant_truth": {
+      "title": "杭州常数的真面目",
+      "requires_resolved": [
+        "1991_grandma_link",
+        "1996_red_girl_truth",
+        "8_self_roster"
+      ],
+      "summary": "1959 / 1991 / 1996 三起儿童死亡都被『杭州常数』纳入数据档案。8 棺里的另一个你,是被常数储备的下一任 G-273 —— 你也在循环里。"
+    },
+    "predecessor_loop": {
+      "title": "前任就是你",
+      "requires_resolved": [
+        "G272_predecessor_identity",
+        "8_self_roster"
+      ],
+      "summary": "对讲机里那个声音,是**上一个时间线的你**。你**正在变成**下一个对讲机里的声音。"
+    },
+    "13_curse_chain": {
+      "title": "13 号替死鬼的循环",
+      "requires_resolved": [
+        "1985_linmou_other26",
+        "1987_red_dress_truth"
+      ],
+      "summary": "林某是『**第 13 笔**』替罪羊,1987 红衣女人是『**13 号**』替死鬼。**13** 是杭州常数固定使用的『**献祭编号**』。下一个 13 是谁?"
+    }
+  },
+  "timeline": [
+    {
+      "year": 1924,
+      "date": "1924-09-25",
+      "event": "雷峰塔倒。砖中钻出白虫,民间称『白蛇骨』",
+      "related_foreshadows": [],
+      "tags": [
+        "塔砖辟邪"
+      ]
+    },
+    {
+      "year": 1929,
+      "event": "断桥残雪重修。捐资人名单中的『林』被人故意凿掉",
+      "related_foreshadows": [],
+      "tags": [
+        "林某"
+      ]
+    },
+    {
+      "year": 1959,
+      "event": "留下小学 203 琴房,叶某外婆自缢。档案 1959-043",
+      "related_foreshadows": [
+        "1991_grandma_link"
+      ],
+      "tags": [
+        "留下小学",
+        "203 琴房"
+      ]
+    },
+    {
+      "year": 1985,
+      "date": "1985-10-18",
+      "event": "林副科长投湖。账本 27 笔贪污,只 13 笔确认",
+      "related_foreshadows": [
+        "1985_linmou_other26"
+      ],
+      "tags": [
+        "林某",
+        "13"
+      ]
+    },
+    {
+      "year": 1986,
+      "date": "1986-08-17",
+      "event": "钱塘江归航沉船。卖出 8 票,死 7 工人。1 顶『林』字硬币",
+      "related_foreshadows": [
+        "1986_lin_coin",
+        "1986_no_eighth"
+      ],
+      "tags": [
+        "7 工人",
+        "替死鬼"
+      ]
+    },
+    {
+      "year": 1987,
+      "event": "柳浪闻莺 308 阶,红衣 13 号替死鬼最后一次出现",
+      "related_foreshadows": [
+        "1987_red_dress_truth"
+      ],
+      "tags": [
+        "13",
+        "替死鬼"
+      ]
+    },
+    {
+      "year": 1991,
+      "date": "1991-04-23",
+      "event": "留下小学 203 琴房,叶某自缢。同桌『赵某』缺席",
+      "related_foreshadows": [
+        "1991_yeh_classmate",
+        "1991_grandma_link"
+      ],
+      "tags": [
+        "叶某",
+        "留下小学",
+        "11 岁的你"
+      ]
+    },
+    {
+      "year": 1996,
+      "date": "1996-08-23",
+      "event": "万象城 B3 货梯,何小燕(9 岁)失踪。继父报案",
+      "related_foreshadows": [
+        "1996_red_girl_truth"
+      ],
+      "tags": [
+        "红衣女孩",
+        "货梯"
+      ]
+    },
+    {
+      "year": 2007,
+      "event": "孔雀大厦塌一层。地基挖出乌龙王石像,被砸",
+      "related_foreshadows": [],
+      "tags": [
+        "孔雀大厦",
+        "乌龙王"
+      ]
+    },
+    {
+      "year": 2009,
+      "event": "浙大钟楼 99 数事件。SLH 论坛热帖",
+      "related_foreshadows": [],
+      "tags": [
+        "浙大钟楼"
+      ]
+    },
+    {
+      "year": 2013,
+      "event": "12 任 G-273 中最后一任『数据化』,留在对讲机频段",
+      "related_foreshadows": [
+        "G272_predecessor_identity"
+      ],
+      "tags": [
+        "G-273",
+        "对讲机"
+      ]
+    },
+    {
+      "year": 2024,
+      "event": "你(赵某)入职。第 13 任 G-273",
+      "related_foreshadows": [
+        "8_self_roster"
+      ],
+      "tags": [
+        "G-273",
+        "13",
+        "主角"
+      ]
+    }
+  ],
   "nodes": {
     "n_lore_leifeng_worm": {
       "scene": "NPC",

@@ -125,7 +125,7 @@ CHARACTER_ROSTER: List[Dict[str, Any]] = [
 
 # --- 默认存档 ---
 
-SAVE_VERSION = 2  # v2:加 foreshadows_seen / foreshadows_resolved
+SAVE_VERSION = 3  # v3:加 foreshadow_shards / deductions_resolved
 DEFAULT_SAVE: Dict[str, Any] = {
     "version": SAVE_VERSION,
     "meta_flags": {},
@@ -139,6 +139,11 @@ DEFAULT_SAVE: Dict[str, Any] = {
     # foreshadows_resolved[story_id] = [slot_id, ...]  真正解开(角色/ending 满足)
     "foreshadows_seen": {},
     "foreshadows_resolved": {},
+    # v3 新增字段:
+    # foreshadow_shards[story_id][slot_id] = [shard_id, ...]
+    # deductions_resolved[story_id] = [deduction_id, ...]
+    "foreshadow_shards": {},
+    "deductions_resolved": {},
 }
 
 
@@ -157,6 +162,8 @@ class SaveManager:
         self.data["unlocked_characters"] = list(DEFAULT_SAVE["unlocked_characters"])
         self.data["foreshadows_seen"] = {}
         self.data["foreshadows_resolved"] = {}
+        self.data["foreshadow_shards"] = {}
+        self.data["deductions_resolved"] = {}
         self.load()
 
     # --- IO ---
@@ -190,6 +197,18 @@ class SaveManager:
         }
         self.data["foreshadows_resolved"] = {
             k: list(v) for k, v in fs_resolved.items() if isinstance(v, list)
+        }
+        # v3:碎片 / 推论(向后兼容缺失字段)
+        fs_shards = raw.get("foreshadow_shards") or {}
+        self.data["foreshadow_shards"] = {
+            sid: {slot: list(shards) for slot, shards in by_slot.items()
+                  if isinstance(shards, list)}
+            for sid, by_slot in fs_shards.items()
+            if isinstance(by_slot, dict)
+        }
+        ded = raw.get("deductions_resolved") or {}
+        self.data["deductions_resolved"] = {
+            k: list(v) for k, v in ded.items() if isinstance(v, list)
         }
         self.data["version"] = SAVE_VERSION
 
@@ -345,6 +364,88 @@ class SaveManager:
 
     def is_foreshadow_resolved(self, story_id: str, slot_id: str) -> bool:
         return slot_id in self.data.get("foreshadows_resolved", {}).get(story_id, [])
+
+    # --- 碎片 API(v3) ---
+
+    def add_foreshadow_shard(
+        self, tree: Dict[str, Any], story_id: str, slot_id: str, shard_id: str,
+    ) -> tuple:
+        """加一个伏笔碎片。返回 (newly_added, fully_collected)。
+
+        - newly_added: 是否本次新增(已有则 False)
+        - fully_collected: 加完后是否齐全(齐则同时标记 resolved)
+        """
+        if not story_id or not slot_id or not shard_id:
+            return (False, False)
+        # 同时标记 seen
+        self.mark_foreshadow_seen(story_id, slot_id)
+        story_shards = self.data.setdefault("foreshadow_shards", {}).setdefault(
+            story_id, {}
+        )
+        owned = story_shards.setdefault(slot_id, [])
+        newly = shard_id not in owned
+        if newly:
+            owned.append(shard_id)
+        # 检查是否集齐
+        meta = (tree.get("foreshadows") or {}).get(slot_id) or {}
+        all_shards = meta.get("shards") or []
+        all_ids = {s.get("id") for s in all_shards if s.get("id")}
+        fully = bool(all_ids) and all_ids.issubset(set(owned))
+        if fully and not self.is_foreshadow_resolved(story_id, slot_id):
+            self.mark_foreshadow_resolved(story_id, slot_id)
+        return (newly, fully)
+
+    def get_shards_collected(self, story_id: str, slot_id: str) -> List[str]:
+        return list(
+            self.data.get("foreshadow_shards", {})
+            .get(story_id, {}).get(slot_id, [])
+        )
+
+    def shard_progress(
+        self, tree: Dict[str, Any], story_id: str, slot_id: str,
+    ) -> tuple:
+        """返回 (collected_count, total)。total=0 表示该伏笔未启用碎片机制。"""
+        meta = (tree.get("foreshadows") or {}).get(slot_id) or {}
+        total = len(meta.get("shards") or [])
+        collected = len(self.get_shards_collected(story_id, slot_id))
+        return (collected, total)
+
+    # --- 推论 API(v3) ---
+
+    def check_deductions(
+        self, tree: Dict[str, Any], story_id: str,
+    ) -> List[str]:
+        """扫所有 deductions,看哪些前置 foreshadow 全 resolved 了 → 触发解锁。
+
+        返回本次新触发的 deduction id 列表。
+        """
+        deductions = (tree or {}).get("deductions") or {}
+        if not deductions:
+            return []
+        resolved_set = set(
+            self.data.get("foreshadows_resolved", {}).get(story_id, [])
+        )
+        already = set(
+            self.data.get("deductions_resolved", {}).get(story_id, [])
+        )
+        newly: List[str] = []
+        for ded_id, meta in deductions.items():
+            if ded_id in already:
+                continue
+            requires = set(meta.get("requires_resolved") or [])
+            if requires and requires.issubset(resolved_set):
+                self.data.setdefault("deductions_resolved", {}).setdefault(
+                    story_id, []
+                ).append(ded_id)
+                newly.append(ded_id)
+        if newly:
+            self.save()
+        return newly
+
+    def is_deduction_resolved(self, story_id: str, deduction_id: str) -> bool:
+        return deduction_id in self.data.get("deductions_resolved", {}).get(
+            story_id, []
+        )
 
 
 # --- 便利函数 ---

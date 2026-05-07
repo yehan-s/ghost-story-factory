@@ -800,6 +800,22 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         for slot in slot_ids:
             if save_manager.mark_foreshadow_seen(story_id, slot):
                 newly_seen_slots.append(slot)
+        # 伏笔碎片:_foreshadow_clue: [{slot, shard}] — 节点级触发拾取
+        node_clues = node.get("_foreshadow_clue") or []
+        newly_shard_events: List[Dict[str, Any]] = []  # {slot, shard, fully}
+        for clue in node_clues:
+            slot = clue.get("slot")
+            shard = clue.get("shard")
+            if not slot or not shard:
+                continue
+            newly, fully = save_manager.add_foreshadow_shard(
+                tree, story_id, slot, shard
+            )
+            if newly:
+                newly_shard_events.append({"slot": slot, "shard": shard,
+                                           "fully": fully})
+        # 推论检查 — 看是否有新推论被解锁
+        newly_deductions = save_manager.check_deductions(tree, story_id)
         # _is_map_picker 节点:用地图视图替代普通 narrative
         # 先 build picker_choices 算出 travel_indices(让数字贴到地图上)
         if node.get("_is_map_picker"):
@@ -843,6 +859,41 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                             color_fn=lambda s: bold(cyan(s)),
                             frames=3, frame_delay=0.07,
                             glitch_ratio=0.2)
+            print()
+        # 拾到伏笔碎片(单条 = 蓝字短闪;集齐 = 黄字长 glitch 表"档案合卷")
+        if newly_shard_events:
+            from ghost_story_factory.v7.animate import glitch_text
+            foreshadows = tree.get("foreshadows", {}) or {}
+            for ev in newly_shard_events:
+                slot = ev["slot"]
+                meta = foreshadows.get(slot) or {}
+                title = meta.get("title", slot)
+                shards_total = len(meta.get("shards", []) or [])
+                got = save_manager.get_shards_collected(story_id, slot)
+                glitch_text(
+                    f"  ▌ 碎片 +1  ·  {title} ({len(got)}/{shards_total}) ▐",
+                    color_fn=lambda s: bold(blue(s)),
+                    frames=2, frame_delay=0.06, glitch_ratio=0.15,
+                )
+                if ev["fully"]:
+                    glitch_text(
+                        f"  ✦ 档案合卷  ·  {title} ✦",
+                        color_fn=lambda s: bold(yellow(s)),
+                        frames=4, frame_delay=0.08, glitch_ratio=0.3,
+                    )
+            print()
+        # 推论触发(合并伏笔)
+        if newly_deductions:
+            from ghost_story_factory.v7.animate import glitch_text
+            deductions = tree.get("deductions", {}) or {}
+            for ded_id in newly_deductions:
+                meta = deductions.get(ded_id) or {}
+                title = meta.get("title", ded_id)
+                glitch_text(
+                    f"  ⟁ 推论合成  ·  {title} ⟁",
+                    color_fn=lambda s: bold(magenta(s)),
+                    frames=5, frame_delay=0.08, glitch_ratio=0.35,
+                )
             print()
 
         # 结局节点
@@ -984,36 +1035,22 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                 pass
             continue
         if idx == ACTION_STATUS:
-            # s 键 → 显示完整状态(包含个人共鸣 / 全局共鸣 + 伏笔档案)
+            # s 键 → 显示完整状态(包含个人共鸣 / 全局共鸣 + 档案 + 推论 + 时间轴)
+            from ghost_story_factory.v7.archive_view import render_archive_cli
             print(state.full_status())
-            # 伏笔档案
-            foreshadows = tree.get("foreshadows", {}) or {}
-            if foreshadows:
-                seen_list = save_manager.data.get("foreshadows_seen", {}).get(story_id, [])
-                resolved_set = set(save_manager.data.get("foreshadows_resolved", {}).get(story_id, []))
-                if seen_list:
-                    print(bold(cyan(f"  ── 档案(已发现 {len(seen_list)}/{len(foreshadows)} · 已解 {len(resolved_set)}/{len(foreshadows)})──")))
-                    for slot in seen_list:
-                        meta = foreshadows.get(slot, {})
-                        title = meta.get("title", slot)
-                        if slot in resolved_set:
-                            summary = meta.get("summary_resolved", "")
-                            print(f"  {green('✦')} {bold(title)}")
-                            if summary:
-                                print(f"    {dim(summary)}")
-                        else:
-                            summary = meta.get("summary_locked", "")
-                            print(f"  {dim('?')} {dim(title)}")
-                            if summary:
-                                print(f"    {dim(summary)}")
-                else:
-                    print(dim(f"  档案:0/{len(foreshadows)} · 还没发现任何伏笔"))
+            render_archive_cli(tree, save_manager, story_id)
             continue
 
         chosen = visible[idx]
         # 选项上若挂了 _foreshadow_slot,选了之后也算 seen
         for slot in chosen.get("_foreshadow_slot") or []:
             save_manager.mark_foreshadow_seen(story_id, slot)
+        # 选项级伏笔碎片
+        for clue in chosen.get("_foreshadow_clue") or []:
+            slot = clue.get("slot")
+            shard = clue.get("shard")
+            if slot and shard:
+                save_manager.add_foreshadow_shard(tree, story_id, slot, shard)
         effects = chosen.get("effects") or {}
         state.apply(effects)
         # 渐进展开 known_landmarks(landmark_visited / reveal_landmarks 触发)
