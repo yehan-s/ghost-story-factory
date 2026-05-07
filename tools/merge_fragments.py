@@ -22,9 +22,9 @@ from typing import Any, Dict, List, Tuple
 
 STORY_META = {
     "story_id": "hangzhou_yebanbaoan",
-    "title": "断桥残雪 · 夜班外卖 (v7 真迷宫图)",
-    "display_name": "断桥残雪 · 夜班外卖",
-    "display_subtitle": "完整版 · 8 主结局 · 13 NPC · 7 共享场景",
+    "title": "断桥残雪",
+    "display_name": "断桥残雪",
+    "display_subtitle": "杭州夜班 · 8 主结局 · 13 NPC · 7 共享场景",
     "protagonist": "赵某 (G-273) · 湖滨国际名品街夜班保安",
     "version": "7.0",
     "author": "Claude Opus 4.7 + team ghost-v7-maze (handcrafted maze)",
@@ -47,6 +47,10 @@ STORY_META = {
         # 节点访问计数 — 给 NPC 重访对话用
         "visit_counts": {},
         "last_landmark_id": None,
+        # 玩家"知道"的地标(地图能看到名字 + 路);开局只知道 S1
+        # 踏入新地标 → 自动展开 X.connections 进 known
+        # narrative effect.reveal_landmarks 也能显式揭示
+        "known_landmarks": ["S1"],
     },
     # v7 多角色伏笔基础设施(schema 接口,等 v8 写入)
     # 当前只有 G-273 主角。将来可扩展 linmou_1985 / yeh_1991 / redgirl_1996 等。

@@ -339,6 +339,7 @@
               "radio_listened": true
             },
             "PR": 1,
+            "reveal_landmarks": ["S6"],
             "stay": true
           },
           "next": "n_npc_predecessor_voice"

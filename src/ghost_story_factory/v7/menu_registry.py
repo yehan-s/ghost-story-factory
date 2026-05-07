@@ -69,7 +69,7 @@ class CharacterEntry:
 # 已知剧本展示顺序(主线 > v6 > v1)
 # 剧本默认显示名 fallback(优先读 tree.json 顶层 display_name / display_subtitle)
 _TREE_FALLBACK = {
-    "tree.json": (0, "断桥残雪 · 夜班外卖", "完整版"),
+    "tree.json": (0, "断桥残雪", "杭州夜班"),
 }
 
 # 默认城市标签(若 meta.json 不存在)— 城市本身只是城市,不带剧本/时段

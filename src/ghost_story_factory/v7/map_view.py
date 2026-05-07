@@ -77,7 +77,12 @@ def _mark_for_status(status: str) -> str:
     }.get(status, "[ ]")
 
 
-def _render_topology(landmark_map: List[Dict[str, Any]], state, current_node_id) -> List[str]:
+def _render_topology(
+    landmark_map: List[Dict[str, Any]],
+    state,
+    current_node_id,
+    travel_indices: Optional[Dict[str, int]] = None,
+) -> List[str]:
     """绘制点状拓扑地图(纯文本)。
 
     硬编码 7 地标布局,反映西湖周边真实地理:
@@ -86,39 +91,90 @@ def _render_topology(landmark_map: List[Dict[str, Any]], state, current_node_id)
         S6(联庄)           S4(羊血)
                               │
                             S2(柳浪) ─── S3(九溪)
+
+    travel_indices: 可选 — {SID: 选项编号} 映射,把数字贴到地标旁,
+                    让玩家"看着地图按数字"。
     """
+    known = set(getattr(state, "known_landmarks", None) or [])
     # 把 landmark_map 里的状态查出来
     status_by_id: Dict[str, str] = {}
     for lm in landmark_map:
         status_by_id[lm.get("id", "")] = landmark_status(lm, state, current_node_id)
 
     def m(sid: str) -> str:
+        # 未知地标:用 [?] 占位
+        if sid not in known:
+            return "[?]"
         return _mark_for_status(status_by_id.get(sid, "available"))
 
-    # 终局标记(无论解锁与否,S7 都标"终")
-    s7_suffix = " 终"
+    def name(sid: str, short: str) -> str:
+        """SID + short_name(2字),共 6 cols(SID + space + 4 CJK cols)"""
+        if sid not in known:
+            return "?? ???"  # 占位
+        prefix = ""
+        if travel_indices and sid in travel_indices:
+            prefix = f"({travel_indices[sid]})"
+        # eg. "(3)S1 湖滨"
+        return f"{prefix}{sid} {short}"
 
-    # 构造模板。每行用空格定位列,box-drawing 字符画连线
-    # 列对齐:
-    #   col  4-9:   左列(S5/S6)
-    #   col 27-32:  中列(S1/S4/S2)
-    #   col 47-52:  右列(S7/S3)
+    def time_for(sid: str, t: str, suffix: str = "") -> str:
+        if sid not in known:
+            return "??:??"
+        return f"{t}{suffix}"
+
+    # 名称查找
+    by_id = {lm.get("id", ""): lm for lm in landmark_map}
+    def short_of(sid):
+        return by_id.get(sid, {}).get("short", "??")
+    def time_of(sid):
+        return by_id.get(sid, {}).get("time", "??:??")
+
+    s7_suffix = " 终" if "S7" in known else ""
+
+    # 构造每个地标的双行块(name + mark+time),让连线对齐
+    def block(sid, suffix=""):
+        return name(sid, short_of(sid)), m(sid), time_for(sid, time_of(sid), suffix)
+
+    n_s5, m_s5, t_s5 = block("S5")
+    n_s1, m_s1, t_s1 = block("S1")
+    n_s7, m_s7, t_s7 = block("S7", s7_suffix)
+    n_s6, m_s6, t_s6 = block("S6")
+    n_s4, m_s4, t_s4 = block("S4")
+    n_s2, m_s2, t_s2 = block("S2")
+    n_s3, m_s3, t_s3 = block("S3")
+
+    # 连线只在两端都已知时画实线,否则画虚线/空白
+    def edge(a, b, dash):
+        # 都已知 → 实线;一端未知 → 虚线;都未知 → 空格
+        if a in known and b in known:
+            return dash
+        if a in known or b in known:
+            return "·" * len(dash)
+        return " " * len(dash)
+
+    e_s5_s1 = edge("S5", "S1", "────────────")  # 12 cols
+    e_s1_s7 = edge("S1", "S7", "──────")         # 6 cols
+    e_s2_s3 = edge("S2", "S3", "──────")
+    v_s5_s6 = "│" if ("S5" in known and "S6" in known) else (":" if ("S5" in known or "S6" in known) else " ")
+    v_s1_s4 = "│" if ("S1" in known and "S4" in known) else (":" if ("S1" in known or "S4" in known) else " ")
+    v_s4_s2 = "│" if ("S4" in known and "S2" in known) else (":" if ("S4" in known or "S2" in known) else " ")
+
     lines = [
-        "                                                              ",
-        "    S5 留下 ──────────── S1 湖滨 ────── S7 平海               ",
-        f"    {m('S5')}                  {m('S1')}             {m('S7')}                ",
-        f"    01:08                20:27          04:17{s7_suffix}              ",
-        "      │                    │                                  ",
-        "      │                    │                                  ",
-        "    S6 联庄                S4 羊血弄                          ",
-        f"    {m('S6')}                  {m('S4')}                                ",
-        "    01:52                00:11                                ",
-        "                           │                                  ",
-        "                           │                                  ",
-        "                         S2 柳浪 ────── S3 九溪               ",
-        f"                         {m('S2')}             {m('S3')}                ",
-        "                         21:47          22:48                 ",
-        "                                                              ",
+        "                                                                ",
+        f"    {n_s5:<10} {e_s5_s1} {n_s1:<10} {e_s1_s7} {n_s7:<10}    ",
+        f"    {m_s5:<10}              {m_s1:<10}        {m_s7:<10}    ",
+        f"    {t_s5:<10}              {t_s1:<10}        {t_s7:<10}    ",
+        f"      {v_s5_s6}                          {v_s1_s4}                                ",
+        f"      {v_s5_s6}                          {v_s1_s4}                                ",
+        f"    {n_s6:<10}                  {n_s4:<10}                          ",
+        f"    {m_s6:<10}                  {m_s4:<10}                          ",
+        f"    {t_s6:<10}                  {t_s4:<10}                          ",
+        f"                                       {v_s4_s2}                                ",
+        f"                                       {v_s4_s2}                                ",
+        f"                                     {n_s2:<10} {e_s2_s3} {n_s3:<10}      ",
+        f"                                     {m_s2:<10}        {m_s3:<10}      ",
+        f"                                     {t_s2:<10}        {t_s3:<10}      ",
+        "                                                                ",
     ]
     return lines
 
@@ -149,8 +205,16 @@ def format_map_lines(
     current_node_id: Optional[str] = None,
     story_id: Optional[str] = None,
     width: int = 60,
+    mode: str = "site",
+    travel_indices: Optional[Dict[str, int]] = None,
 ) -> List[Dict[str, Any]]:
     """返回地图视图各段落,每段一个 dict {"kind": "...", "text": "..."}。
+
+    mode:
+      "site"  — 现场视图(picker 用):显示 NPC、线索、工具栏全套
+      "phone" — 手机地图(m 键用):只看路 + 已知地名,不剧透 NPC
+
+    travel_indices: {SID: 选项编号},把数字贴到地标旁(让玩家按数字直选)
 
     kind 取值用于 UI 层染色:
       "header"       — 章节大标题
@@ -168,20 +232,39 @@ def format_map_lines(
     tools = tree.get("tools") or []
 
     # 段:点状拓扑地图
-    lines.append({"kind": "header", "text": "夜班路线·西湖周边"})
-    for line in _render_topology(landmark_map, state, current_node_id):
+    title = "手机地图 · 西湖周边" if mode == "phone" else "夜班路线·西湖周边"
+    lines.append({"kind": "header", "text": title})
+    for line in _render_topology(landmark_map, state, current_node_id, travel_indices):
         lines.append({"kind": "topology", "text": line})
 
-    # 图例
+    # 图例 + 输入提示(只在 site 且有 travel_indices 时给提示)
     lines.append({"kind": "legend", "text": _render_legend()})
+    if mode == "site" and travel_indices:
+        lines.append({"kind": "footer",
+                      "text": "  · 按括号里的数字 / SID(如 S1)直接走过去"})
 
-    # 段:NPC 出没(根据 state.npc_locations,逐地标列出)
+    # phone 模式:不显示 NPC / 工具(只看路+地名)
+    if mode == "phone":
+        # 进度依然显示(玩家自己的状态可见)
+        lines.append({"kind": "section", "text": ""})
+        lines.append({"kind": "header", "text": "进度"})
+        sc = getattr(state, "shifts_completed", 0)
+        ss = getattr(state, "shifts_skipped", 0)
+        progress_bits = [f"夜班 {sc}/7", f"漏卡 {ss}"]
+        lines.append({"kind": "progress", "text": "  " + " · ".join(progress_bits)})
+        lines.append({"kind": "footer", "text": "  · 手机地图只显示路 — 现场看到的线索,只有亲自去才能见。"})
+        return lines
+
+    # 段:NPC 出没 — 仅显示玩家"已访问过"的地标的 NPC(否则剧透)
+    visited_set = set(getattr(state, "visited_landmarks", None) or [])
     npc_loc = getattr(state, "npc_locations", None) or {}
     if npc_loc:
         any_npc = False
         npc_lines: List[Dict[str, Any]] = []
         for lm in landmark_map:
             sid = lm.get("id", "")
+            if sid not in visited_set:
+                continue  # 没去过 — 不知道那里有谁
             present = _npcs_at_landmark(state, tree, sid)
             if present:
                 any_npc = True
@@ -193,7 +276,7 @@ def format_map_lines(
                 })
         if any_npc:
             lines.append({"kind": "section", "text": ""})
-            lines.append({"kind": "header", "text": "今夜在场"})
+            lines.append({"kind": "header", "text": "今夜在场(你亲眼见过的)"})
             lines.extend(npc_lines)
 
     # 段:进度
@@ -236,6 +319,39 @@ def format_map_lines(
             })
 
     return lines
+
+
+def expand_known_landmarks(state, tree: Dict[str, Any], effects: Optional[Dict[str, Any]]) -> List[str]:
+    """根据 effects 和最近事件展开 state.known_landmarks。返回新加入的 SID 列表。
+
+    展开规则:
+      1. effects.landmark_visited X → 把 X 自己 + X.connections 加进 known
+      2. effects.reveal_landmarks ["S6", ...] → 显式揭示
+    """
+    landmark_map = (tree or {}).get("landmark_map") or []
+    by_id = {lm.get("id", ""): lm for lm in landmark_map}
+    newly: List[str] = []
+
+    if not isinstance(state.known_landmarks, list):
+        state.known_landmarks = list(state.known_landmarks)
+
+    def _add(sid: str):
+        if sid and sid in by_id and sid not in state.known_landmarks:
+            state.known_landmarks.append(sid)
+            newly.append(sid)
+
+    # 1. 这一次 effects 里的 landmark_visited(value 是 SID)
+    if effects:
+        if "landmark_visited" in effects:
+            sid = str(effects["landmark_visited"])
+            _add(sid)
+            for c in (by_id.get(sid, {}).get("connections") or []):
+                _add(c)
+        # 2. 显式揭示
+        for sid in (effects.get("reveal_landmarks") or []):
+            _add(str(sid))
+
+    return newly
 
 
 def reachable_landmarks(
@@ -287,22 +403,28 @@ def picker_choices(
     tools = tree.get("tools") or []
     by_id = {lm.get("id", ""): lm for lm in landmark_map}
     visited = set(getattr(state, "visited_landmarks", None) or [])
+    known = set(getattr(state, "known_landmarks", None) or [])
     current_lid = getattr(state, "last_landmark_id", None)
 
     choices: List[Dict[str, Any]] = []
 
-    # 自由移动 — 邻接地标 + 已解锁
+    # 自由移动 — 邻接地标 + 已解锁 + 已知道
     if current_lid and current_lid in by_id:
         cur = by_id[current_lid]
         # 当前位置出发,可达 = connections + 自身(允许"留在原地再走一遍")
         target_ids = list(dict.fromkeys((cur.get("connections") or []) + [current_lid]))
     else:
-        # 还没去过任何地标 — 所有已解锁的都可去
-        target_ids = [lm.get("id", "") for lm in landmark_map]
+        # 还没去过任何地标 — 只有"已知"的才能去(开局只知道 S1)
+        target_ids = [sid for sid in known]
+        if not target_ids:  # 兜底:如果 known 为空,显示 S1
+            target_ids = ["S1"]
 
     for sid in target_ids:
         lm = by_id.get(sid)
         if not lm:
+            continue
+        # 必须是已知的(否则你不知道路怎么走)
+        if sid not in known:
             continue
         unlock = lm.get("unlock")
         if unlock and not _meets(unlock, state):
@@ -371,7 +493,9 @@ def picker_choices(
     return choices
 
 
-def render_map_cli(tree, state, save_manager, current_node_id=None, story_id=None) -> None:
+def render_map_cli(tree, state, save_manager, current_node_id=None, story_id=None,
+                   mode: str = "site",
+                   travel_indices: Optional[Dict[str, int]] = None) -> None:
     """直接 print 到 stdout(CLI 用)— 调用方在打印后等用户输入。"""
     # 局部导入避免循环
     from ghost_story_factory.v5.player import (
@@ -382,7 +506,9 @@ def render_map_cli(tree, state, save_manager, current_node_id=None, story_id=Non
     print()
     for entry in format_map_lines(tree, state, save_manager,
                                   current_node_id=current_node_id,
-                                  story_id=story_id):
+                                  story_id=story_id,
+                                  mode=mode,
+                                  travel_indices=travel_indices):
         kind = entry["kind"]
         text = entry["text"]
         if kind == "header":
@@ -411,6 +537,8 @@ def render_map_cli(tree, state, save_manager, current_node_id=None, story_id=Non
         elif kind == "tool":
             on = entry.get("on", False)
             print((bold(green(text))) if on else dim(text))
+        elif kind == "footer":
+            print(dim(text))
         else:
             print(text)
     print()

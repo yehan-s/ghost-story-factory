@@ -1,8 +1,8 @@
 {
   "story_id": "hangzhou_yebanbaoan",
-  "title": "断桥残雪 · 夜班外卖 (v7 真迷宫图)",
-  "display_name": "断桥残雪 · 夜班外卖",
-  "display_subtitle": "完整版 · 8 主结局 · 13 NPC · 7 共享场景",
+  "title": "断桥残雪",
+  "display_name": "断桥残雪",
+  "display_subtitle": "杭州夜班 · 8 主结局 · 13 NPC · 7 共享场景",
   "protagonist": "赵某 (G-273) · 湖滨国际名品街夜班保安",
   "version": "7.0",
   "author": "Claude Opus 4.7 + team ghost-v7-maze (handcrafted maze)",
@@ -29,7 +29,10 @@
       "stone_grandpa": "S3"
     },
     "visit_counts": {},
-    "last_landmark_id": null
+    "last_landmark_id": null,
+    "known_landmarks": [
+      "S1"
+    ]
   },
   "characters": {
     "G-273": {
@@ -4115,6 +4118,9 @@
               "radio_listened": true
             },
             "PR": 1,
+            "reveal_landmarks": [
+              "S6"
+            ],
             "stay": true
           },
           "next": "n_npc_predecessor_voice"

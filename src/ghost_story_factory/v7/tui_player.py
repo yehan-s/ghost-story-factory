@@ -99,12 +99,14 @@ class MapScreen(ModalScreen):
             yield Static("[dim]m / Enter / Esc 关闭[/]", id="map-hint")
 
     def _render_content(self) -> str:
+        # phone 模式 — 只看路 / 已知地名,不剧透 NPC
         entries = format_map_lines(
             self._tree, self._state, self._sm,
             current_node_id=self._current_node_id,
             story_id=self._story_id,
+            mode="phone",
         )
-        out = ["[bold red]══════ 夜班路线图 ══════[/]", ""]
+        out = ["[bold red]══════ 手机地图 ══════[/]", ""]
         for entry in entries:
             kind = entry["kind"]
             text = entry["text"]
@@ -112,20 +114,14 @@ class MapScreen(ModalScreen):
                 out.append(f"[bold yellow]{text}[/]")
             elif kind == "section":
                 out.append("")
-            elif kind == "landmark":
-                status = entry.get("status", "available")
-                color = {
-                    "visited": "dim",
-                    "current": "bold magenta",
-                    "available": "green",
-                    "locked": "dim red",
-                }.get(status, "white")
-                out.append(f"[{color}]{text}[/]")
+            elif kind == "topology":
+                out.append(text)
+            elif kind == "legend":
+                out.append(f"[dim]{text}[/]")
             elif kind == "progress":
                 out.append(f"[bold cyan]{text}[/]")
-            elif kind == "tool":
-                on = entry.get("on", False)
-                out.append(f"[bold green]{text}[/]" if on else f"[dim]{text}[/]")
+            elif kind == "footer":
+                out.append(f"[dim italic]{text}[/]")
             else:
                 out.append(text)
         return "\n".join(out)
@@ -300,13 +296,24 @@ class GhostStoryApp(App):
                 newly_seen_slots.append(slot)
         # _is_map_picker 节点:用地图视图替代普通 narrative
         if node.get("_is_map_picker"):
+            from ghost_story_factory.v7.map_view import picker_choices as _pc
+            _pre = _pc(self._tree, self.state)
+            _vis_pre = [c for c in _pre if c.get("_picker_kind") != "locked"]
+            travel_idx = {}
+            for i, c in enumerate(_vis_pre):
+                if c.get("_picker_kind") == "travel":
+                    sid = c.get("_landmark_id")
+                    if sid:
+                        travel_idx[sid] = i + 1
             entries = format_map_lines(
                 self._tree, self.state, self.save_manager,
                 current_node_id=self.current_id,
                 story_id=story_id,
+                mode="site",
+                travel_indices=travel_idx,
             )
             log.write(f"\n[bold red]{'═' * 58}[/]")
-            log.write("[bold red]              ══ 夜班路线图 ══[/]")
+            log.write("[bold red]              ══ 现场视图 ══[/]")
             log.write(f"[bold red]{'═' * 58}[/]\n")
             for entry in entries:
                 kind = entry["kind"]
@@ -315,6 +322,12 @@ class GhostStoryApp(App):
                     log.write(f"[bold yellow]{text}[/]")
                 elif kind == "section":
                     log.write("")
+                elif kind == "topology":
+                    log.write(text)
+                elif kind == "legend":
+                    log.write(f"[dim]{text}[/]")
+                elif kind == "npc_at":
+                    log.write(f"[magenta]{text}[/]")
                 elif kind == "landmark":
                     status = entry.get("status", "available")
                     color = {
@@ -329,6 +342,8 @@ class GhostStoryApp(App):
                 elif kind == "tool":
                     on = entry.get("on", False)
                     log.write(f"[bold green]{text}[/]" if on else f"[dim]{text}[/]")
+                elif kind == "footer":
+                    log.write(f"[dim italic]{text}[/]")
                 else:
                     log.write(text)
             log.write(f"\n[dim]{'─' * 58}[/]\n")
@@ -494,9 +509,19 @@ class GhostStoryApp(App):
         story_id = str(self._tree.get("story_id") or self._tree_path.stem)
         for slot in chosen.get("_foreshadow_slot") or []:
             self.save_manager.mark_foreshadow_seen(story_id, slot)
-        self.state.apply(chosen.get("effects"))
+        effects = chosen.get("effects") or {}
+        self.state.apply(effects)
+        # 渐进展开 known_landmarks
+        from ghost_story_factory.v7.map_view import expand_known_landmarks
+        newly_known = expand_known_landmarks(self.state, self._tree, effects)
         log = self.query_one("#narrative", RichLog)
         log.write(f"\n[bold yellow]▸[/] [bold]{chosen.get('text', '')}[/]")
+        if newly_known:
+            for sid in newly_known:
+                lm = next((l for l in self._tree.get("landmark_map", []) if l.get("id") == sid), {})
+                short = lm.get("short", sid)
+                place = lm.get("place", "")
+                log.write(f"  [bold yellow]▌ 地图 +1  ·  {sid} {short} {place} ▐[/]")
         # 卡片化渲染状态变化
         self._render_apply_events_tui(self.state._last_events, log)
         nxt = resolve_next(chosen, self.state)

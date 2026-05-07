@@ -92,6 +92,9 @@ class State:
         self.last_landmark_id: Optional[str] = initial.get("last_landmark_id")
         self.npc_locations: Dict[str, str] = dict(initial.get("npc_locations", {}))
         self.visit_counts: Dict[str, int] = dict(initial.get("visit_counts", {}))
+        # 已"知道"的地标(地图上可见;不等于"已访问")
+        # 起手只知道 S1(队长简报告诉了第一站)
+        self.known_landmarks: List[str] = list(initial.get("known_landmarks", ["S1"]))
         # apply() 的结构化事件记录(给 UI 卡片化渲染用)
         self._last_events: List[Dict[str, Any]] = []
 
@@ -468,7 +471,13 @@ ACTION_STATUS = -1  # 's' 键
 ACTION_MAP = -2     # 'm' 键
 
 
-def prompt_choice(n: int) -> int:
+def prompt_choice(n: int, aliases: Optional[Dict[str, int]] = None) -> int:
+    """返回 0-based 选项索引,或 ACTION_* 特殊值。
+
+    aliases: 可选 — {别名: 0-based 索引}。例如 picker 传入 {"S1": 0, "S2": 1, ...},
+             玩家可以直接输入 "S1" 而不用看下面是几号。
+    """
+    aliases_lc = {k.lower(): v for k, v in (aliases or {}).items()}
     while True:
         try:
             raw = input(bold("> 你的选择: ")).strip()
@@ -479,17 +488,26 @@ def prompt_choice(n: int) -> int:
             print(dim("退出。"))
             sys.exit(0)
         if raw.lower() in ("h", "help", "?"):
-            print(dim("  q 退出  s 状态  m 地图  其它输入数字选择"))
+            print(dim("  q 退出  s 状态  m 地图  其它输入数字 / SID(如 S1/S2)选择"))
             continue
         if raw.lower() in ("s", "status"):
             return ACTION_STATUS
         if raw.lower() in ("m", "map", "地图"):
             return ACTION_MAP
+        # SID 别名(picker 用)
+        if raw.lower() in aliases_lc:
+            idx = aliases_lc[raw.lower()]
+            if 0 <= idx < n:
+                return idx
         if raw.isdigit():
             idx = int(raw)
             if 1 <= idx <= n:
                 return idx - 1
-        print(red(f"  请输入 1-{n}。"))
+        hint = f"  请输入 1-{n}"
+        if aliases_lc:
+            hint += " 或 " + " / ".join(sorted(aliases.keys()))
+        hint += "。"
+        print(red(hint))
 
 
 # --- v6 schema 解析辅助 ---
@@ -735,10 +753,23 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             if save_manager.mark_foreshadow_seen(story_id, slot):
                 newly_seen_slots.append(slot)
         # _is_map_picker 节点:用地图视图替代普通 narrative
+        # 先 build picker_choices 算出 travel_indices(让数字贴到地图上)
         if node.get("_is_map_picker"):
-            from ghost_story_factory.v7.map_view import render_map_cli
+            from ghost_story_factory.v7.map_view import (
+                render_map_cli, picker_choices
+            )
+            _picker_pre = picker_choices(tree, state)
+            _visible_pre = [c for c in _picker_pre if c.get("_picker_kind") != "locked"]
+            travel_idx = {}
+            for i, c in enumerate(_visible_pre):
+                if c.get("_picker_kind") == "travel":
+                    sid = c.get("_landmark_id")
+                    if sid:
+                        travel_idx[sid] = i + 1
             render_map_cli(tree, state, save_manager,
-                           current_node_id=current_id, story_id=story_id)
+                           current_node_id=current_id, story_id=story_id,
+                           mode="site",
+                           travel_indices=travel_idx)
         else:
             # _one_way 节点 — 在叙事开头打一条红色"无回头路"横条
             if node.get("_one_way"):
@@ -841,16 +872,24 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             print(state.hud())
 
         render_choices(visible, locked)
-        idx = prompt_choice(len(visible))
+        # picker 模式下,把 SID 也注册为别名(玩家可以直接 S1/S2... 选)
+        _aliases: Dict[str, int] = {}
+        if node.get("_is_map_picker"):
+            for i, c in enumerate(visible):
+                sid = c.get("_landmark_id")
+                if sid:
+                    _aliases[sid] = i
+        idx = prompt_choice(len(visible), aliases=_aliases or None)
         if idx == ACTION_MAP:
-            # m 键 → 显示夜班路线图(只读)。_one_way 节点也允许查看,但加红色提示
+            # m 键 → 显示手机地图(phone 模式 — 只看路 + 地名,不剧透 NPC)
             from ghost_story_factory.v7.map_view import render_map_cli
             if node.get("_one_way"):
                 hint = node.get("_one_way_hint",
                                 "你已经走进来了 — 这里没有回头路,只是看一眼地图。")
                 print(red(f"\n  ▌ {hint} ▐\n"))
             render_map_cli(tree, state, save_manager,
-                            current_node_id=current_id, story_id=story_id)
+                            current_node_id=current_id, story_id=story_id,
+                            mode="phone")
             try:
                 input(dim("  按 Enter 继续..."))
             except (EOFError, KeyboardInterrupt):
@@ -889,6 +928,17 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             save_manager.mark_foreshadow_seen(story_id, slot)
         effects = chosen.get("effects") or {}
         state.apply(effects)
+        # 渐进展开 known_landmarks(landmark_visited / reveal_landmarks 触发)
+        from ghost_story_factory.v7.map_view import expand_known_landmarks
+        newly_known = expand_known_landmarks(state, tree, effects)
+        if newly_known:
+            from ghost_story_factory.v7.animate import flash_line
+            for sid in newly_known:
+                lm = next((l for l in tree.get("landmark_map", []) if l.get("id") == sid), {})
+                short = lm.get("short", sid)
+                place = lm.get("place", "")
+                flash_line(f"地图 +1  ·  {sid} {short} {place}",
+                           color_fn=lambda s: bold(yellow(s)))
         # 卡片化渲染状态变化(根据 events 类型分别用 card / flash_line)
         _render_apply_events(state._last_events, important_items)
         # 工具节点 stay:不跳 next,留在当前节点(由"返回"选项触发)
