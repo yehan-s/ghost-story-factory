@@ -305,6 +305,7 @@ Accepted
 | `shifts_completed` | @property | 派生 | 由 `len([l for l in visited_landmarks if l in {S1..S6}])` 算出 |
 | `visited_landmarks` | List[str] | 仅本周目 | 已访问地标 |
 | `puzzle_pieces` | List[str] | 仅本周目 | 已收集谜题碎片 |
+| `skipped_landmarks` | List[str] | 仅本周目 | 跳过的地标列表(`shifts_skipped` 由它派生) |
 | `character` | str | 仅本周目 | 当前角色身份(G-273 / linmou_1985 等) |
 | `last_landmark_id` | Optional[str] | 仅本周目 | 上一站地标 ID(给地图渲染) |
 | `npc_locations` | Dict[str, str] | 仅本周目 | NPC 当前位置 |
@@ -1199,13 +1200,17 @@ p.write_text(json.dumps(data, ensure_ascii=False, indent=2))
 
 - [ ] **Step 5: 处理 `*_revisit_*` 系列**
 
-类似流程,但 mapping 是把 `s6_revisit_well` 这类 flag 替换为 `visit_count_min: {"n_s6_arrive": 2}` 形式的 require —— **这个不是 rename,是结构改写**,需要写更复杂的 transform。建议:
+类似流程,但 mapping 是把 `s6_revisit_well` 这类 flag 替换为 `visit_count_min: {"n_s6_arrive": 2}` 形式的 require —— **这个不是 rename,是结构改写**,需要写更复杂的 transform。
+
+**关键**:`visit_counts` 由 player 引擎在每次访问节点时自动 +1(见 `player.py` line 769 附近),**不需要任何 effects.set 维护**。也就是说:
+- `require.flags["s6_revisit_well"] = true` 改为 `require.visit_count_min = {"n_s6_arrive": 2}`
+- 原本 set 该 flag 的 effects(可能在 `n_s6_arrive` 节点上)**直接删除整个 set 操作**,不要替换,不要"手动维护 visit_counts"
 
 ```python
 # 搜出所有引用 s6_revisit_well 的 require
 # 把 require["flags"] 中删除该项
 # 同时在 require 里加 visit_count_min: {"n_s6_arrive": 2}
-# 同时在原本 set 这个 flag 的 effects 里删除该项(因为 visit_counts 是引擎自动维护的)
+# 删除原本 set 这个 flag 的 effects 项(visit_counts 引擎自动维护,无需手工)
 ```
 
 每改 1 个 *_revisit_* 跑一次完整回归。
@@ -1305,6 +1310,8 @@ git commit -m "refactor(data): 所有 flag 收编进 6 namespace(know./oneshot./
 - Modify: `tools/path_explorer.py`
 
 > 这一步在 audit 工具完工后做,因为 path_explorer 已经改用 `_state_sim`(Task 1),现在补三大盲区。
+>
+> **已知局限**:Phase 3 期间(Task 6-12 的所有数据修订),path_explorer 还是不带三大盲区补丁的版本——也就是说,Phase 3 的回归**无法发现 variants 触发盲区**(某条 variant 因为某次 flag 改名永远触发不到)。这是有意为之的:Phase 3 主要靠**双检守住**——`audit_state.py` 抓 namespace/orphan/dead 字段,`path_explorer` 抓节点级可达性,两者交叉覆盖足以保证 8 主结局 + 41 体验不破。Task 13 完成后再跑一次完整审计就能补查 Phase 3 期间是否有 variant 静默失活——这是 Task 14 Step 5 的目的。
 
 - [ ] **Step 1: 写测试 — variants 触发追踪**
 
@@ -1417,6 +1424,7 @@ Create: `docs/team-reviews/2026-05-XX-pass1-completion.md`
 - audit_variants 前后对比
 - path_explorer 可达性 diff
 - ADR-007 落地清单(14 字段 → 11 字段)
+- **显式回答试点节点 `n_npc_predecessor_voice` 的知识门控可行性**:用清扫后的 `visit_count_min + flags(know.*) + any_of` 表达"听过磁带 / 认出工号 / 见过羊符"三态,验证 PKG 不需要新维度
 - Pass 2 候选清单(CG Codex / PKG / UX learn 反馈)
 
 - [ ] **Step 10: Final commit + 标 tag**
