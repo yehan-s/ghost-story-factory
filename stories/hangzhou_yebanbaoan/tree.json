@@ -2346,7 +2346,7 @@
         {
           "if": {
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           },
           "text": "你又来到 307 阶。\n\n柳浪闻莺的雾比刚才浓——\n\n你能听见**雪花声**从台阶尽头传过来,清清楚楚。\n\n14 寸黑白电视,在某一阶上等你。\n\n但你不知道是第几阶。\n\n《异常事件记录表》[02]栏的光标,等你写。"
@@ -2412,7 +2412,7 @@
               },
               {
                 "flags": {
-                  "s2_heard_tv": true
+                  "arc.s2_heard_tv": true
                 }
               }
             ]
@@ -2438,7 +2438,7 @@
         {
           "if": {
             "flags": {
-              "s2_following_footprints": true
+              "oneshot.s2_following_footprints": true
             }
           },
           "text": "你跟着两个潮湿的脚印往上数。\n\n你的脚和女孩的脚**重叠着前进**。\n\n你的脚印踩在她的脚印上——\n\n严丝合缝。\n\n你 27 岁的脚,踩进 11 岁的脚里。\n\n这不应该。\n\n但你抬头——\n\n307 阶尽头,**红木门为你打开**。\n\n比第一次开得更宽。"
@@ -2447,7 +2447,7 @@
           "if": {
             "PR_min": 30,
             "flags": {
-              "s2_pushed_through": true
+              "oneshot.s2_pushed_through": true
             }
           },
           "text": "你已经在跑。\n\n你不数。\n\n你只跑。\n\n但你的喉咙,**自己发出数字**——\n\n100、200、307。\n\n你的喉咙**比你的脚先到 307**。\n\n你的脚还在第 50 阶。\n\n但你的喉咙数完了。\n\n红木门**自动闭合**——\n\n你今晚不能进了。\n\n你**白来一趟**。"
@@ -2461,7 +2461,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s2_stepped_308": true
+              "oneshot.s2_stepped_308": true
             }
           }
         },
@@ -2492,7 +2492,7 @@
             "PR": 8,
             "GR": 5,
             "flags": {
-              "s2_kept_counting": true
+              "oneshot.s2_kept_counting": true
             }
           }
         }
@@ -2512,7 +2512,7 @@
         {
           "if": {
             "flags": {
-              "s2_offered_candy": true
+              "oneshot.s2_offered_candy": true
             }
           },
           "text": "你前面给过她一颗糖。\n\n你又上 308 阶——\n\n红木门**自己开**——\n\n开成 11 岁女孩**正好钻得过**的缝。\n\n你的脚,**自己变小**——\n\n你也变成 11 岁。\n\n11 岁的你,钻过门缝。\n\n门里,红衣女孩对**11 岁的你**鞠躬:\n\n「同学,**一起走 27 楼**。」"
@@ -2526,7 +2526,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -2565,7 +2565,7 @@
           "effects": {
             "PR": -3,
             "flags": {
-              "s2_skipped_door": true
+              "oneshot.s2_skipped_door": true
             }
           }
         }
@@ -2581,7 +2581,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -2620,7 +2620,7 @@
             "PR": 8,
             "GR": 5,
             "flags": {
-              "s2_saw_double_shadow": true
+              "oneshot.s2_saw_double_shadow": true
             }
           }
         },
@@ -2630,7 +2630,7 @@
           "effects": {
             "PR": 3,
             "flags": {
-              "s2_pushed_through": true
+              "oneshot.s2_pushed_through": true
             }
           }
         },
@@ -2666,7 +2666,7 @@
             "PR": 10,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "s2_redirected_shoe": true
+              "oneshot.s2_redirected_shoe": true
             }
           }
         },
@@ -2686,7 +2686,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s2_threw_shoe_lake": true
+              "oneshot.s2_threw_shoe_lake": true
             }
           }
         }
@@ -2702,7 +2702,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s2_following_footprints": true
+              "oneshot.s2_following_footprints": true
             }
           }
         },
@@ -2714,7 +2714,7 @@
             "GR": 8,
             "flags": {
               "oneshot.s2_barefoot_match": true,
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -2725,7 +2725,7 @@
             "PR": 10,
             "flags": {
               "posted_photo": true,
-              "s2_posted_shadow": true
+              "oneshot.s2_posted_shadow": true
             }
           }
         }
@@ -2763,7 +2763,7 @@
             "PR": 10,
             "GR": 12,
             "flags": {
-              "s2_smeared_face": true,
+              "oneshot.s2_smeared_face": true,
               "marked_lamb": true
             }
           }
@@ -2781,7 +2781,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "s2_heard_tv": true,
+              "arc.s2_heard_tv": true,
               "oneshot.s2_faced_her": true
             }
           }
@@ -2804,8 +2804,8 @@
             "PR": 12,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "s2_offered_candy": true,
-              "s2_heard_tv": true
+              "oneshot.s2_offered_candy": true,
+              "arc.s2_heard_tv": true
             }
           }
         }
@@ -2866,7 +2866,7 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s2_skipped_door": true
+              "oneshot.s2_skipped_door": true
             }
           }
         }
@@ -2932,7 +2932,7 @@
           "effects": {
             "landmark_skipped": "S3",
             "flags": {
-              "s3_aborted": true
+              "oneshot.s3_aborted": true
             }
           },
           "require": {
@@ -2948,7 +2948,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s3_clean_leave": true
+              "oneshot.s3_clean_leave": true
             }
           },
           "require": {
@@ -3086,7 +3086,7 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "s3_accepted_h1987": true,
+              "oneshot.s3_accepted_h1987": true,
               "marked_lamb": true
             }
           }
@@ -3114,7 +3114,7 @@
             "PR": 8,
             "puzzle_add": "piece_refused_h",
             "flags": {
-              "s3_clean_exit": true
+              "oneshot.s3_clean_exit": true
             }
           }
         }
@@ -3162,7 +3162,7 @@
           "effects": {
             "GR": 5,
             "flags": {
-              "s3_dumped_mallet": true
+              "oneshot.s3_dumped_mallet": true
             }
           }
         }
@@ -3272,7 +3272,7 @@
             "PR": 15,
             "puzzle_add": "piece_h1987",
             "flags": {
-              "s3_filled_2024": true
+              "oneshot.s3_filled_2024": true
             }
           }
         },
@@ -3283,7 +3283,7 @@
             "PR": 8,
             "GR": -5,
             "flags": {
-              "s3_erased_years": true
+              "oneshot.s3_erased_years": true
             }
           }
         },
@@ -5317,7 +5317,7 @@
         {
           "if": {
             "flags": {
-              "s2_returned_shoes": true
+              "oneshot.s2_returned_shoes": true
             }
           },
           "text": "你把 S5 那双白布鞋还给她了。\n\n她接过鞋,**穿上**——\n\n严丝合缝。\n\n她笑了。\n\n11 岁的女孩,有 28 年没笑过。\n\n她说:「叔叔,这双鞋是我妈妈 1995 年买给我的。\n  1996 年六一儿童节彩排,我穿这双鞋。\n  彩排完那天我去万象城,在货梯里**鞋掉了一只**。\n  没人帮我捡。\n  我就**回去捡**——\n  门**关了**。\n\n  现在两只都齐了。\n  叔叔,**谢谢**。」"
@@ -5325,7 +5325,7 @@
         {
           "if": {
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           },
           "text": "你在 S2 第 308 阶红木门里见过她。\n\n你又见到她——\n\n她手里电视屏幕里的雪花,**少了**——\n\n屏幕清晰起来。\n\n屏幕里是**307 阶**——\n\n她正在 307 阶上**等你**。\n\n但她**也站在你面前**。\n\n两个她。\n\n两个时间。\n\n屏幕里那个,对你**举起一根手指,贴在嘴前**:\n\n「嘘——\n  叔叔,**别告诉真的我**。」"
@@ -7227,7 +7227,7 @@
         {
           "if": {
             "flags": {
-              "s2_kept_counting": true
+              "oneshot.s2_kept_counting": true
             }
           },
           "text": "你在 S2 第 307 阶,选择了**继续往上数**。\n\n你数到 1987 阶时,**又回到了第 1 阶**。\n\n你停不下来。\n\n你的脚自己迈,你的嘴自己数。\n\n你成了**柳浪闻莺 307 阶的永恒导游**——\n\n下一任 G-273 在 21:47 走到 307 阶入口时,他会看见**你在数台阶**。\n\n你会回头,对他笑,**用 1987 年的口音**说:\n\n「上 307,数对了,就有 308。\n  数错了——\n  跟我一起数。」\n\n他可能跟你数。\n\n他可能不跟。\n\n反正你数 1987 年了。\n\n再过 1987 年,你还在数。"
@@ -7308,7 +7308,7 @@
         {
           "if": {
             "flags": {
-              "s2_skipped_door": true
+              "oneshot.s2_skipped_door": true
             }
           },
           "text": "你下班了。\n\n你这一夜班,什么都没看见——除了 S2 的红木门。\n\n但你**没推**。\n\n你以为没事。\n\n第二天早上,你刷夜班论坛——\n\n热帖第一条:『#G-274 第一夜班』\n\n你点进去——\n\n是新人 G-274 的发帖。\n\n他在 S2 第 308 阶推开了红木门。\n\n他拍了一张照片:门里,**有一张你的脸**。\n\n你的脸,正对着镜头,嘴在动。\n\n但照片是无声的。\n\n你看不出自己在说什么。\n\n你的胸口突然**冷了一下**——\n\n是 S2 第 308 阶那扇红木门的温度。\n\n你假装没看见,关了论坛。"
