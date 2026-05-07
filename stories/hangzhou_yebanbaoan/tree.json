@@ -3013,7 +3013,7 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "s3_offered_id": true
+              "oneshot.s3_offered_id": true
             }
           }
         },
@@ -3038,7 +3038,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s3_into_bell": true
+              "oneshot.s3_into_bell": true
             }
           }
         },
@@ -3049,7 +3049,7 @@
             "PR": 12,
             "puzzle_add": "piece_h1987",
             "flags": {
-              "s3_marked_self": true
+              "oneshot.s3_marked_self": true
             }
           }
         },
@@ -3076,7 +3076,7 @@
             "PR": 15,
             "puzzle_add": "piece_refused_h",
             "flags": {
-              "s3_refused_h1987": true
+              "arc.s3_refused_h1987": true
             }
           }
         },
@@ -3152,7 +3152,7 @@
             "PR": -10,
             "GR": 20,
             "flags": {
-              "s3_struck_eighth": true
+              "oneshot.s3_struck_eighth": true
             }
           }
         },
@@ -3198,7 +3198,7 @@
             "PR": -5,
             "flags": {
               "s3_revisit_temple": true,
-              "s3_reclaimed_id": true
+              "oneshot.s3_reclaimed_id": true
             }
           }
         },
@@ -3222,7 +3222,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "s3_met_red_girl_here": true
+              "oneshot.s3_met_red_girl_here": true
             }
           }
         },
@@ -3261,7 +3261,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "s3_jumped_well": true
+              "oneshot.s3_jumped_well": true
             }
           }
         },
@@ -3293,7 +3293,7 @@
           "effects": {
             "flags": {
               "s3_revisit_temple": true,
-              "s3_saw_well": true
+              "oneshot.s3_saw_well": true
             }
           }
         }
@@ -3309,7 +3309,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "s3_promised_seven": true,
+              "oneshot.s3_promised_seven": true,
               "contacted_predecessor": true
             }
           }
@@ -3397,7 +3397,7 @@
           "effects": {
             "landmark_skipped": "S4",
             "flags": {
-              "s4_aborted": true
+              "oneshot.s4_aborted": true
             }
           },
           "require": {
@@ -3413,7 +3413,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s4_clean_leave": true
+              "oneshot.s4_clean_leave": true
             }
           },
           "require": {
@@ -3463,7 +3463,7 @@
             ],
             "flags": {
               "completed_yang": true,
-              "s4_blood_signed": true
+              "arc.s4_blood_signed": true
             }
           }
         },
@@ -3559,7 +3559,7 @@
             "GR": 10,
             "flags": {
               "s4_revisit_alley": true,
-              "s4_broke_brush": true
+              "oneshot.s4_broke_brush": true
             }
           }
         },
@@ -3640,7 +3640,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s4_broke_yang_curse": true
+              "oneshot.s4_broke_yang_curse": true
             }
           }
         },
@@ -3651,7 +3651,7 @@
             "PR": 15,
             "puzzle_add": "piece_yang_freed",
             "flags": {
-              "s4_clean_exit": true
+              "oneshot.s4_clean_exit": true
             }
           }
         }
@@ -3682,7 +3682,7 @@
             "PR": 10,
             "puzzle_add": "piece_grandma_blessing",
             "flags": {
-              "s4_drank_tofu": true
+              "oneshot.s4_drank_tofu": true
             }
           }
         }
@@ -3720,7 +3720,7 @@
             "PR": -5,
             "flags": {
               "s4_revisit_alley": true,
-              "s4_fled_room": true
+              "oneshot.s4_fled_room": true
             }
           }
         },
@@ -3765,7 +3765,7 @@
             "PR": 15,
             "puzzle_add": "piece_yang_debt",
             "flags": {
-              "s4_debt_to_evaluator": true
+              "oneshot.s4_debt_to_evaluator": true
             }
           }
         },
@@ -3775,7 +3775,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "s4_debt_to_predecessor": true
+              "oneshot.s4_debt_to_predecessor": true
             }
           }
         },
@@ -5379,7 +5379,7 @@
         {
           "if": {
             "flags": {
-              "s4_blood_signed": true
+              "arc.s4_blood_signed": true
             }
           },
           "text": "你刚用羊血在「⺶」字匾上补完最后一笔。\n\n黑山羊抬头——\n\n它没有头,但它**抬起了脖子的断面**。\n\n断面对准你,像在「看」你。\n\n它的胸腔里,婴儿啼哭**变成了你刚出生那天的录音**。\n\n你怎么会有那段录音?\n\n你妈妈从来没给你看过。"
@@ -5817,7 +5817,7 @@
         {
           "if": {
             "flags": {
-              "s4_blood_signed": true
+              "arc.s4_blood_signed": true
             }
           },
           "text": "你身上沾着 S4 弄堂的羊血。\n\n钟里那张铜锈侧脸——\n\n**鼻子动了一下**。\n\n它闻到你身上的羊血。\n\n它说:「弟弟,你刚才喂了那只羊。\n  那只羊是 1933 年的人。\n  我是 1987 年的钟。\n  我们这一族,有 11 个**长辈**在这间寺院里。\n  你想见见吗?」"
@@ -5985,7 +5985,7 @@
         {
           "if": {
             "flags": {
-              "s3_refused_h1987": true
+              "arc.s3_refused_h1987": true
             }
           },
           "text": "你在 S3 钟前写了「不」。\n\n夜班评议会**第一次**记录到这种事。\n\n《异常事件记录表》浮现:\n\n「G-273-X 案号:\n  本届拒绝接受 H = 1987 编号。\n  这是杭州常数运行 37 年来第一次。\n  判定:授予『候补判官 — 边界判例』。\n\n  特别条款:你审判的不是 11 任前任 G-273。\n  你审判的是**杭州常数本身**。」\n\n你的工牌反面,**烫的不是章**——\n\n是一个**问号**。"
@@ -7129,7 +7129,7 @@
         {
           "if": {
             "flags": {
-              "s3_refused_h1987": true
+              "arc.s3_refused_h1987": true
             }
           },
           "text": "你在 S3 理安寺的钟前,刮下了一片铜锈,把它**贴在自己手腕**——\n\n但你没接受『H = 1987』。你写了「不」。\n\n你成了 9 个候选里第一个**拒绝**的人。\n\n剩下 8 个,在水底等。\n\n你回到 B3 档案室,把『拒绝接受 H 编号』这件事写进 5 张拼图碎片里——\n\n这 5 张拼图,本来是要献祭的。\n\n你不献。\n\n你把它们**贴出去**。\n\n27 台电视播放的是 9 个不同年份的『候补编号 014』故事——\n\n他们都选择了接受。\n\n只有第 9 个,你,选择了不。\n\n你写下记录表第 7 栏:**「我读完了。但我没填完。下一任,会有第 10 个候选。她可以选『不』。」**\n\n6:03 湖滨。一只麻雀啄食着你掉的早餐麦片。"
