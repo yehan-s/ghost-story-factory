@@ -253,7 +253,11 @@ class GhostStoryApp(App):
             if cdef.get("initial_flags"):
                 initial_state["flags"] = dict(cdef["initial_flags"])
         self._character_id = chosen or "G-273"
-        self.state = State(initial_state)
+        # 反应机制(ADR-008):State 持 save_manager + story_id + tree 引用,
+        # 让 _meets_clause 的 deduction/foreshadow/theme_resolved 条件能查询单一真相源。
+        _story_id = str(self._tree.get("story_id") or self._tree_path.stem)
+        self.state = State(initial_state, save_manager=self.save_manager, story_id=_story_id)
+        self.state.tree = self._tree
         # 注入道具说明字典(获得物品时显示用途)
         State.inv_descriptions = self._tree.get("inv_descriptions", {}) or {}
         # 关键道具集合(被 inv_has require 引用的视为剧情关键)

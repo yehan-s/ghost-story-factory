@@ -755,11 +755,13 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         if cdef.get("initial_flags"):
             initial_state["flags"] = dict(cdef["initial_flags"])
 
-    state = State(initial_state)
+    story_id = str(tree.get("story_id") or tree_path.stem)
+    # 反应机制(ADR-008):State 持 save_manager + story_id + tree 引用,
+    # 让 _meets_clause 的 deduction/foreshadow/theme_resolved 条件能查询单一真相源。
+    state = State(initial_state, save_manager=save_manager, story_id=story_id)
+    state.tree = tree
     # 注入道具说明字典(获得物品时显示用途)
     State.inv_descriptions = tree.get("inv_descriptions", {}) or {}
-
-    story_id = str(tree.get("story_id") or tree_path.stem)
     # 关键道具集合(被 inv_has 引用的视为剧情关键 → 卡片化反馈)
     important_items = collect_important_items(tree)
 
