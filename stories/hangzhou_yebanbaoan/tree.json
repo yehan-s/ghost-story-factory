@@ -1792,7 +1792,7 @@
         {
           "if": {
             "flags": {
-              "s1_touched_coat": true
+              "oneshot.s1_touched_coat": true
             }
           },
           "text": "你又走到风衣边上。\n\n刚才你摸过它了——湿,冷,皮肤底下没有骨头。\n\n你这次不敢再用手了。\n\n但你的手,自己抬起来。"
@@ -1848,8 +1848,8 @@
           "effects": {
             "GR": 8,
             "flags": {
-              "s1_threw_coat": true,
-              "s1_touched_coat": true
+              "oneshot.s1_threw_coat": true,
+              "oneshot.s1_touched_coat": true
             }
           }
         },
@@ -1858,7 +1858,7 @@
           "next": "n_s1_pocket_book",
           "effects": {
             "flags": {
-              "s1_touched_coat": true
+              "oneshot.s1_touched_coat": true
             }
           }
         },
@@ -1868,7 +1868,7 @@
           "effects": {
             "PR": 3,
             "flags": {
-              "s1_touched_coat": true,
+              "oneshot.s1_touched_coat": true,
               "oneshot.s1_hand_shaking": true
             }
           }
@@ -1922,7 +1922,7 @@
             "PR": 10,
             "GR": 5,
             "flags": {
-              "s1_signed_book": true,
+              "oneshot.s1_signed_book": true,
               "oneshot.s1_book_seen": true
             }
           }
@@ -1987,7 +1987,7 @@
             "PR": 5,
             "GR": 3,
             "flags": {
-              "s1_yelled": true
+              "oneshot.s1_yelled": true
             }
           }
         }
@@ -2063,7 +2063,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "s1_wore_shoes": true,
+              "oneshot.s1_wore_shoes": true,
               "linmou_marked": true
             }
           }
@@ -2074,7 +2074,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s1_threw_shoes": true
+              "oneshot.s1_threw_shoes": true
             }
           }
         },
@@ -2172,7 +2172,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s1_sent_private": true
+              "oneshot.s1_sent_private": true
             }
           }
         },
@@ -2384,7 +2384,7 @@
           "effects": {
             "landmark_skipped": "S2",
             "flags": {
-              "s2_aborted": true
+              "oneshot.s2_aborted": true
             }
           },
           "require": {
@@ -2400,7 +2400,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s2_clean_leave": true
+              "oneshot.s2_clean_leave": true
             }
           },
           "require": {
@@ -2481,7 +2481,7 @@
           "effects": {
             "GR": 3,
             "flags": {
-              "s2_descending": true
+              "oneshot.s2_descending": true
             }
           }
         },
@@ -2504,7 +2504,7 @@
         {
           "if": {
             "flags": {
-              "s2_closed_door": true
+              "oneshot.s2_closed_door": true
             }
           },
           "text": "你又上 308 阶。\n\n这次门没『自己』开。\n\n门**已经开了**——\n\n开得很宽。\n\n你能看见门里——\n\n14 寸电视前,**多了一双白布鞋**。\n\n鞋朝着门口。\n\n鞋后跟,有 1996 年的红色舞台粉。\n\n红衣女孩,**站在电视后**——\n\n这次她对你说:「叔叔,你**关过门一次**。\n  关一次,我等 7 年。\n  你又来了。\n  我等了 14 年。\n\n  你想再关吗?」"
@@ -2544,7 +2544,7 @@
           "effects": {
             "flags": {
               "s2_revisit_stairs": true,
-              "s2_closed_door": true
+              "oneshot.s2_closed_door": true
             }
           }
         },
@@ -2592,7 +2592,7 @@
             "PR": 10,
             "puzzle_add": "piece_27th_clue",
             "flags": {
-              "s2_answered_riddle": true
+              "oneshot.s2_answered_riddle": true
             }
           }
         },
@@ -2603,7 +2603,7 @@
             "PR": -3,
             "GR": 5,
             "flags": {
-              "s2_fled_door": true
+              "oneshot.s2_fled_door": true
             }
           }
         }
@@ -2648,8 +2648,8 @@
             "landmark_skipped": "S2",
             "PR": -8,
             "flags": {
-              "s2_dropped_record": true,
-              "s2_aborted": true
+              "oneshot.s2_dropped_record": true,
+              "oneshot.s2_aborted": true
             }
           }
         }
@@ -2676,7 +2676,7 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "s2_crushed_shoe": true
+              "oneshot.s2_crushed_shoe": true
             }
           }
         },
@@ -2713,7 +2713,7 @@
             "PR": 12,
             "GR": 8,
             "flags": {
-              "s2_barefoot_match": true,
+              "oneshot.s2_barefoot_match": true,
               "s2_heard_tv": true
             }
           }
@@ -2752,7 +2752,7 @@
           "effects": {
             "GR": 8,
             "flags": {
-              "s2_dumped_wipe": true
+              "oneshot.s2_dumped_wipe": true
             }
           }
         },
@@ -2782,7 +2782,7 @@
             "GR": 8,
             "flags": {
               "s2_heard_tv": true,
-              "s2_faced_her": true
+              "oneshot.s2_faced_her": true
             }
           }
         },
@@ -2793,7 +2793,7 @@
             "PR": -5,
             "GR": 15,
             "flags": {
-              "s2_avoided_her": true
+              "oneshot.s2_avoided_her": true
             }
           }
         },
@@ -5118,7 +5118,7 @@
         {
           "if": {
             "flags": {
-              "s1_signed_book": true
+              "oneshot.s1_signed_book": true
             }
           },
           "text": "你刚把『赵某 G-273』写在账本最末一栏——\n\n第三把长椅旁,湖水**自己**漫上岸。\n\n一个穿着 1980 年代中山装、湿透的男人,从湖里**走**出来。\n\n他没有撑伞。\n\n他对你说:\n\n「赵某,你签了。\n  欢迎加入第 14 任 G-273。\n  上一任在 27 楼。下一任在你身后。」"
@@ -5126,7 +5126,7 @@
         {
           "if": {
             "flags": {
-              "s1_wore_shoes": true
+              "oneshot.s1_wore_shoes": true
             }
           },
           "text": "你刚穿上湿鞋——\n\n你的腿,不听使唤。\n\n它们带你走到湖边。\n\n湖里浮上来一个人——\n\n中山装,湿透,腋下夹着账本。\n\n他没看你的脸,他看你的脚:\n\n「我的鞋,合脚吗?」"
@@ -5645,7 +5645,7 @@
         {
           "if": {
             "flags": {
-              "s2_followed_double_shadow": true,
+              "oneshot.s2_followed_double_shadow": true,
               "saw_27th_floor": false
             }
           },
