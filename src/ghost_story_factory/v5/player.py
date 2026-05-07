@@ -288,6 +288,31 @@ class State:
 
             if not any(_theme_done(x) for x in ids):
                 return False
+        # ending_seen(ADR-009):跨周目 ending 查询,支持 ending_id="*" 通配。
+        # 形式: {"ending_seen": {"story_id": "杭州_v7", "ending_id": "E_LINMOU_RELEASE"}}
+        # 兼容 SaveManager 旧版(endings_seen=list)与新版(dict[story_id, list])。
+        if "ending_seen" in require:
+            sm = self.save_manager
+            if sm is None:
+                return False
+            spec = require["ending_seen"] or {}
+            sid = spec.get("story_id")
+            eid = spec.get("ending_id")
+            if not sid or not eid:
+                return False
+            seen = (sm.data or {}).get("endings_seen")
+            if isinstance(seen, dict):
+                story_eds = seen.get(sid) or []
+            elif isinstance(seen, list):
+                # 旧版 list 视作所有归属当前 story_id(杭州_v7),仅当请求 story_id 匹配时返回
+                story_eds = list(seen) if sid == "杭州_v7" else []
+            else:
+                story_eds = []
+            if eid == "*":
+                if not story_eds:
+                    return False
+            elif eid not in story_eds:
+                return False
         return True
 
     def meets(self, require: Optional[Dict[str, Any]]) -> bool:
