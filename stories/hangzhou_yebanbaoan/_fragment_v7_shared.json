@@ -26,10 +26,6 @@
           "text": "撕掉小票。",
           "next": "n_briefing",
           "effects": {
-            "inv_add": [
-              "商场总控钥匙",
-              "工牌 G-273"
-            ],
             "PR": 2,
             "flags": {
               "defied_token": true
@@ -41,8 +37,6 @@
           "next": "n_briefing",
           "effects": {
             "inv_add": [
-              "商场总控钥匙",
-              "工牌 G-273",
               "前任电话号码"
             ],
             "PR": 5,
@@ -241,10 +235,7 @@
             "GR": 10,
             "inv_add": [
               "米色风衣"
-            ],
-            "flags": {
-              "wore_coat": true
-            }
+            ]
           }
         }
       ]
@@ -510,14 +501,7 @@
           "text": "把电视抢过来。",
           "next": "n_scene_27th_floor_corridor",
           "effects": {
-            "GR": 12,
-            "inv_add": [
-              "14 寸黑白电视",
-              "1987 录像带"
-            ],
-            "flags": {
-              "took_red_girl_tv": true
-            }
+            "GR": 12
           }
         }
       ]
@@ -578,13 +562,7 @@
           "text": "跪下,鞠三个躬。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -5,
-            "inv_add": [
-              "羊公会欠条"
-            ],
-            "flags": {
-              "yang_debt": true
-            }
+            "PR": -5
           }
         },
         {
@@ -707,9 +685,6 @@
           "next": "n_scene_lake_underwater",
           "effects": {
             "GR": 20,
-            "inv_add": [
-              "7 顶柳条安全帽"
-            ],
             "flags": {
               "drown_marked": true
             }
@@ -720,9 +695,6 @@
           "next": "n_landmark_picker",
           "effects": {
             "GR": 12,
-            "inv_add": [
-              "柳条安全帽 (粘住)"
-            ],
             "flags": {
               "helmet_stuck": true
             }
@@ -753,10 +725,7 @@
             "puzzle_add": "piece_seven_faces",
             "inv_add": [
               "7 工人速写"
-            ],
-            "flags": {
-              "sketched_seven": true
-            }
+            ]
           }
         },
         {
@@ -845,9 +814,6 @@
           "next": "n_npc_piano_ghost_payoff",
           "effects": {
             "PR": 8,
-            "inv_add": [
-              "倒带背书声"
-            ],
             "flags": {
               "played_for_her": true
             }
@@ -1024,10 +990,7 @@
             "GR": 5,
             "inv_add": [
               "铜锈护符"
-            ],
-            "flags": {
-              "corroding": true
-            }
+            ]
           }
         },
         {
@@ -1432,10 +1395,7 @@
             "PR": 15,
             "inv_add": [
               "27F 铜钥匙"
-            ],
-            "flags": {
-              "promised_relieve_predecessor": true
-            }
+            ]
           }
         },
         {

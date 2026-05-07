@@ -232,8 +232,7 @@
             ],
             "flags": {
               "oneshot.s1_book_grabbed": true,
-              "oneshot.s1_book_seen": true,
-              "linmou_marked": true
+              "oneshot.s1_book_seen": true
             }
           }
         },
@@ -595,13 +594,7 @@
           "text": "把沾血泥的湿巾收好,继续走。",
           "next": "n_landmark_picker",
           "effects": {
-            "inv_add": [
-              "铁锈湖泥湿巾"
-            ],
-            "puzzle_add": "piece_blood_mud",
-            "flags": {
-              "oneshot.s1_kept_mud": true
-            }
+            "puzzle_add": "piece_blood_mud"
           }
         }
       ]

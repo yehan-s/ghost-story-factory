@@ -146,9 +146,6 @@
           "next": "n_s6_grab_seven",
           "effects": {
             "GR": 22,
-            "inv_add": [
-              "7 顶柳条安全帽"
-            ],
             "flags": {
               "drown_marked": true
             }
@@ -194,9 +191,6 @@
           "next": "n_s6_wear_seventh",
           "effects": {
             "GR": 18,
-            "inv_add": [
-              "柳条安全帽 (粘住)"
-            ],
             "flags": {
               "helmet_stuck": true,
               "marked_lamb": true
@@ -271,11 +265,7 @@
             "PR": 8,
             "inv_add": [
               "27F 铜钥匙"
-            ],
-            "flags": {
-              "oneshot.s6_id_into_button": true,
-              "promised_relieve_predecessor": true
-            }
+            ]
           }
         }
       ]
@@ -498,10 +488,7 @@
             "inv_add": [
               "27F 铜钥匙"
             ],
-            "puzzle_add": "piece_27th_clue",
-            "flags": {
-              "promised_relieve_predecessor": true
-            }
+            "puzzle_add": "piece_27th_clue"
           }
         },
         {

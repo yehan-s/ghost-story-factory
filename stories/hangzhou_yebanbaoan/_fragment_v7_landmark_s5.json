@@ -196,9 +196,6 @@
           "next": "n_npc_piano_ghost",
           "effects": {
             "PR": 10,
-            "inv_add": [
-              "倒带背书声"
-            ],
             "flags": {
               "played_for_her": true
             }

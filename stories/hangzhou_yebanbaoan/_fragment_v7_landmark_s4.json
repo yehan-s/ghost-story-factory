@@ -232,13 +232,7 @@
           "text": "把毛笔收进背包。",
           "next": "n_s4_arrive",
           "effects": {
-            "inv_add": [
-              "血毛笔"
-            ],
-            "puzzle_add": "piece_yang_brush",
-            "flags": {
-              "oneshot.s4_kept_brush": true
-            }
+            "puzzle_add": "piece_yang_brush"
           }
         }
       ]
@@ -254,12 +248,10 @@
             "PR": 10,
             "GR": 15,
             "inv_add": [
-              "⺶ 符文",
-              "羊公会名册"
+              "⺶ 符文"
             ],
             "flags": {
               "completed_yang": true,
-              "oneshot.s4_joined_yanggui": true,
               "marked_lamb": true
             }
           }
@@ -330,9 +322,6 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 20,
-            "inv_add": [
-              "1959-043 粮票"
-            ],
             "puzzle_add": "piece_yang_freed",
             "flags": {
               "arc.s4_grandma_blessing": true
@@ -447,13 +436,8 @@
           "effects": {
             "GR": 25,
             "PR": 20,
-            "inv_add": [
-              "羊公会欠条"
-            ],
             "flags": {
-              "yang_debt": true,
-              "marked_lamb": true,
-              "oneshot.s4_self_debt": true
+              "marked_lamb": true
             }
           }
         }

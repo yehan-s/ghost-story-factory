@@ -1951,8 +1951,7 @@
             ],
             "flags": {
               "oneshot.s1_book_grabbed": true,
-              "oneshot.s1_book_seen": true,
-              "linmou_marked": true
+              "oneshot.s1_book_seen": true
             }
           }
         },
@@ -2314,13 +2313,7 @@
           "text": "把沾血泥的湿巾收好,继续走。",
           "next": "n_landmark_picker",
           "effects": {
-            "inv_add": [
-              "铁锈湖泥湿巾"
-            ],
-            "puzzle_add": "piece_blood_mud",
-            "flags": {
-              "oneshot.s1_kept_mud": true
-            }
+            "puzzle_add": "piece_blood_mud"
           }
         }
       ]
@@ -3555,13 +3548,7 @@
           "text": "把毛笔收进背包。",
           "next": "n_s4_arrive",
           "effects": {
-            "inv_add": [
-              "血毛笔"
-            ],
-            "puzzle_add": "piece_yang_brush",
-            "flags": {
-              "oneshot.s4_kept_brush": true
-            }
+            "puzzle_add": "piece_yang_brush"
           }
         }
       ]
@@ -3577,12 +3564,10 @@
             "PR": 10,
             "GR": 15,
             "inv_add": [
-              "⺶ 符文",
-              "羊公会名册"
+              "⺶ 符文"
             ],
             "flags": {
               "completed_yang": true,
-              "oneshot.s4_joined_yanggui": true,
               "marked_lamb": true
             }
           }
@@ -3653,9 +3638,6 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 20,
-            "inv_add": [
-              "1959-043 粮票"
-            ],
             "puzzle_add": "piece_yang_freed",
             "flags": {
               "arc.s4_grandma_blessing": true
@@ -3770,13 +3752,8 @@
           "effects": {
             "GR": 25,
             "PR": 20,
-            "inv_add": [
-              "羊公会欠条"
-            ],
             "flags": {
-              "yang_debt": true,
-              "marked_lamb": true,
-              "oneshot.s4_self_debt": true
+              "marked_lamb": true
             }
           }
         }
@@ -3967,9 +3944,6 @@
           "next": "n_npc_piano_ghost",
           "effects": {
             "PR": 10,
-            "inv_add": [
-              "倒带背书声"
-            ],
             "flags": {
               "played_for_her": true
             }
@@ -4412,9 +4386,6 @@
           "next": "n_s6_grab_seven",
           "effects": {
             "GR": 22,
-            "inv_add": [
-              "7 顶柳条安全帽"
-            ],
             "flags": {
               "drown_marked": true
             }
@@ -4460,9 +4431,6 @@
           "next": "n_s6_wear_seventh",
           "effects": {
             "GR": 18,
-            "inv_add": [
-              "柳条安全帽 (粘住)"
-            ],
             "flags": {
               "helmet_stuck": true,
               "marked_lamb": true
@@ -4537,11 +4505,7 @@
             "PR": 8,
             "inv_add": [
               "27F 铜钥匙"
-            ],
-            "flags": {
-              "oneshot.s6_id_into_button": true,
-              "promised_relieve_predecessor": true
-            }
+            ]
           }
         }
       ]
@@ -4764,10 +4728,7 @@
             "inv_add": [
               "27F 铜钥匙"
             ],
-            "puzzle_add": "piece_27th_clue",
-            "flags": {
-              "promised_relieve_predecessor": true
-            }
+            "puzzle_add": "piece_27th_clue"
           }
         },
         {
@@ -4833,10 +4794,6 @@
           "text": "撕掉小票。",
           "next": "n_briefing",
           "effects": {
-            "inv_add": [
-              "商场总控钥匙",
-              "工牌 G-273"
-            ],
             "PR": 2,
             "flags": {
               "defied_token": true
@@ -4848,8 +4805,6 @@
           "next": "n_briefing",
           "effects": {
             "inv_add": [
-              "商场总控钥匙",
-              "工牌 G-273",
               "前任电话号码"
             ],
             "PR": 5,
@@ -5048,10 +5003,7 @@
             "GR": 10,
             "inv_add": [
               "米色风衣"
-            ],
-            "flags": {
-              "wore_coat": true
-            }
+            ]
           }
         }
       ]
@@ -5317,14 +5269,7 @@
           "text": "把电视抢过来。",
           "next": "n_scene_27th_floor_corridor",
           "effects": {
-            "GR": 12,
-            "inv_add": [
-              "14 寸黑白电视",
-              "1987 录像带"
-            ],
-            "flags": {
-              "took_red_girl_tv": true
-            }
+            "GR": 12
           }
         }
       ]
@@ -5385,13 +5330,7 @@
           "text": "跪下,鞠三个躬。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -5,
-            "inv_add": [
-              "羊公会欠条"
-            ],
-            "flags": {
-              "yang_debt": true
-            }
+            "PR": -5
           }
         },
         {
@@ -5514,9 +5453,6 @@
           "next": "n_scene_lake_underwater",
           "effects": {
             "GR": 20,
-            "inv_add": [
-              "7 顶柳条安全帽"
-            ],
             "flags": {
               "drown_marked": true
             }
@@ -5527,9 +5463,6 @@
           "next": "n_landmark_picker",
           "effects": {
             "GR": 12,
-            "inv_add": [
-              "柳条安全帽 (粘住)"
-            ],
             "flags": {
               "helmet_stuck": true
             }
@@ -5560,10 +5493,7 @@
             "puzzle_add": "piece_seven_faces",
             "inv_add": [
               "7 工人速写"
-            ],
-            "flags": {
-              "sketched_seven": true
-            }
+            ]
           }
         },
         {
@@ -5652,9 +5582,6 @@
           "next": "n_npc_piano_ghost_payoff",
           "effects": {
             "PR": 8,
-            "inv_add": [
-              "倒带背书声"
-            ],
             "flags": {
               "played_for_her": true
             }
@@ -5831,10 +5758,7 @@
             "GR": 5,
             "inv_add": [
               "铜锈护符"
-            ],
-            "flags": {
-              "corroding": true
-            }
+            ]
           }
         },
         {
@@ -6239,10 +6163,7 @@
             "PR": 15,
             "inv_add": [
               "27F 铜钥匙"
-            ],
-            "flags": {
-              "promised_relieve_predecessor": true
-            }
+            ]
           }
         },
         {
