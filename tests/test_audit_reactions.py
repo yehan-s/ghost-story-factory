@@ -85,8 +85,8 @@ def test_clean_tree_zero_problems():
     assert report["problems"] == []
 
 
-def test_consumer_unreachable_from_resolver():
-    """resolver 走不到 consumer 宿主。"""
+def test_consumer_unreachable_from_resolver_per_run():
+    """per_run trigger:resolver 走不到 consumer 宿主 → 阻断。"""
     tree = {
         "start_node": "n1",
         "nodes": {
@@ -104,13 +104,52 @@ def test_consumer_unreachable_from_resolver():
             },
         },
         "reaction_contracts": {
-            "deductions": {"D-001": {"resolver_node": "n_resolver", "consumer_nodes": ["n_consumer"]}},
+            "deductions": {"D-001": {
+                "resolver_node": "n_resolver",
+                "consumer_nodes": ["n_consumer"],
+                "trigger_type": "per_run",
+            }},
             "foreshadows": {}, "themes": {},
         },
     }
     report = audit(_write_tree(tree))
     assert any(p["code"] == "UNREACHABLE_REACTION" and "n_consumer" in p["msg"]
                for p in report["problems"])
+
+
+def test_cross_run_resolver_at_ending_consumer_reachable_from_root():
+    """cross_run trigger:resolver 是 ending(死胡同),
+    consumer 从 root 可达 → 通过。
+    """
+    tree = {
+        "start_node": "n1",
+        "nodes": {
+            "n1": {"choices": [
+                {"text": "to_ending", "next": "n_ending"},
+                {"text": "to_picker", "next": "n_picker"},
+            ]},
+            "n_ending": {"choices": []},  # ending 死胡同
+            "n_picker": {
+                "narrative_variants": [
+                    {"if": {"deduction_resolved": "D-001"}, "text": "下周目反应"},
+                    {"text": "default"},
+                ],
+                "choices": [],
+            },
+        },
+        "reaction_contracts": {
+            "deductions": {"D-001": {
+                "resolver_node": "n_ending",
+                "consumer_nodes": ["n_picker"],
+                "trigger_type": "cross_run",
+            }},
+            "foreshadows": {}, "themes": {},
+        },
+    }
+    report = audit(_write_tree(tree))
+    blockers = [p for p in report["problems"]
+                if p["code"] in ("DEAD_REACTION", "UNREACHABLE_REACTION")]
+    assert blockers == []
 
 
 def test_main_tree_currently_clean():

@@ -107,9 +107,15 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                         })
 
     # UNREACHABLE_REACTION
+    # trigger_type 区分同周目/跨周目:
+    #   per_run  — 解开后玩家在同周目还能继续走,要求 BFS(resolver) ⊇ consumers
+    #   cross_run — 解开点是 ending(本周目终止),下周目从 root 重启,
+    #              要求 BFS(root) ⊇ consumers(resolver 不必可达自身的 consumers)
     for ctype in ("deductions", "foreshadows", "themes"):
         for ref_id, contract in (contracts.get(ctype) or {}).items():
-            resolver = (contract or {}).get("resolver_node")
+            contract = contract or {}
+            resolver = contract.get("resolver_node")
+            trigger_type = contract.get("trigger_type", "cross_run")
             if not resolver or resolver not in nodes:
                 problems.append({
                     "code": "UNREACHABLE_REACTION",
@@ -124,13 +130,17 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                     "msg": f"{ctype}.{ref_id} resolver_node 从 root 不可达",
                 })
                 continue
-            from_resolver = _bfs_reachable(nodes, resolver)
+            # 同周目:必须 resolver → consumer 可达;跨周目:root → consumer 可达即可
+            allowed = _bfs_reachable(nodes, resolver) if trigger_type == "per_run" else reachable
             for host in consumer_map.get((ctype, ref_id), set()):
-                if host not in from_resolver:
+                if host not in allowed:
                     problems.append({
                         "code": "UNREACHABLE_REACTION",
                         "node": host,
-                        "msg": f"{ctype}.{ref_id} 解开后回不到 consumer {host}",
+                        "msg": (
+                            f"{ctype}.{ref_id}({trigger_type}) "
+                            f"{'解开后回不到' if trigger_type == 'per_run' else 'consumer 从 root 不可达:'} {host}"
+                        ),
                     })
 
     # ORPHAN_RESOLVE
