@@ -235,6 +235,12 @@ def audit(tree: Dict[str, Any]) -> Tuple[List[Issue], Dict[str, int]]:
             nid = lm.get("node_id")
             if nid in nodes:
                 reachable.add(nid)
+        # ADR-009:多角色周目入口 — characters[*].start_node 都算入口
+        # (玩家在主菜单可选不同角色,各角色子图独立 BFS)
+        for char_id, cdef in (tree.get("characters") or {}).items():
+            cs = (cdef or {}).get("start_node")
+            if cs and cs in nodes:
+                reachable.add(cs)
         frontier = list(reachable)
         while frontier:
             nid = frontier.pop()
