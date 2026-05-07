@@ -360,6 +360,10 @@ class SaveManager:
     def is_foreshadow_resolved(self, story_id: str, slot_id: str) -> bool:
         return slot_id in self.data.get("foreshadows_resolved", {}).get(story_id, [])
 
+    def get_resolved_foreshadows(self, story_id: str) -> set:
+        """返回某 story 已解开的所有 foreshadow id 的 set(给 theme_resolved 检查用)。"""
+        return set(self.data.get("foreshadows_resolved", {}).get(story_id, []))
+
     # --- 碎片 API(v3) ---
 
     def add_foreshadow_shard(
