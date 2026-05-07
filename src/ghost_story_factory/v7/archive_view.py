@@ -31,7 +31,7 @@ def _format_shard_progress(
 
 def render_archive_cli(tree, save_manager, story_id: str) -> None:
     """直接 print 到 stdout(CLI 用)。
-    渲染顺序:推论 → 伏笔档案 → 时间年表 → NPC 人物志。
+    渲染顺序:主题 → 推论 → 伏笔档案 → 时间年表 → NPC 人物志 → 成就。
     """
     from ghost_story_factory.v5.player import (
         bold, cyan, dim, green, red, yellow, blue, magenta,
@@ -40,6 +40,8 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
     deductions = (tree or {}).get("deductions") or {}
     timeline = (tree or {}).get("timeline") or []
     npcs = (tree or {}).get("npcs") or {}
+    themes = (tree or {}).get("themes") or {}
+    achievements = (tree or {}).get("achievements") or {}
 
     seen_set = set(save_manager.data.get("foreshadows_seen", {}).get(story_id, []))
     resolved_set = set(
@@ -48,6 +50,38 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
     deductions_resolved = set(
         save_manager.data.get("deductions_resolved", {}).get(story_id, [])
     )
+    achievements_unlocked = set(save_manager.data.get("achievements_unlocked") or [])
+
+    # 颜色映射(主题颜色)
+    _color_map = {
+        "magenta": magenta, "red": red, "cyan": cyan, "yellow": yellow,
+        "blue": blue, "green": green,
+    }
+
+    # === 主题宏观进度 ===
+    if themes:
+        print()
+        print(bold(yellow(f"  ── 主题(母题集合) ──")))
+        for theme_id, meta in themes.items():
+            name = meta.get("name", theme_id)
+            icon = meta.get("icon", "·")
+            color_fn = _color_map.get(meta.get("color", ""), lambda s: s)
+            manifests = meta.get("manifestations") or []
+            res = sum(1 for m in manifests if m in resolved_set)
+            seen = sum(1 for m in manifests if m in seen_set)
+            total = len(manifests)
+            if seen == 0:
+                print(f"  {dim(icon)} {dim(name)}  {dim(f'(0/{total})')}")
+            else:
+                bar = color_fn(icon)
+                if res == total and total > 0:
+                    line = f"  {bar} {bold(color_fn(name))}  {color_fn(f'(✦ 通透 {res}/{total})')}"
+                else:
+                    line = f"  {bar} {bold(name)}  {dim(f'({seen}/{total} 已发现 · {res}/{total} 已解)')}"
+                print(line)
+                desc = meta.get("description", "")
+                if desc and seen > 0:
+                    print(f"    {dim(desc)}")
 
     # === 推论 ===
     if deductions:
@@ -139,6 +173,25 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
             else:
                 print(f"  {dim('·')} {dim(str(year))}  {dim('???')}")
 
+    # === 成就 ===
+    if achievements:
+        print()
+        print(bold(yellow(
+            f"  ── 成就({len(achievements_unlocked)}/{len(achievements)})──"
+        )))
+        for ach_id, meta in achievements.items():
+            icon = meta.get("icon", "🏆")
+            name = meta.get("name", ach_id)
+            desc = meta.get("description", "")
+            if ach_id in achievements_unlocked:
+                print(f"  {yellow(icon)} {bold(name)}")
+                if desc:
+                    print(f"    {dim(desc)}")
+            else:
+                print(f"  {dim(icon)} {dim(name)}")
+                if desc:
+                    print(f"    {dim(desc)}")
+
     # === NPC 人物志 ===
     if npcs:
         # 玩家见过的 NPC = npc_locations 里的 keys ∪ tree 的 default location
@@ -158,11 +211,17 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
             death_year = info.get("death_year")
             real_name = info.get("real_name")
             related_fs = info.get("related_foreshadows") or npc_to_fs.get(npc_id, [])
+            relations = info.get("relations") or {}
             # 若有任一 seen,显示;否则隐藏(不剧透 NPC 真名)
             if related_fs and any(r in seen_set for r in related_fs):
                 year_str = f"({death_year}†)" if death_year else ""
                 rn = f" · 真名: {real_name}" if (real_name and any(r in resolved_set for r in related_fs)) else ""
                 print(f"  {green('●')} {bold(label)} {dim(year_str)}{dim(rn)}")
+                # 关系图(任一 resolved 才解锁)
+                if relations and any(r in resolved_set for r in related_fs):
+                    for rel_npc, rel_type in relations.items():
+                        rel_label = (npcs.get(rel_npc) or {}).get("label", rel_npc)
+                        print(f"      {dim('→')} {dim(rel_type)}: {dim(rel_label)}")
             else:
                 print(f"  {dim('○')} {bold(label)}")
         print()

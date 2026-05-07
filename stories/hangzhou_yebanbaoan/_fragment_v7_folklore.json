@@ -8,7 +8,12 @@
       "_is_tool": true,
       "_tool_id": "lore_leifeng",
       "_tool_label": "雷峰塔白虫",
-      "_foreshadow_slot": [],
+      "_foreshadow_slot": ["1924_leifeng_worm"],
+      "_foreshadow_clue": [
+        {"slot": "1924_leifeng_worm", "shard": "tower_brick"},
+        {"slot": "1924_leifeng_worm", "shard": "white_worm"},
+        {"slot": "1924_leifeng_worm", "shard": "scroll_record"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -53,6 +58,12 @@
       "_is_tool": true,
       "_tool_id": "lore_songmuchang",
       "_tool_label": "松木场老酒店",
+      "_foreshadow_slot": ["1987_songmuchang_inn"],
+      "_foreshadow_clue": [
+        {"slot": "1987_songmuchang_inn", "shard": "room_217_key"},
+        {"slot": "1987_songmuchang_inn", "shard": "knock_pattern"},
+        {"slot": "1987_songmuchang_inn", "shard": "newspaper_1987_inn"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -97,6 +108,12 @@
       "_is_tool": true,
       "_tool_id": "lore_zheda",
       "_tool_label": "浙大钟楼跳绳女生",
+      "_foreshadow_slot": ["2009_zheda_clock_99"],
+      "_foreshadow_clue": [
+        {"slot": "2009_zheda_clock_99", "shard": "rope_in_window"},
+        {"slot": "2009_zheda_clock_99", "shard": "count_99_aborted"},
+        {"slot": "2009_zheda_clock_99", "shard": "slh_archive"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -146,6 +163,12 @@
       "_is_tool": true,
       "_tool_id": "lore_wulinmen",
       "_tool_label": "武林门刑场地脉",
+      "_foreshadow_slot": ["1947_wulinmen_seven"],
+      "_foreshadow_clue": [
+        {"slot": "1947_wulinmen_seven", "shard": "seven_squat"},
+        {"slot": "1947_wulinmen_seven", "shard": "iron_smell"},
+        {"slot": "1947_wulinmen_seven", "shard": "ledger_match"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -194,6 +217,12 @@
       "_is_tool": true,
       "_tool_id": "lore_kongque",
       "_tool_label": "孔雀大厦塌楼",
+      "_foreshadow_slot": ["2007_kongque_collapse"],
+      "_foreshadow_clue": [
+        {"slot": "2007_kongque_collapse", "shard": "fence_blood"},
+        {"slot": "2007_kongque_collapse", "shard": "shrine_stone"},
+        {"slot": "2007_kongque_collapse", "shard": "1957_demolition"}
+      ],
       "narrative_variants": [
         {
           "if": {

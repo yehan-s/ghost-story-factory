@@ -125,7 +125,7 @@ CHARACTER_ROSTER: List[Dict[str, Any]] = [
 
 # --- 默认存档 ---
 
-SAVE_VERSION = 3  # v3:加 foreshadow_shards / deductions_resolved
+SAVE_VERSION = 4  # v4:加 achievements_unlocked
 DEFAULT_SAVE: Dict[str, Any] = {
     "version": SAVE_VERSION,
     "meta_flags": {},
@@ -144,6 +144,8 @@ DEFAULT_SAVE: Dict[str, Any] = {
     # deductions_resolved[story_id] = [deduction_id, ...]
     "foreshadow_shards": {},
     "deductions_resolved": {},
+    # v4 新增:跨周目成就解锁(achievement id 列表)
+    "achievements_unlocked": [],
 }
 
 
@@ -164,6 +166,7 @@ class SaveManager:
         self.data["foreshadows_resolved"] = {}
         self.data["foreshadow_shards"] = {}
         self.data["deductions_resolved"] = {}
+        self.data["achievements_unlocked"] = []
         self.load()
 
     # --- IO ---
@@ -210,6 +213,10 @@ class SaveManager:
         self.data["deductions_resolved"] = {
             k: list(v) for k, v in ded.items() if isinstance(v, list)
         }
+        # v4:成就(向后兼容缺失字段)
+        self.data["achievements_unlocked"] = list(
+            raw.get("achievements_unlocked") or []
+        )
         self.data["version"] = SAVE_VERSION
 
     def save(self) -> bool:
@@ -446,6 +453,99 @@ class SaveManager:
         return deduction_id in self.data.get("deductions_resolved", {}).get(
             story_id, []
         )
+
+    # --- 成就 API(v4) ---
+
+    def check_achievements(
+        self, tree: Dict[str, Any], state, story_id: str,
+        on_ending: bool = False,
+    ) -> List[str]:
+        """扫所有 achievements,看哪些条件满足 → 触发解锁。
+
+        on_ending: 是否结局时调用(影响 trigger.on_ending 类型成就)
+        返回本次新解锁的 achievement id 列表。
+        """
+        achievements = (tree or {}).get("achievements") or {}
+        if not achievements:
+            return []
+        already = set(self.data.get("achievements_unlocked") or [])
+        newly: List[str] = []
+
+        # 准备各种统计值
+        shards_total = 0
+        for slot_shards in (
+            self.data.get("foreshadow_shards", {}).get(story_id, {}).values()
+        ):
+            shards_total += len(slot_shards)
+        deductions_count = len(
+            self.data.get("deductions_resolved", {}).get(story_id, [])
+        )
+        endings_seen_count = len(self.data.get("endings_seen") or [])
+        seen_set = set(self.data.get("foreshadows_seen", {}).get(story_id, []))
+        resolved_set = set(
+            self.data.get("foreshadows_resolved", {}).get(story_id, [])
+        )
+        themes = (tree or {}).get("themes") or {}
+
+        for ach_id, meta in achievements.items():
+            if ach_id in already:
+                continue
+            trigger = meta.get("trigger") or {}
+            if trigger.get("on_ending") and not on_ending:
+                continue
+            ok = True
+            # 各种条件
+            if "shards_collected_min" in trigger:
+                if shards_total < int(trigger["shards_collected_min"]):
+                    ok = False
+            if "deductions_resolved_min" in trigger:
+                if deductions_count < int(trigger["deductions_resolved_min"]):
+                    ok = False
+            if "endings_seen_min" in trigger:
+                if endings_seen_count < int(trigger["endings_seen_min"]):
+                    ok = False
+            if "visited_landmarks_count" in trigger and state is not None:
+                visited = getattr(state, "visited_landmarks", None) or []
+                if len(visited) < int(trigger["visited_landmarks_count"]):
+                    ok = False
+            if "shifts_skipped_max" in trigger and state is not None:
+                if getattr(state, "shifts_skipped", 0) > int(
+                    trigger["shifts_skipped_max"]
+                ):
+                    ok = False
+            if "PR_max" in trigger and state is not None:
+                if getattr(state, "PR", 0) > int(trigger["PR_max"]):
+                    ok = False
+            if "PR_peak_min" in trigger and state is not None:
+                peak = getattr(state, "PR_peak", 0)
+                if peak < int(trigger["PR_peak_min"]):
+                    ok = False
+            if "visit_count_min" in trigger and state is not None:
+                visit_counts = getattr(state, "visit_counts", {}) or {}
+                for nid, n in trigger["visit_count_min"].items():
+                    if visit_counts.get(nid, 0) < int(n):
+                        ok = False
+                        break
+            if "foreshadow_seen" in trigger:
+                if trigger["foreshadow_seen"] not in seen_set:
+                    ok = False
+            if "theme_resolved" in trigger:
+                theme_id = trigger["theme_resolved"]
+                theme_meta = themes.get(theme_id) or {}
+                manifestations = theme_meta.get("manifestations") or []
+                if not manifestations or not all(
+                    m in resolved_set for m in manifestations
+                ):
+                    ok = False
+            if ok:
+                self.data.setdefault("achievements_unlocked", []).append(ach_id)
+                newly.append(ach_id)
+        if newly:
+            self.save()
+        return newly
+
+    def is_achievement_unlocked(self, ach_id: str) -> bool:
+        return ach_id in (self.data.get("achievements_unlocked") or [])
 
 
 # --- 便利函数 ---

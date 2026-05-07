@@ -95,6 +95,8 @@ class State:
         # 已"知道"的地标(地图上可见;不等于"已访问")
         # 起手只知道 S1(队长简报告诉了第一站)
         self.known_landmarks: List[str] = list(initial.get("known_landmarks", ["S1"]))
+        # PR 峰值(给"完全共鸣"成就用 — apply 里更新)
+        self.PR_peak: int = int(initial.get("PR_peak", self.PR))
         # apply() 的结构化事件记录(给 UI 卡片化渲染用)
         self._last_events: List[Dict[str, Any]] = []
 
@@ -117,6 +119,8 @@ class State:
             delta = int(effects["PR"])
             if delta:
                 self.PR = max(0, min(100, self.PR + delta))
+                if self.PR > self.PR_peak:
+                    self.PR_peak = self.PR
         if "GR" in effects:
             delta = int(effects["GR"])
             if delta:
@@ -816,6 +820,10 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                                            "fully": fully})
         # 推论检查 — 看是否有新推论被解锁
         newly_deductions = save_manager.check_deductions(tree, story_id)
+        # 成就检查(每节点扫一次,on_ending 时另算)
+        newly_achievements = save_manager.check_achievements(
+            tree, state, story_id, on_ending=False
+        )
         # _is_map_picker 节点:用地图视图替代普通 narrative
         # 先 build picker_choices 算出 travel_indices(让数字贴到地图上)
         if node.get("_is_map_picker"):
@@ -895,6 +903,23 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                     frames=5, frame_delay=0.08, glitch_ratio=0.35,
                 )
             print()
+        # 成就解锁(金色,庆祝感)
+        if newly_achievements:
+            from ghost_story_factory.v7.animate import glitch_text
+            achievements = tree.get("achievements", {}) or {}
+            for ach_id in newly_achievements:
+                meta = achievements.get(ach_id) or {}
+                icon = meta.get("icon", "🏆")
+                name = meta.get("name", ach_id)
+                desc = meta.get("description", "")
+                glitch_text(
+                    f"  {icon} 成就解锁  ·  {name}  {icon}",
+                    color_fn=lambda s: bold(yellow(s)),
+                    frames=4, frame_delay=0.08, glitch_ratio=0.3,
+                )
+                if desc:
+                    print(f"    {dim(desc)}")
+            print()
 
         # 结局节点
         if node.get("is_ending"):
@@ -951,6 +976,23 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                     seen, resolved, total = save_manager.foreshadow_progress(tree, story_id)
                     print(dim(f"  档案进度:已发现 {seen}/{total} · 已解开 {resolved}/{total}"))
                     print(bold(cyan("─" * 60)))
+                # 通关时再扫一轮成就(on_ending 触发的项)
+                ending_achievements = save_manager.check_achievements(
+                    tree, state, story_id, on_ending=True
+                )
+                if ending_achievements:
+                    print(bold(yellow("─" * 60)))
+                    print(bold(yellow("  🏆 成就解锁:")))
+                    achievements = tree.get("achievements", {}) or {}
+                    for ach_id in ending_achievements:
+                        meta = achievements.get(ach_id) or {}
+                        icon = meta.get("icon", "🏆")
+                        name = meta.get("name", ach_id)
+                        desc = meta.get("description", "")
+                        print(f"    {yellow(icon)} {bold(name)}")
+                        if desc:
+                            print(f"      {dim(desc)}")
+                    print(bold(yellow("─" * 60)))
                 print()
             except Exception as e:  # 存档失败不阻塞流程
                 print(dim(f"  [存档警告] {e}"))

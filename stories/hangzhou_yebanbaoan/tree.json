@@ -190,6 +190,10 @@
         "另一签字人",
         "钱塘江第 8 工人"
       ],
+      "relations": {
+        "seven_workers": "债主(欠 1 顶帽子)",
+        "predecessor_g272": "同班(都是 G-273 候补)"
+      },
       "_description": "湖滨第三把绿色长椅旁。穿米色风衣,无头。"
     },
     "old_grandma": {
@@ -208,6 +212,9 @@
         "203 琴房",
         "童谣"
       ],
+      "relations": {
+        "yeh_1991": "外孙女(三十二年后同琴房自缢)"
+      },
       "_description": "羊血弄 2 号门口的吊膀婆婆。"
     },
     "yeh_1991": {
@@ -229,6 +236,9 @@
         "外婆",
         "童谣 1959-043"
       ],
+      "relations": {
+        "old_grandma": "外婆(1959 同琴房)"
+      },
       "_description": "留下小学 203 琴房,坐在最后一排弹童谣。"
     },
     "redgirl_1996": {
@@ -248,6 +258,9 @@
         "继父",
         "1996 录像带"
       ],
+      "relations": {
+        "lake_red_dress_13": "前任替死鬼(1987 → 1996 编号承袭)"
+      },
       "_description": "柳浪闻莺 308 阶,抱 14 寸黑白电视。"
     },
     "predecessor_g272": {
@@ -267,6 +280,10 @@
         "11 年班",
         "数据化"
       ],
+      "relations": {
+        "linmou_coat": "前辈(同 G-273 候补线)",
+        "broadcast_voice": "数据化以后留在论坛的残响"
+      },
       "_description": "只在对讲机里。但你听够 3 次,他可能会出现。"
     },
     "seven_workers": {
@@ -287,6 +304,9 @@
         "归航帽",
         "林某的债"
       ],
+      "relations": {
+        "linmou_coat": "债务关系(林某买了第 8 张票没上船)"
+      },
       "_description": "1986 年沉船。只有夜班 ≥4 才看得见 S6 井底。"
     },
     "lake_red_dress_13": {
@@ -295,7 +315,8 @@
       "death_year": 1987,
       "initial_location": "S2",
       "related_foreshadows": [
-        "1987_red_dress_truth"
+        "1987_red_dress_truth",
+        "1987_songmuchang_inn"
       ],
       "key_items": [],
       "dialog_topics": [
@@ -303,14 +324,19 @@
         "请勿打扰",
         "13 的诅咒"
       ],
+      "relations": {
+        "redgirl_1996": "下一任替死鬼(1987→1996)"
+      },
       "_description": "柳浪闻莺 308 阶上,数到 1987 就消失。"
     },
     "stone_grandpa": {
       "label": "九溪石碑老人",
-      "real_name": "(待说明)",
+      "real_name": "(待说明 · 1924 雷峰塔倒下时的目击者)",
       "death_year": null,
       "initial_location": "S3",
-      "related_foreshadows": [],
+      "related_foreshadows": [
+        "1924_leifeng_worm"
+      ],
       "key_items": [
         "铜锈片",
         "铜锈护符"
@@ -320,6 +346,7 @@
         "敲钟 7 下",
         "1924 塔砖"
       ],
+      "relations": {},
       "_description": "理安寺裂钟旁拐杖老人 — 只夜里出现。"
     },
     "broadcast_voice": {
@@ -328,7 +355,8 @@
       "death_year": null,
       "initial_location": null,
       "related_foreshadows": [
-        "G272_predecessor_identity"
+        "G272_predecessor_identity",
+        "2009_zheda_clock_99"
       ],
       "key_items": [],
       "dialog_topics": [
@@ -336,6 +364,9 @@
         "数据化",
         "下一任"
       ],
+      "relations": {
+        "predecessor_g272": "同源(都是数据化残响)"
+      },
       "_description": "夜班论坛的水楼,只在你发帖后回应。"
     },
     "archive_keeper": {
@@ -344,7 +375,10 @@
       "death_year": null,
       "initial_location": null,
       "related_foreshadows": [
-        "8_self_roster"
+        "8_self_roster",
+        "1985_linmou_other26",
+        "1947_wulinmen_seven",
+        "2007_kongque_collapse"
       ],
       "key_items": [],
       "dialog_topics": [
@@ -352,6 +386,7 @@
         "G-273 档案",
         "签字人"
       ],
+      "relations": {},
       "_description": "遗失档案室的看守者。访问 ≥2 次才出现。"
     }
   },
@@ -697,6 +732,321 @@
           "text": "8 口棺同时**轻微震动**,像有 8 个心跳**同步**。这是『杭州常数』的频率。"
         }
       ]
+    },
+    "1924_leifeng_worm": {
+      "title": "雷峰塔下的白虫",
+      "year": 1924,
+      "theme": "民间传闻",
+      "summary_locked": "1924 年雷峰塔倒,塔砖里钻出『没有眼睛』的白虫。捡塔砖的人家,夜夜看见白蛇。",
+      "summary_resolved": "白虫是杭州常数最早的『**显形物**』 —— 它选了塔砖作宿主。九溪理安寺的裂钟下面,埋的就是 1924 那批塔砖。",
+      "explained_by_character": null,
+      "explained_by_ending": "E_TRUE",
+      "shards": [
+        {
+          "id": "tower_brick",
+          "label": "1924 塔砖",
+          "text": "S3 裂钟底座,有一块**裸露的砖** —— 比其他石材老,边缘啃过的形状像虫嘴。"
+        },
+        {
+          "id": "white_worm",
+          "label": "白虫现身",
+          "text": "你蹲下看裂钟铜锈面孔的眼睛位置 —— **两只白虫**正在爬出来。它们没眼睛,但**朝你的方向移动**。"
+        },
+        {
+          "id": "scroll_record",
+          "label": "地方志扫描页",
+          "text": "手机翻出 1924-09-25 杭州地方志:塔倒后 27 户人家瓦上『**结白霜**』 —— 当年 9 月还没冷到结霜。"
+        }
+      ]
+    },
+    "1987_songmuchang_inn": {
+      "title": "松木场酒店 217 房",
+      "year": 1987,
+      "theme": "民间传闻",
+      "summary_locked": "松木场某老酒店 3 楼 217 房,夜里敲门声不停 —— 1987 年有个温州女人在这间房上吊。",
+      "summary_resolved": "她是『**1987 年最后的红衣**』 —— 同一个 13 号替死鬼,在 308 阶之外的另一个化身。217 = 13 × 16 + 9,杭州常数对她的编号是 **13-9**。",
+      "explained_by_character": "red_victim_13",
+      "explained_by_ending": "E_BAD_1987",
+      "shards": [
+        {
+          "id": "room_217_key",
+          "label": "217 房钥匙不在了",
+          "text": "门厅服务台钥匙板上,**217 的钩是空的**。前台说『今晚没人住 217』。"
+        },
+        {
+          "id": "knock_pattern",
+          "label": "敲门节奏",
+          "text": "你在楼下听见 217 的敲门 —— **3 短 4 长 6 短**。**1+3+4+6 = 14**。但**13 + 1 = 14** —— 第 14 个,就是**听她敲门的人**。"
+        },
+        {
+          "id": "newspaper_1987_inn",
+          "label": "1987 年报纸内页",
+          "text": "S1 报亭那张 1987 年报纸,第三版小字:『松木场某酒店 217 房,温州籍女子,**因情自缢**』 —— 但报告里**没有死者姓名**。"
+        }
+      ]
+    },
+    "2009_zheda_clock_99": {
+      "title": "浙大钟楼跳绳女生",
+      "year": 2009,
+      "theme": "民间传闻",
+      "summary_locked": "浙大老校区钟楼夜里 11 点一刻,4 楼有女生跳绳。她数到 99 —— 跟着数到 100 你就死,不数她就站到你身后。",
+      "summary_resolved": "她是 2009 年浙大学生 **王某** —— SLH 论坛热帖原型。死因是宿舍楼顶跳楼,但**绳子是从钟楼飘到她身上**的。常数的『**13-12**』号。",
+      "explained_by_character": null,
+      "explained_by_ending": null,
+      "shards": [
+        {
+          "id": "rope_in_window",
+          "label": "钟楼 4 楼窗内的绳",
+          "text": "你抬头 —— 4 楼窗户**关着**。但**绳子打地的声音**清清楚楚,**和你的脚步同频**。"
+        },
+        {
+          "id": "count_99_aborted",
+          "label": "数到 99 中断",
+          "text": "你数到 99 时**强行停下**,**摀住耳朵**。回头她**没在身后** —— 但**钢笔写下**『**100**』在你的《异常事件记录表》上。**笔迹不是你的**。"
+        },
+        {
+          "id": "slh_archive",
+          "label": "SLH 论坛 2009 年原帖",
+          "text": "你在夜班论坛搜『**钟楼 99**』 —— 跳出 2009-04-23 原帖。最后一楼回复时间是**今晚**。"
+        }
+      ]
+    },
+    "1947_wulinmen_seven": {
+      "title": "武林门 7 个冤魂",
+      "year": 1947,
+      "theme": "民间传闻",
+      "summary_locked": "武林门是清代刑场,民国 36 年最后一次行刑枪决了 7 人。地脉冷气从地下渗上来。",
+      "summary_resolved": "民国 36 年的 7 个死刑犯,**全是替罪羊** —— 真凶是当年的杭州市长。常数把这 7 人的『冤气』作为**S7 钢门的封印钥匙**储存。武林门 7 + S6 工人 7 + S7 8 棺,**就是 22 = 13 + 9**。",
+      "explained_by_character": null,
+      "explained_by_ending": "E_TRUE",
+      "shards": [
+        {
+          "id": "seven_squat",
+          "label": "通道里蹲着的 7 人",
+          "text": "武林门地下通道,**地面上蹲着 7 个穿不同年代衣服的人**。1947/1958/1965/1970/1979/1983/1995。他们都低头看自己的手 —— **手腕都有铜印**。"
+        },
+        {
+          "id": "iron_smell",
+          "label": "1947 铁锈味",
+          "text": "你蹲下 —— 通道里有股**陈年铁锈味**。不是地铁铁皮的,是**1947 年枪管的**。"
+        },
+        {
+          "id": "ledger_match",
+          "label": "档案室核对",
+          "text": "档案室翻 1947 年的杭州地方法院记录:**民国 36 年最后批 7 名死刑犯**,案由全部是『**附逆**』 —— 但当年的杭州市长**也姓林**。"
+        }
+      ]
+    },
+    "2007_kongque_collapse": {
+      "title": "孔雀大厦塌楼真因",
+      "year": 2007,
+      "theme": "民间传闻",
+      "summary_locked": "2007 年孔雀大厦第 9 层临街塌一段。官方说『施工质量』,坊间说施工队挖出乌龙王石像砸了。",
+      "summary_resolved": "塌的不是 2007 年那栋楼 —— 是**1957 年被拆的乌龙庙**的『**回响**』。常数把乌龙庙作为『**反献祭**』装置(对抗常数的唯一民间力量)封存,2007 年挖出来等于**重启它**。所以孔雀大厦塌了。",
+      "explained_by_character": null,
+      "explained_by_ending": "E_HIDDEN",
+      "shards": [
+        {
+          "id": "fence_blood",
+          "label": "围栏后的渗血",
+          "text": "你翻过孔雀大厦围栏,**水泥地渗出红水**。**血是从水泥下渗上来的** —— 1957 年的。"
+        },
+        {
+          "id": "shrine_stone",
+          "label": "乌龙王石像残片",
+          "text": "水泥地下你挖出**一块碎石** —— 是乌龙王石像的**眼睛部分**。眼睛**还在看你**。"
+        },
+        {
+          "id": "1957_demolition",
+          "label": "1957 年拆庙记录",
+          "text": "档案室藏着 1957-07-20 杭州市政厅令:『**乌龙庙拆除**,原址改建办公楼』。批准人**也姓林**。"
+        }
+      ]
+    }
+  },
+  "themes": {
+    "hangzhou_constant": {
+      "name": "杭州常数",
+      "color": "magenta",
+      "icon": "⊕",
+      "description": "一个把杭州的『非自然死亡』当成数据存档的存在。它不杀人,只是把死亡『纳入档案』。",
+      "manifestations": [
+        "1985_linmou_other26",
+        "8_self_roster",
+        "G272_predecessor_identity"
+      ]
+    },
+    "scapegoat": {
+      "name": "替死鬼",
+      "color": "red",
+      "icon": "✗",
+      "description": "杭州常数选定的『替身』 — 林某 1985、1986 工人、1987 红衣女、1996 红衣女孩、12 任 G-273…… 每一代都有人替。",
+      "manifestations": [
+        "1986_lin_coin",
+        "1986_no_eighth",
+        "1987_red_dress_truth"
+      ]
+    },
+    "time_loop": {
+      "name": "时间循环",
+      "color": "cyan",
+      "icon": "⟲",
+      "description": "1959 → 1991 → 2024,同一间琴房,同一种死法,同一个『你』。",
+      "manifestations": [
+        "1991_yeh_classmate",
+        "1991_grandma_link"
+      ]
+    },
+    "datafication": {
+      "name": "数据化",
+      "color": "blue",
+      "icon": "▣",
+      "description": "杭州常数不让你死透 —— 它把你『压缩』成对讲频段、电视雪花、夜班论坛水楼。",
+      "manifestations": [
+        "G272_predecessor_identity",
+        "1996_red_girl_truth"
+      ]
+    },
+    "thirteen_curse": {
+      "name": "13 的诅咒",
+      "color": "yellow",
+      "icon": "⒔",
+      "description": "13 是杭州常数固定使用的『献祭编号』 —— 第 13 笔贪污、第 13 号替死鬼、第 13 任 G-273……",
+      "manifestations": [
+        "1985_linmou_other26",
+        "1987_red_dress_truth"
+      ]
+    },
+    "folklore": {
+      "name": "民间传闻",
+      "color": "green",
+      "icon": "⌘",
+      "description": "杭州本地的鬼故事 —— 雷峰塔白虫、松木场吊死女、浙大钟楼跳绳女生、武林门刑场冤气、孔雀大厦乌龙王。它们也都是常数的边缘案例。",
+      "manifestations": [
+        "1924_leifeng_worm",
+        "1987_songmuchang_inn",
+        "2009_zheda_clock_99",
+        "1947_wulinmen_seven",
+        "2007_kongque_collapse"
+      ]
+    }
+  },
+  "routes": {
+    "investigator": {
+      "name": "调查派",
+      "icon": "🔍",
+      "description": "查档案、追线索、问真相 —— 死了也要把杭州常数挖出来。",
+      "color": "cyan",
+      "endings": [
+        "E_TRUTH",
+        "E_TRUE"
+      ]
+    },
+    "witness": {
+      "name": "围观派",
+      "icon": "👁",
+      "description": "拍照、发帖、看戏 —— 被网络数据流冲走,变成下一个雪花频道。",
+      "color": "magenta",
+      "endings": [
+        "E_BROADCAST",
+        "E_DATA"
+      ]
+    },
+    "survivor": {
+      "name": "幸存派",
+      "icon": "🚪",
+      "description": "不问、不看、不还。打卡 → 交班 → 回家。但**什么都没改变**。",
+      "color": "green",
+      "endings": [
+        "E_NEUTRAL",
+        "E_HIDDEN"
+      ]
+    }
+  },
+  "achievements": {
+    "no_card_skipped": {
+      "name": "完美打卡",
+      "description": "整局通关,shifts_skipped=0",
+      "icon": "🏆",
+      "trigger": {
+        "on_ending": true,
+        "shifts_skipped_max": 0
+      }
+    },
+    "all_shards": {
+      "name": "档案全卷",
+      "description": "收齐 27 块伏笔碎片",
+      "icon": "📚",
+      "trigger": {
+        "shards_collected_min": 27
+      }
+    },
+    "all_deductions": {
+      "name": "推论合成师",
+      "description": "触发全部 4 条推论",
+      "icon": "⟁",
+      "trigger": {
+        "deductions_resolved_min": 4
+      }
+    },
+    "radio_5_calls": {
+      "name": "对讲第 5 次",
+      "description": "听够 5 次前任的对讲机 — 你听到了你自己",
+      "icon": "📻",
+      "trigger": {
+        "visit_count_min": {
+          "n_npc_predecessor_voice": 5
+        }
+      }
+    },
+    "all_landmarks": {
+      "name": "夜班全勤",
+      "description": "踏入全部 7 个地标",
+      "icon": "🗺",
+      "trigger": {
+        "visited_landmarks_count": 7
+      }
+    },
+    "no_resonance": {
+      "name": "心如止水",
+      "description": "通关时 PR ≤ 5",
+      "icon": "❄",
+      "trigger": {
+        "on_ending": true,
+        "PR_max": 5
+      }
+    },
+    "max_resonance": {
+      "name": "完全共鸣",
+      "description": "PR 一度达到 80+",
+      "icon": "🔥",
+      "trigger": {
+        "PR_peak_min": 80
+      }
+    },
+    "found_8_self": {
+      "name": "8 棺识己",
+      "description": "看见 S7 终局区 8 棺",
+      "icon": "⚰",
+      "trigger": {
+        "foreshadow_seen": "8_self_roster"
+      }
+    },
+    "all_endings": {
+      "name": "结局全鉴",
+      "description": "通关全部 8 主结局",
+      "icon": "🏁",
+      "trigger": {
+        "endings_seen_min": 8
+      }
+    },
+    "folklore_master": {
+      "name": "怪谈通",
+      "description": "解开全部 5 个民间传闻",
+      "icon": "👻",
+      "trigger": {
+        "theme_resolved": "folklore"
+      }
     }
   },
   "deductions": {
@@ -739,9 +1089,15 @@
       "year": 1924,
       "date": "1924-09-25",
       "event": "雷峰塔倒。砖中钻出白虫,民间称『白蛇骨』",
-      "related_foreshadows": [],
+      "related_foreshadows": [
+        "1924_leifeng_worm"
+      ],
+      "related_npcs": [
+        "stone_grandpa"
+      ],
       "tags": [
-        "塔砖辟邪"
+        "塔砖辟邪",
+        "民间传闻"
       ]
     },
     {
@@ -753,10 +1109,37 @@
       ]
     },
     {
+      "year": 1947,
+      "event": "民国 36 年武林门最后一次行刑,枪决 7 名『附逆』犯。当年杭州市长姓林",
+      "related_foreshadows": [
+        "1947_wulinmen_seven"
+      ],
+      "tags": [
+        "武林门",
+        "刑场",
+        "7"
+      ]
+    },
+    {
+      "year": 1957,
+      "date": "1957-07-20",
+      "event": "杭州市政厅令拆乌龙庙,改建办公楼。批准人姓林",
+      "related_foreshadows": [
+        "2007_kongque_collapse"
+      ],
+      "tags": [
+        "乌龙庙",
+        "拆"
+      ]
+    },
+    {
       "year": 1959,
       "event": "留下小学 203 琴房,叶某外婆自缢。档案 1959-043",
       "related_foreshadows": [
         "1991_grandma_link"
+      ],
+      "related_npcs": [
+        "old_grandma"
       ],
       "tags": [
         "留下小学",
@@ -769,6 +1152,9 @@
       "event": "林副科长投湖。账本 27 笔贪污,只 13 笔确认",
       "related_foreshadows": [
         "1985_linmou_other26"
+      ],
+      "related_npcs": [
+        "linmou_coat"
       ],
       "tags": [
         "林某",
@@ -783,6 +1169,9 @@
         "1986_lin_coin",
         "1986_no_eighth"
       ],
+      "related_npcs": [
+        "seven_workers"
+      ],
       "tags": [
         "7 工人",
         "替死鬼"
@@ -790,13 +1179,18 @@
     },
     {
       "year": 1987,
-      "event": "柳浪闻莺 308 阶,红衣 13 号替死鬼最后一次出现",
+      "event": "柳浪闻莺 308 阶,红衣 13 号替死鬼最后一次出现。同年松木场酒店 217 房有温州女子上吊",
       "related_foreshadows": [
-        "1987_red_dress_truth"
+        "1987_red_dress_truth",
+        "1987_songmuchang_inn"
+      ],
+      "related_npcs": [
+        "lake_red_dress_13"
       ],
       "tags": [
         "13",
-        "替死鬼"
+        "替死鬼",
+        "民间传闻"
       ]
     },
     {
@@ -806,6 +1200,9 @@
       "related_foreshadows": [
         "1991_yeh_classmate",
         "1991_grandma_link"
+      ],
+      "related_npcs": [
+        "yeh_1991"
       ],
       "tags": [
         "叶某",
@@ -820,6 +1217,9 @@
       "related_foreshadows": [
         "1996_red_girl_truth"
       ],
+      "related_npcs": [
+        "redgirl_1996"
+      ],
       "tags": [
         "红衣女孩",
         "货梯"
@@ -827,19 +1227,26 @@
     },
     {
       "year": 2007,
-      "event": "孔雀大厦塌一层。地基挖出乌龙王石像,被砸",
-      "related_foreshadows": [],
+      "event": "孔雀大厦塌一层。地基挖出乌龙王石像,被砸 — 1957 拆庙的回响",
+      "related_foreshadows": [
+        "2007_kongque_collapse"
+      ],
       "tags": [
         "孔雀大厦",
-        "乌龙王"
+        "乌龙王",
+        "民间传闻"
       ]
     },
     {
       "year": 2009,
-      "event": "浙大钟楼 99 数事件。SLH 论坛热帖",
-      "related_foreshadows": [],
+      "date": "2009-04-23",
+      "event": "浙大老校区钟楼,王某跳楼。SLH 论坛『钟楼 99 数』热帖原型",
+      "related_foreshadows": [
+        "2009_zheda_clock_99"
+      ],
       "tags": [
-        "浙大钟楼"
+        "浙大钟楼",
+        "民间传闻"
       ]
     },
     {
@@ -847,6 +1254,9 @@
       "event": "12 任 G-273 中最后一任『数据化』,留在对讲机频段",
       "related_foreshadows": [
         "G272_predecessor_identity"
+      ],
+      "related_npcs": [
+        "predecessor_g272"
       ],
       "tags": [
         "G-273",
@@ -872,7 +1282,23 @@
       "_is_tool": true,
       "_tool_id": "lore_leifeng",
       "_tool_label": "雷峰塔白虫",
-      "_foreshadow_slot": [],
+      "_foreshadow_slot": [
+        "1924_leifeng_worm"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1924_leifeng_worm",
+          "shard": "tower_brick"
+        },
+        {
+          "slot": "1924_leifeng_worm",
+          "shard": "white_worm"
+        },
+        {
+          "slot": "1924_leifeng_worm",
+          "shard": "scroll_record"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -923,6 +1349,23 @@
       "_is_tool": true,
       "_tool_id": "lore_songmuchang",
       "_tool_label": "松木场老酒店",
+      "_foreshadow_slot": [
+        "1987_songmuchang_inn"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1987_songmuchang_inn",
+          "shard": "room_217_key"
+        },
+        {
+          "slot": "1987_songmuchang_inn",
+          "shard": "knock_pattern"
+        },
+        {
+          "slot": "1987_songmuchang_inn",
+          "shard": "newspaper_1987_inn"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -973,6 +1416,23 @@
       "_is_tool": true,
       "_tool_id": "lore_zheda",
       "_tool_label": "浙大钟楼跳绳女生",
+      "_foreshadow_slot": [
+        "2009_zheda_clock_99"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "2009_zheda_clock_99",
+          "shard": "rope_in_window"
+        },
+        {
+          "slot": "2009_zheda_clock_99",
+          "shard": "count_99_aborted"
+        },
+        {
+          "slot": "2009_zheda_clock_99",
+          "shard": "slh_archive"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -1030,6 +1490,23 @@
       "_is_tool": true,
       "_tool_id": "lore_wulinmen",
       "_tool_label": "武林门刑场地脉",
+      "_foreshadow_slot": [
+        "1947_wulinmen_seven"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1947_wulinmen_seven",
+          "shard": "seven_squat"
+        },
+        {
+          "slot": "1947_wulinmen_seven",
+          "shard": "iron_smell"
+        },
+        {
+          "slot": "1947_wulinmen_seven",
+          "shard": "ledger_match"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -1084,6 +1561,23 @@
       "_is_tool": true,
       "_tool_id": "lore_kongque",
       "_tool_label": "孔雀大厦塌楼",
+      "_foreshadow_slot": [
+        "2007_kongque_collapse"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "2007_kongque_collapse",
+          "shard": "fence_blood"
+        },
+        {
+          "slot": "2007_kongque_collapse",
+          "shard": "shrine_stone"
+        },
+        {
+          "slot": "2007_kongque_collapse",
+          "shard": "1957_demolition"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
