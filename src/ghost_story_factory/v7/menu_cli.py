@@ -17,11 +17,16 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+import random
+
 from ghost_story_factory.v5 import player as v5player
 from ghost_story_factory.v5.player import (
     bold, cyan, dim, green, magenta, red, yellow,
 )
-from ghost_story_factory.v7.banner import render_banner_lines
+from ghost_story_factory.v7.animate import (
+    clear_screen, fade_lines, pause, pulse_text, type_text,
+)
+from ghost_story_factory.v7.banner import banner_pieces, render_banner_lines
 from ghost_story_factory.v7.menu_registry import (
     City, Story, CharacterEntry,
     list_cities, list_stories, list_characters,
@@ -49,6 +54,8 @@ def _read_choice(n: int, prompt: str = "请选择") -> Optional[int]:
 
 
 def _banner(title: str, subtitle: str = "") -> None:
+    # 轻微切换停顿,营造屏幕过渡感(GHOST_FAST 跳过)
+    pause(0.15)
     print(bold(red("\n" + "═" * 60)))
     print(bold(red(f"   {title}")))
     if subtitle:
@@ -56,30 +63,79 @@ def _banner(title: str, subtitle: str = "") -> None:
     print(bold(red("═" * 60)))
 
 
+def _fog_line(width: int = 60) -> str:
+    """生成一行雾雪纹(随机 ░ ▒ ▓ 空格混合)— 营造氛围。"""
+    chars = "░░░▒▒▓  "  # 空格多 → 稀疏感
+    return "".join(random.choice(chars) for _ in range(width))
+
+
 def screen_intro(sm: SaveManager) -> bool:
-    """屏 0:启动屏(像素字标题)。返回 True 进入主流程,False 退出。"""
+    """屏 0:启动屏(像素字标题 + 渐进入场)。返回 True 进入,False 退出。
+
+    入场序列(GHOST_FAST=1 跳过 sleep):
+      T=0.0s    清屏 + 黑屏 0.3s
+      T=0.3s    顶部一行雾纹 0.4s 后被换行盖掉
+      T=0.7s    像素字 6 行渐进出现(每行 0.10s)
+      T=1.5s    副标题"鬼  夜  班"打字机
+      T=2.0s    tagline 打字机
+      T=2.5s    存档摘要(若有)灰色打字机
+      T=3.0s    "按 Enter 开始" 呼吸闪烁 2 次后定亮
+    """
+    pieces = banner_pieces(60)
+
+    # T=0:清屏 + 黑场
+    clear_screen()
+    pause(0.3)
+
+    # T=0.3:雾纹一闪
+    print(dim(_fog_line(60)))
+    pause(0.4)
+
+    # T=0.7:像素字渐进
+    print()  # 上空行
+    fade_lines(pieces["ascii_lines"], line_delay=0.10,
+               color_fn=lambda l: bold(red(l)))
     print()
-    for i, line in enumerate(render_banner_lines(60)):
-        # 上方 6 行像素字 → 红色加粗;副标题 → 黄色;tagline → dim
-        if i in (1, 2, 3, 4, 5, 6):
-            print(bold(red(line)))
-        elif "鬼" in line and "夜" in line:
-            print(bold(yellow(line)))
-        elif line.strip().startswith("——"):
-            print(dim(line))
-        else:
-            print(line)
-    # 存档摘要(若有)
+    pause(0.25)
+
+    # T=1.5:副标题打字机(每个汉字慢一点)
+    type_text(pieces["subtitle"], delay=0.07,
+              color_fn=lambda c: bold(yellow(c)))
+    pause(0.3)
+    print()
+
+    # T=2.0:tagline 打字机
+    type_text(pieces["tagline"], delay=0.035,
+              color_fn=lambda c: dim(c))
+    pause(0.3)
+    print()
+
+    # T=2.5:存档摘要
     if sm.endings_seen:
         summary = (
-            f"  上次:{sm.data.get('last_played', '')[:10]} · "
-            f"已通关 {len(sm.endings_seen)} 种结局 · "
+            f"上次:{sm.data.get('last_played', '')[:10]}  ·  "
+            f"已通关 {len(sm.endings_seen)} 种结局  ·  "
             f"解锁 {len(sm.unlocked_characters)} 个角色"
         )
-        print(dim(summary.center(60)))
+        # 居中(用空格 padding,中文按 2 宽度近似)
+        summary_padded = summary.center(56)
+        type_text(summary_padded, delay=0.015,
+                  color_fn=lambda c: dim(c))
         print()
-    print(bold(green("  按 Enter 开始")) + dim("    q 退出"))
+        pause(0.25)
+
+    # T=3.0:呼吸闪烁按钮
+    prompt = "  按 Enter 开始    q 退出  "
+    pulse_text(
+        prompt,
+        cycles=2,
+        period=0.9,
+        bright_fn=lambda t: bold(green(t)),
+        dim_fn=lambda t: dim(t),
+    )
     print()
+
+    # 阻塞等待
     while True:
         try:
             raw = input(bold("  > ")).strip()
@@ -88,7 +144,6 @@ def screen_intro(sm: SaveManager) -> bool:
             return False
         if raw.lower() in ("q", "quit", "exit"):
             return False
-        # 任何其他输入(包括空回车)都进入
         return True
 
 

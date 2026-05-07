@@ -23,7 +23,10 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header, OptionList, Static
 from textual.widgets.option_list import Option
 
-from ghost_story_factory.v7.banner import render_banner_rich
+import os
+import random
+
+from ghost_story_factory.v7.banner import banner_pieces
 from ghost_story_factory.v7.menu_registry import (
     City, Story,
     list_cities, list_stories, list_characters,
@@ -69,10 +72,33 @@ Header { background: #1a0000; color: #ff8080; }
     color: #707070;
 }
 
+#intro-fog {
+    height: 1;
+    padding: 0 2;
+    color: #404040;
+    text-align: center;
+}
+
 #intro-banner {
     height: auto;
-    padding: 2 2;
+    padding: 1 2 0 2;
     background: #050000;
+    text-align: center;
+    color: #400000;
+}
+
+#intro-subtitle {
+    height: auto;
+    padding: 1 2 0 2;
+    text-align: center;
+    color: #ffaa00;
+    text-style: bold;
+}
+
+#intro-tagline {
+    height: auto;
+    padding: 0 2 1 2;
+    color: #707070;
     text-align: center;
 }
 
@@ -95,7 +121,16 @@ Header { background: #1a0000; color: #ff8080; }
 # --- 启动屏 ---
 
 class IntroScreen(Screen):
-    """启动屏 — 显示像素字标题 + 存档摘要 + 「按 Enter 开始」。"""
+    """启动屏 — 像素字标题 + 渐进入场。
+
+    入场序列(GHOST_FAST=1 一次性显示):
+      0.0s  雾纹一闪
+      0.4s  像素字逐行渐进 + 颜色从暗红到亮红
+      1.5s  副标题"鬼  夜  班"
+      2.1s  tagline
+      2.6s  存档摘要
+      3.0s  按钮显现并开始呼吸闪烁
+    """
 
     BINDINGS = [
         Binding("enter", "begin", "开始", priority=True),
@@ -105,24 +140,105 @@ class IntroScreen(Screen):
     ]
 
     def compose(self) -> ComposeResult:
-        sm: SaveManager = self.app.save_manager  # type: ignore[attr-defined]
         yield Header(show_clock=False)
-        yield Static(render_banner_rich(60), id="intro-banner")
+        yield Static("", id="intro-fog")
+        yield Static("", id="intro-banner")
+        yield Static("", id="intro-subtitle")
+        yield Static("", id="intro-tagline")
+        yield Static("", id="intro-summary")
+        yield Static("", id="intro-prompt")
+        yield Footer()
+
+    def on_mount(self) -> None:
+        self._pieces = banner_pieces(60)
+        self._ascii_revealed = 0
+        self._pulse_bright = True
+        self._fast = bool(os.environ.get("GHOST_FAST"))
+
+        if self._fast:
+            # 一次性显示完整画面
+            self._show_fog()
+            for _ in self._pieces["ascii_lines"]:
+                self._reveal_next_ascii_line()
+            self._show_subtitle()
+            self._show_tagline()
+            self._show_summary()
+            self._show_prompt()
+            return
+
+        # 分阶段调度
+        self.set_timer(0.05, self._show_fog)
+        # 像素字 6 行,每行 0.10s
+        for i in range(len(self._pieces["ascii_lines"])):
+            self.set_timer(0.45 + i * 0.10, self._reveal_next_ascii_line)
+        self.set_timer(1.4, self._show_subtitle)
+        self.set_timer(2.0, self._show_tagline)
+        self.set_timer(2.6, self._show_summary)
+        self.set_timer(3.1, self._show_prompt)
+        self.set_timer(3.3, self._start_pulse)
+
+    # --- 阶段 ---
+
+    def _show_fog(self) -> None:
+        chars = "░░░▒▒▓  "
+        fog = "".join(random.choice(chars) for _ in range(60))
+        self.query_one("#intro-fog", Static).update(f"[dim]{fog}[/]")
+
+    def _reveal_next_ascii_line(self) -> None:
+        i = self._ascii_revealed
+        lines = self._pieces["ascii_lines"]
+        if i >= len(lines):
+            return
+        # 累积已显示的行,新行 bold red,前面行也是 bold red
+        revealed = lines[: i + 1]
+        text = "\n".join(f"[bold red]{l}[/]" for l in revealed)
+        self.query_one("#intro-banner", Static).update(text)
+        self._ascii_revealed = i + 1
+
+    def _show_subtitle(self) -> None:
+        self.query_one("#intro-subtitle", Static).update(
+            f"[bold yellow]{self._pieces['subtitle']}[/]"
+        )
+
+    def _show_tagline(self) -> None:
+        self.query_one("#intro-tagline", Static).update(
+            f"[dim]{self._pieces['tagline']}[/]"
+        )
+
+    def _show_summary(self) -> None:
+        sm: SaveManager = self.app.save_manager  # type: ignore[attr-defined]
         if sm.endings_seen:
             summary = (
                 f"上次:{sm.data.get('last_played', '')[:10]}  ·  "
                 f"已通关 [bold]{len(sm.endings_seen)}[/] 种结局  ·  "
                 f"解锁 [bold]{len(sm.unlocked_characters)}[/] 个角色  ·  "
-                f"共 [bold]{sm.data.get('playthroughs', 0)}[/] 次夜班"
+                f"共 [bold]{sm.data.get('playthroughs', 0)}[/] 次"
             )
-            yield Static(summary, id="intro-summary")
+            self.query_one("#intro-summary", Static).update(summary)
         else:
-            yield Static("[dim]这是你的第一次班。[/]", id="intro-summary")
-        yield Static(
-            "[bold yellow]按 Enter 开始[/]    [dim]q 退出[/]",
-            id="intro-prompt",
+            self.query_one("#intro-summary", Static).update(
+                "[dim]这是你的第一次班。[/]"
+            )
+
+    def _show_prompt(self) -> None:
+        self.query_one("#intro-prompt", Static).update(
+            "[bold yellow]按 Enter 开始[/]    [dim]q 退出[/]"
         )
-        yield Footer()
+
+    def _start_pulse(self) -> None:
+        # 1.2s 周期闪烁:bold yellow ↔ dim
+        self.set_interval(0.6, self._toggle_prompt)
+
+    def _toggle_prompt(self) -> None:
+        self._pulse_bright = not self._pulse_bright
+        if self._pulse_bright:
+            self.query_one("#intro-prompt", Static).update(
+                "[bold yellow]按 Enter 开始[/]    [dim]q 退出[/]"
+            )
+        else:
+            self.query_one("#intro-prompt", Static).update(
+                "[#806000]按 Enter 开始[/]    [dim]q 退出[/]"
+            )
 
     def action_begin(self) -> None:
         self.app.push_screen(CityScreen())

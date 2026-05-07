@@ -46,6 +46,23 @@ def render_banner_lines(width: int = 60) -> List[str]:
     return out
 
 
+def banner_pieces(width: int = 60) -> dict:
+    """分块返回 banner 各部件(给分阶段动画用)。
+
+    Returns:
+        {
+          "ascii_lines": [像素字 6 行,已居中],
+          "subtitle": 居中后的副标题,
+          "tagline": 居中后的 tagline,
+        }
+    """
+    return {
+        "ascii_lines": [_center(line, width) for line in _BANNER_LINES],
+        "subtitle": _center(_SUBTITLE, width),
+        "tagline": _center(_TAGLINE, width),
+    }
+
+
 def _center(text: str, width: int) -> str:
     """中文 + ASCII 混合居中(中文按 2 宽度算)。"""
     visible = _visible_width(text)
