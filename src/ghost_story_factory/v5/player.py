@@ -73,7 +73,12 @@ def cyan(s: str) -> str:
 class State:
     """游戏状态。dict-backed,便于 JSON 中 effects 直接操作。"""
 
-    def __init__(self, initial: Dict[str, Any]):
+    def __init__(
+        self,
+        initial: Dict[str, Any],
+        save_manager: Any = None,
+        story_id: Optional[str] = None,
+    ):
         self.PR: int = int(initial.get("PR", 0))
         self.GR: int = int(initial.get("GR", 0))
         self.shifts_skipped: int = int(initial.get("shifts_skipped", 0))
@@ -96,6 +101,12 @@ class State:
         self.PR_peak: int = int(initial.get("PR_peak", self.PR))
         # apply() 的结构化事件记录(给 UI 卡片化渲染用)
         self._last_events: List[Dict[str, Any]] = []
+        # 反应机制(ADR-008):跨周目持久化层引用(单一真相源 = save_manager),
+        # 给 _meets_clause 的 deduction_resolved / foreshadow_resolved / theme_resolved 用。
+        # 默认 None 时三个新条件安全降级返回 False,不破坏现有测试与 v6/v7 启动路径。
+        self.save_manager: Any = save_manager
+        self.story_id: Optional[str] = story_id
+        self.tree: Optional[Dict[str, Any]] = None
 
     @property
     def shifts_completed(self) -> int:
