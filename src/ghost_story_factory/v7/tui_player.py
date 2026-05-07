@@ -252,8 +252,6 @@ class GhostStoryApp(App):
                 initial_state["inv"] = list(cdef["initial_inv"])
             if cdef.get("initial_flags"):
                 initial_state["flags"] = dict(cdef["initial_flags"])
-        # 跨周目记忆 → State.meta_flags
-        initial_state["meta_flags"] = dict(self.save_manager.meta_flags)
         self._character_id = chosen or "G-273"
         self.state = State(initial_state)
         # 注入道具说明字典(获得物品时显示用途)

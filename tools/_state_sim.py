@@ -13,7 +13,7 @@
   本模块以 player.py 为准。
 
 注意:这里的字段集合是"player.State 现有字段的快照"。
-Pass 1 清扫完成后,本文件需要同步更新(删 route/meta_flags 等)。
+Pass 1 清扫完成后,本文件需要同步更新(删 route 等)。
 """
 from __future__ import annotations
 
@@ -34,7 +34,6 @@ class SimState:
     skipped_landmarks: Tuple[str, ...] = ()
     puzzle_pieces: Tuple[str, ...] = ()
     character: str = "G-273"
-    meta_flags: Tuple[Tuple[str, bool], ...] = ()  # hashable for BFS dedup
     last_landmark_id: Optional[str] = None
     visit_counts: Tuple[Tuple[str, int], ...] = ()  # hashable for BFS dedup
 
@@ -52,16 +51,12 @@ class SimState:
             skipped_landmarks=tuple(initial.get("skipped_landmarks", [])),
             puzzle_pieces=tuple(initial.get("puzzle_pieces", [])),
             character=str(initial.get("character", "G-273")),
-            meta_flags=tuple(sorted((initial.get("meta_flags") or {}).items())),
             last_landmark_id=initial.get("last_landmark_id"),
             visit_counts=tuple(sorted((initial.get("visit_counts") or {}).items())),
         )
 
     def flags_dict(self) -> Dict[str, bool]:
         return dict(self.flags)
-
-    def meta_flags_dict(self) -> Dict[str, bool]:
-        return dict(self.meta_flags)
 
     def visit_counts_dict(self) -> Dict[str, int]:
         return dict(self.visit_counts)
@@ -73,7 +68,7 @@ class SimState:
             self.shifts_completed, self.shifts_skipped,
             self.inv, self.flags, self.route,
             self.visited_landmarks, self.skipped_landmarks, self.puzzle_pieces,
-            self.character, self.meta_flags, self.last_landmark_id, self.visit_counts,
+            self.character, self.last_landmark_id, self.visit_counts,
         )
 
 
@@ -148,8 +143,4 @@ def _meets_clause(state: SimState, require: Dict[str, Any]) -> bool:
         elif isinstance(expected, list):
             if state.character not in expected:
                 return False
-    meta = state.meta_flags_dict()
-    for k, v in (require.get("meta_flags") or {}).items():
-        if bool(meta.get(k, False)) != bool(v):
-            return False
     return True

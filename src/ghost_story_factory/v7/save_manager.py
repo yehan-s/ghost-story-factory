@@ -4,14 +4,13 @@
 - 数据结构是核心:存档就是一个扁平 JSON,没有嵌套花活
 - 单一职责:只管 load/save/record_ending,不管菜单 UI
 - 容错优先:文件损坏 / 缺失 / 字段丢失 → 静默降级到默认值,从不抛异常
-- 向后兼容:旧版本(只有 meta_flags)能无缝升级
+- 向后兼容:旧版本存档能无缝升级
 
 存档文件位置: ~/.ghost_save.json
 
 数据结构:
 {
     "version": 1,
-    "meta_flags": {"cleared_g273_truth": true, ...},
     "unlocked_characters": ["G-273", "linmou_1985"],
     "endings_seen": ["E_TRUTH", "E_NEUTRAL"],
     "last_played": "2026-05-07T03:00:00",
@@ -128,7 +127,6 @@ CHARACTER_ROSTER: List[Dict[str, Any]] = [
 SAVE_VERSION = 4  # v4:加 achievements_unlocked
 DEFAULT_SAVE: Dict[str, Any] = {
     "version": SAVE_VERSION,
-    "meta_flags": {},
     "unlocked_characters": ["G-273"],
     "endings_seen": [],
     "last_played": "",
@@ -182,8 +180,7 @@ class SaveManager:
             return
         if not isinstance(raw, dict):
             return
-        # 字段级合并:旧版本只有 meta_flags 也能用
-        self.data["meta_flags"] = dict(raw.get("meta_flags") or {})
+        # 字段级合并:旧版本存档也能用(未知字段被忽略)
         unlocked = raw.get("unlocked_characters") or ["G-273"]
         if "G-273" not in unlocked:
             unlocked = ["G-273"] + list(unlocked)
@@ -234,10 +231,6 @@ class SaveManager:
     # --- 查询 API ---
 
     @property
-    def meta_flags(self) -> Dict[str, bool]:
-        return self.data.get("meta_flags", {})
-
-    @property
     def unlocked_characters(self) -> List[str]:
         return list(self.data.get("unlocked_characters", []))
 
@@ -259,7 +252,6 @@ class SaveManager:
         副作用:
         - endings_seen 追加(去重)
         - unlocked_characters 根据 ENDING_UNLOCKS 解锁(去重)
-        - meta_flags 设置 cleared_<character>_<ending_lower>
         - playthroughs += 1
         - last_played 更新
         - stories_completed[story_id] 追加
@@ -279,10 +271,6 @@ class SaveManager:
         if target and target not in unlocked:
             unlocked.append(target)
             newly_unlocked.append(target)
-
-        # meta_flag: 通关标记(剧本层可读)
-        meta_flag_key = f"cleared_g273_{ending_type.lower().replace('e_', '')}"
-        self.data.setdefault("meta_flags", {})[meta_flag_key] = True
 
         # stories_completed
         sc = self.data.setdefault("stories_completed", {})

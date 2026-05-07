@@ -41,7 +41,6 @@ STORY_META = {
         "visited_landmarks": [],
         "puzzle_pieces": [],
         "character": "G-273",
-        "meta_flags": {},
         # NPC 初始位置 — 由 STORY_META.npcs[i].initial_location 自动注入(merge 时填充)
         "npc_locations": {},
         # 节点访问计数 — 给 NPC 重访对话用

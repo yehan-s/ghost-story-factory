@@ -87,7 +87,6 @@ class State:
         self.puzzle_pieces: List[str] = list(initial.get("puzzle_pieces", []))
         # v7 多角色伏笔基础设施(默认值不破坏 v6/v7 现有玩法)
         self.character: str = str(initial.get("character", "G-273"))
-        self.meta_flags: Dict[str, bool] = dict(initial.get("meta_flags", {}))
         # v7+ 自由移动 / NPC 位置 / 访问计数(默认空)
         self.last_landmark_id: Optional[str] = initial.get("last_landmark_id")
         self.npc_locations: Dict[str, str] = dict(initial.get("npc_locations", {}))
@@ -250,9 +249,6 @@ class State:
             elif isinstance(expected, list):
                 if self.character not in expected:
                     return False
-        for k, v in (require.get("meta_flags") or {}).items():
-            if bool(self.meta_flags.get(k, False)) != bool(v):
-                return False
         return True
 
     def meets(self, require: Optional[Dict[str, Any]]) -> bool:
@@ -293,7 +289,7 @@ class State:
     _SPOILER_KEYS = (
         "PR_min", "PR_max", "GR_min", "GR_max",
         "flags", "shifts_completed_min", "shifts_skipped_min",
-        "landmark_visited", "route_is", "character", "meta_flags", "not",
+        "landmark_visited", "route_is", "character", "not",
     )
 
     def _missing_visible_part(self, req: Optional[Dict[str, Any]]) -> Optional[str]:
@@ -342,8 +338,6 @@ class State:
             expected = req["character"]
             if isinstance(expected, str) and self.character != expected: return False
             if isinstance(expected, list) and self.character not in expected: return False
-        for k, v in (req.get("meta_flags") or {}).items():
-            if bool(self.meta_flags.get(k, False)) != bool(v): return False
         if "not" in req:
             if self.meets(req["not"]): return False
         # any_of:任一子句的 spoiler+visible 整体满足即可
@@ -740,8 +734,6 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             initial_state["inv"] = list(cdef["initial_inv"])
         if cdef.get("initial_flags"):
             initial_state["flags"] = dict(cdef["initial_flags"])
-        # 跨周目记忆:meta_flags 从存档注入
-        initial_state["meta_flags"] = dict(save_manager.meta_flags)
 
     state = State(initial_state)
     # 注入道具说明字典(获得物品时显示用途)

@@ -70,10 +70,6 @@ from ghost_story_factory.v5.player import State
     ({"character": ["G-273", "L-101"]}, {"character": "L-101"}, True),
     ({"character": ["G-273", "L-101"]}, {"character": "X-999"}, False),
 
-    # ── meta_flags
-    ({"meta_flags": {"replay_unlocked": True}}, {"meta_flags": {"replay_unlocked": True}}, True),
-    ({"meta_flags": {"replay_unlocked": True}}, {"meta_flags": {"replay_unlocked": False}}, False),
-
     # ── 嵌套:any_of(OR)
     ({"any_of": [{"PR_min": 5}, {"GR_min": 5}]}, {"PR": 10, "GR": 0}, True),
     ({"any_of": [{"PR_min": 50}, {"GR_min": 50}]}, {"PR": 10, "GR": 10}, False),
