@@ -81,7 +81,6 @@ class State:
         self.inv: List[str] = list(initial.get("inv", []))
         self.flags: Dict[str, bool] = dict(initial.get("flags", {}))
         # v6 新增字段(允许缺失,默认空/None)
-        self.route: Optional[str] = initial.get("route", None)
         self.skipped_landmarks: List[str] = list(initial.get("skipped_landmarks", []))
         self.visited_landmarks: List[str] = list(initial.get("visited_landmarks", []))
         self.puzzle_pieces: List[str] = list(initial.get("puzzle_pieces", []))
@@ -154,11 +153,6 @@ class State:
             self.flags[k] = bool(v)
 
         # v6 新增 effects
-        if "set_route" in effects:
-            new_route = effects["set_route"]
-            if new_route in ("investigator", "witness", "survivor"):
-                self.route = new_route
-                notes.append(f"路线确立:{new_route}")
         if "landmark_visited" in effects:
             lm = str(effects["landmark_visited"])
             # 记录"刚刚去过哪"用于自由移动 — 即便重复访问也更新
@@ -221,8 +215,6 @@ class State:
         if "shifts_completed_min" in require and self.shifts_completed < int(require["shifts_completed_min"]):
             return False
         # v6 新增检查
-        if "route_is" in require and self.route != require["route_is"]:
-            return False
         for lm in require.get("landmark_visited", []) or []:
             if lm not in self.visited_landmarks:
                 return False
@@ -289,7 +281,7 @@ class State:
     _SPOILER_KEYS = (
         "PR_min", "PR_max", "GR_min", "GR_max",
         "flags", "shifts_completed_min", "shifts_skipped_min",
-        "landmark_visited", "route_is", "character", "not",
+        "landmark_visited", "character", "not",
     )
 
     def _missing_visible_part(self, req: Optional[Dict[str, Any]]) -> Optional[str]:
@@ -333,7 +325,6 @@ class State:
             if bool(self.flags.get(k, False)) != bool(v): return False
         for lm in req.get("landmark_visited", []) or []:
             if lm not in self.visited_landmarks: return False
-        if "route_is" in req and self.route != req["route_is"]: return False
         if "character" in req:
             expected = req["character"]
             if isinstance(expected, str) and self.character != expected: return False
@@ -372,14 +363,6 @@ class State:
     def hud(self) -> str:
         """常驻顶部状态条 — 不含隐藏效果(个人共鸣 / 全局共鸣)。"""
         inv_str = "·".join(self.inv) if self.inv else "—"
-        route_str = ""
-        if self.route:
-            route_label = {
-                "investigator": "调查派",
-                "witness": "围观派",
-                "survivor": "逃避派",
-            }.get(self.route, self.route)
-            route_str = f"  {blue('路线')} {route_label}"
         puzzle_str = ""
         if self.puzzle_pieces:
             puzzle_str = f"  {green('拼图')} {len(self.puzzle_pieces)}/5"
@@ -387,7 +370,7 @@ class State:
             f"{dim('━' * 60)}\n"
             f"{yellow('夜班')} {self.shifts_completed}/7  "
             f"{red('漏卡')} {self.shifts_skipped}"
-            f"{route_str}{puzzle_str}\n"
+            f"{puzzle_str}\n"
             f"{dim('随身:')} {inv_str}\n"
             f"{dim('━' * 60)}"
         )
@@ -395,14 +378,6 @@ class State:
     def full_status(self) -> str:
         """完整状态(s 键调出) — 包含个人共鸣 / 全局共鸣。"""
         inv_str = "·".join(self.inv) if self.inv else "—"
-        route_str = ""
-        if self.route:
-            route_label = {
-                "investigator": "调查派",
-                "witness": "围观派",
-                "survivor": "逃避派",
-            }.get(self.route, self.route)
-            route_str = f"  {blue('路线')} {route_label}"
         puzzle_str = ""
         if self.puzzle_pieces:
             puzzle_str = f"  {green('拼图')} {len(self.puzzle_pieces)}/5"
@@ -415,7 +390,7 @@ class State:
             f"{dim('  · 全局共鸣 = 杭州常数对你的注视程度。越高越被异常实体盯上 / 触发实体出现。')}\n"
             f"{yellow('夜班')} {self.shifts_completed}/7  "
             f"{red('漏卡')} {self.shifts_skipped}"
-            f"{route_str}{puzzle_str}\n"
+            f"{puzzle_str}\n"
             f"{dim('随身:')} {inv_str}\n"
             f"{dim('━' * 60)}"
         )
@@ -612,8 +587,6 @@ def _render_apply_events(events: List[Dict[str, Any]], important_items: set) -> 
         elif t == "landmark_skipped":
             flash_line(f"绕开 {ev['key']}",
                        color_fn=lambda s: bold(red(s)))
-        elif t == "set_route":
-            print(dim(f"  · 路线确立:{ev['key']}"))
     print()
 
 

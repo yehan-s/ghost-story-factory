@@ -40,10 +40,6 @@ from ghost_story_factory.v5.player import State
     ({"shifts_completed_min": 4}, {"shifts_completed": 5}, True),
     ({"shifts_completed_min": 4}, {"shifts_completed": 2}, False),
 
-    # ── route_is
-    ({"route_is": "investigator"}, {"route": "investigator"}, True),
-    ({"route_is": "investigator"}, {"route": "witness"}, False),
-
     # ── landmark_visited(列表形式 — 必须全部 visited 才通过)
     ({"landmark_visited": ["S1"]}, {"visited_landmarks": ["S1", "S2"]}, True),
     ({"landmark_visited": ["S1", "S3"]}, {"visited_landmarks": ["S1", "S2"]}, False),

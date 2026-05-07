@@ -83,7 +83,6 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
     new_sk = state.shifts_skipped
     new_inv = list(state.inv)
     new_flags = dict(state.flags)
-    new_route = state.route
     new_vl = list(state.visited_landmarks)
     new_skl = list(state.skipped_landmarks)
     new_pp = list(state.puzzle_pieces)
@@ -110,8 +109,6 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
             new_inv.remove(item)
     for k, v in (effects.get("flags") or {}).items():
         new_flags[k] = bool(v)
-    if "route" in effects and effects["route"]:
-        new_route = effects["route"]
     for lm in effects.get("visited_landmarks_add", []) or []:
         if lm not in new_vl:
             new_vl.append(lm)
@@ -127,7 +124,6 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
         shifts_completed=new_sc, shifts_skipped=new_sk,
         inv=tuple(new_inv),
         flags=tuple(sorted(new_flags.items())),
-        route=new_route,
         visited_landmarks=tuple(new_vl),
         skipped_landmarks=tuple(new_skl),
         puzzle_pieces=tuple(new_pp),

@@ -611,9 +611,6 @@ class GhostStoryApp(App):
                 log.write(f"  [bold green]▌ 踏入 {ev['key']} ▐[/]")
             elif t == "landmark_skipped":
                 log.write(f"  [bold red]▌ 绕开 {ev['key']} ▐[/]")
-            elif t == "set_route":
-                log.write(f"[dim]  · 路线确立:{ev['key']}[/]")
-
     def action_select_choice(self, idx: int) -> None:
         """1-9 数字键快选。"""
         self._apply_choice(idx)

@@ -78,7 +78,6 @@
         "shifts_skipped_min": {"type": "integer"},
         "puzzle_pieces_min": {"type": "integer"},
         "landmark_visited": {"type": "array", "items": {"type": "string"}},
-        "route_is": {"type": "string"},
         "character": {
           "anyOf": [
             {"type": "string"},
@@ -141,7 +140,6 @@
           "type": "object",
           "additionalProperties": {"type": "boolean"}
         },
-        "set_route": {"type": "string", "description": "v6 遗留:锁定路线"},
         "landmark_visited": {"type": "string"},
         "landmark_skipped": {"type": "string"},
         "puzzle_add": {"type": "string", "description": "拼图碎片 ID"}

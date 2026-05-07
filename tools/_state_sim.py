@@ -13,7 +13,6 @@
   本模块以 player.py 为准。
 
 注意:这里的字段集合是"player.State 现有字段的快照"。
-Pass 1 清扫完成后,本文件需要同步更新(删 route 等)。
 """
 from __future__ import annotations
 
@@ -29,7 +28,6 @@ class SimState:
     shifts_skipped: int = 0
     inv: Tuple[str, ...] = ()
     flags: Tuple[Tuple[str, bool], ...] = ()  # hashable for BFS dedup
-    route: Optional[str] = None
     visited_landmarks: Tuple[str, ...] = ()
     skipped_landmarks: Tuple[str, ...] = ()
     puzzle_pieces: Tuple[str, ...] = ()
@@ -46,7 +44,6 @@ class SimState:
             shifts_skipped=int(initial.get("shifts_skipped", 0)),
             inv=tuple(initial.get("inv", [])),
             flags=tuple(sorted((initial.get("flags") or {}).items())),
-            route=initial.get("route"),
             visited_landmarks=tuple(initial.get("visited_landmarks", [])),
             skipped_landmarks=tuple(initial.get("skipped_landmarks", [])),
             puzzle_pieces=tuple(initial.get("puzzle_pieces", [])),
@@ -66,7 +63,7 @@ class SimState:
         return (
             self.PR, self.GR,
             self.shifts_completed, self.shifts_skipped,
-            self.inv, self.flags, self.route,
+            self.inv, self.flags,
             self.visited_landmarks, self.skipped_landmarks, self.puzzle_pieces,
             self.character, self.last_landmark_id, self.visit_counts,
         )
@@ -115,8 +112,6 @@ def _meets_clause(state: SimState, require: Dict[str, Any]) -> bool:
     if "shifts_skipped_min" in require and state.shifts_skipped < int(require["shifts_skipped_min"]):
         return False
     if "shifts_completed_min" in require and state.shifts_completed < int(require["shifts_completed_min"]):
-        return False
-    if "route_is" in require and state.route != require["route_is"]:
         return False
     for lm in require.get("landmark_visited", []) or []:
         if lm not in state.visited_landmarks:

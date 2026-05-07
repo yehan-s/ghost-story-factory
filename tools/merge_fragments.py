@@ -36,7 +36,6 @@ STORY_META = {
         "shifts_skipped": 0,
         "inv": [],
         "flags": {},
-        "route": None,
         "skipped_landmarks": [],
         "visited_landmarks": [],
         "puzzle_pieces": [],
