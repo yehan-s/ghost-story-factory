@@ -174,6 +174,146 @@ def separator(
     sys.stdout.flush()
 
 
+_GLITCH_CHARS = "▓░█▒▌▐■□◆◇♠♣◎※"
+
+
+def glitch_text(
+    text: str,
+    color_fn: Optional[Callable[[str], str]] = None,
+    frames: int = 4,
+    frame_delay: float = 0.08,
+    glitch_ratio: float = 0.3,
+) -> None:
+    """关键时刻字符闪 — text 用同长度的乱码替换 frames 次,最后定到 text。
+
+    用 \\r 单行重写。每帧随机替换 glitch_ratio(0~1)比例的字符为 ▓░█▒…。
+    """
+    import random
+    if not _supports_color() or _fast():
+        sys.stdout.write((color_fn(text) if color_fn else text) + "\n")
+        sys.stdout.flush()
+        return
+    try:
+        chars = list(text)
+        n = len(chars)
+        glitch_count = max(1, int(n * glitch_ratio))
+        for _ in range(frames):
+            scrambled = chars[:]
+            indices = random.sample(range(n), min(glitch_count, n))
+            for i in indices:
+                scrambled[i] = random.choice(_GLITCH_CHARS)
+            line = "".join(scrambled)
+            sys.stdout.write("\r" + (color_fn(line) if color_fn else line))
+            sys.stdout.flush()
+            time.sleep(frame_delay)
+        # 定到正常
+        sys.stdout.write("\r" + (color_fn(text) if color_fn else text) + "\n")
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        raise
+
+
+def draw_line_progressive(
+    width: int = 60,
+    char: str = "▔",
+    color_fn: Optional[Callable[[str], str]] = None,
+    char_delay: float = 0.012,
+) -> None:
+    """逐字符画一条横线 — 制造『翻页』感。"""
+    if _fast() or not _supports_color():
+        line = char * width
+        sys.stdout.write((color_fn(line) if color_fn else line) + "\n")
+        sys.stdout.flush()
+        return
+    try:
+        sys.stdout.write("  ")
+        for _ in range(width):
+            sys.stdout.write(color_fn(char) if color_fn else char)
+            sys.stdout.flush()
+            time.sleep(char_delay)
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        raise
+
+
+def heartbeat_pulse(
+    color_fn: Optional[Callable[[str], str]] = None,
+    beats: int = 2,
+    period: float = 0.6,
+) -> None:
+    """心跳条 — 「· · · ●  · · ●」节奏(高 PR 时调用,暗示焦虑)。
+
+    用 \\r 重写,占 1 行,2 次心跳后清掉换行。
+    """
+    if _fast() or not _supports_color():
+        return  # 静默(快进模式不显示)
+    frames = [
+        "  ·   ·   ·       ",
+        "  ·   ·   ·   ●   ",
+        "  ·   ·   ●       ",
+        "  ·   ●           ",
+        "  ●               ",
+        "                  ",
+    ]
+    try:
+        for _ in range(beats):
+            for frame in frames:
+                sys.stdout.write("\r" + (color_fn(frame) if color_fn else frame))
+                sys.stdout.flush()
+                time.sleep(period / len(frames))
+        # 清掉
+        sys.stdout.write("\r" + " " * len(frames[0]) + "\r")
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        raise
+
+
+def keyword_flash(
+    line: str,
+    keyword: str,
+    color_fn: Optional[Callable[[str], str]] = None,
+    cycles: int = 2,
+    period: float = 0.4,
+) -> None:
+    """在一行里只闪烁某个关键词,行内其它部分保持。
+
+    用 \\r 重写,关键词用 ANSI 反白 ↔ 普通色 切换。
+    """
+    if _fast() or not _supports_color():
+        if keyword and color_fn:
+            line = line.replace(keyword, color_fn(keyword))
+        sys.stdout.write(line + "\n")
+        sys.stdout.flush()
+        return
+    if keyword not in line:
+        sys.stdout.write(line + "\n")
+        sys.stdout.flush()
+        return
+    bright = color_fn(keyword) if color_fn else f"\033[7m{keyword}\033[0m"
+    plain = keyword
+    try:
+        for _ in range(cycles):
+            sys.stdout.write("\r" + line.replace(keyword, plain))
+            sys.stdout.flush()
+            time.sleep(period / 2)
+            sys.stdout.write("\r" + line.replace(keyword, bright))
+            sys.stdout.flush()
+            time.sleep(period / 2)
+        sys.stdout.write("\r" + line.replace(keyword, bright) + "\n")
+        sys.stdout.flush()
+    except KeyboardInterrupt:
+        sys.stdout.write("\n")
+        sys.stdout.flush()
+        raise
+
+
 def pulse_text(
     text: str,
     cycles: int = 2,

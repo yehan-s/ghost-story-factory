@@ -768,23 +768,32 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         visited.append(current_id)
         # 累计节点访问次数(给 NPC 重访 narrative_variants 用)
         state.visit_counts[current_id] = state.visit_counts.get(current_id, 0) + 1
-        # 地标入场 banner — 节点带 _landmark_header 时显示横划过场
+        # 地标入场 banner — 节点带 _landmark_header 时显示翻页过场
         header = node.get("_landmark_header")
         if header and isinstance(header, dict):
             from ghost_story_factory.v7.animate import (
-                fade_lines, pause as _pause, separator,
+                fade_lines, pause as _pause, draw_line_progressive,
             )
             t = header.get("time", "")
             p = header.get("place", "")
             print()
-            separator(60, char="─", color_fn=lambda s: dim(s))
+            draw_line_progressive(56, char="▔", color_fn=lambda s: dim(red(s)),
+                                  char_delay=0.012)
             _pause(0.15)
             fade_lines(
                 ["", f"          {bold(yellow(t))}", f"      {bold(red(p))}", ""],
                 line_delay=0.12,
             )
-            separator(60, char="─", color_fn=lambda s: dim(s))
+            draw_line_progressive(56, char="▁", color_fn=lambda s: dim(red(s)),
+                                  char_delay=0.012)
             _pause(0.3)
+        # PR ≥ 50 时,在节点叙事前打一段心跳条(暗示焦虑)
+        # 但在 picker / 工具节点不显示(避免太频繁)
+        if (state.PR >= 50 and not node.get("_is_map_picker")
+                and not node.get("_is_tool")):
+            from ghost_story_factory.v7.animate import heartbeat_pulse
+            heartbeat_pulse(color_fn=lambda s: bold(red(s)),
+                            beats=1, period=0.5)
         # 伏笔自动跟踪:_foreshadow_slot 被触发即标记 seen,首次触发显示卡片
         slot_ids = node.get("_foreshadow_slot") or []
         newly_seen_slots: List[str] = []
@@ -810,25 +819,30 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                            mode="site",
                            travel_indices=travel_idx)
         else:
-            # _one_way 节点 — 在叙事开头打一条红色"无回头路"横条
+            # _one_way 节点 — 用 glitch 闪一段红字"无回头路"
             if node.get("_one_way"):
-                from ghost_story_factory.v7.animate import flash_line
+                from ghost_story_factory.v7.animate import glitch_text
                 hint = node.get("_one_way_hint",
                                 "无回头路 — 你已经踏入此地。")
-                flash_line(f"  🔒 {hint}",
-                           color_fn=lambda s: bold(red(s)))
+                print()
+                glitch_text(f"  🔒 {hint}",
+                            color_fn=lambda s: bold(red(s)),
+                            frames=4, frame_delay=0.06,
+                            glitch_ratio=0.25)
                 print()
             narrative = resolve_narrative(node, state)
             if narrative:
                 render_narrative(narrative)
-        # 首次发现伏笔 — 用青色 flash_line 反馈
+        # 首次发现伏笔 — 用 glitch 闪一段青字(像系统弹窗 corruption 后定下来)
         if newly_seen_slots:
-            from ghost_story_factory.v7.animate import flash_line
+            from ghost_story_factory.v7.animate import glitch_text
             foreshadows = tree.get("foreshadows", {}) or {}
             for slot in newly_seen_slots:
                 title = (foreshadows.get(slot) or {}).get("title", slot)
-                flash_line(f"档案 +1  ·  {title}",
-                           color_fn=lambda s: bold(cyan(s)))
+                glitch_text(f"  ▌ 档案 +1  ·  {title} ▐",
+                            color_fn=lambda s: bold(cyan(s)),
+                            frames=3, frame_delay=0.07,
+                            glitch_ratio=0.2)
             print()
 
         # 结局节点
@@ -836,9 +850,18 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             ending_type = node.get("ending_type", "E_UNKNOWN")
             ending_name = tree.get("endings", {}).get(ending_type, ending_type)
             ec = ending_color(ending_type)
-            print(bold(ec("\n" + "═" * 60)))
-            print(bold(ec(f"  【结局 · {ending_type}】 {ending_name}")))
-            print(bold(ec("═" * 60)))
+            from ghost_story_factory.v7.animate import (
+                draw_line_progressive, glitch_text,
+            )
+            print()
+            draw_line_progressive(60, char="═", color_fn=lambda s: bold(ec(s)),
+                                  char_delay=0.008)
+            glitch_text(f"  【结局 · {ending_type}】 {ending_name}",
+                        color_fn=lambda s: bold(ec(s)),
+                        frames=5, frame_delay=0.07,
+                        glitch_ratio=0.35)
+            draw_line_progressive(60, char="═", color_fn=lambda s: bold(ec(s)),
+                                  char_delay=0.008)
             print(state.hud())
             print(dim(f"\n  共经历 {len(visited)} 个节点。"))
             print(dim("  夜班没有尽头,只有下一班。\n"))
