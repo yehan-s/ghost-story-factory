@@ -23,9 +23,6 @@ from textual.screen import Screen
 from textual.widgets import Footer, Header, OptionList, Static
 from textual.widgets.option_list import Option
 
-import os
-import random
-
 from ghost_story_factory.v7.banner import banner_pieces
 from ghost_story_factory.v7.menu_registry import (
     City, Story,
@@ -125,78 +122,22 @@ class IntroScreen(Screen):
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
-        yield Static("", id="intro-fog")
         yield Static("", id="intro-banner")
         yield Static("", id="intro-subtitle")
         yield Static("", id="intro-prompt")
         yield Footer()
 
     def on_mount(self) -> None:
-        self._pieces = banner_pieces(60)
-        self._ascii_revealed = 0
-        self._pulse_bright = True
-        self._fast = bool(os.environ.get("GHOST_FAST"))
-
-        if self._fast:
-            # 一次性显示完整画面
-            self._show_fog()
-            for _ in self._pieces["ascii_lines"]:
-                self._reveal_next_ascii_line()
-            self._show_subtitle()
-            self._show_prompt()
-            return
-
-        # 分阶段调度
-        self.set_timer(0.05, self._show_fog)
-        # 像素字 6 行,每行 0.10s
-        for i in range(len(self._pieces["ascii_lines"])):
-            self.set_timer(0.45 + i * 0.10, self._reveal_next_ascii_line)
-        self.set_timer(1.4, self._show_subtitle)
-        self.set_timer(2.4, self._show_prompt)
-        self.set_timer(2.6, self._start_pulse)
-
-    # --- 阶段 ---
-
-    def _show_fog(self) -> None:
-        chars = "░░░▒▒▓  "
-        fog = "".join(random.choice(chars) for _ in range(60))
-        self.query_one("#intro-fog", Static).update(f"[dim]{fog}[/]")
-
-    def _reveal_next_ascii_line(self) -> None:
-        i = self._ascii_revealed
-        lines = self._pieces["ascii_lines"]
-        if i >= len(lines):
-            return
-        # 累积已显示的行,新行 bold red,前面行也是 bold red
-        revealed = lines[: i + 1]
-        text = "\n".join(f"[bold red]{l}[/]" for l in revealed)
-        self.query_one("#intro-banner", Static).update(text)
-        self._ascii_revealed = i + 1
-
-    def _show_subtitle(self) -> None:
+        # 启动屏不做入场动画 — 一次性静态显示,避免开屏墨迹
+        pieces = banner_pieces(60)
+        banner = "\n".join(f"[bold red]{l}[/]" for l in pieces["ascii_lines"])
+        self.query_one("#intro-banner", Static).update(banner)
         self.query_one("#intro-subtitle", Static).update(
-            f"[bold yellow]{self._pieces['subtitle']}[/]"
+            f"[bold yellow]{pieces['subtitle']}[/]"
         )
-
-    def _show_prompt(self) -> None:
         self.query_one("#intro-prompt", Static).update(
             "[bold yellow]按 Enter 开始[/]    [dim]q 退出[/]"
         )
-
-    def _start_pulse(self) -> None:
-        # 1.2s 周期闪烁:bold yellow ↔ dim
-        self.set_interval(0.6, self._toggle_prompt)
-
-    def _toggle_prompt(self) -> None:
-        self._pulse_bright = not self._pulse_bright
-        if self._pulse_bright:
-            self.query_one("#intro-prompt", Static).update(
-                "[bold yellow]按 Enter 开始[/]    [dim]q 退出[/]"
-            )
-        else:
-            self.query_one("#intro-prompt", Static).update(
-                "[#806000]按 Enter 开始[/]    [dim]q 退出[/]"
-            )
 
     def action_begin(self) -> None:
         self.app.push_screen(CityScreen())
