@@ -1,0 +1,166 @@
+{
+  "_template_name": "landmark_maze",
+  "_template_version": "v7.0",
+  "_usage": "一个地标的迷宫子图骨架。SX 替换为地标编号,如 S1/S2/...。每地标 15-25 节点。务必满足:每选项后 2-4 层独立子选项 / ≥5 真环 / ≥3 多入口汇合 / ≥3 死胡同 / ≥4 跨地标出口 / ≥1 narrative_variants 重访节点 / ≥1 mini-ending。",
+
+  "n_<sx>_arrive": {
+    "_comment": "地标入口节点。最多 4-5 个主选项,每个引向不同子树。",
+    "scene": "<SX>",
+    "narrative_variants": [
+      {
+        "if": {"flags": {"<sx>_revisit_main_path": true}},
+        "text": "<玩家第二次到达时看到的 150-300 字。反映他们做过什么(摸过 / 看过 / 拍过)。>"
+      },
+      {
+        "if": {"flags": {"<sx>_revisit_alt_path": true}},
+        "text": "<玩家走了另一条路又回来时的版本>"
+      }
+    ],
+    "narrative": "<第一次到达,150-300 字。地点 + 时间戳 + 第一感官 + 异常出现 + 钩子(等玩家做选择)。>",
+    "choices": [
+      {
+        "text": "A. <主探索选项 — 走近,看清楚>",
+        "next": "n_<sx>_close",
+        "effects": {"PR": 2, "landmark_visited": "<SX>"}
+      },
+      {
+        "text": "B. <对抗 / 对峙选项 — 站着不动>",
+        "next": "n_<sx>_standoff",
+        "effects": {"GR": 2, "landmark_visited": "<SX>"}
+      },
+      {
+        "text": "C. <旁观 / 观察选项 — 拍照 / 录音>",
+        "next": "n_<sx>_observe",
+        "effects": {"PR": 5, "landmark_visited": "<SX>", "flags": {"<sx>_post_forum": true}}
+      },
+      {
+        "text": "D. <逃避选项 — 假装没看见>",
+        "next": "n_<sx>_walk_past",
+        "effects": {"landmark_visited": "<SX>"}
+      },
+      {
+        "text": "E. <跳过整地标 — 退回打卡机>",
+        "next": "n_landmark_picker",
+        "effects": {"shifts_skipped": 1, "landmark_skipped": "<SX>", "flags": {"<sx>_aborted": true}},
+        "require": {"flags": {"<sx>_revisit_main_path": true}}
+      }
+    ]
+  },
+
+  "n_<sx>_close": {
+    "_comment": "A 选项的子树第 1 层。再分 3-4 个子选项。",
+    "scene": "<SX>",
+    "narrative": "<200-300 字,玩家走近后的细节。多一层悬念。>",
+    "choices": [
+      {
+        "text": "<触摸 / 物理交互>",
+        "next": "n_<sx>_close_touch",
+        "effects": {"flags": {"<sx>_revisit_main_path": true}}
+      },
+      {
+        "text": "<翻找 / 搜索>",
+        "next": "n_<sx>_pocket_<item>",
+        "effects": {"flags": {"<sx>_revisit_main_path": true}}
+      },
+      {
+        "text": "<照明 / 工具使用>",
+        "next": "n_<sx>_close_flashlight",
+        "effects": {"flags": {"<sx>_revisit_main_path": true}}
+      },
+      {
+        "text": "<退回入口>",
+        "next": "n_<sx>_arrive",
+        "effects": {"flags": {"<sx>_revisit_main_path": true}}
+      }
+    ]
+  },
+
+  "n_<sx>_close_touch": {
+    "_comment": "子树第 2 层 — 关键岔路口。这里可以引向共享 NPC / 死胡同 / 回路。",
+    "scene": "<SX>",
+    "narrative": "<物理交互后的反应。300 字。让玩家感觉『这次决定不可逆』。>",
+    "choices": [
+      {
+        "text": "<极端动作,跳到共享场景>",
+        "next": "n_scene_<shared>",
+        "effects": {"GR": 8, "flags": {"<sx>_extreme_done": true}}
+      },
+      {
+        "text": "<继续深入,跳到 pocket 节点(多入口汇合点)>",
+        "next": "n_<sx>_pocket_<item>",
+        "effects": {"flags": {"<sx>_touched": true}}
+      },
+      {
+        "text": "<害怕,缩手,损失 PR,回入口>",
+        "next": "n_<sx>_arrive",
+        "effects": {"PR": 3, "flags": {"<sx>_revisit_main_path": true, "<sx>_panic": true}}
+      }
+    ]
+  },
+
+  "n_<sx>_pocket_<item>": {
+    "_comment": "多入口汇合点 — 至少 3 个不同来源的选项可以到达这里。是地标的『隐藏 hub』。",
+    "scene": "<SX>",
+    "narrative_variants": [
+      {
+        "if": {"flags": {"<sx>_seen_<item>": true}},
+        "text": "<第二次到达 — 玩家已经看过物品,这次有变化>"
+      }
+    ],
+    "narrative": "<第一次发现关键物品 / 信息。300 字。>",
+    "choices": [
+      {
+        "text": "<拿走物品(主线)>",
+        "next": "n_npc_<related>",
+        "effects": {"GR": 10, "inv_add": ["<key_item>"], "flags": {"<sx>_<item>_grabbed": true, "<sx>_seen_<item>": true}}
+      },
+      {
+        "text": "<部分使用(支线)>",
+        "next": "n_<sx>_<item>_copy",
+        "effects": {"PR": 5, "puzzle_add": "<piece>", "flags": {"<sx>_seen_<item>": true}}
+      },
+      {
+        "text": "<签字 / 宣誓(献祭支线)>",
+        "next": "n_npc_<other_npc>",
+        "effects": {"PR": 10, "GR": 5, "flags": {"<sx>_signed": true, "<sx>_seen_<item>": true}}
+      },
+      {
+        "text": "<放回去,返回>",
+        "next": "n_<sx>_close",
+        "effects": {"flags": {"<sx>_seen_<item>": true, "<sx>_returned_item": true}}
+      }
+    ]
+  },
+
+  "n_<sx>_walk_past": {
+    "_comment": "D 选项 — 假装没看见 — 引向不同的子树。",
+    "scene": "<SX>",
+    "narrative": "<玩家试图逃避,但还是被影响。300 字,用『脚已经湿了』『手机自动拍照』等暗示。>",
+    "choices": [
+      {
+        "text": "<回头看>",
+        "next": "n_<sx>_arrive",
+        "effects": {"PR": -3, "flags": {"<sx>_observed_back": true}}
+      },
+      {
+        "text": "<跑出地标>",
+        "next": "n_<sx>_chase",
+        "effects": {"PR": -5, "flags": {"<sx>_running": true}}
+      },
+      {
+        "text": "<跳过整地标>",
+        "next": "n_landmark_picker",
+        "effects": {"shifts_skipped": 1, "landmark_skipped": "<SX>", "flags": {"<sx>_aborted": true}}
+      }
+    ]
+  },
+
+  "n_<sx>_mini_ending_X": {
+    "_comment": "mini-ending — 不可逆死亡分支。地标内每个至少 1-2 个。",
+    "scene": "<SX>",
+    "is_ending": true,
+    "ending_type": "<E_BAD_X>",
+    "narrative": "<400-500 字 — 玩家做了某个不可逆动作后的死亡描写。要呼应这个地标的主题。>",
+    "show_hud": true
+  }
+}
