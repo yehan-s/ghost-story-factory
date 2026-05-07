@@ -148,6 +148,12 @@
         "搪瓷缸"
       ],
       "initial_flags": {},
+      "initial_known_landmarks": [
+        "L1",
+        "L2",
+        "L3",
+        "L4"
+      ],
       "_unlock_hint": "通关 G-273『揭穿真相』(E_TRUTH)解锁",
       "_description": "杭州二轻物资财务科副科长。1985-10-18 投湖前 6 小时(20:00 → 02:00)。Act 1 ~50 节点 / 4 ending(冤/悔/释/曝光)。通关 G-273 E_TRUTH 解锁。"
     }
@@ -192,6 +198,7 @@
     {
       "id": "S1",
       "node_id": "n_s1_arrive",
+      "character": "G-273",
       "time": "20:27",
       "place": "湖滨第三把绿色长椅",
       "short": "湖滨",
@@ -205,6 +212,7 @@
     {
       "id": "S2",
       "node_id": "n_s2_arrive",
+      "character": "G-273",
       "time": "21:47",
       "place": "柳浪闻莺 307 阶",
       "short": "柳浪",
@@ -217,6 +225,7 @@
     {
       "id": "S3",
       "node_id": "n_s3_arrive",
+      "character": "G-273",
       "time": "22:48",
       "place": "九溪理安寺裂钟",
       "short": "九溪",
@@ -228,6 +237,7 @@
     {
       "id": "S4",
       "node_id": "n_s4_arrive",
+      "character": "G-273",
       "time": "00:11",
       "place": "中山中路羊血弄 2 号",
       "short": "羊血",
@@ -240,6 +250,7 @@
     {
       "id": "S5",
       "node_id": "n_s5_arrive",
+      "character": "G-273",
       "time": "01:08",
       "place": "留下小学 203 琴房",
       "short": "留下",
@@ -252,6 +263,7 @@
     {
       "id": "S6",
       "node_id": "n_s6_arrive",
+      "character": "G-273",
       "time": "01:52",
       "place": "联庄站 B4 盾构井",
       "short": "联庄",
@@ -266,6 +278,7 @@
     {
       "id": "S7",
       "node_id": "n_s7_arrive",
+      "character": "G-273",
       "time": "04:17",
       "place": "平海街 1 号 · B3 货梯井",
       "short": "平海",
@@ -275,6 +288,60 @@
       "unlock_hint": "夜班 ≥5 班(终局)",
       "connections": [
         "S1"
+      ]
+    },
+    {
+      "id": "L1",
+      "node_id": "n_l1985_abacus_01",
+      "character": "linmou_1985",
+      "time": "17:30",
+      "place": "二轻物资财务科 · 算盘房",
+      "short": "算盘房",
+      "unlock": null,
+      "connections": [
+        "L2",
+        "L3",
+        "L4"
+      ]
+    },
+    {
+      "id": "L2",
+      "node_id": "n_l1985_boiler_01",
+      "character": "linmou_1985",
+      "time": "18:30",
+      "place": "二轻物资财务科 · 锅炉房后院",
+      "short": "锅炉房",
+      "unlock": null,
+      "connections": [
+        "L1",
+        "L3"
+      ]
+    },
+    {
+      "id": "L3",
+      "node_id": "n_l1985_archive_01",
+      "character": "linmou_1985",
+      "time": "19:30",
+      "place": "二轻物资财务科 · 档案室(地下半层)",
+      "short": "档案室",
+      "unlock": null,
+      "connections": [
+        "L1",
+        "L2",
+        "L4"
+      ]
+    },
+    {
+      "id": "L4",
+      "node_id": "n_l1985_pavilion_01",
+      "character": "linmou_1985",
+      "time": "21:00",
+      "place": "西湖锦带桥东侧凉亭",
+      "short": "凉亭",
+      "unlock": null,
+      "connections": [
+        "L1",
+        "L3"
       ]
     }
   ],
@@ -4497,75 +4564,30 @@
       ],
       "narrative": "(占位)",
       "show_hud": true,
-      "choices": [
-        {
-          "text": "[01] 算盘房 — 交班 + 取最后一份拨款单。",
-          "next": "n_l1985_abacus_01",
-          "require": {
-            "not": {
+      "choices": [],
+      "_picker_endshift_choice": {
+        "text": "[05] 直接去湖边。",
+        "next": "n_l1985_lake_jump",
+        "require": {
+          "any_of": [
+            {
               "flags": {
-                "l_visited_abacus": true
+                "l_intent_release": true
+              }
+            },
+            {
+              "flags": {
+                "l_intent_regret": true
+              }
+            },
+            {
+              "flags": {
+                "l_intent_grievance": true
               }
             }
-          }
-        },
-        {
-          "text": "[02] 锅炉房 — 烧掉一些东西。",
-          "next": "n_l1985_boiler_01",
-          "require": {
-            "not": {
-              "flags": {
-                "l_visited_boiler": true
-              }
-            }
-          }
-        },
-        {
-          "text": "[03] 档案室 — 查 26 个签字人。",
-          "next": "n_l1985_archive_01",
-          "require": {
-            "not": {
-              "flags": {
-                "l_visited_archive": true
-              }
-            }
-          }
-        },
-        {
-          "text": "[04] 湖边凉亭 — 见一个老朋友。",
-          "next": "n_l1985_pavilion_01",
-          "require": {
-            "not": {
-              "flags": {
-                "l_visited_pavilion": true
-              }
-            }
-          }
-        },
-        {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
-          "require": {
-            "any_of": [
-              {
-                "flags": {
-                  "l_intent_release": true
-                }
-              },
-              {
-                "flags": {
-                  "l_intent_regret": true
-                }
-              },
-              {
-                "flags": {
-                  "l_intent_grievance": true
-                }
-              }
-            ]
-          }
+          ]
         }
-      ]
+      }
     },
     "n_l1985_abacus_01": {
       "scene": "SCENE",

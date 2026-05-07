@@ -22,7 +22,10 @@
       "narrative_variants": [
         {
           "if": {
-            "ending_seen": {"story_id": "杭州_v7", "ending_id": "E_TRUTH"}
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_TRUTH"
+            }
           },
           "text": "你站在二轻物资大院的过道。\n\n这条过道你走过几千次,但今晚——\n\n你忽然觉得,过道尽头那盏煤油应急灯,**不像是 1985 年的灯**。\n\n灯下那个值班保安胸前的工牌,你没看清,但**字母 G 和数字**,你一看就觉得熟。\n\n你今晚,还有 4 个地方要去。\n\n你忽然知道,这一夜你已经走过很多次了。"
         },
@@ -33,43 +36,30 @@
       ],
       "narrative": "(占位)",
       "show_hud": true,
-      "choices": [
-        {
-          "text": "[01] 算盘房 — 交班 + 取最后一份拨款单。",
-          "next": "n_l1985_abacus_01",
-          "require": {"not": {"flags": {"l_visited_abacus": true}}}
-        },
-        {
-          "text": "[02] 锅炉房 — 烧掉一些东西。",
-          "next": "n_l1985_boiler_01",
-          "require": {"not": {"flags": {"l_visited_boiler": true}}}
-        },
-        {
-          "text": "[03] 档案室 — 查 26 个签字人。",
-          "next": "n_l1985_archive_01",
-          "require": {"not": {"flags": {"l_visited_archive": true}}}
-        },
-        {
-          "text": "[04] 湖边凉亭 — 见一个老朋友。",
-          "next": "n_l1985_pavilion_01",
-          "require": {"not": {"flags": {"l_visited_pavilion": true}}}
-        },
-        {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
-          "require": {"flags": {"l_intent_release": true}}
-        },
-        {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
-          "require": {"flags": {"l_intent_regret": true}}
-        },
-        {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
-          "require": {"flags": {"l_intent_grievance": true}}
+      "choices": [],
+      "_picker_endshift_choice": {
+        "text": "[05] 直接去湖边。",
+        "next": "n_l1985_lake_jump",
+        "require": {
+          "any_of": [
+            {
+              "flags": {
+                "l_intent_release": true
+              }
+            },
+            {
+              "flags": {
+                "l_intent_regret": true
+              }
+            },
+            {
+              "flags": {
+                "l_intent_grievance": true
+              }
+            }
+          ]
         }
-      ]
+      }
     },
     "n_l1985_abacus_01": {
       "scene": "SCENE",
@@ -126,7 +116,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "拿着复印件,继续走。", "next": "n_l1985_landmark_picker"
+          "text": "拿着复印件,继续走。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -136,7 +127,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "向老李道别,继续走。", "next": "n_l1985_landmark_picker"
+          "text": "向老李道别,继续走。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -146,7 +138,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "抽完那支烟,离开。", "next": "n_l1985_landmark_picker"
+          "text": "抽完那支烟,离开。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -156,7 +149,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "继续走。", "next": "n_l1985_landmark_picker"
+          "text": "继续走。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -215,7 +209,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "走。", "next": "n_l1985_landmark_picker"
+          "text": "走。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -225,7 +220,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "走出锅炉房。", "next": "n_l1985_landmark_picker"
+          "text": "走出锅炉房。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -235,7 +231,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "走。", "next": "n_l1985_landmark_picker"
+          "text": "走。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -245,7 +242,8 @@
       "show_hud": false,
       "choices": [
         {
-          "text": "走过去。", "next": "n_l1985_landmark_picker"
+          "text": "走过去。",
+          "next": "n_l1985_landmark_picker"
         }
       ]
     },
@@ -303,7 +301,10 @@
       "narrative": "你把整份原件抽出来,卷起来,塞进蓝布人造革账册包。\n\n卷宗夹的扣子合不上了——里面少了一份。\n\n明天早上**有人**会发现。\n\n你没时间管了。\n\n你抬头看了一眼档案柜——\n\n柜门玻璃里有你自己的影子。\n\n影子里你脖子上挂着一块**铜印**。\n\n你低头摸自己脖子——什么也没有。\n\n但玻璃里那块铜印,**在发光**。\n\n你忽然听见湖水的声音,从档案室外面传过来。",
       "show_hud": false,
       "choices": [
-        {"text": "走。", "next": "n_l1985_landmark_picker"}
+        {
+          "text": "走。",
+          "next": "n_l1985_landmark_picker"
+        }
       ]
     },
     "n_l1985_archive_release": {
@@ -311,7 +312,10 @@
       "narrative": "你把卷宗合上,放回档案柜原位。\n\n柜门关上,锁的「啪」一声很轻。\n\n你倒退一步,**鞠了一躬**。\n\n不是给档案柜——\n\n是给那 25 个签字的人。\n\n他们大多数你都认识。\n\n张工程师,他女儿今年考上了浙大。\n陈科长,他下个月退休。\n小郑,他刚结婚 3 个月。\n\n**这些事不该牵进来**。\n\n你转身离开。\n\n包里只有你自己那份复印件。\n\n这一份,**够了**。",
       "show_hud": false,
       "choices": [
-        {"text": "走。", "next": "n_l1985_landmark_picker"}
+        {
+          "text": "走。",
+          "next": "n_l1985_landmark_picker"
+        }
       ]
     },
     "n_l1985_archive_regret": {
@@ -319,7 +323,10 @@
       "narrative": "你找到第 13 行——\n\n你自己的签名页。\n\n你**撕**了。\n\n沿着装订线,慢慢撕,一寸一寸——\n\n撕完后,卷宗里少了一页。\n\n少了一页就**不完整**。\n\n不完整的卷宗,法律效力会打折扣——\n\n但那 25 个签字人,**还在上面**。\n\n你忽然意识到自己刚才在干什么:\n\n你在**给自己脱罪**。\n\n你站在档案室中间,撕下来的纸捏在手里,捏皱了。\n\n你低声说:「对不起。」\n\n但你**没有**把它放回去。\n\n你把它折好,塞进西装内袋,挨着心脏。",
       "show_hud": false,
       "choices": [
-        {"text": "走。", "next": "n_l1985_landmark_picker"}
+        {
+          "text": "走。",
+          "next": "n_l1985_landmark_picker"
+        }
       ]
     },
     "n_l1985_archive_exposed": {
@@ -327,7 +334,10 @@
       "narrative": "你把卷宗摊开,放在档案室中间那张桌子上。\n\n第 13 行你自己的签名,正对着门口。\n\n红章「调拨」鲜红。\n\n你倒退三步,转身。\n\n你出档案室。\n\n你听见过道尽头有人**奔跑**的脚步声——\n\n是值班员小赵。\n\n他看见档案室的门**没锁**。\n\n他吹哨子。\n\n远处广播喇叭在你出门的瞬间,**第二次响起**。",
       "show_hud": false,
       "choices": [
-        {"text": "走。", "next": "n_l1985_landmark_picker"}
+        {
+          "text": "走。",
+          "next": "n_l1985_landmark_picker"
+        }
       ]
     },
     "n_l1985_pavilion_01": {
@@ -385,7 +395,10 @@
       "narrative": "你看着张某,声音很慢,但很硬:\n\n「我们一起去自首。\n  你和我,1972 年一起进二轻物资的那一年起,我就信你。\n  你现在还有一次机会。」\n\n张某沉默了很久。\n\n他抽出一支烟,点燃,**手在抖**。\n\n他说:\n\n「老林,我**不能**。\n  你知道这事**不止 26 个人**。\n  我上面还有人。\n  我去自首,我老婆孩子明天就**没了**。」\n\n他把烟塞进你手里。\n\n「你想去**你**去。我送你到湖边。\n  到湖边之后,我们**不认识**。」\n\n你看着他——\n\n这个 1972 年和你一起进二轻物资的张某,**眼神已经不是以前的张某**。\n\n你站起来。\n\n你和他,**走完最后这段路**。",
       "show_hud": false,
       "choices": [
-        {"text": "走向湖边。", "next": "n_l1985_lake_jump"}
+        {
+          "text": "走向湖边。",
+          "next": "n_l1985_lake_jump"
+        }
       ]
     },
     "n_l1985_pavilion_release": {
@@ -393,7 +406,10 @@
       "narrative": "你坐下。\n\n你和张某都不说话。\n\n湖面上,末班船的汽笛响了。22:30 整。\n\n船灯远远的,像一颗将要熄灭的烟头。\n\n张某忽然说:\n\n「老林,你我这一辈子,都是给别人签字的人。\n  签错了——我们就**得自己抵**。\n  你今晚来这里,我懂你的意思。」\n\n他没再多说。\n\n他从怀里摸出一个搪瓷缸,白底红字「劳动光荣」——\n\n和你那个**一模一样**。\n\n他递给你。\n\n你接了。\n\n你和他对碰了一下——\n\n搪瓷碰搪瓷,**「叮」**一声,在湖边夜雾里散得很远。\n\n你站起来。\n\n你不需要再说什么了。",
       "show_hud": false,
       "choices": [
-        {"text": "走向湖边。", "next": "n_l1985_lake_jump"}
+        {
+          "text": "走向湖边。",
+          "next": "n_l1985_lake_jump"
+        }
       ]
     },
     "n_l1985_pavilion_regret": {
@@ -401,7 +417,10 @@
       "narrative": "你看着张某,慢慢说:\n\n「老张,你听我说。\n  我已经把那 26 联签复印件,**塞进老李的抽屉了**。\n  明天早上 8 点,他会发现。\n  你今晚就走——上海、广州、哪都好——不要回来。」\n\n张某愣住。\n\n他看着你,眼睛里全是不可置信。\n\n他说:「老林,你**疯了**?\n  老李那个人,他会**先来找你**——\n  他会先告诉你『小林,你看错了』,然后他会去**烧**那份复印件。\n  你以为你保了我?\n  你**害**了老李。」\n\n你心里**塌了一块**。\n\n你站起来。\n\n你已经没有时间回头了。\n\n你走向湖边——\n\n你脑子里只有一句话:\n\n**「对不起小李。」**",
       "show_hud": false,
       "choices": [
-        {"text": "走向湖边。", "next": "n_l1985_lake_jump"}
+        {
+          "text": "走向湖边。",
+          "next": "n_l1985_lake_jump"
+        }
       ]
     },
     "n_l1985_pavilion_exposed": {
@@ -409,7 +428,10 @@
       "narrative": "你扑过去。\n\n张某没反抗——他比你瘦,比你矮。\n\n你的两手扼在他脖子上。\n\n他的眼睛慢慢瞪大。\n\n但你**做不到**。\n\n你松手。\n\n张某瘫在石凳上,咳嗽,缓过来。\n\n他没说话。\n\n他**吹了一声口哨**——\n\n短促,尖利。\n\n你知道这个口哨。\n\n这是党委办公室那条暗线的口哨。\n\n你听见湖边树丛里有脚步声站起来——\n\n3 个人,从你看不见的地方,慢慢走出来。\n\n他们手里拿着**麻绳**。",
       "show_hud": false,
       "choices": [
-        {"text": "(被押向湖边)", "next": "n_l1985_lake_jump"}
+        {
+          "text": "(被押向湖边)",
+          "next": "n_l1985_lake_jump"
+        }
       ]
     },
     "n_l1985_lake_jump": {
@@ -421,28 +443,47 @@
         {
           "text": "(自动)",
           "next": "E_LINMOU_RELEASE",
-          "require": {"flags": {"l_intent_release": true}}
+          "require": {
+            "flags": {
+              "l_intent_release": true
+            }
+          }
         },
         {
           "text": "(自动)",
           "next": "E_LINMOU_REGRET",
-          "require": {"flags": {"l_intent_regret": true}}
+          "require": {
+            "flags": {
+              "l_intent_regret": true
+            }
+          }
         },
         {
           "text": "(自动)",
           "next": "E_LINMOU_GRIEVANCE",
-          "require": {"flags": {"l_intent_grievance": true}}
+          "require": {
+            "flags": {
+              "l_intent_grievance": true
+            }
+          }
         },
         {
           "text": "(自动)",
           "next": "E_LINMOU_EXPOSED",
-          "require": {"flags": {"l_exposed": true}}
+          "require": {
+            "flags": {
+              "l_exposed": true
+            }
+          }
         }
       ]
     },
     "E_LINMOU_RELEASE": {
       "scene": "ENDING",
-      "_lore_canon": {"must_die": true, "intent": "释"},
+      "_lore_canon": {
+        "must_die": true,
+        "intent": "释"
+      },
       "ending_type": "E_LINMOU_RELEASE",
       "narrative": "1985 年 10 月 18 日 23:40。\n\n西湖北山街锦带桥东侧。\n\n你站在岸边。\n\n夜雾从孤山方向漫过来。\n\n你脱下蓝色中山装,叠好,放在岸边石头上。\n\n你把蓝布人造革账册包,**带进水里**。\n\n包里只有一份你自己的复印件。\n\n你慢慢走进湖。\n\n水冷,但你不冷。\n\n你想起 1972 年第一次来二轻物资报到那一天——\n\n那一天你 34 岁,你妻子在医院生孩子。\n\n你那时候相信集体,相信组织,相信签字。\n\n你现在 47 岁。\n\n你**不再相信**了——\n\n但你不恨。\n\n你只是不想再签了。\n\n这一份带着我走。\n\n那 25 份留给你们。\n\n湖水到了脖子。\n\n你深吸一口气——\n\n空气里是桂花潮味,是杭州深秋的最后一点温度。\n\n你低头。\n\n水面合拢的瞬间,你听见末班船最后一声汽笛,从远远的湖心传来。\n\n— 释 —",
       "show_hud": false,
@@ -450,7 +491,10 @@
     },
     "E_LINMOU_REGRET": {
       "scene": "ENDING",
-      "_lore_canon": {"must_die": true, "intent": "悔"},
+      "_lore_canon": {
+        "must_die": true,
+        "intent": "悔"
+      },
       "ending_type": "E_LINMOU_REGRET",
       "narrative": "1985 年 10 月 18 日 23:40。\n\n西湖北山街锦带桥东侧。\n\n你站在岸边。\n\n你脑子里只有一句话:\n\n**「对不起小李。」**\n\n老李——你 1972 年第一次进二轻物资,他教你打算盘。\n他算盘上的搪瓷缸白底红字「劳动光荣」,和你那个**一模一样**。\n\n他明天 8 点开抽屉,他会先**害怕**——然后他会**烧**——然后党委会**先找他**——\n\n你害了他。\n\n你**没有**给他选择。\n\n你脱下中山装,叠好。\n\n你把账册包放在岸边——**没有带进水里**——你希望天亮的时候,有人能找到它,**不要怪老李**。\n\n你走进湖。\n\n水冷,你的牙打颤。\n\n你不想死,你想回头去算盘房,把那份复印件从老李抽屉里**拿出来**——\n\n但你**走不回去了**。\n\n你站在水里,水到胸口。\n\n你低头。\n\n你看见水面上自己的脸——\n\n眼睛里**全是泪**。\n\n— 悔 —",
       "show_hud": false,
@@ -458,7 +502,10 @@
     },
     "E_LINMOU_GRIEVANCE": {
       "scene": "ENDING",
-      "_lore_canon": {"must_die": true, "intent": "冤"},
+      "_lore_canon": {
+        "must_die": true,
+        "intent": "冤"
+      },
       "ending_type": "E_LINMOU_GRIEVANCE",
       "narrative": "1985 年 10 月 18 日 23:40。\n\n西湖北山街锦带桥东侧。\n\n你站在岸边。\n\n蓝布人造革账册包**鼓鼓的**——里面有 27 份。\n\n你自己的 1 份。从锅炉房抢的 6 笔调拨。从档案室偷的 26 联签原件。\n\n你**全部**带进湖。\n\n你恨。\n\n你不恨那 25 个签字的人——他们和你一样,只是签字。\n\n你恨**让你们签字的那个人**。\n\n你恨**让 26 个老国营人觉得『不签会死』的那个时代**。\n\n你脱下中山装,**没有叠**——你把它**扔**在岸边。\n\n你走进湖。\n\n水冷,你不冷。\n\n你怀里抱着账册包。\n\n包很重。\n\n你想——\n\n如果鬼魂可以**带账走**,如果**水底有审判**,如果 1985 年之后还有 1986、1987……\n\n如果**有一天**有人会下到湖底,把这份账翻出来——\n\n你今晚不白死。\n\n你低头。\n\n水面合拢的瞬间,你怀里的账册包**沉得很快**。\n\n你听见自己心里说一句:\n\n**「我等。」**\n\n— 冤 —",
       "show_hud": false,
@@ -466,7 +513,10 @@
     },
     "E_LINMOU_EXPOSED": {
       "scene": "ENDING",
-      "_lore_canon": {"must_die": true, "intent": "曝光"},
+      "_lore_canon": {
+        "must_die": true,
+        "intent": "曝光"
+      },
       "ending_type": "E_LINMOU_EXPOSED",
       "narrative": "1985 年 10 月 18 日 23:35。\n\n西湖北山街锦带桥东侧。\n\n你被押到岸边。\n\n3 个人——你不认识他们,但他们的口哨,你听过。\n\n他们没说一句话。\n\n他们让你**跪**。\n\n你跪下。\n\n膝盖在湿草地上,凉。\n\n远处大院的广播喇叭还在响——\n\n「请财务科林志诚同志立即到党委办公室。\n  请财务科林志诚同志……」\n\n声音是党委王书记的,带着杭州本地腔。\n\n你抬头看湖。\n\n夜雾很浓。\n\n你看不见对岸。\n\n其中一个人,从背后**推**了你一下。\n\n你向前栽倒。\n\n水冷。\n\n你想挣扎,但脖子上有麻绳。\n\n你没力气。\n\n岸上有人在抽烟——\n\n烟头红光,在你视线最后一瞬,像 1985 年最后一颗**没有月亮的星**。\n\n你没留下遗书。\n\n你没留下账册。\n\n你的蓝布账册包,被他们拿走了。\n\n— 曝光 —\n\n(明天大院广播会说:林志诚同志昨夜不慎落水,经抢救无效,因公殉职。)",
       "show_hud": false,

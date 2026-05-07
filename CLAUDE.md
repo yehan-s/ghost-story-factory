@@ -2,6 +2,38 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 🔴 第一公理:这是沙盒,不是死剧本(ADR-010)
+
+**`hangzhou_yebanbaoan` 周目实质拓扑 = 沙盒**,不是分支剧本树。下次写剧本 / 加角色 / 改场景前,先想这条:
+
+**沙盒原语(必须复用,不许重造)**:
+- `_is_map_picker: true` hub 节点 + `landmark_map` + `connections`(地标网,非辐射)
+- `_is_tool: true` + `effects.stay: true`(可反复访问的工具节点)
+- `narrative_variants[].if.{deduction_resolved | foreshadow_resolved | theme_resolved | ending_seen}` 反应切档
+- `reaction_contracts`(per_run / cross_run trigger_type)
+- `endings_seen[story_id]: list[ending_id]` 跨周目联动(0 新字段)
+
+**"死剧本"反模式黑名单(评审一票否决)**:
+- ❌ entry → 单链 → ending(没有 picker hub)
+- ❌ 地标只能从 picker 进,不能横向跳(没有 connections,只是辐射)
+- ❌ 工具节点 `next` 直接跳走(应该 `stay: true`)
+- ❌ NPC 反复访问 narrative 不变(没有 variants + 反应 clause)
+- ❌ 加 `flags` 镜像伏笔/推论解开(违反 ADR-007/008 单一真相源)
+- ❌ 加 state 字段表达"玩家见过 X"(查 `endings_seen`/`foreshadows_seen`/`deductions_resolved` 即可)
+
+**新可玩角色"沙盒最小骨架"**(少于这个直接打回):
+1. ≥ 1 个 `_is_map_picker` hub
+2. ≥ 4 地标,每个 ≥ 1 条 `connections` 邻边
+3. ≥ 2 个 `_is_tool` 节点
+4. ≥ 1 处 `stay: true` 工具自循环
+5. ≥ 1 处反应 clause variants
+
+**参考实现**:G-273 周目(`n_landmark_picker` 56 入边 + 7 地标 + 9 工具)
+**契约 ADR**:`docs/architecture/ADR-010-sandbox-topology-contract.md`
+**已知 sandbox debt**:linmou Act 1(27 节点 / 0 工具 / 单向辐射,见 ADR-009)
+
+---
+
 ## 开发任务工作流(强制)
 
 收到任何"开发任务"指令时,助手必须先调用 `script-review-team` skill,

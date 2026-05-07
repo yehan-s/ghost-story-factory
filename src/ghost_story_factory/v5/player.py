@@ -854,6 +854,9 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             initial_state["inv"] = list(cdef["initial_inv"])
         if cdef.get("initial_flags"):
             initial_state["flags"] = dict(cdef["initial_flags"])
+        # ADR-010 沙盒契约:角色周目自带"已知地标"集合(默认 G-273=[S1])
+        if cdef.get("initial_known_landmarks"):
+            initial_state["known_landmarks"] = list(cdef["initial_known_landmarks"])
 
     story_id = str(tree.get("story_id") or tree_path.stem)
     # 反应机制(ADR-008):State 持 save_manager + story_id + tree 引用,

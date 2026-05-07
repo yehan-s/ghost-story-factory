@@ -5,6 +5,22 @@
 
 ---
 
+## 🔴 共同基线:这是沙盒(ADR-010)
+
+**所有 7 个角色在审查前必须先确认**:任务是否符合**沙盒拓扑契约**(`docs/architecture/ADR-010-sandbox-topology-contract.md`)。
+任何"死剧本反模式"在 7 人中任意一票一票否决,Chief Editor 在汇总时必须列入"决议"节。
+
+**沙盒原语清单**(出现在任何角色判定相关度时,自动深度参与):
+- picker hub(`_is_map_picker: true`)+ `landmark_map.connections`(网,非辐射)
+- `_is_tool: true` + `effects.stay: true`(可重访工具节点)
+- `narrative_variants[].if.{deduction_resolved | foreshadow_resolved | theme_resolved | ending_seen}`
+- `reaction_contracts.{deductions, foreshadows, themes}` + trigger_type
+- `endings_seen[story_id]: list` 跨周目联动
+
+**死剧本黑名单**(评审一票否决):entry→单链→ending / 地标只能 picker 进 / 工具节点 `next` 跳走 / NPC 复访不分化 / `flags` 镜像兑现状态 / 加 state 字段表达"见过 X"。
+
+---
+
 ## 1. Chief Editor — 首席编辑·连续性审查官
 
 ### 一句话职责
@@ -225,10 +241,10 @@
 
 ---
 
-## 6. Topology Designer — 拓扑设计师
+## 6. Topology Designer — 拓扑设计师 + **沙盒守门人**(ADR-010)
 
 ### 一句话职责
-守图论简洁——质问每个新增 flag/状态"真的需要全局吗?",防止状态空间爆炸。
+守图论简洁 + 守沙盒契约 — 质问每个新增 flag/状态"真的需要全局吗?",同时**强制每个新角色周目 / 新场景符合"沙盒最小骨架"**(picker hub + 4 地标 connections + 2 工具节点 + 1 stay 自循环 + 1 反应 clause)。
 
 ### 完整职责
 - 7 地标 + 13 NPC + 7 场景 = 27 节点的图论结构维护
@@ -236,6 +252,12 @@
 - 节点合并/拆分/重写决策(用户已批准局部重构)
 - 可达性证明:任何修改后所有结局/CG/知识仍可达
 - 与 State Architect 配对工作:Topology 管"状态有几个维度",State 管"状态怎么命名"
+- **沙盒契约守护**(ADR-010):任何新角色周目 / 新场景的提案必须验证 5 项沙盒最小骨架,缺一直接打回:
+  1. ≥ 1 个 `_is_map_picker: true` hub 节点
+  2. ≥ 4 地标,每个 ≥ 1 条 `connections` 邻边(网,非辐射)
+  3. ≥ 2 个 `_is_tool: true` 节点
+  4. ≥ 1 处 `effects.stay: true` 自循环
+  5. ≥ 1 处 `narrative_variants[].if.{deduction_resolved | foreshadow_resolved | theme_resolved | ending_seen}` 反应 clause
 
 ### 判定相关度的标准
 - **深度参与**:涉及节点结构、跨节点跳转、新增节点/场景/NPC 的任务
@@ -253,6 +275,7 @@
 - 节点合并/拆分/重写的合理性(用户允许局部重构)
 - 可达性:任何修改后所有结局/CG/知识仍可达
 - "这个新增 flag 是必要的全局变量吗?能不能降级?"
+- **沙盒契约**(ADR-010):新角色周目 / 新场景必须满足"沙盒最小骨架" 5 项,死剧本反模式一票否决
 
 ## 你的工具
 - tools/path_explorer.py(项目内已有的全路径分析工具)

@@ -53,6 +53,24 @@ def _meets(require: Optional[Dict[str, Any]], state) -> bool:
     return True
 
 
+def _landmarks_for(tree: Dict[str, Any], state) -> List[Dict[str, Any]]:
+    """ADR-010 沙盒契约:按 state.character 过滤 landmark_map。
+
+    匹配规则:
+    - 当前 character == landmark.character → 显示
+    - landmark.character 缺失(None)→ 视为通用,所有角色显示(向后兼容)
+    - 其它 → 隐藏(linmou 不显示 G-273 的 S1-S7,反之亦然)
+    """
+    landmark_map = tree.get("landmark_map") or []
+    character = getattr(state, "character", None) if state is not None else None
+    if not character:
+        return list(landmark_map)
+    return [
+        lm for lm in landmark_map
+        if lm.get("character") in (None, character)
+    ]
+
+
 def landmark_status(landmark: Dict[str, Any], state, current_node_id: Optional[str]) -> str:
     """返回单个地标的状态:'visited' / 'current' / 'available' / 'locked'。"""
     sid = landmark.get("id", "")
@@ -228,7 +246,7 @@ def format_map_lines(
       "footer"       — 底部提示
     """
     lines: List[Dict[str, Any]] = []
-    landmark_map = tree.get("landmark_map") or []
+    landmark_map = _landmarks_for(tree, state)
     tools = tree.get("tools") or []
 
     # 段:点状拓扑地图
@@ -328,7 +346,7 @@ def expand_known_landmarks(state, tree: Dict[str, Any], effects: Optional[Dict[s
       1. effects.landmark_visited X → 把 X 自己 + X.connections 加进 known
       2. effects.reveal_landmarks ["S6", ...] → 显式揭示
     """
-    landmark_map = (tree or {}).get("landmark_map") or []
+    landmark_map = _landmarks_for(tree or {}, state)
     by_id = {lm.get("id", ""): lm for lm in landmark_map}
     newly: List[str] = []
 
@@ -383,6 +401,7 @@ def reachable_landmarks(
 def picker_choices(
     tree: Dict[str, Any],
     state,
+    node: Optional[Dict[str, Any]] = None,
 ) -> List[Dict[str, Any]]:
     """生成 picker 节点的动态选项列表(自由移动版)。
 
@@ -399,7 +418,7 @@ def picker_choices(
       - shifts_completed ≥ 4 显示"结束夜班"
       - 锁定地标显示但带提示
     """
-    landmark_map = tree.get("landmark_map") or []
+    landmark_map = _landmarks_for(tree, state)
     tools = tree.get("tools") or []
     by_id = {lm.get("id", ""): lm for lm in landmark_map}
     visited = set(getattr(state, "visited_landmarks", None) or [])
@@ -464,8 +483,19 @@ def picker_choices(
             "_tool_id": tool.get("id"),
         })
 
-    # 结束夜班(shifts_completed ≥ 4 解锁)
-    if getattr(state, "shifts_completed", 0) >= 4:
+    # 退出节奏 endshift —
+    # 优先节点级 `_picker_endshift_choice`(由 fragment 自定义),否则走 G-273 默认。
+    custom_endshift = (node or {}).get("_picker_endshift_choice") if node else None
+    if custom_endshift:
+        require = custom_endshift.get("require")
+        if not require or _meets(require, state):
+            choices.append({
+                "text": custom_endshift.get("text", "[结束] 离开"),
+                "next": custom_endshift.get("next"),
+                "_picker_kind": "endshift",
+            })
+    elif getattr(state, "shifts_completed", 0) >= 4:
+        # G-273 兜底:打满 4 班可下班
         choices.append({
             "text": "[结束] 直接交班 — 你已经打了 4 个点,可以下班了。",
             "next": "n_scene_morning_lakeside",

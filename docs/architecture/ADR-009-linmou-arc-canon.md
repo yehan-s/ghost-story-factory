@@ -1,10 +1,11 @@
 # ADR-009: linmou_1985 角色周目契约 + 跨周目联动
 
 ## Status
-Accepted
+Accepted(本 ADR P0 部分已实现)
+**已知 sandbox debt**:见末尾"Sandbox Debt(ADR-010 后补充)"节,Act 2/3 必须偿还。
 
 ## Date
-2026-05-07
+2026-05-07(P0 实施);2026-05-08(ADR-010 后追加 sandbox debt 节)
 
 ## Context
 
@@ -125,10 +126,35 @@ Accepted
 - INV-2(无边逃出)在 P0 是 trivial(Act 2/3 不存在),P1 上线时要立刻补
   - **Mitigation**:Phase 拆分文档明示;Phase 4 完成立即把 INV-2 真实化
 
+## Sandbox Debt(ADR-010 后追加,2026-05-08)
+
+P0 落地后实测发现:**linmou Act 1 是沙盒"拓扑骨架",但没有沙盒机制内容**。诚实账单如下,Act 2/3 必须偿还:
+
+| Sandbox 原语 | G-273 周目(参考) | linmou Act 1 现状 | 偿还时机 |
+|---|---|---|---|
+| `_is_map_picker` hub | 1 个(56 入边) | 1 个(7 入边) ✅ | — |
+| 地标 `connections` 邻接 | 7 地标全网状连接 | 4 地标**全部从 picker 单向辐射,0 邻接** | Act 2 |
+| `_is_tool` 工具节点 | 9 个 | **0 个** | Act 2(账册包/搪瓷缸/26 联签作物件) |
+| `effects.stay: true` 自循环 | 9 处 | **0 处** | Act 2 |
+| `narrative_variants` 反应 clause | 11 处 | 1 处(picker 反应) | Act 3 |
+| 总节点数 | 50+ | 27(目标 50) | Act 2 补 23 节点 |
+
+**核心问题**:Act 1 节点 = 单点决策机,picker → 地标 → 选择 → ending。**没有"反复回访 / 物件互动 / 横向移动"**,这是死剧本结构,只是用了 picker 包装。
+
+**Act 2/3 强制偿还规则**(ADR-010 沙盒契约):
+1. Act 2 鬼身补票必须满足"沙盒最小骨架" 5 项,否则评审一票否决
+2. **Act 1 不必回炉**(已合入,死代码),但 Act 2 引入的新地标必须 connect 到 Act 1 地标(让 Act 1 获得邻接)
+3. 账册包 / 搪瓷缸 / 26 联签 在 Act 2 升级为 `_is_tool` 物件节点(玩家可在湖底反复"摩挲"获得叙述切档)
+4. P1 加 INV-2(无边逃出)真实化时,顺带补 sandbox 机制
+
+**审查问询(下次开发任务必问)**:
+- "新提案是 ADR-009 P1 Act 2 吗?如果是,沙盒最小骨架 5 项满足了吗?"
+- "Act 1 的 27 节点拓扑是不是被复制粘贴成 Act 2 的死结构了?"
+
 ## 参考
 
 - 评审报告: `docs/team-reviews/2026-05-07-linmou-arc.md`
 - 实施 plan: `docs/superpowers/plans/2026-05-07-linmou-arc-act1.md`
 - Lore 数据: `data/linmou_act1_lore.json`
 - 守门工具: `tools/audit_paths_linmou.py` + `tools/audit_reactions.py`(DEAD_ENDING_SEEN)
-- 关联 ADR: ADR-007(状态空间契约)、ADR-008(戏剧化反应机制)
+- 关联 ADR: ADR-007(状态空间契约)、ADR-008(戏剧化反应机制)、**ADR-010(沙盒拓扑契约)**

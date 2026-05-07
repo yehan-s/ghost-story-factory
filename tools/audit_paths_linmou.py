@@ -21,7 +21,7 @@ import json
 import sys
 from collections import deque
 from pathlib import Path
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 
 
 LINMOU_ENDINGS: Set[str] = {
@@ -39,11 +39,26 @@ LAKE_JUMP_NODE = "n_l1985_lake_jump"
 CANON_INTENTS: Set[str] = {"释", "悔", "冤", "曝光"}
 
 
-def _bfs_reachable(nodes: Dict[str, Any], start: str) -> Set[str]:
+def _bfs_reachable(
+    nodes: Dict[str, Any],
+    start: str,
+    extra_entries: Optional[List[str]] = None,
+) -> Set[str]:
+    """BFS 可达性。
+
+    ADR-010 沙盒契约:`_is_map_picker` 节点的 choices 由引擎动态生成
+    (从 STORY_META.landmark_map),静态扫不到。所以接受 extra_entries 列表
+    (通常是 landmark_map[*].node_id 和 _picker_endshift_choice.next),
+    把它们也算入 BFS 起点。
+    """
     if not start or start not in nodes:
         return set()
-    seen = {start}
-    q = deque([start])
+    entries: Set[str] = {start}
+    for nid in (extra_entries or []):
+        if nid in nodes:
+            entries.add(nid)
+    seen = set(entries)
+    q = deque(entries)
     while q:
         cur = q.popleft()
         node = nodes.get(cur) or {}
@@ -54,6 +69,13 @@ def _bfs_reachable(nodes: Dict[str, Any], start: str) -> Set[str]:
                 q.append(nxt)
         for nv in node.get("next_variants") or []:
             nxt = nv.get("next")
+            if nxt and nxt in nodes and nxt not in seen:
+                seen.add(nxt)
+                q.append(nxt)
+        # picker 节点的 _picker_endshift_choice.next
+        ec = node.get("_picker_endshift_choice")
+        if ec:
+            nxt = ec.get("next")
             if nxt and nxt in nodes and nxt not in seen:
                 seen.add(nxt)
                 q.append(nxt)
@@ -77,11 +99,24 @@ def audit(tree_path: Path) -> Dict[str, Any]:
             "problems": [],
         }
 
-    reachable = _bfs_reachable(nodes, start)
+    # ADR-010 沙盒契约:linmou picker 是 _is_map_picker,choices 由引擎从
+    # landmark_map 动态生成 — 把 linmou 的 4 地标 node_id 也作为 BFS 入口。
+    extra_entries: List[str] = []
+    for lm in (tree.get("landmark_map") or []):
+        if lm.get("character") == "linmou_1985":
+            nid = lm.get("node_id")
+            if nid:
+                extra_entries.append(nid)
+
+    reachable = _bfs_reachable(nodes, start, extra_entries=extra_entries)
 
     # INV-1: 所有终态 ∈ 4 ending
+    # ADR-010 沙盒契约:_is_map_picker 节点的 choices 由引擎动态生成,
+    # 静态扫到 choices=[] 不代表 terminal,跳过 INV-1。
     for nid in reachable:
         node = nodes[nid] or {}
+        if node.get("_is_map_picker"):
+            continue
         if not (node.get("choices") or []):
             if nid not in LINMOU_ENDINGS:
                 problems.append({
