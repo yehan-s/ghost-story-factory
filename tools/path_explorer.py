@@ -263,6 +263,10 @@ class DynamicReport:
     inv_max_size: int = 0
     explored_state_count: int = 0
     truncated_at_depth: int = 0
+    # variant 触发记录:(node_id, "narrative", variant_idx) / (node_id, "next", choice_idx, variant_idx)
+    # 在阶段 B 模拟中,任何状态下被 meets() 的 variant 计为命中
+    hit_narrative_variants: Set[Tuple[str, int]] = field(default_factory=set)
+    hit_next_variants: Set[Tuple[str, int, int]] = field(default_factory=set)
 
 
 def explore(tree: Dict[str, Any], max_depth: int = 80, max_states: int = 200_000) -> DynamicReport:
@@ -340,12 +344,20 @@ def explore(tree: Dict[str, Any], max_depth: int = 80, max_states: int = 200_000
         report.gr_max = max(report.gr_max, state.GR)
         report.gr_min = min(report.gr_min, state.GR)
         report.inv_max_size = max(report.inv_max_size, len(state.inv))
+        # 记录该状态下被命中的 narrative_variants(每个 if 命中即标记)
+        for v_idx, nv in enumerate(node.get("narrative_variants") or []):
+            if meets(state, nv.get("if") or {}):
+                report.hit_narrative_variants.add((cur_id, v_idx))
         if node.get("is_ending"):
             continue
         if depth >= max_depth:
             report.truncated_at_depth += 1
             continue
         for idx, ch in enumerate(node.get("choices") or []):
+            # 记录该状态下被命中的 next_variants(每个 if 命中即标记)
+            for v_idx, nxv in enumerate(ch.get("next_variants") or []):
+                if meets(state, nxv.get("if") or {}):
+                    report.hit_next_variants.add((cur_id, idx, v_idx))
             if not meets(state, ch.get("require")):
                 continue
             nxt = resolve_next(ch, state)
@@ -364,6 +376,235 @@ def explore(tree: Dict[str, Any], max_depth: int = 80, max_states: int = 200_000
 
     report.explored_state_count = len(visited_state)
     return report
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 盲区补丁 1: variant 触发覆盖
+# ─────────────────────────────────────────────────────────────────────
+
+@dataclass
+class VariantsCoverage:
+    total_variants: int = 0
+    hit_count: int = 0
+    miss_count: int = 0
+    misses: List[Dict[str, Any]] = field(default_factory=list)
+    # 每条 miss: {node_id, variant_index, kind: "narrative"|"next", choice_index?, if}
+
+
+def analyze_variants_coverage(tree: Dict[str, Any], dyn: DynamicReport) -> VariantsCoverage:
+    """统计 narrative_variants / next_variants 是否被任何已探索状态触发。
+
+    依赖 explore() 在阶段 B 收集的 hit_* 集合。状态空间有 max_states cap,
+    所以"miss"只代表"在已探索状态下永不命中",仍然是合理的预警信号。
+    """
+    nodes: Dict[str, Dict[str, Any]] = tree.get("nodes", {}) or {}
+    cov = VariantsCoverage()
+
+    for nid, node in nodes.items():
+        # narrative_variants
+        for v_idx, nv in enumerate(node.get("narrative_variants") or []):
+            cov.total_variants += 1
+            if (nid, v_idx) in dyn.hit_narrative_variants:
+                cov.hit_count += 1
+            else:
+                cov.miss_count += 1
+                cov.misses.append({
+                    "node_id": nid,
+                    "variant_index": v_idx,
+                    "kind": "narrative",
+                    "if": nv.get("if") or {},
+                })
+        # next_variants(每个 choice 内部)
+        for ch_idx, ch in enumerate(node.get("choices") or []):
+            for v_idx, nxv in enumerate(ch.get("next_variants") or []):
+                cov.total_variants += 1
+                if (nid, ch_idx, v_idx) in dyn.hit_next_variants:
+                    cov.hit_count += 1
+                else:
+                    cov.miss_count += 1
+                    cov.misses.append({
+                        "node_id": nid,
+                        "variant_index": v_idx,
+                        "kind": "next",
+                        "choice_index": ch_idx,
+                        "if": nxv.get("if") or {},
+                    })
+
+    return cov
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 盲区补丁 2: orphan require key(只 require 不 set 的 flag / inv item)
+# ─────────────────────────────────────────────────────────────────────
+
+@dataclass
+class OrphanKeys:
+    flag_orphans: List[Dict[str, Any]] = field(default_factory=list)
+    inv_orphans: List[Dict[str, Any]] = field(default_factory=list)
+    # 每条:{key, required_by: [node_ids]}
+
+
+def _walk_require_keys(require: Optional[Dict[str, Any]]) -> Tuple[Set[str], Set[str]]:
+    """递归收集 require 中引用的 (flag_keys, inv_items)。"""
+    flags: Set[str] = set()
+    inv: Set[str] = set()
+    if not require or not isinstance(require, dict):
+        return flags, inv
+    for k, v in (require.get("flags") or {}).items():
+        flags.add(str(k))
+    for it in require.get("inv_has", []) or []:
+        inv.add(str(it))
+    for it in require.get("inv_lacks", []) or []:
+        inv.add(str(it))
+    # 递归 any_of / all_of / not
+    for sub in require.get("any_of", []) or []:
+        f, i = _walk_require_keys(sub)
+        flags |= f
+        inv |= i
+    for sub in require.get("all_of", []) or []:
+        f, i = _walk_require_keys(sub)
+        flags |= f
+        inv |= i
+    if "not" in require:
+        f, i = _walk_require_keys(require["not"])
+        flags |= f
+        inv |= i
+    return flags, inv
+
+
+def _walk_effect_keys(effects: Optional[Dict[str, Any]]) -> Tuple[Set[str], Set[str]]:
+    """收集 effects 中 set 过的 (flag_keys, inv_items)。"""
+    flags: Set[str] = set()
+    inv: Set[str] = set()
+    if not effects or not isinstance(effects, dict):
+        return flags, inv
+    for k in (effects.get("flags") or {}).keys():
+        flags.add(str(k))
+    for it in effects.get("inv_add", []) or []:
+        inv.add(str(it))
+    # inv_remove 也算"被引用过",玩家可能曾持有
+    for it in effects.get("inv_remove", []) or []:
+        inv.add(str(it))
+    return flags, inv
+
+
+def analyze_orphan_keys(tree: Dict[str, Any]) -> OrphanKeys:
+    """扫描全树:require 引用了 flag/inv item,但 effects 中无人 set/add 过。"""
+    nodes: Dict[str, Dict[str, Any]] = tree.get("nodes", {}) or {}
+    initial = tree.get("initial_state", {}) or {}
+
+    # 初始 state 中已存在的 flag/inv 也算"已 set"
+    set_flags: Set[str] = set((initial.get("flags") or {}).keys())
+    set_inv: Set[str] = set(initial.get("inv", []) or [])
+
+    # require 引用方:{flag_key: [node_ids], ...}
+    flag_required_by: Dict[str, List[str]] = defaultdict(list)
+    inv_required_by: Dict[str, List[str]] = defaultdict(list)
+
+    for nid, node in nodes.items():
+        # narrative_variants 的 if 也算 require
+        for nv in node.get("narrative_variants") or []:
+            f, i = _walk_require_keys(nv.get("if") or {})
+            for k in f:
+                if nid not in flag_required_by[k]:
+                    flag_required_by[k].append(nid)
+            for k in i:
+                if nid not in inv_required_by[k]:
+                    inv_required_by[k].append(nid)
+        for ch in node.get("choices") or []:
+            f, i = _walk_require_keys(ch.get("require") or {})
+            for k in f:
+                if nid not in flag_required_by[k]:
+                    flag_required_by[k].append(nid)
+            for k in i:
+                if nid not in inv_required_by[k]:
+                    inv_required_by[k].append(nid)
+            # next_variants 的 if 也算 require
+            for nxv in ch.get("next_variants") or []:
+                f, i = _walk_require_keys(nxv.get("if") or {})
+                for k in f:
+                    if nid not in flag_required_by[k]:
+                        flag_required_by[k].append(nid)
+                for k in i:
+                    if nid not in inv_required_by[k]:
+                        inv_required_by[k].append(nid)
+            # effects 收集
+            f, i = _walk_effect_keys(ch.get("effects") or {})
+            set_flags |= f
+            set_inv |= i
+
+    orphans = OrphanKeys()
+    for k, refs in sorted(flag_required_by.items()):
+        if k not in set_flags:
+            orphans.flag_orphans.append({"key": k, "required_by": refs})
+    for k, refs in sorted(inv_required_by.items()):
+        if k not in set_inv:
+            orphans.inv_orphans.append({"key": k, "required_by": refs})
+    return orphans
+
+
+# ─────────────────────────────────────────────────────────────────────
+# 盲区补丁 3: picker / tool 节点静态展开
+# ─────────────────────────────────────────────────────────────────────
+
+def _is_picker_node(nid: str, node: Dict[str, Any]) -> bool:
+    """识别地图选择器节点。判定标志(任一即是):
+       - 节点有 `_is_map_picker: true`
+       - 节点 `type` 字段为 "landmark_picker"
+       - 节点 ID 包含 "picker"
+       - 节点有 `picker_choices` 字段
+    """
+    if node.get("_is_map_picker"):
+        return True
+    if node.get("type") == "landmark_picker":
+        return True
+    if "picker_choices" in node:
+        return True
+    if "picker" in nid.lower():
+        return True
+    return False
+
+
+def analyze_picker_nodes(tree: Dict[str, Any]) -> List[Dict[str, Any]]:
+    """识别 picker 节点,静态展开 landmark_map 中的所有 node_id 作为 picker_paths。
+
+    返回每条:{node_id, picker_paths: [target_node_ids], static_choice_count, ...}
+    BFS 阶段 A 已经会展开这些静态 choices,这里只是显式地报告出来,
+    供报告中显示"picker 入口已经覆盖了多少条 landmark 路径"。
+    """
+    nodes: Dict[str, Dict[str, Any]] = tree.get("nodes", {}) or {}
+    landmark_map = tree.get("landmark_map") or []
+    landmark_node_ids = {str(lm.get("node_id")) for lm in landmark_map if lm.get("node_id")}
+
+    pickers: List[Dict[str, Any]] = []
+    for nid, node in nodes.items():
+        if not _is_picker_node(nid, node):
+            continue
+
+        # 1) 节点显式提供的 picker_choices(若有)
+        picker_paths: Set[str] = set()
+        for pc in node.get("picker_choices") or []:
+            tgt = pc.get("next") if isinstance(pc, dict) else None
+            if tgt:
+                picker_paths.add(str(tgt))
+
+        # 2) 静态 choices 中的 next/next_variants
+        static_choices = node.get("choices") or []
+        for ch in static_choices:
+            for tgt in all_possible_nexts(ch):
+                picker_paths.add(tgt)
+
+        # 3) landmark_map 中所有 landmark 的 node_id(picker 节点天然能进入它们)
+        picker_paths |= landmark_node_ids
+
+        pickers.append({
+            "node_id": nid,
+            "picker_paths": sorted(picker_paths),
+            "static_choice_count": len(static_choices),
+            "landmark_count": len(landmark_node_ids),
+        })
+
+    return pickers
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -386,7 +627,12 @@ def _print_section(title: str) -> None:
 
 
 def render_report(
-    tree: Dict[str, Any], static: StaticReport, dyn: DynamicReport
+    tree: Dict[str, Any],
+    static: StaticReport,
+    dyn: DynamicReport,
+    variants_cov: Optional[VariantsCoverage] = None,
+    orphan_keys: Optional[OrphanKeys] = None,
+    pickers: Optional[List[Dict[str, Any]]] = None,
 ) -> bool:
     """打印报告。返回是否"健康"(True = 退出码 0)。"""
     healthy = True
@@ -491,6 +737,61 @@ def render_report(
         if len(unvisited) > 0:
             healthy = False
 
+    # 3.5 Variant 触发覆盖(Task 13 盲区补丁 1)
+    if variants_cov is not None and variants_cov.total_variants > 0:
+        _print_section("3.5 Variant 触发覆盖")
+        hit_pct = variants_cov.hit_count / max(variants_cov.total_variants, 1) * 100
+        print(f"  总 variants: {variants_cov.total_variants}")
+        print(f"  触发: {variants_cov.hit_count} ({hit_pct:.1f}%)")
+        print(f"  从未触发: {variants_cov.miss_count}")
+        if variants_cov.misses:
+            for m in variants_cov.misses[:20]:
+                if m["kind"] == "narrative":
+                    head = f"{m['node_id']} narrative_variants[{m['variant_index']}]"
+                else:
+                    head = f"{m['node_id']} choices[{m['choice_index']}].next_variants[{m['variant_index']}]"
+                cond_str = json.dumps(m["if"], ensure_ascii=False)
+                if len(cond_str) > 80:
+                    cond_str = cond_str[:77] + "..."
+                print(f"    {yellow('· ' + head)} {dim('if=' + cond_str)}")
+            if len(variants_cov.misses) > 20:
+                print(f"    {dim(f'... 还有 {len(variants_cov.misses)-20} 个 miss')}")
+            healthy = False
+
+    # 3.6 Orphan require key(Task 13 盲区补丁 2)
+    if orphan_keys is not None and (orphan_keys.flag_orphans or orphan_keys.inv_orphans):
+        _print_section("3.6 Orphan require key")
+        print(f"  孤立 flag(只 require 不 set):{len(orphan_keys.flag_orphans)} 个")
+        for o in orphan_keys.flag_orphans[:30]:
+            refs = ", ".join(o["required_by"][:5])
+            if len(o["required_by"]) > 5:
+                refs += f" (+{len(o['required_by'])-5})"
+            print(f"    {yellow('· ' + o['key'])} {dim('(required by: ' + refs + ')')}")
+        if len(orphan_keys.flag_orphans) > 30:
+            print(f"    {dim(f'... 还有 {len(orphan_keys.flag_orphans)-30} 个')}")
+        print(f"  孤立 inv item:{len(orphan_keys.inv_orphans)} 个")
+        for o in orphan_keys.inv_orphans[:30]:
+            refs = ", ".join(o["required_by"][:5])
+            if len(o["required_by"]) > 5:
+                refs += f" (+{len(o['required_by'])-5})"
+            print(f"    {yellow('· ' + o['key'])} {dim('(required by: ' + refs + ')')}")
+        if orphan_keys.flag_orphans or orphan_keys.inv_orphans:
+            healthy = False
+
+    # 3.7 Picker 节点静态展开(Task 13 盲区补丁 3)
+    if pickers is not None and pickers:
+        _print_section("3.7 Picker 节点(地图选择器)")
+        print(f"  识别到 picker 节点: {len(pickers)} 个")
+        for p in pickers:
+            sc = p["static_choice_count"]
+            lc = p["landmark_count"]
+            meta = f"(static_choices={sc}, landmarks={lc})"
+            print(f"  {green('·')} {bold(p['node_id'])} → {len(p['picker_paths'])} 条 picker_paths {dim(meta)}")
+            paths_preview = ", ".join(p["picker_paths"][:8])
+            if len(p["picker_paths"]) > 8:
+                paths_preview += f" (+{len(p['picker_paths'])-8})"
+            print(f"    {dim(paths_preview)}")
+
     # 4. 状态值边界
     _print_section("4. 状态边界")
     print(f"  PR 范围: [{dyn.pr_min}, {dyn.pr_max}]"
@@ -537,7 +838,10 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     static = analyze_static(tree)
     dyn = explore(tree, max_depth=80)
-    healthy = render_report(tree, static, dyn)
+    variants_cov = analyze_variants_coverage(tree, dyn)
+    orphan_keys = analyze_orphan_keys(tree)
+    pickers = analyze_picker_nodes(tree)
+    healthy = render_report(tree, static, dyn, variants_cov, orphan_keys, pickers)
     return 0 if healthy else 1
 
 
