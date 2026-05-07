@@ -3475,7 +3475,7 @@
             "flags": {
               "freed_yang": true,
               "marked_lamb": true,
-              "s4_kneeled_three_times": false
+              "oneshot.s4_kneeled_three_times": false
             }
           }
         },
@@ -3501,7 +3501,7 @@
             "PR": 15,
             "puzzle_add": "piece_linmou_full",
             "flags": {
-              "s4_heard_warning": true
+              "oneshot.s4_heard_warning": true
             }
           }
         },
@@ -3511,7 +3511,7 @@
           "effects": {
             "GR": 20,
             "flags": {
-              "s4_kneeled_three_times": true,
+              "oneshot.s4_kneeled_three_times": true,
               "marked_lamb": true
             }
           }
@@ -3523,7 +3523,7 @@
             "PR": 12,
             "flags": {
               "posted_photo": true,
-              "s4_posted_blood_face": true
+              "oneshot.s4_posted_blood_face": true
             }
           }
         }
@@ -3547,7 +3547,7 @@
             "PR": 5,
             "flags": {
               "s4_revisit_alley": true,
-              "s4_lifted_brush": true
+              "oneshot.s4_lifted_brush": true
             }
           }
         },
@@ -3573,7 +3573,7 @@
             "puzzle_add": "piece_yang_brush",
             "flags": {
               "s4_revisit_alley": true,
-              "s4_kept_brush": true
+              "oneshot.s4_kept_brush": true
             }
           }
         }
@@ -3595,7 +3595,7 @@
             ],
             "flags": {
               "completed_yang": true,
-              "s4_joined_yanggui": true,
+              "oneshot.s4_joined_yanggui": true,
               "marked_lamb": true
             }
           }
@@ -3606,7 +3606,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "s4_refused_yanggui": true,
+              "oneshot.s4_refused_yanggui": true,
               "got_judge_seal": true
             }
           }
@@ -3617,7 +3617,7 @@
           "effects": {
             "GR": 20,
             "flags": {
-              "s4_overstroke": true
+              "oneshot.s4_overstroke": true
             }
           }
         }
@@ -3671,7 +3671,7 @@
             ],
             "puzzle_add": "piece_yang_freed",
             "flags": {
-              "s4_grandma_blessing": true
+              "arc.s4_grandma_blessing": true
             }
           }
         },
@@ -3699,7 +3699,7 @@
             "PR": 8,
             "flags": {
               "s4_revisit_alley": true,
-              "s4_waved_camera": true
+              "oneshot.s4_waved_camera": true
             }
           }
         },
@@ -3709,7 +3709,7 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "s4_smashed_monitor": true
+              "oneshot.s4_smashed_monitor": true
             }
           }
         },
@@ -3731,7 +3731,7 @@
             "PR": 12,
             "puzzle_add": "piece_camera_self",
             "flags": {
-              "s4_self_archived": true
+              "oneshot.s4_self_archived": true
             }
           }
         }
@@ -3748,7 +3748,7 @@
             "PR": 8,
             "GR": 10,
             "flags": {
-              "s4_static_in_skin": true
+              "oneshot.s4_static_in_skin": true
             }
           }
         }
@@ -3791,7 +3791,7 @@
             "flags": {
               "yang_debt": true,
               "marked_lamb": true,
-              "s4_self_debt": true
+              "oneshot.s4_self_debt": true
             }
           }
         }
@@ -3880,7 +3880,7 @@
           "effects": {
             "landmark_skipped": "S5",
             "flags": {
-              "s5_aborted": true
+              "oneshot.s5_aborted": true
             }
           },
           "require": {
@@ -3896,7 +3896,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s5_clean_leave": true
+              "oneshot.s5_clean_leave": true
             }
           },
           "require": {
@@ -4057,7 +4057,7 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "s5_burned_rope": true,
+              "oneshot.s5_burned_rope": true,
               "piano_appeased": true
             }
           }
@@ -4106,7 +4106,7 @@
             "PR": -10,
             "GR": 8,
             "flags": {
-              "s5_burned_photo": true
+              "oneshot.s5_burned_photo": true
             }
           }
         }
@@ -4118,7 +4118,7 @@
         {
           "if": {
             "flags": {
-              "s5_burned_rope": true
+              "oneshot.s5_burned_rope": true
             }
           },
           "text": "你已经烧了那根钢丝绳。\n\n你又来到 203——\n\n请假条还在地上。\n\n但**字迹自己改了**——\n\n「不准」自己变成了「准」。\n\n钢琴键自己摁出最后一个完整的 C 大调。\n\n窗外,11 岁的女孩,**已经走出校门**——\n\n她在校门口回头,对你**鞠躬**。\n\n但她**比第一次走出校门**时,多了一个动作:\n\n她对你**眨了一下眼睛**——\n\n是 1991 年她妈妈最疼她那次,她对妈妈眨过的眼睛。"
@@ -4264,7 +4264,7 @@
             "PR": 5,
             "GR": 5,
             "flags": {
-              "s5_broke_chalk": true
+              "oneshot.s5_broke_chalk": true
             }
           }
         },
@@ -4274,7 +4274,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "s5_erased_blackboard": true
+              "oneshot.s5_erased_blackboard": true
             }
           }
         },
@@ -5977,7 +5977,7 @@
         {
           "if": {
             "flags": {
-              "s4_refused_yanggui": true
+              "oneshot.s4_refused_yanggui": true
             }
           },
           "text": "你拒绝加入羊公会。\n\n《异常事件记录表》自己翻到最末页:\n\n「夜班评议会案号 G-273-X 第 14 卷:\n  本届巡夜员**拒绝**羊公会名册第 18 号编入。\n  这是 G 字头案件第一次有人拒绝。\n  根据章程第 17 条,授予『候补判官 — 革命党人 第 1 号』。\n  请到 B3 档案室,**审判**前 17 名加入羊公会的死灵。」\n\n你的工牌反面,**烫出『正章』**——\n\n不是『候补』,是直接『正』。"
@@ -6158,7 +6158,7 @@
         {
           "if": {
             "flags": {
-              "s4_smashed_monitor": true
+              "oneshot.s4_smashed_monitor": true
             }
           },
           "text": "你刚砸了 S4 弄堂房间里的监视器。\n\n清洁工**就是从那台监视器里跑出来的**。\n\n他没有脸,但他**指着你的左眼**——\n\n你的左眼,自从砸了监视器后,就**能自动对焦**。\n\n他用雪花声说:\n\n「兄弟,你**接收**了我的频段。\n  你现在是『可移动的不存在的清洁工』。\n  欢迎入伙。」"
@@ -7094,7 +7094,7 @@
               },
               {
                 "flags": {
-                  "s4_grandma_blessing": true
+                  "arc.s4_grandma_blessing": true
                 }
               }
             ]
@@ -7204,7 +7204,7 @@
           "if": {
             "flags": {
               "arc.s1_post_forum": true,
-              "s4_posted_blood_face": true
+              "oneshot.s4_posted_blood_face": true
             }
           },
           "text": "你最爆的两条帖子——\n\n『湖滨 G-273 第一夜班·风衣空领口里的自拍』\n『清河坊羊血弄·林某的脸浮在血滩里·1985 vs 2024』\n\n两条帖子加起来,**刷爆夜班论坛 4 天榜首**。\n\n热度从论坛溢出,蔓延到知乎、微博、抖音、Bilibili。\n\n2024-XX-XX 早晨 7:14,搜索热度第一名:『#杭州夜班保安G273#』。\n\n你成了一个**全网讨论的都市传说**。\n\n但你的肉体——\n\n在 06:03 已经变成 27 台电视墙上的一段循环 GIF。\n\nGIF 时长 27 秒。\n\n第 27 秒,你转过头,对镜头说:\n\n「下一班是几点?」"
@@ -7235,7 +7235,7 @@
         {
           "if": {
             "flags": {
-              "s4_overstroke": true
+              "oneshot.s4_overstroke": true
             }
           },
           "text": "你在 S4 弄堂多画了一笔。\n\n「⺶」变成一个不存在的字。\n\n那个『不存在的字』——是 1933 年羊血弄第一桩命案凶手的名字。\n\n他被烧死在这条弄堂里。\n\n现在,你**穿上了他的长衫**。\n\n你的手里握着屠羊刀。\n\n弄堂尽头铁钩上,黑山羊有头——\n\n是 1933 年那个人的头。\n\n你成了**他**。\n\n你将在每个夜班 00:11,**永远**站在羊血弄,等下一个 G-273 进来。\n\n你会跟他说:『进来。我教你怎么割。』\n\n他可能进来。\n\n他可能不。\n\n但你已经等了 91 年。\n\n再等几个夜班,无所谓。"
@@ -7252,7 +7252,7 @@
         {
           "if": {
             "flags": {
-              "s4_kneeled_three_times": true
+              "oneshot.s4_kneeled_three_times": true
             }
           },
           "text": "你跪了三个。\n\n弄堂深处 17 个『羊公会』火死灵,记下了你的三拜——\n\n这是『正式入会』的姿势。\n\n他们没让你戴帽子。\n\n他们直接把你**挂上铁钩**。\n\n弄堂尽头铁钩上,**第二具黑山羊**,有头。\n\n头是你的。\n\n婴儿啼哭从你**胸腔**里传出来。\n\n这是羊公会名册的**第 18 号**。\n\n下一任 G-273 在 00:11 走进羊血弄时,他会看见**两具**倒吊的羊——\n\n一具是 1933 年那个开山首刀的男人。\n\n另一具,是你。\n\n你的腿,还在蹬。"
@@ -7294,7 +7294,7 @@
         {
           "if": {
             "flags": {
-              "s4_grandma_blessing": true
+              "arc.s4_grandma_blessing": true
             }
           },
           "text": "你下班了。\n\n你今晚做的最有意义的事——\n\n是在 S4 羊血弄,把毛笔折断,救了 1933 年那个被冤死的人。\n\n弄堂里那个豆腐脑老婆婆,把她外公的 1959-043 号粮票塞给你。\n\n你不知道这张粮票有什么用。\n\n6:03 你回到更衣室,粮票在胸袋里。\n\n你掏出来——\n\n粮票变成了**一张写着「赵某 G-273 工资单」的纸**。\n\n纸上写着:「本月工资 8,427 元。无扣款。绩效 100%。」\n\n你不知道为什么。\n\n你只知道,房东今天没打电话。\n\n你睡了一个 12 小时的觉。\n\n你做的梦里,有一个 11 岁的女孩,在留下小学的操场上跳皮筋。\n\n她对你笑了一下。\n\n你不认识她,但你感觉自己**为她做过什么**。"
