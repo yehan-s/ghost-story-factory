@@ -88,18 +88,24 @@ class State:
         # v7 多角色伏笔基础设施(默认值不破坏 v6/v7 现有玩法)
         self.character: str = str(initial.get("character", "G-273"))
         self.meta_flags: Dict[str, bool] = dict(initial.get("meta_flags", {}))
+        # apply() 的结构化事件记录(给 UI 卡片化渲染用)
+        self._last_events: List[Dict[str, Any]] = []
 
     # 由 play() 在加载 tree 时注入(可选)。用于获得道具时显示说明。
     inv_descriptions: Dict[str, str] = {}
 
     def apply(self, effects: Optional[Dict[str, Any]]) -> List[str]:
-        """应用 effects 字典,返回简短描述列表(供 UI 反馈)。"""
+        """应用 effects 字典,返回简短描述列表(供 UI 反馈,向后兼容)。
+
+        副作用:同时把结构化事件写入 self._last_events,供 UI 卡片化渲染。
+        """
         notes: List[str] = []
+        events: List[Dict[str, Any]] = []
         if not effects:
+            self._last_events = events
             return notes
 
-        # 个人共鸣 / 全局共鸣 是隐藏效果,选择后不向用户反馈具体数值
-        # 用户可在 s 键调出的完整状态里看到当前值
+        # 个人共鸣 / 全局共鸣 是隐藏效果,不向用户反馈数值
         if "PR" in effects:
             delta = int(effects["PR"])
             if delta:
@@ -109,11 +115,17 @@ class State:
             if delta:
                 self.GR = max(0, min(100, self.GR + delta))
         if "shifts_completed" in effects:
-            self.shifts_completed += int(effects["shifts_completed"])
-            notes.append(f"已完成夜班 +{int(effects['shifts_completed'])}")
+            d = int(effects["shifts_completed"])
+            self.shifts_completed += d
+            notes.append(f"已完成夜班 +{d}")
+            events.append({"type": "shifts_completed", "delta": d,
+                           "current": self.shifts_completed})
         if "shifts_skipped" in effects:
-            self.shifts_skipped += int(effects["shifts_skipped"])
-            notes.append(f"漏打卡 +{int(effects['shifts_skipped'])}")
+            d = int(effects["shifts_skipped"])
+            self.shifts_skipped += d
+            notes.append(f"漏打卡 +{d}")
+            events.append({"type": "shifts_skipped", "delta": d,
+                           "current": self.shifts_skipped})
         for item in effects.get("inv_add", []) or []:
             if item not in self.inv:
                 self.inv.append(item)
@@ -122,14 +134,16 @@ class State:
                     notes.append(f"获得「{item}」 — {desc}")
                 else:
                     notes.append(f"获得「{item}」")
+                events.append({"type": "inv_add", "key": item, "desc": desc or ""})
         for item in effects.get("inv_remove", []) or []:
             if item in self.inv:
                 self.inv.remove(item)
                 notes.append(f"失去「{item}」")
+                events.append({"type": "inv_remove", "key": item})
         for k, v in (effects.get("flags") or {}).items():
             self.flags[k] = bool(v)
 
-        # v6 新增 effects 操作
+        # v6 新增 effects
         if "set_route" in effects:
             new_route = effects["set_route"]
             if new_route in ("investigator", "witness", "survivor"):
@@ -139,21 +153,28 @@ class State:
             lm = str(effects["landmark_visited"])
             if lm not in self.visited_landmarks:
                 self.visited_landmarks.append(lm)
-                # 首次踏入 S1-S6 自动累计夜班完成数(避免每个 fragment writer 都要手动 +1)
                 if lm in ("S1", "S2", "S3", "S4", "S5", "S6"):
                     self.shifts_completed += 1
+                    events.append({"type": "shifts_completed", "delta": 1,
+                                   "current": self.shifts_completed,
+                                   "implicit": True})  # 由 landmark_visited 隐含触发
                 notes.append(f"踏入 {lm}")
+                events.append({"type": "landmark_visited", "key": lm})
         if "landmark_skipped" in effects:
             lm = str(effects["landmark_skipped"])
             if lm not in self.skipped_landmarks:
                 self.skipped_landmarks.append(lm)
                 notes.append(f"绕开 {lm}")
+                events.append({"type": "landmark_skipped", "key": lm})
         if "puzzle_add" in effects:
             piece = str(effects["puzzle_add"])
             if piece not in self.puzzle_pieces:
                 self.puzzle_pieces.append(piece)
                 notes.append(f"拼图碎片 +1 ({len(self.puzzle_pieces)}/5)")
+                events.append({"type": "puzzle_add", "key": piece,
+                               "current": len(self.puzzle_pieces), "total": 5})
 
+        self._last_events = events
         return notes
 
     def _meets_clause(self, require: Optional[Dict[str, Any]]) -> bool:
@@ -466,6 +487,104 @@ def resolve_next(chosen: Dict[str, Any], state: State) -> Optional[str]:
     return chosen.get("next")
 
 
+# --- 渲染状态变化事件 ---
+
+def _render_apply_events(events: List[Dict[str, Any]], important_items: set) -> None:
+    """根据 state.apply 产出的 events,卡片化渲染各类状态变化。"""
+    if not events:
+        return
+    from ghost_story_factory.v7.animate import card, flash_line  # 局部导入避免循环
+    print()  # 与上方 narrative 分开
+    for ev in events:
+        t = ev.get("type")
+        if t == "inv_add":
+            key = ev["key"]
+            desc = ev.get("desc", "")
+            if key in important_items:
+                # 关键道具 → 边框卡片 + 用途说明
+                card(f"拾起「{key}」", color_fn=lambda s: bold(green(s)))
+                if desc:
+                    print(f"     {dim(desc)}")
+            else:
+                # 装饰道具 → 一行 dim
+                line = f"  · 获得「{key}」"
+                if desc:
+                    line += f" — {desc}"
+                print(dim(line))
+        elif t == "inv_remove":
+            print(dim(f"  · 失去「{ev['key']}」"))
+        elif t == "shifts_skipped":
+            flash_line(f"漏卡 +{ev['delta']}", color_fn=lambda s: bold(red(s)))
+        elif t == "shifts_completed" and not ev.get("implicit"):
+            cur = ev.get("current", 0)
+            flash_line(f"夜班 +{ev['delta']}  ({cur}/7)",
+                       color_fn=lambda s: bold(green(s)))
+        elif t == "puzzle_add":
+            flash_line(f"拼图 +1  ({ev['current']}/{ev['total']})",
+                       color_fn=lambda s: bold(cyan(s)))
+        elif t == "landmark_visited":
+            flash_line(f"踏入 {ev['key']}",
+                       color_fn=lambda s: bold(green(s)))
+        elif t == "landmark_skipped":
+            flash_line(f"绕开 {ev['key']}",
+                       color_fn=lambda s: bold(red(s)))
+        elif t == "set_route":
+            print(dim(f"  · 路线确立:{ev['key']}"))
+    print()
+
+
+# --- 关键道具集合(被 inv_has require 引用过的视为 important) ---
+
+def collect_important_items(tree: Dict[str, Any]) -> set:
+    """扫一遍 tree.json 所有 require.inv_has,返回被引用过的道具名集合。
+
+    被引用 = 玩家拿到后影响后续选项可达 = 关键道具,值得卡片化反馈。
+    没被引用 = 装饰性道具(只触发 narrative_variants 或 flag),正常 dim 显示。
+    """
+    important: set = set()
+
+    def _scan_require(req):
+        if not isinstance(req, dict):
+            return
+        for it in req.get("inv_has", []) or []:
+            important.add(it)
+        for sub in req.get("any_of", []) or []:
+            _scan_require(sub)
+        for sub in req.get("all_of", []) or []:
+            _scan_require(sub)
+        if "not" in req:
+            _scan_require(req["not"])
+
+    for node in (tree.get("nodes") or {}).values():
+        for choice in node.get("choices") or []:
+            _scan_require(choice.get("require"))
+            for v in choice.get("next_variants") or []:
+                _scan_require(v.get("if"))
+        for v in node.get("narrative_variants") or []:
+            _scan_require(v.get("if"))
+    return important
+
+
+# --- 结局色调映射 ---
+
+# 8 主结局 + 9 mini-ending 各按"基调"染色,玩家通关瞬间能"读出"是哪种结局
+_ENDING_COLORS = {
+    "E_TRUE": green,           # 关闭杭州常数 — 光明
+    "E_HIDDEN": yellow,        # 重投胎 — 隐秘
+    "E_TRUTH": cyan,           # 揭穿真相
+    "E_DATA": magenta,         # 数据化雪花
+    "E_BROADCAST": blue,       # 永生论坛 — 赛博
+    "E_BAD_DROWN": red,        # 沉船替死
+    "E_BAD_1987": red,         # 无尽 1987
+    "E_NEUTRAL": dim,          # 平淡 fallback
+}
+
+
+def ending_color(ending_type: str):
+    """按 ending_type 取色函数。未知 → magenta(向后兼容)。"""
+    return _ENDING_COLORS.get(ending_type, magenta)
+
+
 # --- 主循环 ---
 
 def _select_character(characters: Dict[str, Any]) -> Optional[str]:
@@ -539,6 +658,8 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
     State.inv_descriptions = tree.get("inv_descriptions", {}) or {}
 
     story_id = str(tree.get("story_id") or tree_path.stem)
+    # 关键道具集合(被 inv_has 引用的视为剧情关键 → 卡片化反馈)
+    important_items = collect_important_items(tree)
 
     print(bold(red("\n" + "═" * 60)))
     print(bold(red(f"   {title}")))
@@ -559,21 +680,50 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             return
 
         visited.append(current_id)
-        # 伏笔自动跟踪:节点上的 _foreshadow_slot 被触发即标记为 seen
+        # 地标入场 banner — 节点带 _landmark_header 时显示横划过场
+        header = node.get("_landmark_header")
+        if header and isinstance(header, dict):
+            from ghost_story_factory.v7.animate import (
+                fade_lines, pause as _pause, separator,
+            )
+            t = header.get("time", "")
+            p = header.get("place", "")
+            print()
+            separator(60, char="─", color_fn=lambda s: dim(s))
+            _pause(0.15)
+            fade_lines(
+                ["", f"          {bold(yellow(t))}", f"      {bold(red(p))}", ""],
+                line_delay=0.12,
+            )
+            separator(60, char="─", color_fn=lambda s: dim(s))
+            _pause(0.3)
+        # 伏笔自动跟踪:_foreshadow_slot 被触发即标记 seen,首次触发显示卡片
         slot_ids = node.get("_foreshadow_slot") or []
+        newly_seen_slots: List[str] = []
         for slot in slot_ids:
-            save_manager.mark_foreshadow_seen(story_id, slot)
+            if save_manager.mark_foreshadow_seen(story_id, slot):
+                newly_seen_slots.append(slot)
         narrative = resolve_narrative(node, state)
         if narrative:
             render_narrative(narrative)
+        # 首次发现伏笔 — 用青色 flash_line 反馈
+        if newly_seen_slots:
+            from ghost_story_factory.v7.animate import flash_line
+            foreshadows = tree.get("foreshadows", {}) or {}
+            for slot in newly_seen_slots:
+                title = (foreshadows.get(slot) or {}).get("title", slot)
+                flash_line(f"档案 +1  ·  {title}",
+                           color_fn=lambda s: bold(cyan(s)))
+            print()
 
         # 结局节点
         if node.get("is_ending"):
             ending_type = node.get("ending_type", "E_UNKNOWN")
             ending_name = tree.get("endings", {}).get(ending_type, ending_type)
-            print(bold(magenta("\n" + "─" * 60)))
-            print(bold(magenta(f"  【结局 · {ending_type}】 {ending_name}")))
-            print(bold(magenta("─" * 60)))
+            ec = ending_color(ending_type)
+            print(bold(ec("\n" + "═" * 60)))
+            print(bold(ec(f"  【结局 · {ending_type}】 {ending_name}")))
+            print(bold(ec("═" * 60)))
             print(state.hud())
             print(dim(f"\n  共经历 {len(visited)} 个节点。"))
             print(dim("  夜班没有尽头,只有下一班。\n"))
@@ -670,11 +820,9 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         # 选项上若挂了 _foreshadow_slot,选了之后也算 seen
         for slot in chosen.get("_foreshadow_slot") or []:
             save_manager.mark_foreshadow_seen(story_id, slot)
-        notes = state.apply(chosen.get("effects"))
-        # 只显示非隐藏的反馈(获得物品 / 踏入地标 / 漏卡 / 拼图碎片)
-        # 个人共鸣 / 全局共鸣 已在 apply 内部静默处理
-        if notes:
-            print(dim("  · " + " · ".join(notes)))
+        state.apply(chosen.get("effects"))
+        # 卡片化渲染状态变化(根据 events 类型分别用 card / flash_line)
+        _render_apply_events(state._last_events, important_items)
 
         nxt = resolve_next(chosen, state)
         if not nxt:

@@ -116,6 +116,64 @@ def fade_lines(
         raise
 
 
+def _visible_width(text: str) -> int:
+    """估算可见宽度(中文 2,ASCII 1)— 给居中和卡片对齐用。"""
+    w = 0
+    for ch in text:
+        if "\u4e00" <= ch <= "\u9fff" or "\uff00" <= ch <= "\uffef":
+            w += 2
+        else:
+            w += 1
+    return w
+
+
+def card(
+    text: str,
+    color_fn: Optional[Callable[[str], str]] = None,
+    width: int = 44,
+    indent: str = "  ",
+) -> None:
+    """单行标题卡片 ╭─ X ─────╮(横线在右侧延伸到 width)。"""
+    text_w = _visible_width(text)
+    # 总 visible 宽 = 1(╭) + 1(─) + 1(空) + text + 1(空) + N(─) + 1(╮) = width
+    fill = max(width - text_w - 5, 1)
+    line = f"╭─ {text} {'─' * fill}╮"
+    if color_fn:
+        line = color_fn(line)
+    sys.stdout.write(indent + line + "\n")
+    sys.stdout.flush()
+
+
+def flash_line(
+    text: str,
+    color_fn: Optional[Callable[[str], str]] = None,
+    indent: str = "  ",
+    width: int = 44,
+) -> None:
+    """高亮短条: ▌ X ▐ — 比 card 更轻量,用于状态变化。"""
+    inner = max(width - 4, _visible_width(text) + 2)
+    pad = inner - _visible_width(text)
+    line = f"▌ {text}{' ' * pad}▐"
+    if color_fn:
+        line = color_fn(line)
+    sys.stdout.write(indent + line + "\n")
+    sys.stdout.flush()
+
+
+def separator(
+    width: int = 60,
+    char: str = "─",
+    color_fn: Optional[Callable[[str], str]] = None,
+    indent: str = "",
+) -> None:
+    """横线分隔符 — 节点 header / 章节边界。"""
+    line = char * width
+    if color_fn:
+        line = color_fn(line)
+    sys.stdout.write(indent + line + "\n")
+    sys.stdout.flush()
+
+
 def pulse_text(
     text: str,
     cycles: int = 2,

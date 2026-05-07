@@ -39,7 +39,9 @@ from textual.containers import VerticalScroll
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
-from ghost_story_factory.v5.player import State, resolve_narrative, resolve_next
+from ghost_story_factory.v5.player import (
+    State, collect_important_items, resolve_narrative, resolve_next,
+)
 from ghost_story_factory.v7.save_manager import (
     SaveManager,
     get_character_info,
@@ -158,6 +160,8 @@ class GhostStoryApp(App):
         self.state = State(initial_state)
         # 注入道具说明字典(获得物品时显示用途)
         State.inv_descriptions = self._tree.get("inv_descriptions", {}) or {}
+        # 关键道具集合(被 inv_has require 引用的视为剧情关键)
+        self._important_items = collect_important_items(self._tree)
         # 起点:角色级 start_node 优先于 tree.start_node
         self.current_id = self._tree.get("start_node", "n_intro")
         if chosen and chosen in characters:
@@ -187,10 +191,25 @@ class GhostStoryApp(App):
             return
 
         self.visited.append(self.current_id)
-        # 伏笔自动跟踪
+        # 地标入场 banner — 节点带 _landmark_header 时显示
+        header = node.get("_landmark_header")
+        if header and isinstance(header, dict):
+            t = header.get("time", "")
+            p = header.get("place", "")
+            log.write("")
+            log.write(f"[dim]{'─' * 58}[/]")
+            log.write("")
+            log.write(f"          [bold yellow]{t}[/]")
+            log.write(f"      [bold red]{p}[/]")
+            log.write("")
+            log.write(f"[dim]{'─' * 58}[/]")
+            log.write("")
+        # 伏笔自动跟踪 — 收集首次触发的 slot,稍后渲染卡片
         story_id = str(self._tree.get("story_id") or self._tree_path.stem)
+        newly_seen_slots: List[str] = []
         for slot in node.get("_foreshadow_slot") or []:
-            self.save_manager.mark_foreshadow_seen(story_id, slot)
+            if self.save_manager.mark_foreshadow_seen(story_id, slot):
+                newly_seen_slots.append(slot)
         narrative = resolve_narrative(node, self.state)
         if narrative:
             # 分隔线
@@ -203,6 +222,14 @@ class GhostStoryApp(App):
                     log.write("")
             log.write("")
 
+        # 首次发现伏笔 — 用青色短条反馈
+        if newly_seen_slots:
+            foreshadows = self._tree.get("foreshadows", {}) or {}
+            for slot in newly_seen_slots:
+                title = (foreshadows.get(slot) or {}).get("title", slot)
+                log.write(f"  [bold cyan]▌ 档案 +1  ·  {title} ▐[/]")
+            log.write("")
+
         # 更新状态栏
         self.query_one("#status-bar", StatusBar).update_state(self.state)
 
@@ -213,9 +240,21 @@ class GhostStoryApp(App):
         if node.get("is_ending"):
             ending_type = node.get("ending_type", "E_UNKNOWN")
             ending_name = self._tree.get("endings", {}).get(ending_type, ending_type)
-            log.write(f"\n[bold magenta]{'═' * 60}[/]")
-            log.write(f"[bold magenta]  【结局 · {ending_type}】 {ending_name}[/]")
-            log.write(f"[bold magenta]{'═' * 60}[/]")
+            # 按结局类型分色 — 让 8 主结局视觉差异化
+            ec_map = {
+                "E_TRUE": "green",
+                "E_HIDDEN": "yellow",
+                "E_TRUTH": "cyan",
+                "E_DATA": "magenta",
+                "E_BROADCAST": "blue",
+                "E_BAD_DROWN": "red",
+                "E_BAD_1987": "red",
+                "E_NEUTRAL": "white",
+            }
+            ec = ec_map.get(ending_type, "magenta")
+            log.write(f"\n[bold {ec}]{'═' * 60}[/]")
+            log.write(f"[bold {ec}]  【结局 · {ending_type}】 {ending_name}[/]")
+            log.write(f"[bold {ec}]{'═' * 60}[/]")
             log.write(f"\n[dim]共经历 {len(self.visited)} 个节点。[/]")
             log.write(f"[dim]夜班没有尽头,只有下一班。[/]")
             # 写盘 + 显示解锁
@@ -314,11 +353,15 @@ class GhostStoryApp(App):
         if idx < 0 or idx >= len(self.visible_choices):
             return
         chosen = self.visible_choices[idx]
-        notes = self.state.apply(chosen.get("effects"))
+        # 选项上若挂了 _foreshadow_slot,选了之后也算 seen
+        story_id = str(self._tree.get("story_id") or self._tree_path.stem)
+        for slot in chosen.get("_foreshadow_slot") or []:
+            self.save_manager.mark_foreshadow_seen(story_id, slot)
+        self.state.apply(chosen.get("effects"))
         log = self.query_one("#narrative", RichLog)
         log.write(f"\n[bold yellow]▸[/] [bold]{chosen.get('text', '')}[/]")
-        if notes:
-            log.write(f"[dim]  · {' · '.join(notes)}[/]")
+        # 卡片化渲染状态变化
+        self._render_apply_events_tui(self.state._last_events, log)
         nxt = resolve_next(chosen, self.state)
         if not nxt:
             log.write("[red][错误] 选项缺少 next/next_variants 字段。[/]")
@@ -326,6 +369,43 @@ class GhostStoryApp(App):
             return
         self.current_id = nxt
         self._render_node()
+
+    def _render_apply_events_tui(self, events, log) -> None:
+        """根据 events 在 RichLog 里卡片化渲染状态变化。"""
+        if not events:
+            return
+        log.write("")
+        for ev in events:
+            t = ev.get("type")
+            if t == "inv_add":
+                key = ev["key"]
+                desc = ev.get("desc", "")
+                if key in self._important_items:
+                    # 关键道具 — 边框卡片
+                    fill = max(44 - 5 - len(key) - 4, 1)  # 粗略 visible 估算
+                    log.write(f"  [bold green]╭─ 拾起「{key}」 {'─' * fill}╮[/]")
+                    if desc:
+                        log.write(f"     [dim]{desc}[/]")
+                else:
+                    line = f"  · 获得「{key}」"
+                    if desc:
+                        line += f" — {desc}"
+                    log.write(f"[dim]{line}[/]")
+            elif t == "inv_remove":
+                log.write(f"[dim]  · 失去「{ev['key']}」[/]")
+            elif t == "shifts_skipped":
+                log.write(f"  [bold red]▌ 漏卡 +{ev['delta']} ▐[/]")
+            elif t == "shifts_completed" and not ev.get("implicit"):
+                cur = ev.get("current", 0)
+                log.write(f"  [bold green]▌ 夜班 +{ev['delta']}  ({cur}/7) ▐[/]")
+            elif t == "puzzle_add":
+                log.write(f"  [bold cyan]▌ 拼图 +1  ({ev['current']}/{ev['total']}) ▐[/]")
+            elif t == "landmark_visited":
+                log.write(f"  [bold green]▌ 踏入 {ev['key']} ▐[/]")
+            elif t == "landmark_skipped":
+                log.write(f"  [bold red]▌ 绕开 {ev['key']} ▐[/]")
+            elif t == "set_route":
+                log.write(f"[dim]  · 路线确立:{ev['key']}[/]")
 
     def action_select_choice(self, idx: int) -> None:
         """1-9 数字键快选。"""
