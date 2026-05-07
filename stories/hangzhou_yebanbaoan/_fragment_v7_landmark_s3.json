@@ -15,11 +15,19 @@
       "scene": "S3",
       "narrative_variants": [
         {
-          "if": {"flags": {"s3_revisit_temple": true}},
+          "if": {
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          },
           "text": "你又来到理安寺。\n\n刚才的钟摆,现在反着摆。\n\n你的指纹还留在第二片铜锈上——\n\n现在,**铜锈自己长回去了**,但形状变成你的指纹。\n\n寺门开着。等你。"
         },
         {
-          "if": {"flags": {"rang_seven": true}},
+          "if": {
+            "flags": {
+              "rang_seven": true
+            }
+          },
           "text": "你已经敲过七下钟。\n\n寺院应该归位。\n\n但你回来时——\n\n**钟没了**。\n\n钟架上空空的,只挂着一行字:\n\n「H = 你」"
         }
       ],
@@ -28,36 +36,81 @@
         {
           "text": "走近,看那张倒挂的侧脸。",
           "next": "n_s3_examine_face",
-          "effects": {"PR": 3, "landmark_visited": "S3"}
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S3"
+          }
         },
         {
           "text": "直接拿撞钟木,准备 23:45 敲。",
           "next": "n_s3_wait_to_ring",
-          "effects": {"GR": 3, "landmark_visited": "S3"}
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S3"
+          }
         },
         {
           "text": "绕过钟,看看大殿后面有什么。",
           "next": "n_s3_temple_back",
-          "effects": {"PR": 5, "landmark_visited": "S3"}
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S3"
+          }
         },
         {
           "text": "退回门口,打卡走人。",
           "next": "n_landmark_picker",
-          "effects": {"shifts_skipped": 1, "landmark_skipped": "S3", "flags": {"s3_aborted": true}},
-          "require": {"not": {"flags": {"s3_revisit_temple": true}}}
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S3",
+            "flags": {
+              "s3_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s3_revisit_temple": true
+              }
+            }
+          }
         },
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"flags": {"s3_clean_leave": true}},
-          "require": {"any_of": [{"flags": {"s3_revisit_temple": true}}, {"flags": {"rang_seven": true}}]}
+          "effects": {
+            "flags": {
+              "s3_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s3_revisit_temple": true
+                }
+              },
+              {
+                "flags": {
+                  "rang_seven": true
+                }
+              }
+            ]
+          }
         },
         {
           "text": "你的对讲机突然响了——先接对讲机。",
           "next": "n_s3_temple_radio",
-          "effects": {"landmark_visited": "S3", "PR": 3}
+          "effects": {
+            "landmark_visited": "S3",
+            "PR": 3
+          }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "22:48",
+        "place": "九溪理安寺裂钟"
+      }
     },
     "n_s3_examine_face": {
       "scene": "S3",
@@ -66,22 +119,44 @@
         {
           "text": "用指甲刮一片铜锈下来。",
           "next": "n_s3_scrape_corrosion",
-          "effects": {"PR": 5, "inv_add": ["铜锈片"], "flags": {"s3_revisit_temple": true}}
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "铜锈片"
+            ],
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
         },
         {
           "text": "对着侧脸说话:『你想让我做什么?』",
           "next": "n_npc_corrosion_face",
-          "effects": {"PR": 8, "flags": {"s3_revisit_temple": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
         },
         {
           "text": "把工牌摘下来,挂在钟上。",
           "next": "n_s3_offer_id",
-          "effects": {"GR": 12, "flags": {"s3_offered_id": true}}
+          "effects": {
+            "GR": 12,
+            "flags": {
+              "s3_offered_id": true
+            }
+          }
         },
         {
           "text": "退后,绕到钟另一面。",
           "next": "n_s3_other_side",
-          "effects": {"flags": {"s3_revisit_temple": true}}
+          "effects": {
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
         }
       ]
     },
@@ -92,17 +167,33 @@
         {
           "text": "把头探进钟内,听水声。",
           "next": "n_scene_lake_underwater",
-          "effects": {"PR": 8, "flags": {"s3_into_bell": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s3_into_bell": true
+            }
+          }
         },
         {
           "text": "把铜锈片烫在自己手腕的铜印上。",
           "next": "n_s3_match_print",
-          "effects": {"PR": 12, "puzzle_add": "piece_h1987", "flags": {"s3_marked_self": true}}
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_h1987",
+            "flags": {
+              "s3_marked_self": true
+            }
+          }
         },
         {
           "text": "放回去,告诉它你不要。",
           "next": "n_npc_corrosion_face",
-          "effects": {"PR": 3, "flags": {"s3_revisit_temple": true}}
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
         }
       ]
     },
@@ -113,12 +204,24 @@
         {
           "text": "在记录表写「不」。",
           "next": "n_s3_refuse_h1987",
-          "effects": {"PR": 15, "puzzle_add": "piece_refused_h", "flags": {"s3_refused_h1987": true}}
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_refused_h",
+            "flags": {
+              "s3_refused_h1987": true
+            }
+          }
         },
         {
           "text": "什么都不写。",
           "next": "n_s3_temple_descend_h",
-          "effects": {"GR": 12, "flags": {"s3_accepted_h1987": true, "marked_lamb": true}}
+          "effects": {
+            "GR": 12,
+            "flags": {
+              "s3_accepted_h1987": true,
+              "marked_lamb": true
+            }
+          }
         }
       ]
     },
@@ -129,12 +232,23 @@
         {
           "text": "去看。我也是 G-273。",
           "next": "n_npc_eight_self",
-          "effects": {"PR": 15, "flags": {"linked_to_eight_self": true}}
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "linked_to_eight_self": true
+            }
+          }
         },
         {
           "text": "不去。我打卡走人。",
           "next": "n_landmark_picker",
-          "effects": {"PR": 8, "puzzle_add": "piece_refused_h", "flags": {"s3_clean_exit": true}}
+          "effects": {
+            "PR": 8,
+            "puzzle_add": "piece_refused_h",
+            "flags": {
+              "s3_clean_exit": true
+            }
+          }
         }
       ]
     },
@@ -152,17 +266,37 @@
         {
           "text": "停在第 7 下,放下木槌。",
           "next": "n_npc_corrosion_face",
-          "effects": {"PR": 10, "GR": 8, "inv_add": ["铜锈护符"], "flags": {"rang_seven": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "inv_add": [
+              "铜锈护符"
+            ],
+            "flags": {
+              "rang_seven": true
+            }
+          }
         },
         {
           "text": "撞第 8 下。",
           "next": "n_s3_eighth_strike",
-          "effects": {"PR": -10, "GR": 20, "flags": {"s3_struck_eighth": true}}
+          "effects": {
+            "PR": -10,
+            "GR": 20,
+            "flags": {
+              "s3_struck_eighth": true
+            }
+          }
         },
         {
           "text": "把撞钟木丢进钟里,跑。",
           "next": "n_s3_temple_back",
-          "effects": {"GR": 5, "flags": {"s3_dumped_mallet": true}}
+          "effects": {
+            "GR": 5,
+            "flags": {
+              "s3_dumped_mallet": true
+            }
+          }
         }
       ]
     },
@@ -180,17 +314,33 @@
         {
           "text": "确定。把工牌彻底交给它。",
           "next": "n_end_data",
-          "effects": {"inv_remove": ["工牌 G-273"], "flags": {"sacrificed_id": true}}
+          "effects": {
+            "inv_remove": [
+              "工牌 G-273"
+            ],
+            "flags": {
+              "sacrificed_id": true
+            }
+          }
         },
         {
           "text": "反悔。把工牌摘回来。",
           "next": "n_s3_arrive",
-          "effects": {"PR": -5, "flags": {"s3_revisit_temple": true, "s3_reclaimed_id": true}}
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s3_revisit_temple": true,
+              "s3_reclaimed_id": true
+            }
+          }
         },
         {
           "text": "问它另外 8 个是谁。",
           "next": "n_npc_eight_self",
-          "effects": {"PR": 10, "puzzle_add": "piece_eight_zhao"}
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_eight_zhao"
+          }
         }
       ]
     },
@@ -201,17 +351,34 @@
         {
           "text": "对她说:『27 楼怎么走?』",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 10, "flags": {"s3_met_red_girl_here": true}}
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "s3_met_red_girl_here": true
+            }
+          }
         },
         {
           "text": "刮下她那张脸的一片铜锈。",
           "next": "n_s3_scrape_corrosion",
-          "effects": {"PR": 5, "inv_add": ["红衣女孩铜锈"], "flags": {"s3_revisit_temple": true}}
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "红衣女孩铜锈"
+            ],
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
         },
         {
           "text": "退回正面,继续看男人侧脸。",
           "next": "n_s3_examine_face",
-          "effects": {"flags": {"s3_revisit_temple": true}}
+          "effects": {
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
         }
       ]
     },
@@ -222,22 +389,45 @@
         {
           "text": "推开木板,跳下去。",
           "next": "n_scene_lake_underwater",
-          "effects": {"PR": 10, "GR": 8, "flags": {"s3_jumped_well": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s3_jumped_well": true
+            }
+          }
         },
         {
           "text": "在空格里写「2024」。",
           "next": "n_npc_eight_self",
-          "effects": {"PR": 15, "puzzle_add": "piece_h1987", "flags": {"s3_filled_2024": true}}
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_h1987",
+            "flags": {
+              "s3_filled_2024": true
+            }
+          }
         },
         {
           "text": "用粉笔擦掉所有年份。",
           "next": "n_scene_lost_archive",
-          "effects": {"PR": 8, "GR": -5, "flags": {"s3_erased_years": true}}
+          "effects": {
+            "PR": 8,
+            "GR": -5,
+            "flags": {
+              "s3_erased_years": true
+            }
+          }
         },
         {
           "text": "退出小院,回大殿。",
           "next": "n_s3_arrive",
-          "effects": {"flags": {"s3_revisit_temple": true, "s3_saw_well": true}}
+          "effects": {
+            "flags": {
+              "s3_revisit_temple": true,
+              "s3_saw_well": true
+            }
+          }
         }
       ]
     },
@@ -248,17 +438,34 @@
         {
           "text": "回话:『我会敲 7 下。』",
           "next": "n_s3_wait_to_ring",
-          "effects": {"PR": 10, "flags": {"s3_promised_seven": true, "contacted_predecessor": true}}
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "s3_promised_seven": true,
+              "contacted_predecessor": true
+            }
+          }
         },
         {
           "text": "回话:『我不打算敲。』",
           "next": "n_npc_predecessor_voice",
-          "effects": {"PR": 5, "flags": {"contacted_predecessor": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "contacted_predecessor": true
+            }
+          }
         },
         {
           "text": "挂掉对讲机。",
           "next": "n_s3_arrive",
-          "effects": {"GR": 5, "flags": {"s3_revisit_temple": true, "hung_up_predecessor": true}}
+          "effects": {
+            "GR": 5,
+            "flags": {
+              "s3_revisit_temple": true,
+              "hung_up_predecessor": true
+            }
+          }
         }
       ]
     }

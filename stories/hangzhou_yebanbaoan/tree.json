@@ -221,7 +221,11 @@
             }
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "20:27",
+        "place": "湖滨第三把绿色长椅"
+      }
     },
     "n_s1_close": {
       "scene": "S1",
@@ -824,7 +828,11 @@
             ]
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "21:47",
+        "place": "柳浪闻莺 307 阶"
+      }
     },
     "n_s2_count_stairs": {
       "scene": "S2",
@@ -1370,7 +1378,11 @@
             "PR": 3
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "22:48",
+        "place": "九溪理安寺裂钟"
+      }
     },
     "n_s3_examine_face": {
       "scene": "S3",
@@ -1816,7 +1828,11 @@
             ]
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "00:11",
+        "place": "中山中路羊血弄 2 号"
+      }
     },
     "n_s4_approach_goat": {
       "scene": "S4",
@@ -2266,7 +2282,11 @@
             ]
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "01:08",
+        "place": "留下小学 203 琴房"
+      }
     },
     "n_s5_open_door": {
       "scene": "S5",
@@ -2750,7 +2770,11 @@
             ]
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "01:52",
+        "place": "联庄站 B4 盾构井"
+      }
     },
     "n_s6_look_down": {
       "scene": "S6",
@@ -5169,7 +5193,11 @@
             }
           }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "04:17",
+        "place": "平海街 1 号 · B3 货梯井"
+      }
     },
     "n_end_true": {
       "scene": "END",

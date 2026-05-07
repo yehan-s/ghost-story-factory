@@ -15,11 +15,19 @@
       "scene": "S2",
       "narrative_variants": [
         {
-          "if": {"flags": {"s2_revisit_stairs": true}},
+          "if": {
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          },
           "text": "你又站在 307 阶的入口。\n\n灯柱比刚才暗一格。\n\n第 1 阶上,刚才你蹲下擦鞋的位置——多了一个**手掌印**。\n\n手掌印是湿的,五指张开,大小是个 11 岁女孩的。\n\n她在等你回来。"
         },
         {
-          "if": {"flags": {"s2_heard_tv": true}},
+          "if": {
+            "flags": {
+              "s2_heard_tv": true
+            }
+          },
           "text": "你又来到 307 阶。\n\n柳浪闻莺的雾比刚才浓——\n\n你能听见**雪花声**从台阶尽头传过来,清清楚楚。\n\n14 寸黑白电视,在某一阶上等你。\n\n但你不知道是第几阶。\n\n《异常事件记录表》[02]栏的光标,等你写。"
         }
       ],
@@ -28,45 +36,100 @@
         {
           "text": "一阶一阶数着上去。",
           "next": "n_s2_count_stairs",
-          "effects": {"PR": 2, "landmark_visited": "S2"}
+          "effects": {
+            "PR": 2,
+            "landmark_visited": "S2"
+          }
         },
         {
           "text": "不数,跑步上山。",
           "next": "n_s2_run_up",
-          "effects": {"GR": 3, "landmark_visited": "S2"}
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S2"
+          }
         },
         {
           "text": "蹲下,先擦干净自己鞋上沾的湖泥。",
           "next": "n_s2_clean_shoes",
-          "effects": {"PR": 3, "landmark_visited": "S2"}
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S2"
+          }
         },
         {
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"shifts_skipped": 1, "landmark_skipped": "S2", "flags": {"s2_aborted": true}},
-          "require": {"not": {"flags": {"s2_revisit_stairs": true}}}
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S2",
+            "flags": {
+              "s2_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s2_revisit_stairs": true
+              }
+            }
+          }
         },
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"flags": {"s2_clean_leave": true}},
-          "require": {"any_of": [{"flags": {"s2_revisit_stairs": true}}, {"flags": {"s2_heard_tv": true}}]}
+          "effects": {
+            "flags": {
+              "s2_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s2_revisit_stairs": true
+                }
+              },
+              {
+                "flags": {
+                  "s2_heard_tv": true
+                }
+              }
+            ]
+          }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "21:47",
+        "place": "柳浪闻莺 307 阶"
+      }
     },
     "n_s2_count_stairs": {
       "scene": "S2",
       "narrative_variants": [
         {
-          "if": {"flags": {"s2_revisit_stairs": true}},
+          "if": {
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          },
           "text": "你又开始数。\n\n但这次,你**已经知道结果**——\n\n307 阶完了,会出现 308。\n\n你数到 100 阶,数到 200 阶——\n\n你的脚步声**和身后的脚步声错开半拍**。\n\n这一次,你**不回头**。\n\n你数到 307 阶——\n\n你前面,**直接是 308 阶**。\n\n红木门**已经开**了一条缝。\n\n它在等你。"
         },
         {
-          "if": {"flags": {"s2_following_footprints": true}},
+          "if": {
+            "flags": {
+              "s2_following_footprints": true
+            }
+          },
           "text": "你跟着两个潮湿的脚印往上数。\n\n你的脚和女孩的脚**重叠着前进**。\n\n你的脚印踩在她的脚印上——\n\n严丝合缝。\n\n你 27 岁的脚,踩进 11 岁的脚里。\n\n这不应该。\n\n但你抬头——\n\n307 阶尽头,**红木门为你打开**。\n\n比第一次开得更宽。"
         },
         {
-          "if": {"PR_min": 30, "flags": {"s2_pushed_through": true}},
+          "if": {
+            "PR_min": 30,
+            "flags": {
+              "s2_pushed_through": true
+            }
+          },
           "text": "你已经在跑。\n\n你不数。\n\n你只跑。\n\n但你的喉咙,**自己发出数字**——\n\n100、200、307。\n\n你的喉咙**比你的脚先到 307**。\n\n你的脚还在第 50 阶。\n\n但你的喉咙数完了。\n\n红木门**自动闭合**——\n\n你今晚不能进了。\n\n你**白来一趟**。"
         }
       ],
@@ -75,22 +138,43 @@
         {
           "text": "踏上第 308 阶。",
           "next": "n_s2_step_308",
-          "effects": {"PR": 5, "flags": {"s2_stepped_308": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s2_stepped_308": true
+            }
+          }
         },
         {
           "text": "停在 307,蹲下系鞋带,等天亮。",
           "next": "n_s2_wait_307",
-          "effects": {"PR": 3, "flags": {"s2_revisit_stairs": true}}
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          }
         },
         {
           "text": "倒着下山,数着倒数。",
           "next": "n_s2_descend_count",
-          "effects": {"GR": 3, "flags": {"s2_descending": true}}
+          "effects": {
+            "GR": 3,
+            "flags": {
+              "s2_descending": true
+            }
+          }
         },
         {
           "text": "继续往上数:309、310、311...",
           "next": "n_s2_endless_loop",
-          "effects": {"PR": 8, "GR": 5, "flags": {"s2_kept_counting": true}}
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {
+              "s2_kept_counting": true
+            }
+          }
         }
       ]
     },
@@ -98,11 +182,19 @@
       "scene": "S2",
       "narrative_variants": [
         {
-          "if": {"flags": {"s2_closed_door": true}},
+          "if": {
+            "flags": {
+              "s2_closed_door": true
+            }
+          },
           "text": "你又上 308 阶。\n\n这次门没『自己』开。\n\n门**已经开了**——\n\n开得很宽。\n\n你能看见门里——\n\n14 寸电视前,**多了一双白布鞋**。\n\n鞋朝着门口。\n\n鞋后跟,有 1996 年的红色舞台粉。\n\n红衣女孩,**站在电视后**——\n\n这次她对你说:「叔叔,你**关过门一次**。\n  关一次,我等 7 年。\n  你又来了。\n  我等了 14 年。\n\n  你想再关吗?」"
         },
         {
-          "if": {"flags": {"s2_offered_candy": true}},
+          "if": {
+            "flags": {
+              "s2_offered_candy": true
+            }
+          },
           "text": "你前面给过她一颗糖。\n\n你又上 308 阶——\n\n红木门**自己开**——\n\n开成 11 岁女孩**正好钻得过**的缝。\n\n你的脚,**自己变小**——\n\n你也变成 11 岁。\n\n11 岁的你,钻过门缝。\n\n门里,红衣女孩对**11 岁的你**鞠躬:\n\n「同学,**一起走 27 楼**。」"
         }
       ],
@@ -111,27 +203,51 @@
         {
           "text": "推开门,进去。",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 8, "flags": {"s2_heard_tv": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s2_heard_tv": true
+            }
+          }
         },
         {
           "text": "敲门——「有人吗?」",
           "next": "n_s2_knock_door",
-          "effects": {"PR": 5, "GR": 3}
+          "effects": {
+            "PR": 5,
+            "GR": 3
+          }
         },
         {
           "text": "把门关上,退回 307 阶。",
           "next": "n_s2_arrive",
-          "effects": {"flags": {"s2_revisit_stairs": true, "s2_closed_door": true}}
+          "effects": {
+            "flags": {
+              "s2_revisit_stairs": true,
+              "s2_closed_door": true
+            }
+          }
         },
         {
           "text": "扯下「请勿打扰 1987」的告示,塞进背包。",
           "next": "n_npc_predecessor_voice",
-          "effects": {"PR": 5, "inv_add": ["1987 告示残页"], "puzzle_add": "piece_1987_notice"}
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "1987 告示残页"
+            ],
+            "puzzle_add": "piece_1987_notice"
+          }
         },
         {
           "text": "我累了,不开门,直接下山打卡走人。",
           "next": "n_s2_red_door_skip",
-          "effects": {"PR": -3, "flags": {"s2_skipped_door": true}}
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s2_skipped_door": true
+            }
+          }
         }
       ]
     },
@@ -142,17 +258,34 @@
         {
           "text": "推门,告诉她。",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 5, "flags": {"s2_heard_tv": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s2_heard_tv": true
+            }
+          }
         },
         {
           "text": "回答她:『27 楼不在 27 层。』",
           "next": "n_npc_predecessor_voice",
-          "effects": {"PR": 10, "puzzle_add": "piece_27th_clue", "flags": {"s2_answered_riddle": true}}
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_27th_clue",
+            "flags": {
+              "s2_answered_riddle": true
+            }
+          }
         },
         {
           "text": "什么都不说,转身下山。",
           "next": "n_s2_descend_count",
-          "effects": {"PR": -3, "GR": 5, "flags": {"s2_fled_door": true}}
+          "effects": {
+            "PR": -3,
+            "GR": 5,
+            "flags": {
+              "s2_fled_door": true
+            }
+          }
         }
       ]
     },
@@ -163,22 +296,43 @@
         {
           "text": "猛回头。",
           "next": "n_s2_turn_back",
-          "effects": {"PR": 8, "GR": 5, "flags": {"s2_saw_double_shadow": true}}
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {
+              "s2_saw_double_shadow": true
+            }
+          }
         },
         {
           "text": "继续跑,一口气冲到顶。",
           "next": "n_s2_count_stairs",
-          "effects": {"PR": 3, "flags": {"s2_pushed_through": true}}
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s2_pushed_through": true
+            }
+          }
         },
         {
           "text": "蹲下,两脚踩住自己的影子。",
           "next": "n_s2_step_on_shadow",
-          "effects": {"GR": 8}
+          "effects": {
+            "GR": 8
+          }
         },
         {
           "text": "丢下《异常事件记录表》,跑下山。",
           "next": "n_landmark_picker",
-          "effects": {"shifts_skipped": 1, "landmark_skipped": "S2", "PR": -8, "flags": {"s2_dropped_record": true, "s2_aborted": true}}
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S2",
+            "PR": -8,
+            "flags": {
+              "s2_dropped_record": true,
+              "s2_aborted": true
+            }
+          }
         }
       ]
     },
@@ -189,17 +343,33 @@
         {
           "text": "捡起布鞋,放在台阶上,鞋头朝山顶。",
           "next": "n_s2_step_308",
-          "effects": {"PR": 10, "puzzle_add": "piece_red_girl_truth", "flags": {"s2_redirected_shoe": true}}
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "s2_redirected_shoe": true
+            }
+          }
         },
         {
           "text": "踩烂布鞋。",
           "next": "n_s2_endless_loop",
-          "effects": {"GR": 12, "flags": {"s2_crushed_shoe": true}}
+          "effects": {
+            "GR": 12,
+            "flags": {
+              "s2_crushed_shoe": true
+            }
+          }
         },
         {
           "text": "把布鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
-          "effects": {"GR": 10, "flags": {"s2_threw_shoe_lake": true}}
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s2_threw_shoe_lake": true
+            }
+          }
         }
       ]
     },
@@ -210,17 +380,35 @@
         {
           "text": "跟着潮湿的脚印,继续上山。",
           "next": "n_s2_count_stairs",
-          "effects": {"PR": 5, "flags": {"s2_following_footprints": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s2_following_footprints": true
+            }
+          }
         },
         {
           "text": "脱下自己的鞋,光脚踩在两个脚印中间。",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 12, "GR": 8, "flags": {"s2_barefoot_match": true, "s2_heard_tv": true}}
+          "effects": {
+            "PR": 12,
+            "GR": 8,
+            "flags": {
+              "s2_barefoot_match": true,
+              "s2_heard_tv": true
+            }
+          }
         },
         {
           "text": "拍照发夜班论坛。",
           "next": "n_npc_forum_lurkers",
-          "effects": {"PR": 10, "flags": {"posted_photo": true, "s2_posted_shadow": true}}
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "posted_photo": true,
+              "s2_posted_shadow": true
+            }
+          }
         }
       ]
     },
@@ -231,17 +419,35 @@
         {
           "text": "把湿巾收好,继续上山。",
           "next": "n_s2_count_stairs",
-          "effects": {"PR": 3, "inv_add": ["十三号湿巾"], "puzzle_add": "piece_13th"}
+          "effects": {
+            "PR": 3,
+            "inv_add": [
+              "十三号湿巾"
+            ],
+            "puzzle_add": "piece_13th"
+          }
         },
         {
           "text": "把湿巾扔进湖里。",
           "next": "n_scene_lake_underwater",
-          "effects": {"GR": 8, "flags": {"s2_dumped_wipe": true}}
+          "effects": {
+            "GR": 8,
+            "flags": {
+              "s2_dumped_wipe": true
+            }
+          }
         },
         {
           "text": "用湿巾擦自己的脸。",
           "next": "n_s2_endless_loop",
-          "effects": {"PR": 10, "GR": 12, "flags": {"s2_smeared_face": true, "marked_lamb": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 12,
+            "flags": {
+              "s2_smeared_face": true,
+              "marked_lamb": true
+            }
+          }
         }
       ]
     },
@@ -252,17 +458,37 @@
         {
           "text": "睁眼,直视她。",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 10, "GR": 8, "flags": {"s2_heard_tv": true, "s2_faced_her": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s2_heard_tv": true,
+              "s2_faced_her": true
+            }
+          }
         },
         {
           "text": "闭着眼,等她走。",
           "next": "n_s2_endless_loop",
-          "effects": {"PR": -5, "GR": 15, "flags": {"s2_avoided_her": true}}
+          "effects": {
+            "PR": -5,
+            "GR": 15,
+            "flags": {
+              "s2_avoided_her": true
+            }
+          }
         },
         {
           "text": "从口袋里掏出一颗糖,放在面前。",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 12, "puzzle_add": "piece_red_girl_truth", "flags": {"s2_offered_candy": true, "s2_heard_tv": true}}
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "s2_offered_candy": true,
+              "s2_heard_tv": true
+            }
+          }
         }
       ]
     },
@@ -273,18 +499,34 @@
         {
           "text": "干脆坐下,等天亮。",
           "next": "n_s2_wait_307",
-          "effects": {"PR": -3, "flags": {"s2_revisit_stairs": true}}
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          }
         },
         {
           "text": "回头,跑上 308 阶。",
           "next": "n_s2_step_308",
-          "effects": {"PR": 5}
+          "effects": {
+            "PR": 5
+          }
         },
         {
           "text": "拨打前任电话求助。",
           "next": "n_scene_red_telephone",
-          "effects": {"PR": 5, "flags": {"called_1987": true}},
-          "require": {"inv_has": ["前任电话号码"]}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "called_1987": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "前任电话号码"
+            ]
+          }
         }
       ]
     },
@@ -302,7 +544,12 @@
         {
           "text": "继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"PR": -5, "flags": {"s2_skipped_door": true}}
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s2_skipped_door": true
+            }
+          }
         }
       ]
     }

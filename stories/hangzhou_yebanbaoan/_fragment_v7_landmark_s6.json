@@ -15,11 +15,19 @@
       "scene": "S6",
       "narrative_variants": [
         {
-          "if": {"flags": {"s6_revisit_well": true}},
+          "if": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          },
           "text": "你又下到联庄站底层。\n\n刚才你看过盾构井。\n\n现在,井口**多了一顶柳条安全帽**——\n\n第 8 顶。\n\n第 8 顶的内侧,刻着「G-273」。"
         },
         {
-          "if": {"flags": {"seven_returned": true}},
+          "if": {
+            "flags": {
+              "seven_returned": true
+            }
+          },
           "text": "你已经把帽子还给了 7 个工人。\n\n但你回来时——\n\n7 顶帽子**全部漂在井口水面**。\n\n7 个工人**一个都不在**。\n\n7 顶帽子在水面拼出一个字:\n\n「**等**」"
         }
       ],
@@ -28,31 +36,73 @@
         {
           "text": "走到井边,看井底。",
           "next": "n_s6_look_down",
-          "effects": {"PR": 5, "landmark_visited": "S6"}
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S6"
+          }
         },
         {
           "text": "拿起一顶柳条安全帽,看内侧。",
           "next": "n_s6_inspect_helmet",
-          "effects": {"PR": 3, "landmark_visited": "S6"}
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S6"
+          }
         },
         {
           "text": "沿 B4 走廊往里走,看盾构机。",
           "next": "n_s6_go_to_machine",
-          "effects": {"GR": 5, "landmark_visited": "S6"}
+          "effects": {
+            "GR": 5,
+            "landmark_visited": "S6"
+          }
         },
         {
           "text": "上去打卡,跳下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"shifts_skipped": 1, "landmark_skipped": "S6", "flags": {"s6_aborted": true}},
-          "require": {"not": {"flags": {"s6_revisit_well": true}}}
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S6",
+            "flags": {
+              "s6_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s6_revisit_well": true
+              }
+            }
+          }
         },
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"flags": {"s6_clean_leave": true}},
-          "require": {"any_of": [{"flags": {"s6_revisit_well": true}}, {"flags": {"seven_returned": true}}]}
+          "effects": {
+            "flags": {
+              "s6_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s6_revisit_well": true
+                }
+              },
+              {
+                "flags": {
+                  "seven_returned": true
+                }
+              }
+            ]
+          }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "01:52",
+        "place": "联庄站 B4 盾构井"
+      }
     },
     "n_s6_look_down": {
       "scene": "S6",
@@ -61,23 +111,51 @@
         {
           "text": "「7 人归航」——把头上戴着的柳条帽递给第一个工人。",
           "next": "n_npc_helmet_workers",
-          "effects": {"PR": 15, "flags": {"s6_revisit_well": true}}
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
         },
         {
           "text": "把 7 顶帽子全部从栏杆薅下来。",
           "next": "n_s6_grab_seven",
-          "effects": {"GR": 22, "inv_add": ["7 顶柳条安全帽"], "flags": {"drown_marked": true}}
+          "effects": {
+            "GR": 22,
+            "inv_add": [
+              "7 顶柳条安全帽"
+            ],
+            "flags": {
+              "drown_marked": true
+            }
+          }
         },
         {
           "text": "把对讲机贴近井口,听轮渡引擎声。",
           "next": "n_s6_listen_engine",
-          "effects": {"PR": 8, "flags": {"s6_revisit_well": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
         },
         {
           "text": "把 1986 年硬币(如果有)扔进井里。",
           "next": "n_s6_drop_coin",
-          "effects": {"PR": 12, "flags": {"s6_revisit_well": true, "s6_dropped_coin": true}},
-          "require": {"inv_has": ["1986 林字硬币"]}
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_dropped_coin": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          }
         }
       ]
     },
@@ -95,22 +173,50 @@
         {
           "text": "把第七顶戴在自己头上。",
           "next": "n_s6_wear_seventh",
-          "effects": {"GR": 18, "inv_add": ["柳条安全帽 (粘住)"], "flags": {"helmet_stuck": true, "marked_lamb": true}}
+          "effects": {
+            "GR": 18,
+            "inv_add": [
+              "柳条安全帽 (粘住)"
+            ],
+            "flags": {
+              "helmet_stuck": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "把第七顶倒扣在地上。",
           "next": "n_s6_revisit_well_alt",
-          "effects": {"PR": 8, "flags": {"s6_revisit_well": true, "s6_inverted_seventh": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_inverted_seventh": true
+            }
+          }
         },
         {
           "text": "把日期写成「永不」。",
           "next": "n_npc_evaluator_chair",
-          "effects": {"PR": 18, "puzzle_add": "piece_judge_seal", "flags": {"got_judge_seal": true, "s6_wrote_never": true}}
+          "effects": {
+            "PR": 18,
+            "puzzle_add": "piece_judge_seal",
+            "flags": {
+              "got_judge_seal": true,
+              "s6_wrote_never": true
+            }
+          }
         },
         {
           "text": "把 7 顶帽子整齐归位回栏杆。",
           "next": "n_npc_helmet_workers",
-          "effects": {"PR": 12, "GR": 5, "flags": {"s6_returned_helmets": true}}
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "flags": {
+              "s6_returned_helmets": true
+            }
+          }
         }
       ]
     },
@@ -128,17 +234,36 @@
         {
           "text": "走过去,按 27。",
           "next": "n_scene_27th_floor_corridor",
-          "effects": {"PR": 12, "flags": {"s6_revisit_well": true, "saw_27th_floor": true}}
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "s6_revisit_well": true,
+              "saw_27th_floor": true
+            }
+          }
         },
         {
           "text": "不去。退回井边。",
           "next": "n_s6_arrive",
-          "effects": {"flags": {"s6_revisit_well": true}}
+          "effects": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
         },
         {
           "text": "把工牌塞进电梯按钮里。",
           "next": "n_npc_ghost_guard",
-          "effects": {"PR": 8, "inv_add": ["27F 铜钥匙"], "flags": {"s6_id_into_button": true, "promised_relieve_predecessor": true}}
+          "effects": {
+            "PR": 8,
+            "inv_add": [
+              "27F 铜钥匙"
+            ],
+            "flags": {
+              "s6_id_into_button": true,
+              "promised_relieve_predecessor": true
+            }
+          }
         }
       ]
     },
@@ -149,22 +274,45 @@
         {
           "text": "回答:『我替他来了。』",
           "next": "n_npc_helmet_workers",
-          "effects": {"PR": 15, "flags": {"s6_volunteered": true, "seven_returned": true}}
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s6_volunteered": true,
+              "seven_returned": true
+            }
+          }
         },
         {
           "text": "回答:『你们是 7 个,我是 1 个。我不替他,我替你们。』",
           "next": "n_s6_replace_seven",
-          "effects": {"PR": 25, "puzzle_add": "piece_seven_returned", "flags": {"seven_returned": true, "s6_replaced_seven": true, "b3_unlocked": true}}
+          "effects": {
+            "PR": 25,
+            "puzzle_add": "piece_seven_returned",
+            "flags": {
+              "seven_returned": true,
+              "s6_replaced_seven": true,
+              "b3_unlocked": true
+            }
+          }
         },
         {
           "text": "挂掉对讲机。",
           "next": "n_s6_arrive",
-          "effects": {"GR": 5, "flags": {"s6_revisit_well": true, "hung_up_predecessor": true}}
+          "effects": {
+            "GR": 5,
+            "flags": {
+              "s6_revisit_well": true,
+              "hung_up_predecessor": true
+            }
+          }
         },
         {
           "text": "问:『1986 年那天,第 8 个人为什么没上船?』",
           "next": "n_npc_predecessor_voice",
-          "effects": {"PR": 10, "puzzle_add": "piece_truancy"}
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_truancy"
+          }
         }
       ]
     },
@@ -175,7 +323,14 @@
         {
           "text": "鞠躬,继续巡逻。",
           "next": "n_landmark_picker",
-          "effects": {"PR": 30, "GR": -10, "puzzle_add": "piece_seven_freed", "flags": {"s6_seven_freed": true}}
+          "effects": {
+            "PR": 30,
+            "GR": -10,
+            "puzzle_add": "piece_seven_freed",
+            "flags": {
+              "s6_seven_freed": true
+            }
+          }
         }
       ]
     },
@@ -186,17 +341,33 @@
         {
           "text": "把工牌反过来,接受 27 笔欠债。",
           "next": "n_npc_evaluator_chair",
-          "effects": {"PR": 10, "GR": 8, "flags": {"got_judge_seal": true, "s6_owes_27": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "got_judge_seal": true,
+              "s6_owes_27": true
+            }
+          }
         },
         {
           "text": "把工牌烧了。",
           "next": "n_s6_burn_id",
-          "effects": {"GR": 25, "flags": {"s6_burned_id": true}}
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "s6_burned_id": true
+            }
+          }
         },
         {
           "text": "回到井边,继续巡逻。",
           "next": "n_s6_look_down",
-          "effects": {"flags": {"s6_revisit_well": true}}
+          "effects": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
         }
       ]
     },
@@ -207,12 +378,22 @@
         {
           "text": "去 B3 档案室,看处理结果。",
           "next": "n_scene_evaluator_room",
-          "effects": {"PR": 5, "flags": {"s6_no_fingerprint": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s6_no_fingerprint": true
+            }
+          }
         },
         {
           "text": "继续巡逻,假装没事。",
           "next": "n_landmark_picker",
-          "effects": {"GR": 10, "flags": {"s6_no_fingerprint": true}}
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s6_no_fingerprint": true
+            }
+          }
         }
       ]
     },
@@ -223,22 +404,42 @@
         {
           "text": "走进操作间,看那个人。",
           "next": "n_s6_operator_room",
-          "effects": {"PR": 8, "flags": {"s6_into_operator": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s6_into_operator": true
+            }
+          }
         },
         {
           "text": "用扳手卡住刀盘。",
           "next": "n_s6_jam_blade",
-          "effects": {"GR": 15, "flags": {"s6_jammed_blade": true}}
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "s6_jammed_blade": true
+            }
+          }
         },
         {
           "text": "走到盾构机正面,挡住刀盘。",
           "next": "n_s6_stand_blade",
-          "effects": {"GR": 25, "flags": {"s6_stood_blade": true, "marked_lamb": true}}
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "s6_stood_blade": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "退回井边,不进操作间。",
           "next": "n_s6_arrive",
-          "effects": {"flags": {"s6_revisit_well": true}}
+          "effects": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
         }
       ]
     },
@@ -249,17 +450,35 @@
         {
           "text": "在他工号牌上,把「1986-08-17」改成「1985-10-18」。",
           "next": "n_npc_drowned_official",
-          "effects": {"PR": 25, "puzzle_add": "piece_linmou_full", "flags": {"s6_corrected_linmou": true, "claimed_linmou": true}}
+          "effects": {
+            "PR": 25,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "s6_corrected_linmou": true,
+              "claimed_linmou": true
+            }
+          }
         },
         {
           "text": "拒绝。这不是我能改的。",
           "next": "n_landmark_picker",
-          "effects": {"PR": -8, "flags": {"s6_refused_correction": true}}
+          "effects": {
+            "PR": -8,
+            "flags": {
+              "s6_refused_correction": true
+            }
+          }
         },
         {
           "text": "把自己的工牌也放进操作间,『让我也当第 8 个』。",
           "next": "n_npc_eight_self",
-          "effects": {"PR": 20, "flags": {"s6_offered_self": true, "linked_to_eight_self": true}}
+          "effects": {
+            "PR": 20,
+            "flags": {
+              "s6_offered_self": true,
+              "linked_to_eight_self": true
+            }
+          }
         }
       ]
     },
@@ -270,12 +489,28 @@
         {
           "text": "去 27 楼接前任。",
           "next": "n_npc_ghost_guard",
-          "effects": {"PR": 18, "inv_add": ["27F 铜钥匙"], "puzzle_add": "piece_27th_clue", "flags": {"promised_relieve_predecessor": true}}
+          "effects": {
+            "PR": 18,
+            "inv_add": [
+              "27F 铜钥匙"
+            ],
+            "puzzle_add": "piece_27th_clue",
+            "flags": {
+              "promised_relieve_predecessor": true
+            }
+          }
         },
         {
           "text": "把扳手拿出来,让刀盘继续转。",
           "next": "n_s6_arrive",
-          "effects": {"PR": -10, "GR": 8, "flags": {"s6_revisit_well": true, "s6_unjammed": true}}
+          "effects": {
+            "PR": -10,
+            "GR": 8,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_unjammed": true
+            }
+          }
         }
       ]
     },
@@ -286,12 +521,28 @@
         {
           "text": "接受这道红印。",
           "next": "n_npc_ghost_guard",
-          "effects": {"PR": 25, "GR": 10, "puzzle_add": "piece_predecessor_log", "flags": {"s6_inherited_scar": true, "promised_relieve_predecessor": true, "marked_lamb": true}}
+          "effects": {
+            "PR": 25,
+            "GR": 10,
+            "puzzle_add": "piece_predecessor_log",
+            "flags": {
+              "s6_inherited_scar": true,
+              "promised_relieve_predecessor": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "退后,让刀盘继续转。",
           "next": "n_s6_arrive",
-          "effects": {"PR": -15, "GR": 5, "flags": {"s6_revisit_well": true, "s6_chickened": true}}
+          "effects": {
+            "PR": -15,
+            "GR": 5,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_chickened": true
+            }
+          }
         }
       ]
     }

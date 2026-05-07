@@ -15,11 +15,19 @@
       "scene": "S5",
       "narrative_variants": [
         {
-          "if": {"flags": {"s5_revisit_piano": true}},
+          "if": {
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          },
           "text": "你又站在 203 琴房门外。\n\n刚才你已经听过钢琴。\n\n现在,门把手是**温的**。\n\n是被人**握过**的温度。\n\n那个人,刚刚才离开。\n\n但走廊空无一人。"
         },
         {
-          "if": {"flags": {"piano_appeased": true}},
+          "if": {
+            "flags": {
+              "piano_appeased": true
+            }
+          },
           "text": "你已经把 1987 年 6 月 1 日的报纸放在琴盖上了。\n\n但你回来时——\n\n报纸**消失**了。\n\n钢琴自己又掀开了盖子。\n\n键上,留着一张**新的纸条**:\n\n「叔叔,我妈妈来过。她说我可以下来了。\n  谢谢叔叔。」"
         }
       ],
@@ -28,31 +36,74 @@
         {
           "text": "推门进去。",
           "next": "n_s5_open_door",
-          "effects": {"PR": 5, "landmark_visited": "S5"}
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S5"
+          }
         },
         {
           "text": "在门外听,等钢琴停。",
           "next": "n_s5_listen_outside",
-          "effects": {"PR": 3, "GR": 5, "landmark_visited": "S5"}
+          "effects": {
+            "PR": 3,
+            "GR": 5,
+            "landmark_visited": "S5"
+          }
         },
         {
           "text": "沿走廊往里走,看其他教室。",
           "next": "n_s5_corridor",
-          "effects": {"GR": 3, "landmark_visited": "S5"}
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S5"
+          }
         },
         {
           "text": "退出旧楼,跳到下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"shifts_skipped": 1, "landmark_skipped": "S5", "flags": {"s5_aborted": true}},
-          "require": {"not": {"flags": {"s5_revisit_piano": true}}}
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S5",
+            "flags": {
+              "s5_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s5_revisit_piano": true
+              }
+            }
+          }
         },
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"flags": {"s5_clean_leave": true}},
-          "require": {"any_of": [{"flags": {"s5_revisit_piano": true}}, {"flags": {"piano_appeased": true}}]}
+          "effects": {
+            "flags": {
+              "s5_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s5_revisit_piano": true
+                }
+              },
+              {
+                "flags": {
+                  "piano_appeased": true
+                }
+              }
+            ]
+          }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "01:08",
+        "place": "留下小学 203 琴房"
+      }
     },
     "n_s5_open_door": {
       "scene": "S5",
@@ -61,23 +112,49 @@
         {
           "text": "走过去,坐到琴凳上。",
           "next": "n_s5_sit_piano",
-          "effects": {"PR": 8, "flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         },
         {
           "text": "蹲下,把布鞋拎起来检查。",
           "next": "n_s5_inspect_shoes",
-          "effects": {"PR": 5, "flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         },
         {
           "text": "把 1987 年 6 月 1 日的报纸放在琴盖上。",
           "next": "n_npc_piano_ghost",
-          "effects": {"PR": 12, "GR": 5, "flags": {"piano_appeased": true, "s5_offered_newspaper": true}},
-          "require": {"inv_has": ["1987 告示残页"]}
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "flags": {
+              "piano_appeased": true,
+              "s5_offered_newspaper": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1987 告示残页"
+            ]
+          }
         },
         {
           "text": "退出琴房,关门。",
           "next": "n_s5_arrive",
-          "effects": {"flags": {"s5_revisit_piano": true, "s5_left_room": true}}
+          "effects": {
+            "flags": {
+              "s5_revisit_piano": true,
+              "s5_left_room": true
+            }
+          }
         }
       ]
     },
@@ -88,22 +165,47 @@
         {
           "text": "起身,推开琴凳。",
           "next": "n_s5_open_bench",
-          "effects": {"PR": 8, "flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         },
         {
           "text": "坐着不动,弹一首她想听的曲子。",
           "next": "n_npc_piano_ghost",
-          "effects": {"PR": 10, "inv_add": ["倒带背书声"], "flags": {"played_for_her": true}}
+          "effects": {
+            "PR": 10,
+            "inv_add": [
+              "倒带背书声"
+            ],
+            "flags": {
+              "played_for_her": true
+            }
+          }
         },
         {
           "text": "把 1991 年的请假条收起来。",
           "next": "n_scene_lost_archive",
-          "effects": {"PR": 12, "inv_add": ["1991 请假条"], "puzzle_add": "piece_piano_girl"}
+          "effects": {
+            "PR": 12,
+            "inv_add": [
+              "1991 请假条"
+            ],
+            "puzzle_add": "piece_piano_girl"
+          }
         },
         {
           "text": "把请假条划掉「不准」,改成「准」。",
           "next": "n_s5_grant_leave",
-          "effects": {"PR": 18, "GR": 5, "flags": {"s5_granted_leave": true}}
+          "effects": {
+            "PR": 18,
+            "GR": 5,
+            "flags": {
+              "s5_granted_leave": true
+            }
+          }
         }
       ]
     },
@@ -114,22 +216,46 @@
         {
           "text": "把绳子拿出来,带走。",
           "next": "n_s5_take_rope",
-          "effects": {"PR": 5, "GR": 5, "inv_add": ["1991 钢丝绳"], "puzzle_add": "piece_piano_girl"}
+          "effects": {
+            "PR": 5,
+            "GR": 5,
+            "inv_add": [
+              "1991 钢丝绳"
+            ],
+            "puzzle_add": "piece_piano_girl"
+          }
         },
         {
           "text": "把绳子套在自己脖子上。",
           "next": "n_s5_self_hang",
-          "effects": {"GR": 25, "flags": {"s5_self_noosed": true, "marked_lamb": true}}
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "s5_self_noosed": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "用打火机烧绳子。",
           "next": "n_npc_piano_ghost",
-          "effects": {"PR": 12, "flags": {"s5_burned_rope": true, "piano_appeased": true}}
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "s5_burned_rope": true,
+              "piano_appeased": true
+            }
+          }
         },
         {
           "text": "什么都不做,关上琴凳盖子。",
           "next": "n_s5_arrive",
-          "effects": {"PR": -3, "flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         }
       ]
     },
@@ -147,12 +273,27 @@
         {
           "text": "把照片塞回糖纸,带走。",
           "next": "n_scene_lost_archive",
-          "effects": {"PR": 15, "inv_add": ["1991 班级合照"], "puzzle_add": "piece_eight_zhao", "flags": {"s5_remembered_school": true}}
+          "effects": {
+            "PR": 15,
+            "inv_add": [
+              "1991 班级合照"
+            ],
+            "puzzle_add": "piece_eight_zhao",
+            "flags": {
+              "s5_remembered_school": true
+            }
+          }
         },
         {
           "text": "把照片烧了。",
           "next": "n_npc_piano_ghost",
-          "effects": {"PR": -10, "GR": 8, "flags": {"s5_burned_photo": true}}
+          "effects": {
+            "PR": -10,
+            "GR": 8,
+            "flags": {
+              "s5_burned_photo": true
+            }
+          }
         }
       ]
     },
@@ -160,15 +301,27 @@
       "scene": "S5",
       "narrative_variants": [
         {
-          "if": {"flags": {"s5_burned_rope": true}},
+          "if": {
+            "flags": {
+              "s5_burned_rope": true
+            }
+          },
           "text": "你已经烧了那根钢丝绳。\n\n你又来到 203——\n\n请假条还在地上。\n\n但**字迹自己改了**——\n\n「不准」自己变成了「准」。\n\n钢琴键自己摁出最后一个完整的 C 大调。\n\n窗外,11 岁的女孩,**已经走出校门**——\n\n她在校门口回头,对你**鞠躬**。\n\n但她**比第一次走出校门**时,多了一个动作:\n\n她对你**眨了一下眼睛**——\n\n是 1991 年她妈妈最疼她那次,她对妈妈眨过的眼睛。"
         },
         {
-          "if": {"flags": {"s5_erased_self": true}},
+          "if": {
+            "flags": {
+              "s5_erased_self": true
+            }
+          },
           "text": "你刚把自己的名字从 205 黑板上擦掉。\n\n你回到 203——\n\n请假条**自己改字**——\n\n「不准」变成「准」。\n\n但请假条上的「申请人」一栏,**多了一行**——\n\n「**赵某 G-273**」。\n\n你和叶某,一起准假 33 年。\n\n窗外两个孩子走出校门,**一前一后**——\n\n第一个是叶某。\n\n第二个,**穿白衬衫**,11 岁的你。"
         },
         {
-          "if": {"flags": {"s5_revisit_piano": true}},
+          "if": {
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          },
           "text": "你又来到这里。\n\n请假条已经被你签了。\n\n但 203 琴房的钢琴,**还在响**——\n\n这次不是《小星星》。\n\n是**1991 年那天叶某妈妈在外面叫她的声音**——\n\n「叶某,饭好了!」\n\n这是叶某 33 年没听到的话。\n\n她已经走出校门——\n\n她**朝家的方向跑**。\n\n你低头——\n\n请假条上,**多了一行**:\n\n「叶某 已下班。\n  下一份『未结』:**红衣女孩 何小燕**。」"
         }
       ],
@@ -177,7 +330,14 @@
         {
           "text": "鞠躬回礼。",
           "next": "n_landmark_picker",
-          "effects": {"PR": 25, "GR": -5, "puzzle_add": "piece_piano_girl_freed", "flags": {"s5_freed_yeh": true}}
+          "effects": {
+            "PR": 25,
+            "GR": -5,
+            "puzzle_add": "piece_piano_girl_freed",
+            "flags": {
+              "s5_freed_yeh": true
+            }
+          }
         }
       ]
     },
@@ -188,17 +348,35 @@
         {
           "text": "把鞋带去给红衣女孩。",
           "next": "n_npc_red_dress_girl",
-          "effects": {"PR": 12, "GR": 5, "puzzle_add": "piece_red_girl_truth", "flags": {"s5_returned_shoes": true}}
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "s5_returned_shoes": true
+            }
+          }
         },
         {
           "text": "把鞋穿在自己脚上。",
           "next": "n_s5_wear_shoes",
-          "effects": {"GR": 18, "flags": {"s5_wore_girl_shoes": true, "marked_lamb": true}}
+          "effects": {
+            "GR": 18,
+            "flags": {
+              "s5_wore_girl_shoes": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "把鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
-          "effects": {"GR": 10, "flags": {"s5_threw_shoes_lake": true}}
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s5_threw_shoes_lake": true
+            }
+          }
         }
       ]
     },
@@ -216,17 +394,36 @@
         {
           "text": "推门进去,告诉她不要倒带。",
           "next": "n_s5_grant_leave",
-          "effects": {"PR": 15, "flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         },
         {
           "text": "把对讲机调到 1991-04-23 频段。",
           "next": "n_scene_red_telephone",
-          "effects": {"PR": 10, "puzzle_add": "piece_radio_call", "flags": {"called_1987": true}}
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_radio_call",
+            "flags": {
+              "called_1987": true
+            }
+          }
         },
         {
           "text": "录下钢琴声,准备给前任听。",
           "next": "n_npc_predecessor_voice",
-          "effects": {"PR": 8, "inv_add": ["1959-043 磁带"], "flags": {"s5_recorded_piano": true}}
+          "effects": {
+            "PR": 8,
+            "inv_add": [
+              "1959-043 磁带"
+            ],
+            "flags": {
+              "s5_recorded_piano": true
+            }
+          }
         }
       ]
     },
@@ -237,22 +434,43 @@
         {
           "text": "等粉笔写出名字。",
           "next": "n_s5_chalk_name",
-          "effects": {"PR": 10, "GR": 8, "flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         },
         {
           "text": "抓住粉笔,折断。",
           "next": "n_npc_piano_ghost",
-          "effects": {"PR": 5, "GR": 5, "flags": {"s5_broke_chalk": true}}
+          "effects": {
+            "PR": 5,
+            "GR": 5,
+            "flags": {
+              "s5_broke_chalk": true
+            }
+          }
         },
         {
           "text": "用黑板擦,擦掉所有「叶某」。",
           "next": "n_s5_grant_leave",
-          "effects": {"PR": 15, "flags": {"s5_erased_blackboard": true}}
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s5_erased_blackboard": true
+            }
+          }
         },
         {
           "text": "退回 203 琴房。",
           "next": "n_s5_open_door",
-          "effects": {"flags": {"s5_revisit_piano": true}}
+          "effects": {
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
         }
       ]
     },
@@ -263,12 +481,22 @@
         {
           "text": "走到黑板前,把自己的名字也擦掉。",
           "next": "n_s5_grant_leave",
-          "effects": {"PR": 25, "GR": -10, "flags": {"s5_erased_self": true}}
+          "effects": {
+            "PR": 25,
+            "GR": -10,
+            "flags": {
+              "s5_erased_self": true
+            }
+          }
         },
         {
           "text": "把自己的名字留在黑板上,接替叶某。",
           "next": "n_end_data",
-          "effects": {"flags": {"s5_replaced_yeh": true}}
+          "effects": {
+            "flags": {
+              "s5_replaced_yeh": true
+            }
+          }
         }
       ]
     }

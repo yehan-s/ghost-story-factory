@@ -15,11 +15,19 @@
       "scene": "S4",
       "narrative_variants": [
         {
-          "if": {"flags": {"s4_revisit_alley": true}},
+          "if": {
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          },
           "text": "你又转进羊血弄。\n\n弄堂尽头的灯,亮一阵灭一阵——\n\n刚才你看见的黑山羊,现在**多了一具**,挂在第二个铁钩上。\n\n第二具,有头。\n\n头是**你的**。"
         },
         {
-          "if": {"flags": {"completed_yang": true}},
+          "if": {
+            "flags": {
+              "completed_yang": true
+            }
+          },
           "text": "你已经补全了「⺶」字。\n\n但你回来时——\n\n匾上的字**又少了一笔**。\n\n弄堂里有人在用毛笔涂字。\n\n那个人,穿着 1933 年的长衫。"
         }
       ],
@@ -28,31 +36,73 @@
         {
           "text": "走过去,近距离看那只黑山羊。",
           "next": "n_s4_approach_goat",
-          "effects": {"PR": 5, "landmark_visited": "S4"}
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S4"
+          }
         },
         {
           "text": "先走到「⺶」字匾下,看那一笔。",
           "next": "n_s4_examine_sign",
-          "effects": {"PR": 3, "landmark_visited": "S4"}
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S4"
+          }
         },
         {
           "text": "弄堂半路有一扇半开的门,推门看看。",
           "next": "n_s4_open_door",
-          "effects": {"GR": 5, "landmark_visited": "S4"}
+          "effects": {
+            "GR": 5,
+            "landmark_visited": "S4"
+          }
         },
         {
           "text": "不进去,绕路走。",
           "next": "n_landmark_picker",
-          "effects": {"shifts_skipped": 1, "landmark_skipped": "S4", "flags": {"s4_aborted": true}},
-          "require": {"not": {"flags": {"s4_revisit_alley": true}}}
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S4",
+            "flags": {
+              "s4_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s4_revisit_alley": true
+              }
+            }
+          }
         },
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {"flags": {"s4_clean_leave": true}},
-          "require": {"any_of": [{"flags": {"s4_revisit_alley": true}}, {"flags": {"completed_yang": true}}]}
+          "effects": {
+            "flags": {
+              "s4_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s4_revisit_alley": true
+                }
+              },
+              {
+                "flags": {
+                  "completed_yang": true
+                }
+              }
+            ]
+          }
         }
-      ]
+      ],
+      "_landmark_header": {
+        "time": "00:11",
+        "place": "中山中路羊血弄 2 号"
+      }
     },
     "n_s4_approach_goat": {
       "scene": "S4",
@@ -61,22 +111,49 @@
         {
           "text": "蹲下,把那半张脸的轮廓看清楚。",
           "next": "n_s4_blood_face",
-          "effects": {"PR": 8, "GR": 3, "flags": {"s4_revisit_alley": true}}
+          "effects": {
+            "PR": 8,
+            "GR": 3,
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          }
         },
         {
           "text": "用手指蘸一点血,补「⺶」字最下面那一笔。",
           "next": "n_npc_yang_butcher",
-          "effects": {"PR": 12, "GR": 8, "inv_add": ["⺶ 符文"], "flags": {"completed_yang": true, "s4_blood_signed": true}}
+          "effects": {
+            "PR": 12,
+            "GR": 8,
+            "inv_add": [
+              "⺶ 符文"
+            ],
+            "flags": {
+              "completed_yang": true,
+              "s4_blood_signed": true
+            }
+          }
         },
         {
           "text": "割断绳索,让羊落地。",
           "next": "n_s4_cut_rope",
-          "effects": {"GR": 15, "flags": {"freed_yang": true, "marked_lamb": true, "s4_kneeled_three_times": false}}
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "freed_yang": true,
+              "marked_lamb": true,
+              "s4_kneeled_three_times": false
+            }
+          }
         },
         {
           "text": "退后,先去看「⺶」字匾。",
           "next": "n_s4_examine_sign",
-          "effects": {"flags": {"s4_revisit_alley": true}}
+          "effects": {
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          }
         }
       ]
     },
@@ -87,17 +164,35 @@
         {
           "text": "听他的,不跪,转身离开。",
           "next": "n_npc_drowned_official",
-          "effects": {"PR": 15, "puzzle_add": "piece_linmou_full", "flags": {"s4_heard_warning": true}}
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "s4_heard_warning": true
+            }
+          }
         },
         {
           "text": "不听,我跪三个。",
           "next": "n_s4_kneel_three",
-          "effects": {"GR": 20, "flags": {"s4_kneeled_three_times": true, "marked_lamb": true}}
+          "effects": {
+            "GR": 20,
+            "flags": {
+              "s4_kneeled_three_times": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "拍照。",
           "next": "n_npc_forum_lurkers",
-          "effects": {"PR": 12, "flags": {"posted_photo": true, "s4_posted_blood_face": true}}
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "posted_photo": true,
+              "s4_posted_blood_face": true
+            }
+          }
         }
       ]
     },
@@ -115,17 +210,39 @@
         {
           "text": "拿起毛笔,补「⺶」字最下面那一笔。",
           "next": "n_s4_paint_stroke",
-          "effects": {"PR": 5, "flags": {"s4_revisit_alley": true, "s4_lifted_brush": true}}
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_lifted_brush": true
+            }
+          }
         },
         {
           "text": "把毛笔折断,扔掉。",
           "next": "n_s4_break_brush",
-          "effects": {"PR": 8, "GR": 10, "flags": {"s4_revisit_alley": true, "s4_broke_brush": true}}
+          "effects": {
+            "PR": 8,
+            "GR": 10,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_broke_brush": true
+            }
+          }
         },
         {
           "text": "把毛笔收进背包。",
           "next": "n_s4_arrive",
-          "effects": {"inv_add": ["血毛笔"], "puzzle_add": "piece_yang_brush", "flags": {"s4_revisit_alley": true, "s4_kept_brush": true}}
+          "effects": {
+            "inv_add": [
+              "血毛笔"
+            ],
+            "puzzle_add": "piece_yang_brush",
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_kept_brush": true
+            }
+          }
         }
       ]
     },
@@ -136,17 +253,40 @@
         {
           "text": "接受。把工牌挂回脖子。",
           "next": "n_npc_yang_butcher",
-          "effects": {"PR": 10, "GR": 15, "inv_add": ["⺶ 符文", "羊公会名册"], "flags": {"completed_yang": true, "s4_joined_yanggui": true, "marked_lamb": true}}
+          "effects": {
+            "PR": 10,
+            "GR": 15,
+            "inv_add": [
+              "⺶ 符文",
+              "羊公会名册"
+            ],
+            "flags": {
+              "completed_yang": true,
+              "s4_joined_yanggui": true,
+              "marked_lamb": true
+            }
+          }
         },
         {
           "text": "拒绝。把工牌摔在地上。",
           "next": "n_npc_evaluator_chair",
-          "effects": {"PR": 15, "flags": {"s4_refused_yanggui": true, "got_judge_seal": true}}
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s4_refused_yanggui": true,
+              "got_judge_seal": true
+            }
+          }
         },
         {
           "text": "把毛笔再画一笔,**多画一笔**。",
           "next": "n_s4_extra_stroke",
-          "effects": {"GR": 20, "flags": {"s4_overstroke": true}}
+          "effects": {
+            "GR": 20,
+            "flags": {
+              "s4_overstroke": true
+            }
+          }
         }
       ]
     },
@@ -164,12 +304,23 @@
         {
           "text": "走过去,跟老婆婆说话。",
           "next": "n_s4_old_woman",
-          "effects": {"PR": 8, "flags": {"s4_broke_yang_curse": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s4_broke_yang_curse": true
+            }
+          }
         },
         {
           "text": "不去。直接转身离开。",
           "next": "n_landmark_picker",
-          "effects": {"PR": 15, "puzzle_add": "piece_yang_freed", "flags": {"s4_clean_exit": true}}
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_yang_freed",
+            "flags": {
+              "s4_clean_exit": true
+            }
+          }
         }
       ]
     },
@@ -180,12 +331,27 @@
         {
           "text": "收下粮票,鞠躬,离开。",
           "next": "n_landmark_picker",
-          "effects": {"PR": 20, "inv_add": ["1959-043 粮票"], "puzzle_add": "piece_yang_freed", "flags": {"s4_grandma_blessing": true}}
+          "effects": {
+            "PR": 20,
+            "inv_add": [
+              "1959-043 粮票"
+            ],
+            "puzzle_add": "piece_yang_freed",
+            "flags": {
+              "s4_grandma_blessing": true
+            }
+          }
         },
         {
           "text": "把豆腐脑喝了。",
           "next": "n_scene_lost_archive",
-          "effects": {"PR": 10, "puzzle_add": "piece_grandma_blessing", "flags": {"s4_drank_tofu": true}}
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_grandma_blessing",
+            "flags": {
+              "s4_drank_tofu": true
+            }
+          }
         }
       ]
     },
@@ -196,22 +362,45 @@
         {
           "text": "对着监视器挥手。",
           "next": "n_npc_cleaner_null",
-          "effects": {"PR": 8, "flags": {"s4_revisit_alley": true, "s4_waved_camera": true}}
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_waved_camera": true
+            }
+          }
         },
         {
           "text": "把监视器砸了。",
           "next": "n_s4_smash_monitor",
-          "effects": {"GR": 15, "flags": {"s4_smashed_monitor": true}}
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "s4_smashed_monitor": true
+            }
+          }
         },
         {
           "text": "退出房间,转身就跑。",
           "next": "n_s4_arrive",
-          "effects": {"PR": -5, "flags": {"s4_revisit_alley": true, "s4_fled_room": true}}
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_fled_room": true
+            }
+          }
         },
         {
           "text": "把记录表伸进监视器画面里。",
           "next": "n_scene_lost_archive",
-          "effects": {"PR": 12, "puzzle_add": "piece_camera_self", "flags": {"s4_self_archived": true}}
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_camera_self",
+            "flags": {
+              "s4_self_archived": true
+            }
+          }
         }
       ]
     },
@@ -222,7 +411,13 @@
         {
           "text": "出门继续巡逻。",
           "next": "n_npc_cleaner_null",
-          "effects": {"PR": 8, "GR": 10, "flags": {"s4_static_in_skin": true}}
+          "effects": {
+            "PR": 8,
+            "GR": 10,
+            "flags": {
+              "s4_static_in_skin": true
+            }
+          }
         }
       ]
     },
@@ -233,17 +428,39 @@
         {
           "text": "还给「夜班评议会」。",
           "next": "n_npc_evaluator_chair",
-          "effects": {"PR": 15, "puzzle_add": "piece_yang_debt", "flags": {"s4_debt_to_evaluator": true}}
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_yang_debt",
+            "flags": {
+              "s4_debt_to_evaluator": true
+            }
+          }
         },
         {
           "text": "还给上一任 G-273。",
           "next": "n_npc_predecessor_voice",
-          "effects": {"PR": 10, "flags": {"s4_debt_to_predecessor": true}}
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "s4_debt_to_predecessor": true
+            }
+          }
         },
         {
           "text": "我来还。我自己背。",
           "next": "n_landmark_picker",
-          "effects": {"GR": 25, "PR": 20, "inv_add": ["羊公会欠条"], "flags": {"yang_debt": true, "marked_lamb": true, "s4_self_debt": true}}
+          "effects": {
+            "GR": 25,
+            "PR": 20,
+            "inv_add": [
+              "羊公会欠条"
+            ],
+            "flags": {
+              "yang_debt": true,
+              "marked_lamb": true,
+              "s4_self_debt": true
+            }
+          }
         }
       ]
     }
