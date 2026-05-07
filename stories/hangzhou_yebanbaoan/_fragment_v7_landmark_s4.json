@@ -16,14 +16,16 @@
       "narrative_variants": [
         {
           "if": {
-            "visit_count_min": {"n_s4_arrive": 3}
+            "visit_count_min": {
+              "n_s4_arrive": 3
+            }
           },
           "text": "你已经第 3 次转进羊血弄。\n\n弄堂尽头的铁钩——\n\n挂着 **3 只**黑山羊。\n\n3 只都没头。\n\n3 只腿都在蹬。\n\n蹬的节拍**完全一致**。\n\n弄口胡庆余堂那块「戒欺」匾,你今晚看了三次,匾上的字**每次少一笔**。\n\n现在这块匾上——\n\n只剩下「**欺**」。\n\n墙根的青砖缝里,挤出一道**红水**——是雨水洗过羊血混着青苔。\n\n往年羊血弄夜里只听屠夫剁骨。\n\n今晚是**屠夫剁你**。"
         },
         {
           "if": {
-            "flags": {
-              "s4_revisit_alley": true
+            "visit_count_min": {
+              "n_s4_arrive": 2
             }
           },
           "text": "你又转进羊血弄。\n\n弄堂尽头的灯,亮一阵灭一阵——\n\n刚才你看见的黑山羊,现在**多了一具**,挂在第二个铁钩上。\n\n第二具,有头。\n\n头是**你的**。"
@@ -67,16 +69,15 @@
           "text": "不进去,绕路走。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S4",
             "flags": {
-              "s4_aborted": true
+              "oneshot.s4_aborted": true
             }
           },
           "require": {
             "not": {
-              "flags": {
-                "s4_revisit_alley": true
+              "visit_count_min": {
+                "n_s4_arrive": 2
               }
             }
           }
@@ -86,14 +87,14 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s4_clean_leave": true
+              "oneshot.s4_clean_leave": true
             }
           },
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s4_revisit_alley": true
+                "visit_count_min": {
+                  "n_s4_arrive": 2
                 }
               },
               {
@@ -119,10 +120,7 @@
           "next": "n_s4_blood_face",
           "effects": {
             "PR": 8,
-            "GR": 3,
-            "flags": {
-              "s4_revisit_alley": true
-            }
+            "GR": 3
           }
         },
         {
@@ -136,7 +134,7 @@
             ],
             "flags": {
               "completed_yang": true,
-              "s4_blood_signed": true
+              "arc.s4_blood_signed": true
             }
           }
         },
@@ -148,18 +146,14 @@
             "flags": {
               "freed_yang": true,
               "marked_lamb": true,
-              "s4_kneeled_three_times": false
+              "oneshot.s4_kneeled_three_times": false
             }
           }
         },
         {
           "text": "退后,先去看「⺶」字匾。",
           "next": "n_s4_examine_sign",
-          "effects": {
-            "flags": {
-              "s4_revisit_alley": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -174,7 +168,7 @@
             "PR": 15,
             "puzzle_add": "piece_linmou_full",
             "flags": {
-              "s4_heard_warning": true
+              "oneshot.s4_heard_warning": true
             }
           }
         },
@@ -184,7 +178,7 @@
           "effects": {
             "GR": 20,
             "flags": {
-              "s4_kneeled_three_times": true,
+              "oneshot.s4_kneeled_three_times": true,
               "marked_lamb": true
             }
           }
@@ -196,7 +190,7 @@
             "PR": 12,
             "flags": {
               "posted_photo": true,
-              "s4_posted_blood_face": true
+              "oneshot.s4_posted_blood_face": true
             }
           }
         }
@@ -219,8 +213,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s4_revisit_alley": true,
-              "s4_lifted_brush": true
+              "oneshot.s4_lifted_brush": true
             }
           }
         },
@@ -231,8 +224,7 @@
             "PR": 8,
             "GR": 10,
             "flags": {
-              "s4_revisit_alley": true,
-              "s4_broke_brush": true
+              "oneshot.s4_broke_brush": true
             }
           }
         },
@@ -245,8 +237,7 @@
             ],
             "puzzle_add": "piece_yang_brush",
             "flags": {
-              "s4_revisit_alley": true,
-              "s4_kept_brush": true
+              "oneshot.s4_kept_brush": true
             }
           }
         }
@@ -268,7 +259,7 @@
             ],
             "flags": {
               "completed_yang": true,
-              "s4_joined_yanggui": true,
+              "oneshot.s4_joined_yanggui": true,
               "marked_lamb": true
             }
           }
@@ -279,7 +270,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "s4_refused_yanggui": true,
+              "oneshot.s4_refused_yanggui": true,
               "got_judge_seal": true
             }
           }
@@ -290,7 +281,7 @@
           "effects": {
             "GR": 20,
             "flags": {
-              "s4_overstroke": true
+              "oneshot.s4_overstroke": true
             }
           }
         }
@@ -313,7 +304,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s4_broke_yang_curse": true
+              "oneshot.s4_broke_yang_curse": true
             }
           }
         },
@@ -324,7 +315,7 @@
             "PR": 15,
             "puzzle_add": "piece_yang_freed",
             "flags": {
-              "s4_clean_exit": true
+              "oneshot.s4_clean_exit": true
             }
           }
         }
@@ -344,7 +335,7 @@
             ],
             "puzzle_add": "piece_yang_freed",
             "flags": {
-              "s4_grandma_blessing": true
+              "arc.s4_grandma_blessing": true
             }
           }
         },
@@ -355,7 +346,7 @@
             "PR": 10,
             "puzzle_add": "piece_grandma_blessing",
             "flags": {
-              "s4_drank_tofu": true
+              "oneshot.s4_drank_tofu": true
             }
           }
         }
@@ -371,8 +362,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s4_revisit_alley": true,
-              "s4_waved_camera": true
+              "oneshot.s4_waved_camera": true
             }
           }
         },
@@ -382,7 +372,7 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "s4_smashed_monitor": true
+              "oneshot.s4_smashed_monitor": true
             }
           }
         },
@@ -392,8 +382,7 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s4_revisit_alley": true,
-              "s4_fled_room": true
+              "oneshot.s4_fled_room": true
             }
           }
         },
@@ -404,7 +393,7 @@
             "PR": 12,
             "puzzle_add": "piece_camera_self",
             "flags": {
-              "s4_self_archived": true
+              "oneshot.s4_self_archived": true
             }
           }
         }
@@ -421,7 +410,7 @@
             "PR": 8,
             "GR": 10,
             "flags": {
-              "s4_static_in_skin": true
+              "oneshot.s4_static_in_skin": true
             }
           }
         }
@@ -438,7 +427,7 @@
             "PR": 15,
             "puzzle_add": "piece_yang_debt",
             "flags": {
-              "s4_debt_to_evaluator": true
+              "oneshot.s4_debt_to_evaluator": true
             }
           }
         },
@@ -448,7 +437,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "s4_debt_to_predecessor": true
+              "oneshot.s4_debt_to_predecessor": true
             }
           }
         },
@@ -464,7 +453,7 @@
             "flags": {
               "yang_debt": true,
               "marked_lamb": true,
-              "s4_self_debt": true
+              "oneshot.s4_self_debt": true
             }
           }
         }

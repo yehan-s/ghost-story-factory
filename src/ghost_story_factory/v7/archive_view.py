@@ -59,6 +59,12 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
     }
 
     # === 主题宏观进度 ===
+    # 反应契约(ADR-008):反向影响索引,通关后玩家可 trace 自己的发现路径
+    reaction_contracts = (tree or {}).get("reaction_contracts") or {}
+    ded_contracts = reaction_contracts.get("deductions") or {}
+    fs_contracts = reaction_contracts.get("foreshadows") or {}
+    theme_contracts = reaction_contracts.get("themes") or {}
+
     if themes:
         print()
         print(bold(yellow(f"  ── 主题(母题集合) ──")))
@@ -82,6 +88,11 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
                 desc = meta.get("description", "")
                 if desc and seen > 0:
                     print(f"    {dim(desc)}")
+                # 母题"通透"才显示反向影响节点(避免剧透)
+                if res == total and total > 0:
+                    th_consumers = (theme_contracts.get(theme_id) or {}).get("consumer_nodes") or []
+                    if th_consumers:
+                        print(f"    {dim('↳ 影响节点:')} {dim(', '.join(th_consumers))}")
 
     # === 推论 ===
     if deductions:
@@ -98,6 +109,10 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
                 print(f"  {magenta('⟁')} {bold(title)}")
                 if summary:
                     print(f"    {dim(summary)}")
+                # 反向影响索引:已解开 → 影响哪些节点
+                consumers = (ded_contracts.get(ded_id) or {}).get("consumer_nodes") or []
+                if consumers:
+                    print(f"    {dim('↳ 影响节点:')} {dim(', '.join(consumers))}")
             else:
                 # 显示前置伏笔解开了几个
                 req = list(meta.get("requires_resolved") or [])
@@ -129,6 +144,10 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
                 print(f"  {green('✦')} {dim(year_tag)} {bold(title)} {dim(theme_tag)}")
                 if summary:
                     print(f"    {dim(summary)}")
+                # 反向影响索引(ADR-008):已解开伏笔影响哪些节点
+                fs_consumers = (fs_contracts.get(slot_id) or {}).get("consumer_nodes") or []
+                if fs_consumers:
+                    print(f"    {dim('↳ 影响节点:')} {dim(', '.join(fs_consumers))}")
                 # 展示已收的碎片(全 resolved 时)
                 shards = meta.get("shards") or []
                 if shards:

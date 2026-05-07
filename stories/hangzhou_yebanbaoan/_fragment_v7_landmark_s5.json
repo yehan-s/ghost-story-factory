@@ -18,28 +18,36 @@
           "label": "琴凳里翻出 1991 班级合照",
           "text": "你掀开琴凳。\n\n里面塞着一张已经发黄的黑白班级合照。\n\n标注:**留下小学 五(2)班 · 1991-04**。\n\n第三排第二个孩子,**和你长得一模一样**。\n\n但你 11 岁那年在另一个城市上小学,**从未来过留下**。",
           "_foreshadow_clue": [
-            {"slot": "1991_yeh_classmate", "shard": "class_photo"}
+            {
+              "slot": "1991_yeh_classmate",
+              "shard": "class_photo"
+            }
           ]
         },
         {
           "label": "琴盖里的 1959-043 磁带",
           "text": "你撬开钢琴琴盖。\n\n里面卡着一盘老式磁带,标签泛黄:\n\n「**1959-043** · 留下小学 · 童谣 · 录音 · 第三轨」\n\n但 1991 年还能用这种磁带?\n\n标签底下还有一行小字:**外婆**。",
           "_foreshadow_clue": [
-            {"slot": "1991_grandma_link", "shard": "tape_label"}
+            {
+              "slot": "1991_grandma_link",
+              "shard": "tape_label"
+            }
           ]
         }
       ],
       "narrative_variants": [
         {
           "if": {
-            "visit_count_min": {"n_s5_arrive": 3}
+            "visit_count_min": {
+              "n_s5_arrive": 3
+            }
           },
           "text": "你已经第 3 次站在 203 琴房门外。\n\n这次门没有虚掩。\n\n门是**敞开**的。\n\n钢琴**响着**——\n\n不是单音了。\n\n是一首完整的童谣,《祖母的歌》。\n\n这是 1959 年浙大幼师班毕业的那一年,留下小学外婆教过的童谣——\n\n但她 1959 年就在这间琴房**自缢**了。\n\n她还在弹。\n\n她不是给叶某弹。\n\n她在给**第三个回来的人**弹。\n\n你听见自己脚下,木地板**温的**——\n\n你前两次的脚印,还没散。"
         },
         {
           "if": {
-            "flags": {
-              "s5_revisit_piano": true
+            "visit_count_min": {
+              "n_s5_arrive": 2
             }
           },
           "text": "你又站在 203 琴房门外。\n\n刚才你已经听过钢琴。\n\n现在,门把手是**温的**。\n\n是被人**握过**的温度。\n\n那个人,刚刚才离开。\n\n但走廊空无一人。"
@@ -84,16 +92,15 @@
           "text": "退出旧楼,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S5",
             "flags": {
-              "s5_aborted": true
+              "oneshot.s5_aborted": true
             }
           },
           "require": {
             "not": {
-              "flags": {
-                "s5_revisit_piano": true
+              "visit_count_min": {
+                "n_s5_arrive": 2
               }
             }
           }
@@ -103,14 +110,14 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s5_clean_leave": true
+              "oneshot.s5_clean_leave": true
             }
           },
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s5_revisit_piano": true
+                "visit_count_min": {
+                  "n_s5_arrive": 2
                 }
               },
               {
@@ -135,20 +142,14 @@
           "text": "走过去,坐到琴凳上。",
           "next": "n_s5_sit_piano",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 8
           }
         },
         {
           "text": "蹲下,把布鞋拎起来检查。",
           "next": "n_s5_inspect_shoes",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 5
           }
         },
         {
@@ -159,7 +160,7 @@
             "GR": 5,
             "flags": {
               "piano_appeased": true,
-              "s5_offered_newspaper": true
+              "oneshot.s5_offered_newspaper": true
             }
           },
           "require": {
@@ -173,8 +174,7 @@
           "next": "n_s5_arrive",
           "effects": {
             "flags": {
-              "s5_revisit_piano": true,
-              "s5_left_room": true
+              "oneshot.s5_left_room": true
             }
           }
         }
@@ -188,10 +188,7 @@
           "text": "起身,推开琴凳。",
           "next": "n_s5_open_bench",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 8
           }
         },
         {
@@ -225,7 +222,7 @@
             "PR": 18,
             "GR": 5,
             "flags": {
-              "s5_granted_leave": true
+              "oneshot.s5_granted_leave": true
             }
           }
         }
@@ -253,7 +250,7 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "s5_self_noosed": true,
+              "oneshot.s5_self_noosed": true,
               "marked_lamb": true
             }
           }
@@ -264,7 +261,7 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "s5_burned_rope": true,
+              "oneshot.s5_burned_rope": true,
               "piano_appeased": true
             }
           }
@@ -273,10 +270,7 @@
           "text": "什么都不做,关上琴凳盖子。",
           "next": "n_s5_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": -3
           }
         }
       ]
@@ -302,7 +296,7 @@
             ],
             "puzzle_add": "piece_eight_zhao",
             "flags": {
-              "s5_remembered_school": true
+              "oneshot.s5_remembered_school": true
             }
           }
         },
@@ -313,7 +307,7 @@
             "PR": -10,
             "GR": 8,
             "flags": {
-              "s5_burned_photo": true
+              "oneshot.s5_burned_photo": true
             }
           }
         }
@@ -325,7 +319,7 @@
         {
           "if": {
             "flags": {
-              "s5_burned_rope": true
+              "oneshot.s5_burned_rope": true
             }
           },
           "text": "你已经烧了那根钢丝绳。\n\n你又来到 203——\n\n请假条还在地上。\n\n但**字迹自己改了**——\n\n「不准」自己变成了「准」。\n\n钢琴键自己摁出最后一个完整的 C 大调。\n\n窗外,11 岁的女孩,**已经走出校门**——\n\n她在校门口回头,对你**鞠躬**。\n\n但她**比第一次走出校门**时,多了一个动作:\n\n她对你**眨了一下眼睛**——\n\n是 1991 年她妈妈最疼她那次,她对妈妈眨过的眼睛。"
@@ -333,15 +327,15 @@
         {
           "if": {
             "flags": {
-              "s5_erased_self": true
+              "oneshot.s5_erased_self": true
             }
           },
           "text": "你刚把自己的名字从 205 黑板上擦掉。\n\n你回到 203——\n\n请假条**自己改字**——\n\n「不准」变成「准」。\n\n但请假条上的「申请人」一栏,**多了一行**——\n\n「**赵某 G-273**」。\n\n你和叶某,一起准假 33 年。\n\n窗外两个孩子走出校门,**一前一后**——\n\n第一个是叶某。\n\n第二个,**穿白衬衫**,11 岁的你。"
         },
         {
           "if": {
-            "flags": {
-              "s5_revisit_piano": true
+            "visit_count_min": {
+              "n_s5_arrive": 2
             }
           },
           "text": "你又来到这里。\n\n请假条已经被你签了。\n\n但 203 琴房的钢琴,**还在响**——\n\n这次不是《小星星》。\n\n是**1991 年那天叶某妈妈在外面叫她的声音**——\n\n「叶某,饭好了!」\n\n这是叶某 33 年没听到的话。\n\n她已经走出校门——\n\n她**朝家的方向跑**。\n\n你低头——\n\n请假条上,**多了一行**:\n\n「叶某 已下班。\n  下一份『未结』:**红衣女孩 何小燕**。」"
@@ -357,7 +351,7 @@
             "GR": -5,
             "puzzle_add": "piece_piano_girl_freed",
             "flags": {
-              "s5_freed_yeh": true
+              "oneshot.s5_freed_yeh": true
             }
           }
         }
@@ -375,7 +369,7 @@
             "GR": 5,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "s5_returned_shoes": true
+              "oneshot.s5_returned_shoes": true
             }
           }
         },
@@ -385,7 +379,7 @@
           "effects": {
             "GR": 18,
             "flags": {
-              "s5_wore_girl_shoes": true,
+              "oneshot.s5_wore_girl_shoes": true,
               "marked_lamb": true
             }
           }
@@ -396,7 +390,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s5_threw_shoes_lake": true
+              "oneshot.s5_threw_shoes_lake": true
             }
           }
         }
@@ -417,10 +411,7 @@
           "text": "推门进去,告诉她不要倒带。",
           "next": "n_s5_grant_leave",
           "effects": {
-            "PR": 15,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 15
           }
         },
         {
@@ -443,7 +434,7 @@
               "1959-043 磁带"
             ],
             "flags": {
-              "s5_recorded_piano": true
+              "oneshot.s5_recorded_piano": true
             }
           }
         }
@@ -458,10 +449,7 @@
           "next": "n_s5_chalk_name",
           "effects": {
             "PR": 10,
-            "GR": 8,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "GR": 8
           }
         },
         {
@@ -471,7 +459,7 @@
             "PR": 5,
             "GR": 5,
             "flags": {
-              "s5_broke_chalk": true
+              "oneshot.s5_broke_chalk": true
             }
           }
         },
@@ -481,18 +469,14 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "s5_erased_blackboard": true
+              "oneshot.s5_erased_blackboard": true
             }
           }
         },
         {
           "text": "退回 203 琴房。",
           "next": "n_s5_open_door",
-          "effects": {
-            "flags": {
-              "s5_revisit_piano": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -507,7 +491,7 @@
             "PR": 25,
             "GR": -10,
             "flags": {
-              "s5_erased_self": true
+              "oneshot.s5_erased_self": true
             }
           }
         },
@@ -516,7 +500,7 @@
           "next": "n_end_data",
           "effects": {
             "flags": {
-              "s5_replaced_yeh": true
+              "oneshot.s5_replaced_yeh": true
             }
           }
         }

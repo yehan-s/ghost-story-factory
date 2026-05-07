@@ -16,14 +16,16 @@
       "narrative_variants": [
         {
           "if": {
-            "visit_count_min": {"n_s3_arrive": 3}
+            "visit_count_min": {
+              "n_s3_arrive": 3
+            }
           },
-          "text": "你已经第 3 次站在理安寺门外。\n\n寺门**第三次**自己开了一条缝。\n\n但这次,缝里飘出来一股**檀香**——\n\n不是早晚课的清香,是**葬礼**的浓檀。\n\n殿里那口裂钟——\n\n**两半合上了**。\n\n钟身上只剩一行新刻的字:\n\n「H = 第 13 任 · 已收。」\n\n钟身底部,那块铜锈面孔——\n\n这一次,**睁眼了**。\n\n眼睛里映着的是\u2014\u2014飞来峰。\n\n飞来峰的那块「会动的石头」,据老杭州人说,夜里挪一寸,就有一个本地人**睡过去不再醒**。\n\n你来过 3 次,石头挪过 3 寸。"
+          "text": "你已经第 3 次站在理安寺门外。\n\n寺门**第三次**自己开了一条缝。\n\n但这次,缝里飘出来一股**檀香**——\n\n不是早晚课的清香,是**葬礼**的浓檀。\n\n殿里那口裂钟——\n\n**两半合上了**。\n\n钟身上只剩一行新刻的字:\n\n「H = 第 13 任 · 已收。」\n\n钟身底部,那块铜锈面孔——\n\n这一次,**睁眼了**。\n\n眼睛里映着的是——飞来峰。\n\n飞来峰的那块「会动的石头」,据老杭州人说,夜里挪一寸,就有一个本地人**睡过去不再醒**。\n\n你来过 3 次,石头挪过 3 寸。"
         },
         {
           "if": {
-            "flags": {
-              "s3_revisit_temple": true
+            "visit_count_min": {
+              "n_s3_arrive": 2
             }
           },
           "text": "你又来到理安寺。\n\n刚才的钟摆,现在反着摆。\n\n你的指纹还留在第二片铜锈上——\n\n现在,**铜锈自己长回去了**,但形状变成你的指纹。\n\n寺门开着。等你。"
@@ -67,16 +69,15 @@
           "text": "退回门口,打卡走人。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S3",
             "flags": {
-              "s3_aborted": true
+              "oneshot.s3_aborted": true
             }
           },
           "require": {
             "not": {
-              "flags": {
-                "s3_revisit_temple": true
+              "visit_count_min": {
+                "n_s3_arrive": 2
               }
             }
           }
@@ -86,14 +87,14 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s3_clean_leave": true
+              "oneshot.s3_clean_leave": true
             }
           },
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s3_revisit_temple": true
+                "visit_count_min": {
+                  "n_s3_arrive": 2
                 }
               },
               {
@@ -129,20 +130,14 @@
             "PR": 5,
             "inv_add": [
               "铜锈片"
-            ],
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            ]
           }
         },
         {
           "text": "对着侧脸说话:『你想让我做什么?』",
           "next": "n_npc_corrosion_face",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            "PR": 8
           }
         },
         {
@@ -151,18 +146,14 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "s3_offered_id": true
+              "oneshot.s3_offered_id": true
             }
           }
         },
         {
           "text": "退后,绕到钟另一面。",
           "next": "n_s3_other_side",
-          "effects": {
-            "flags": {
-              "s3_revisit_temple": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -176,7 +167,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s3_into_bell": true
+              "oneshot.s3_into_bell": true
             }
           }
         },
@@ -187,7 +178,7 @@
             "PR": 12,
             "puzzle_add": "piece_h1987",
             "flags": {
-              "s3_marked_self": true
+              "oneshot.s3_marked_self": true
             }
           }
         },
@@ -195,10 +186,7 @@
           "text": "放回去,告诉它你不要。",
           "next": "n_npc_corrosion_face",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            "PR": 3
           }
         }
       ]
@@ -214,7 +202,7 @@
             "PR": 15,
             "puzzle_add": "piece_refused_h",
             "flags": {
-              "s3_refused_h1987": true
+              "arc.s3_refused_h1987": true
             }
           }
         },
@@ -224,7 +212,7 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "s3_accepted_h1987": true,
+              "oneshot.s3_accepted_h1987": true,
               "marked_lamb": true
             }
           }
@@ -252,7 +240,7 @@
             "PR": 8,
             "puzzle_add": "piece_refused_h",
             "flags": {
-              "s3_clean_exit": true
+              "oneshot.s3_clean_exit": true
             }
           }
         }
@@ -290,7 +278,7 @@
             "PR": -10,
             "GR": 20,
             "flags": {
-              "s3_struck_eighth": true
+              "oneshot.s3_struck_eighth": true
             }
           }
         },
@@ -300,7 +288,7 @@
           "effects": {
             "GR": 5,
             "flags": {
-              "s3_dumped_mallet": true
+              "oneshot.s3_dumped_mallet": true
             }
           }
         }
@@ -335,8 +323,7 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s3_revisit_temple": true,
-              "s3_reclaimed_id": true
+              "oneshot.s3_reclaimed_id": true
             }
           }
         },
@@ -360,7 +347,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "s3_met_red_girl_here": true
+              "oneshot.s3_met_red_girl_here": true
             }
           }
         },
@@ -371,20 +358,13 @@
             "PR": 5,
             "inv_add": [
               "红衣女孩铜锈"
-            ],
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            ]
           }
         },
         {
           "text": "退回正面,继续看男人侧脸。",
           "next": "n_s3_examine_face",
-          "effects": {
-            "flags": {
-              "s3_revisit_temple": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -399,7 +379,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "s3_jumped_well": true
+              "oneshot.s3_jumped_well": true
             }
           }
         },
@@ -410,7 +390,7 @@
             "PR": 15,
             "puzzle_add": "piece_h1987",
             "flags": {
-              "s3_filled_2024": true
+              "oneshot.s3_filled_2024": true
             }
           }
         },
@@ -421,7 +401,7 @@
             "PR": 8,
             "GR": -5,
             "flags": {
-              "s3_erased_years": true
+              "oneshot.s3_erased_years": true
             }
           }
         },
@@ -430,8 +410,7 @@
           "next": "n_s3_arrive",
           "effects": {
             "flags": {
-              "s3_revisit_temple": true,
-              "s3_saw_well": true
+              "oneshot.s3_saw_well": true
             }
           }
         }
@@ -447,7 +426,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "s3_promised_seven": true,
+              "oneshot.s3_promised_seven": true,
               "contacted_predecessor": true
             }
           }
@@ -468,7 +447,6 @@
           "effects": {
             "GR": 5,
             "flags": {
-              "s3_revisit_temple": true,
               "hung_up_predecessor": true
             }
           }

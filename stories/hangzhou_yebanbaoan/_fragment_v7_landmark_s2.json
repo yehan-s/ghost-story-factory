@@ -22,28 +22,36 @@
           "label": "台阶旁的『请勿打扰』告示",
           "text": "第 3 阶旁边的水泥栏杆上,贴着一张白纸:\n\n「**请勿打扰** · 1987」\n\n纸边卷曲,墨迹在灯下还泛着青——\n\n你想起《异常事件记录表》上,**第 7 任 G-273** 的最后一栏写着:\n\n「**1987 还在**。它不在过去,在这里。」",
           "_foreshadow_clue": [
-            {"slot": "1987_red_dress_truth", "shard": "do_not_disturb"}
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "do_not_disturb"
+            }
           ]
         },
         {
           "label": "数到第 308 阶",
           "text": "你试着一阶一阶往上走。\n\n308。\n\n你听见**身后**有声音说:「**1987**」 —— 不是你的声音。\n\n你回头,什么都没有。\n\n但《异常事件记录表》自动浮现新栏,光标在 [02] 后面闪 —— 它在等你**写下年份**。",
           "_foreshadow_clue": [
-            {"slot": "1987_red_dress_truth", "shard": "stair_count"}
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "stair_count"
+            }
           ]
         }
       ],
       "narrative_variants": [
         {
           "if": {
-            "visit_count_min": {"n_s2_arrive": 3}
+            "visit_count_min": {
+              "n_s2_arrive": 3
+            }
           },
           "text": "你已经第 3 次站在 307 阶的入口。\n\n第 1 阶上的湿手掌印,叠成了三只——三个不同尺寸,小的、中的、大的。\n\n它们重合在同一个位置。\n\n灯泡里的「雪花」飘得更密了,像有人把电视雪花搬到了树梢。\n\n柳浪闻莺夜里有过吊死人,1987 年报纸登过——红衣女人,数到 1987 跳的湖。\n\n你打卡机叫了第 3 声「嘀」,这次屏幕没闪。\n\n屏幕黑了。\n\n屏幕里映出**你自己**——\n\n但你的左肩,坐着一个红衣的小孩。"
         },
         {
           "if": {
-            "flags": {
-              "s2_revisit_stairs": true
+            "visit_count_min": {
+              "n_s2_arrive": 2
             }
           },
           "text": "你又站在 307 阶的入口。\n\n灯柱比刚才暗一格。\n\n第 1 阶上,刚才你蹲下擦鞋的位置——多了一个**手掌印**。\n\n手掌印是湿的,五指张开,大小是个 11 岁女孩的。\n\n她在等你回来。"
@@ -51,7 +59,7 @@
         {
           "if": {
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           },
           "text": "你又来到 307 阶。\n\n柳浪闻莺的雾比刚才浓——\n\n你能听见**雪花声**从台阶尽头传过来,清清楚楚。\n\n14 寸黑白电视,在某一阶上等你。\n\n但你不知道是第几阶。\n\n《异常事件记录表》[02]栏的光标,等你写。"
@@ -87,16 +95,15 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S2",
             "flags": {
-              "s2_aborted": true
+              "oneshot.s2_aborted": true
             }
           },
           "require": {
             "not": {
-              "flags": {
-                "s2_revisit_stairs": true
+              "visit_count_min": {
+                "n_s2_arrive": 2
               }
             }
           }
@@ -106,19 +113,19 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s2_clean_leave": true
+              "oneshot.s2_clean_leave": true
             }
           },
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s2_revisit_stairs": true
+                "visit_count_min": {
+                  "n_s2_arrive": 2
                 }
               },
               {
                 "flags": {
-                  "s2_heard_tv": true
+                  "arc.s2_heard_tv": true
                 }
               }
             ]
@@ -135,8 +142,8 @@
       "narrative_variants": [
         {
           "if": {
-            "flags": {
-              "s2_revisit_stairs": true
+            "visit_count_min": {
+              "n_s2_arrive": 2
             }
           },
           "text": "你又开始数。\n\n但这次,你**已经知道结果**——\n\n307 阶完了,会出现 308。\n\n你数到 100 阶,数到 200 阶——\n\n你的脚步声**和身后的脚步声错开半拍**。\n\n这一次,你**不回头**。\n\n你数到 307 阶——\n\n你前面,**直接是 308 阶**。\n\n红木门**已经开**了一条缝。\n\n它在等你。"
@@ -144,7 +151,7 @@
         {
           "if": {
             "flags": {
-              "s2_following_footprints": true
+              "oneshot.s2_following_footprints": true
             }
           },
           "text": "你跟着两个潮湿的脚印往上数。\n\n你的脚和女孩的脚**重叠着前进**。\n\n你的脚印踩在她的脚印上——\n\n严丝合缝。\n\n你 27 岁的脚,踩进 11 岁的脚里。\n\n这不应该。\n\n但你抬头——\n\n307 阶尽头,**红木门为你打开**。\n\n比第一次开得更宽。"
@@ -153,7 +160,7 @@
           "if": {
             "PR_min": 30,
             "flags": {
-              "s2_pushed_through": true
+              "oneshot.s2_pushed_through": true
             }
           },
           "text": "你已经在跑。\n\n你不数。\n\n你只跑。\n\n但你的喉咙,**自己发出数字**——\n\n100、200、307。\n\n你的喉咙**比你的脚先到 307**。\n\n你的脚还在第 50 阶。\n\n但你的喉咙数完了。\n\n红木门**自动闭合**——\n\n你今晚不能进了。\n\n你**白来一趟**。"
@@ -167,7 +174,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s2_stepped_308": true
+              "oneshot.s2_stepped_308": true
             }
           }
         },
@@ -175,10 +182,7 @@
           "text": "停在 307,蹲下系鞋带,等天亮。",
           "next": "n_s2_wait_307",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "s2_revisit_stairs": true
-            }
+            "PR": 3
           }
         },
         {
@@ -187,7 +191,7 @@
           "effects": {
             "GR": 3,
             "flags": {
-              "s2_descending": true
+              "oneshot.s2_descending": true
             }
           }
         },
@@ -198,7 +202,7 @@
             "PR": 8,
             "GR": 5,
             "flags": {
-              "s2_kept_counting": true
+              "oneshot.s2_kept_counting": true
             }
           }
         }
@@ -210,7 +214,7 @@
         {
           "if": {
             "flags": {
-              "s2_closed_door": true
+              "oneshot.s2_closed_door": true
             }
           },
           "text": "你又上 308 阶。\n\n这次门没『自己』开。\n\n门**已经开了**——\n\n开得很宽。\n\n你能看见门里——\n\n14 寸电视前,**多了一双白布鞋**。\n\n鞋朝着门口。\n\n鞋后跟,有 1996 年的红色舞台粉。\n\n红衣女孩,**站在电视后**——\n\n这次她对你说:「叔叔,你**关过门一次**。\n  关一次,我等 7 年。\n  你又来了。\n  我等了 14 年。\n\n  你想再关吗?」"
@@ -218,7 +222,7 @@
         {
           "if": {
             "flags": {
-              "s2_offered_candy": true
+              "oneshot.s2_offered_candy": true
             }
           },
           "text": "你前面给过她一颗糖。\n\n你又上 308 阶——\n\n红木门**自己开**——\n\n开成 11 岁女孩**正好钻得过**的缝。\n\n你的脚,**自己变小**——\n\n你也变成 11 岁。\n\n11 岁的你,钻过门缝。\n\n门里,红衣女孩对**11 岁的你**鞠躬:\n\n「同学,**一起走 27 楼**。」"
@@ -232,7 +236,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -249,8 +253,7 @@
           "next": "n_s2_arrive",
           "effects": {
             "flags": {
-              "s2_revisit_stairs": true,
-              "s2_closed_door": true
+              "oneshot.s2_closed_door": true
             }
           }
         },
@@ -271,7 +274,7 @@
           "effects": {
             "PR": -3,
             "flags": {
-              "s2_skipped_door": true
+              "oneshot.s2_skipped_door": true
             }
           }
         }
@@ -287,7 +290,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s2_heard_tv": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -298,7 +301,7 @@
             "PR": 10,
             "puzzle_add": "piece_27th_clue",
             "flags": {
-              "s2_answered_riddle": true
+              "oneshot.s2_answered_riddle": true
             }
           }
         },
@@ -309,7 +312,7 @@
             "PR": -3,
             "GR": 5,
             "flags": {
-              "s2_fled_door": true
+              "oneshot.s2_fled_door": true
             }
           }
         }
@@ -326,7 +329,7 @@
             "PR": 8,
             "GR": 5,
             "flags": {
-              "s2_saw_double_shadow": true
+              "oneshot.s2_saw_double_shadow": true
             }
           }
         },
@@ -336,7 +339,7 @@
           "effects": {
             "PR": 3,
             "flags": {
-              "s2_pushed_through": true
+              "oneshot.s2_pushed_through": true
             }
           }
         },
@@ -351,12 +354,11 @@
           "text": "丢下《异常事件记录表》,跑下山。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S2",
             "PR": -8,
             "flags": {
-              "s2_dropped_record": true,
-              "s2_aborted": true
+              "oneshot.s2_dropped_record": true,
+              "oneshot.s2_aborted": true
             }
           }
         }
@@ -373,7 +375,7 @@
             "PR": 10,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "s2_redirected_shoe": true
+              "oneshot.s2_redirected_shoe": true
             }
           }
         },
@@ -383,7 +385,7 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "s2_crushed_shoe": true
+              "oneshot.s2_crushed_shoe": true
             }
           }
         },
@@ -393,7 +395,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s2_threw_shoe_lake": true
+              "oneshot.s2_threw_shoe_lake": true
             }
           }
         }
@@ -409,7 +411,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s2_following_footprints": true
+              "oneshot.s2_following_footprints": true
             }
           }
         },
@@ -420,8 +422,8 @@
             "PR": 12,
             "GR": 8,
             "flags": {
-              "s2_barefoot_match": true,
-              "s2_heard_tv": true
+              "oneshot.s2_barefoot_match": true,
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -432,7 +434,7 @@
             "PR": 10,
             "flags": {
               "posted_photo": true,
-              "s2_posted_shadow": true
+              "oneshot.s2_posted_shadow": true
             }
           }
         }
@@ -459,7 +461,7 @@
           "effects": {
             "GR": 8,
             "flags": {
-              "s2_dumped_wipe": true
+              "oneshot.s2_dumped_wipe": true
             }
           }
         },
@@ -470,7 +472,7 @@
             "PR": 10,
             "GR": 12,
             "flags": {
-              "s2_smeared_face": true,
+              "oneshot.s2_smeared_face": true,
               "marked_lamb": true
             }
           }
@@ -488,8 +490,8 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "s2_heard_tv": true,
-              "s2_faced_her": true
+              "arc.s2_heard_tv": true,
+              "oneshot.s2_faced_her": true
             }
           }
         },
@@ -500,7 +502,7 @@
             "PR": -5,
             "GR": 15,
             "flags": {
-              "s2_avoided_her": true
+              "oneshot.s2_avoided_her": true
             }
           }
         },
@@ -511,8 +513,8 @@
             "PR": 12,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "s2_offered_candy": true,
-              "s2_heard_tv": true
+              "oneshot.s2_offered_candy": true,
+              "arc.s2_heard_tv": true
             }
           }
         }
@@ -526,10 +528,7 @@
           "text": "干脆坐下,等天亮。",
           "next": "n_s2_wait_307",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "s2_revisit_stairs": true
-            }
+            "PR": -3
           }
         },
         {
@@ -573,7 +572,7 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s2_skipped_door": true
+              "oneshot.s2_skipped_door": true
             }
           }
         }

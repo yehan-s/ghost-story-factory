@@ -26,9 +26,48 @@ STORY_META = {
     # audit_reactions.py 据此检测 DEAD_REACTION / UNREACHABLE_REACTION / ORPHAN_RESOLVE。
     # 初始为空,Phase 4 内容填充时逐条加。
     "reaction_contracts": {
-        "deductions": {},
-        "foreshadows": {},
-        "themes": {},
+        "deductions": {
+            "predecessor_loop": {
+                "_label": "前任就是你 — 跨周目反应",
+                "resolver_node": "n_end_data",
+                "consumer_nodes": ["n_npc_predecessor_voice", "n_npc_eight_self"],
+                "trigger_type": "cross_run",
+            },
+            "1986_eighth_passenger": {
+                "_label": "第 8 张归航船票",
+                "resolver_node": "n_end_truth",
+                "consumer_nodes": ["n_npc_helmet_workers"],
+                "trigger_type": "cross_run",
+            },
+            "13_curse_chain": {
+                "_label": "13 号替死鬼的循环",
+                "resolver_node": "n_end_bad_1987",
+                "consumer_nodes": ["n_npc_corrosion_face"],
+                "trigger_type": "cross_run",
+            },
+        },
+        "foreshadows": {
+            "1987_red_dress_truth": {
+                "_label": "1987 红衣 13 号的真相",
+                "resolver_node": "n_end_bad_1987",
+                "consumer_nodes": ["n_npc_red_dress_girl"],
+                "trigger_type": "cross_run",
+            },
+        },
+        "themes": {
+            "hangzhou_constant": {
+                "_label": "杭州常数 — 母题通透后 picker 切档",
+                "resolver_node": "n_end_true",
+                "consumer_nodes": ["n_landmark_picker"],
+                "trigger_type": "cross_run",
+            },
+            "scapegoat": {
+                "_label": "替死 — 母题通透后档案室揭示",
+                "resolver_node": "n_end_truth",
+                "consumer_nodes": ["n_scene_lost_archive"],
+                "trigger_type": "cross_run",
+            },
+        },
     },
     # Lore canon(ADR-007):锁定年份基线 + 禁用术语,audit_state 据此校验
     # 防止 LLM 把"评议会"写成"管理委员会"等现代化用语。9 核心锚点 + 22 既有引用。

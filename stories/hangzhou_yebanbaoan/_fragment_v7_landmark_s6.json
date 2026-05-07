@@ -18,23 +18,33 @@
           "label": "井底散落的 8 张归航船票存根",
           "text": "你蹲在井底,捡起一叠**已被水泡烂**的船票存根。\n\n8 张,但只有 7 张签了名。\n\n第 8 张的存根**没有签名**,只剩一个**指纹**。\n\n你用手机灯照那个指纹 —— 比对方式只有一种:**死人的**。指纹纹路完全平整,**没有皮肤张力**。\n\n你想起对讲机里前任那句:「**第 8 个,没上船。**」",
           "_foreshadow_clue": [
-            {"slot": "1986_no_eighth", "shard": "ticket_stub"}
+            {
+              "slot": "1986_no_eighth",
+              "shard": "ticket_stub"
+            }
           ]
         },
         {
           "label": "硬币背面的『1986·林』刻字",
           "text": "你把工人塞给你的那枚硬币翻过来。\n\n背面刻着:「**1986·林**」\n\n这种『年份+姓』的刻法,1986 年还**没有流通**。\n\n硬币的成色像是被人**用手心捏了几十年** —— 但手心的温度是**死人的**。",
-          "require": {"inv_has": ["1986 林字硬币"]},
+          "require": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          },
           "_foreshadow_clue": [
-            {"slot": "1986_lin_coin", "shard": "coin_inscription"}
+            {
+              "slot": "1986_lin_coin",
+              "shard": "coin_inscription"
+            }
           ]
         }
       ],
       "narrative_variants": [
         {
           "if": {
-            "flags": {
-              "s6_revisit_well": true
+            "visit_count_min": {
+              "n_s6_arrive": 2
             }
           },
           "text": "你又下到联庄站底层。\n\n刚才你看过盾构井。\n\n现在,井口**多了一顶柳条安全帽**——\n\n第 8 顶。\n\n第 8 顶的内侧,刻着「G-273」。"
@@ -78,16 +88,15 @@
           "text": "上去打卡,跳下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "shifts_skipped": 1,
             "landmark_skipped": "S6",
             "flags": {
-              "s6_aborted": true
+              "oneshot.s6_aborted": true
             }
           },
           "require": {
             "not": {
-              "flags": {
-                "s6_revisit_well": true
+              "visit_count_min": {
+                "n_s6_arrive": 2
               }
             }
           }
@@ -97,14 +106,14 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s6_clean_leave": true
+              "oneshot.s6_clean_leave": true
             }
           },
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s6_revisit_well": true
+                "visit_count_min": {
+                  "n_s6_arrive": 2
                 }
               },
               {
@@ -129,10 +138,7 @@
           "text": "「7 人归航」——把头上戴着的柳条帽递给第一个工人。",
           "next": "n_npc_helmet_workers",
           "effects": {
-            "PR": 15,
-            "flags": {
-              "s6_revisit_well": true
-            }
+            "PR": 15
           }
         },
         {
@@ -152,10 +158,7 @@
           "text": "把对讲机贴近井口,听轮渡引擎声。",
           "next": "n_s6_listen_engine",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s6_revisit_well": true
-            }
+            "PR": 8
           }
         },
         {
@@ -164,8 +167,7 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "s6_revisit_well": true,
-              "s6_dropped_coin": true
+              "oneshot.s6_dropped_coin": true
             }
           },
           "require": {
@@ -207,8 +209,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s6_revisit_well": true,
-              "s6_inverted_seventh": true
+              "oneshot.s6_inverted_seventh": true
             }
           }
         },
@@ -220,7 +221,7 @@
             "puzzle_add": "piece_judge_seal",
             "flags": {
               "got_judge_seal": true,
-              "s6_wrote_never": true
+              "oneshot.s6_wrote_never": true
             }
           }
         },
@@ -231,7 +232,7 @@
             "PR": 12,
             "GR": 5,
             "flags": {
-              "s6_returned_helmets": true
+              "oneshot.s6_returned_helmets": true
             }
           }
         }
@@ -254,7 +255,6 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "s6_revisit_well": true,
               "saw_27th_floor": true
             }
           }
@@ -262,11 +262,7 @@
         {
           "text": "不去。退回井边。",
           "next": "n_s6_arrive",
-          "effects": {
-            "flags": {
-              "s6_revisit_well": true
-            }
-          }
+          "effects": {}
         },
         {
           "text": "把工牌塞进电梯按钮里。",
@@ -277,7 +273,7 @@
               "27F 铜钥匙"
             ],
             "flags": {
-              "s6_id_into_button": true,
+              "oneshot.s6_id_into_button": true,
               "promised_relieve_predecessor": true
             }
           }
@@ -294,7 +290,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "s6_volunteered": true,
+              "oneshot.s6_volunteered": true,
               "seven_returned": true
             }
           }
@@ -307,7 +303,7 @@
             "puzzle_add": "piece_seven_returned",
             "flags": {
               "seven_returned": true,
-              "s6_replaced_seven": true,
+              "arc.s6_replaced_seven": true,
               "b3_unlocked": true
             }
           }
@@ -318,7 +314,6 @@
           "effects": {
             "GR": 5,
             "flags": {
-              "s6_revisit_well": true,
               "hung_up_predecessor": true
             }
           }
@@ -345,7 +340,7 @@
             "GR": -10,
             "puzzle_add": "piece_seven_freed",
             "flags": {
-              "s6_seven_freed": true
+              "oneshot.s6_seven_freed": true
             }
           }
         }
@@ -363,7 +358,7 @@
             "GR": 8,
             "flags": {
               "got_judge_seal": true,
-              "s6_owes_27": true
+              "oneshot.s6_owes_27": true
             }
           }
         },
@@ -373,18 +368,14 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "s6_burned_id": true
+              "oneshot.s6_burned_id": true
             }
           }
         },
         {
           "text": "回到井边,继续巡逻。",
           "next": "n_s6_look_down",
-          "effects": {
-            "flags": {
-              "s6_revisit_well": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -398,7 +389,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s6_no_fingerprint": true
+              "oneshot.s6_no_fingerprint": true
             }
           }
         },
@@ -408,7 +399,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s6_no_fingerprint": true
+              "oneshot.s6_no_fingerprint": true
             }
           }
         }
@@ -424,7 +415,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s6_into_operator": true
+              "oneshot.s6_into_operator": true
             }
           }
         },
@@ -434,7 +425,7 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "s6_jammed_blade": true
+              "oneshot.s6_jammed_blade": true
             }
           }
         },
@@ -444,7 +435,7 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "s6_stood_blade": true,
+              "oneshot.s6_stood_blade": true,
               "marked_lamb": true
             }
           }
@@ -452,11 +443,7 @@
         {
           "text": "退回井边,不进操作间。",
           "next": "n_s6_arrive",
-          "effects": {
-            "flags": {
-              "s6_revisit_well": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -471,7 +458,7 @@
             "PR": 25,
             "puzzle_add": "piece_linmou_full",
             "flags": {
-              "s6_corrected_linmou": true,
+              "oneshot.s6_corrected_linmou": true,
               "claimed_linmou": true
             }
           }
@@ -482,7 +469,7 @@
           "effects": {
             "PR": -8,
             "flags": {
-              "s6_refused_correction": true
+              "oneshot.s6_refused_correction": true
             }
           }
         },
@@ -492,7 +479,7 @@
           "effects": {
             "PR": 20,
             "flags": {
-              "s6_offered_self": true,
+              "oneshot.s6_offered_self": true,
               "linked_to_eight_self": true
             }
           }
@@ -524,8 +511,7 @@
             "PR": -10,
             "GR": 8,
             "flags": {
-              "s6_revisit_well": true,
-              "s6_unjammed": true
+              "oneshot.s6_unjammed": true
             }
           }
         }
@@ -543,7 +529,7 @@
             "GR": 10,
             "puzzle_add": "piece_predecessor_log",
             "flags": {
-              "s6_inherited_scar": true,
+              "arc.s6_inherited_scar": true,
               "promised_relieve_predecessor": true,
               "marked_lamb": true
             }
@@ -556,8 +542,7 @@
             "PR": -15,
             "GR": 5,
             "flags": {
-              "s6_revisit_well": true,
-              "s6_chickened": true
+              "oneshot.s6_chickened": true
             }
           }
         }
