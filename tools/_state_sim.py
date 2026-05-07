@@ -24,7 +24,6 @@ from typing import Any, Dict, List, Optional, Tuple
 class SimState:
     PR: int = 0
     GR: int = 0
-    shifts_completed: int = 0
     shifts_skipped: int = 0
     inv: Tuple[str, ...] = ()
     flags: Tuple[Tuple[str, bool], ...] = ()  # hashable for BFS dedup
@@ -35,12 +34,16 @@ class SimState:
     last_landmark_id: Optional[str] = None
     visit_counts: Tuple[Tuple[str, int], ...] = ()  # hashable for BFS dedup
 
+    @property
+    def shifts_completed(self) -> int:
+        """从 visited_landmarks 派生:已访问的 S1-S6 地标数量。"""
+        return len([l for l in self.visited_landmarks if l in {"S1", "S2", "S3", "S4", "S5", "S6"}])
+
     @classmethod
     def from_dict(cls, initial: Dict[str, Any]) -> "SimState":
         return cls(
             PR=int(initial.get("PR", 0)),
             GR=int(initial.get("GR", 0)),
-            shifts_completed=int(initial.get("shifts_completed", 0)),
             shifts_skipped=int(initial.get("shifts_skipped", 0)),
             inv=tuple(initial.get("inv", [])),
             flags=tuple(sorted((initial.get("flags") or {}).items())),
@@ -62,7 +65,7 @@ class SimState:
         """用作访问去重(忽略 visited 节点列表,仅快照游戏状态)。"""
         return (
             self.PR, self.GR,
-            self.shifts_completed, self.shifts_skipped,
+            self.shifts_skipped,
             self.inv, self.flags,
             self.visited_landmarks, self.skipped_landmarks, self.puzzle_pieces,
             self.character, self.last_landmark_id, self.visit_counts,

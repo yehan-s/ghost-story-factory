@@ -76,7 +76,6 @@ class State:
     def __init__(self, initial: Dict[str, Any]):
         self.PR: int = int(initial.get("PR", 0))
         self.GR: int = int(initial.get("GR", 0))
-        self.shifts_completed: int = int(initial.get("shifts_completed", 0))
         self.shifts_skipped: int = int(initial.get("shifts_skipped", 0))
         self.inv: List[str] = list(initial.get("inv", []))
         self.flags: Dict[str, bool] = dict(initial.get("flags", {}))
@@ -97,6 +96,11 @@ class State:
         self.PR_peak: int = int(initial.get("PR_peak", self.PR))
         # apply() 的结构化事件记录(给 UI 卡片化渲染用)
         self._last_events: List[Dict[str, Any]] = []
+
+    @property
+    def shifts_completed(self) -> int:
+        """从 visited_landmarks 派生:已访问的 S1-S6 地标数量。"""
+        return len([l for l in self.visited_landmarks if l in {"S1", "S2", "S3", "S4", "S5", "S6"}])
 
     # 由 play() 在加载 tree 时注入(可选)。用于获得道具时显示说明。
     inv_descriptions: Dict[str, str] = {}
@@ -123,12 +127,6 @@ class State:
             delta = int(effects["GR"])
             if delta:
                 self.GR = max(0, min(100, self.GR + delta))
-        if "shifts_completed" in effects:
-            d = int(effects["shifts_completed"])
-            self.shifts_completed += d
-            notes.append(f"已完成夜班 +{d}")
-            events.append({"type": "shifts_completed", "delta": d,
-                           "current": self.shifts_completed})
         if "shifts_skipped" in effects:
             d = int(effects["shifts_skipped"])
             self.shifts_skipped += d
@@ -160,7 +158,6 @@ class State:
             if lm not in self.visited_landmarks:
                 self.visited_landmarks.append(lm)
                 if lm in ("S1", "S2", "S3", "S4", "S5", "S6"):
-                    self.shifts_completed += 1
                     events.append({"type": "shifts_completed", "delta": 1,
                                    "current": self.shifts_completed,
                                    "implicit": True})  # 由 landmark_visited 隐含触发

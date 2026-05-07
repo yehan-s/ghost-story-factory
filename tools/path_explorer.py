@@ -79,7 +79,6 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
 
     new_PR = state.PR
     new_GR = state.GR
-    new_sc = state.shifts_completed
     new_sk = state.shifts_skipped
     new_inv = list(state.inv)
     new_flags = dict(state.flags)
@@ -97,8 +96,6 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
         if new_GR_raw > 100:
             warnings.append(f"GR 上溢: {state.GR}+{effects['GR']}={new_GR_raw} (clamp to 100)")
         new_GR = max(0, min(100, new_GR_raw))
-    if "shifts_completed" in effects:
-        new_sc += int(effects["shifts_completed"])
     if "shifts_skipped" in effects:
         new_sk += int(effects["shifts_skipped"])
     for item in effects.get("inv_add", []) or []:
@@ -109,6 +106,11 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
             new_inv.remove(item)
     for k, v in (effects.get("flags") or {}).items():
         new_flags[k] = bool(v)
+    # landmark_visited(单个地标):player.py 约定,BFS 需对齐以正确派生 shifts_completed
+    if "landmark_visited" in effects:
+        lm = str(effects["landmark_visited"])
+        if lm not in new_vl:
+            new_vl.append(lm)
     for lm in effects.get("visited_landmarks_add", []) or []:
         if lm not in new_vl:
             new_vl.append(lm)
@@ -121,7 +123,7 @@ def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[Si
 
     ns = SimState(
         PR=new_PR, GR=new_GR,
-        shifts_completed=new_sc, shifts_skipped=new_sk,
+        shifts_skipped=new_sk,
         inv=tuple(new_inv),
         flags=tuple(sorted(new_flags.items())),
         visited_landmarks=tuple(new_vl),

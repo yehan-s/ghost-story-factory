@@ -37,8 +37,8 @@ from ghost_story_factory.v5.player import State
     # ── shifts_skipped_min / shifts_completed_min
     ({"shifts_skipped_min": 2}, {"shifts_skipped": 3}, True),
     ({"shifts_skipped_min": 2}, {"shifts_skipped": 1}, False),
-    ({"shifts_completed_min": 4}, {"shifts_completed": 5}, True),
-    ({"shifts_completed_min": 4}, {"shifts_completed": 2}, False),
+    ({"shifts_completed_min": 4}, {"visited_landmarks": ["S1", "S2", "S3", "S4", "S5"]}, True),
+    ({"shifts_completed_min": 4}, {"visited_landmarks": ["S1", "S2"]}, False),
 
     # ── landmark_visited(列表形式 — 必须全部 visited 才通过)
     ({"landmark_visited": ["S1"]}, {"visited_landmarks": ["S1", "S2"]}, True),
