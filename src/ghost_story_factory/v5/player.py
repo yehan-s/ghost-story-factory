@@ -88,6 +88,10 @@ class State:
         # v7 多角色伏笔基础设施(默认值不破坏 v6/v7 现有玩法)
         self.character: str = str(initial.get("character", "G-273"))
         self.meta_flags: Dict[str, bool] = dict(initial.get("meta_flags", {}))
+        # v7+ 自由移动 / NPC 位置 / 访问计数(默认空)
+        self.last_landmark_id: Optional[str] = initial.get("last_landmark_id")
+        self.npc_locations: Dict[str, str] = dict(initial.get("npc_locations", {}))
+        self.visit_counts: Dict[str, int] = dict(initial.get("visit_counts", {}))
         # apply() 的结构化事件记录(给 UI 卡片化渲染用)
         self._last_events: List[Dict[str, Any]] = []
 
@@ -151,6 +155,8 @@ class State:
                 notes.append(f"路线确立:{new_route}")
         if "landmark_visited" in effects:
             lm = str(effects["landmark_visited"])
+            # 记录"刚刚去过哪"用于自由移动 — 即便重复访问也更新
+            self.last_landmark_id = lm
             if lm not in self.visited_landmarks:
                 self.visited_landmarks.append(lm)
                 if lm in ("S1", "S2", "S3", "S4", "S5", "S6"):
@@ -160,6 +166,10 @@ class State:
                                    "implicit": True})  # 由 landmark_visited 隐含触发
                 notes.append(f"踏入 {lm}")
                 events.append({"type": "landmark_visited", "key": lm})
+        # NPC 移动:effects.npc_move = {"npc_id": "S2", ...}
+        for npc_id, target in (effects.get("npc_move") or {}).items():
+            self.npc_locations[npc_id] = str(target)
+            events.append({"type": "npc_move", "key": npc_id, "to": str(target)})
         if "landmark_skipped" in effects:
             lm = str(effects["landmark_skipped"])
             if lm not in self.skipped_landmarks:
@@ -212,6 +222,18 @@ class State:
                 return False
         if "puzzle_pieces_min" in require and len(self.puzzle_pieces) < int(require["puzzle_pieces_min"]):
             return False
+        # v7+ NPC 访问计数 / 当前位置(给重访 narrative_variants 用)
+        for node_id, n in (require.get("visit_count_min") or {}).items():
+            if self.visit_counts.get(node_id, 0) < int(n):
+                return False
+        if "last_landmark" in require:
+            expected = require["last_landmark"]
+            if isinstance(expected, str):
+                if self.last_landmark_id != expected:
+                    return False
+            elif isinstance(expected, list):
+                if self.last_landmark_id not in expected:
+                    return False
         # v7 多角色 / 跨周目检查
         if "character" in require:
             expected = require["character"]
@@ -687,6 +709,8 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             return
 
         visited.append(current_id)
+        # 累计节点访问次数(给 NPC 重访 narrative_variants 用)
+        state.visit_counts[current_id] = state.visit_counts.get(current_id, 0) + 1
         # 地标入场 banner — 节点带 _landmark_header 时显示横划过场
         header = node.get("_landmark_header")
         if header and isinstance(header, dict):
@@ -716,6 +740,14 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             render_map_cli(tree, state, save_manager,
                            current_node_id=current_id, story_id=story_id)
         else:
+            # _one_way 节点 — 在叙事开头打一条红色"无回头路"横条
+            if node.get("_one_way"):
+                from ghost_story_factory.v7.animate import flash_line
+                hint = node.get("_one_way_hint",
+                                "无回头路 — 你已经踏入此地。")
+                flash_line(f"  🔒 {hint}",
+                           color_fn=lambda s: bold(red(s)))
+                print()
             narrative = resolve_narrative(node, state)
             if narrative:
                 render_narrative(narrative)
@@ -781,16 +813,24 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             return
 
         # 选项分类:visible(可选) / locked(显示但禁用) / hidden(完全隐藏)
-        all_choices: List[Dict[str, Any]] = node.get("choices", []) or []
-        visible: List[Dict[str, Any]] = []
-        locked: List[tuple] = []
-        for c in all_choices:
-            status, hint = state.get_choice_status(c)
-            if status == "visible":
-                visible.append(c)
-            elif status == "locked":
-                locked.append((c, hint))
-            # hidden: 完全跳过
+        if node.get("_is_map_picker"):
+            # 自由移动 picker:动态生成 travel + tool + endshift + locked 选项
+            from ghost_story_factory.v7.map_view import picker_choices
+            generated = picker_choices(tree, state)
+            visible = [c for c in generated if c.get("_picker_kind") != "locked"]
+            locked = [(c, c.get("text", "").split("(")[-1].rstrip(")"))
+                      for c in generated if c.get("_picker_kind") == "locked"]
+        else:
+            all_choices: List[Dict[str, Any]] = node.get("choices", []) or []
+            visible = []
+            locked = []
+            for c in all_choices:
+                status, hint = state.get_choice_status(c)
+                if status == "visible":
+                    visible.append(c)
+                elif status == "locked":
+                    locked.append((c, hint))
+                # hidden: 完全跳过
 
         if not visible:
             print(red("[警告] 此节点没有可点击选项,故事中断。检查 tree.json。"))
@@ -803,8 +843,12 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         render_choices(visible, locked)
         idx = prompt_choice(len(visible))
         if idx == ACTION_MAP:
-            # m 键 → 显示夜班路线图(只读)
+            # m 键 → 显示夜班路线图(只读)。_one_way 节点也允许查看,但加红色提示
             from ghost_story_factory.v7.map_view import render_map_cli
+            if node.get("_one_way"):
+                hint = node.get("_one_way_hint",
+                                "你已经走进来了 — 这里没有回头路,只是看一眼地图。")
+                print(red(f"\n  ▌ {hint} ▐\n"))
             render_map_cli(tree, state, save_manager,
                             current_node_id=current_id, story_id=story_id)
             try:

@@ -19,7 +19,17 @@
     "visited_landmarks": [],
     "puzzle_pieces": [],
     "character": "G-273",
-    "meta_flags": {}
+    "meta_flags": {},
+    "npc_locations": {
+      "linmou_coat": "S1",
+      "old_grandma": "S4",
+      "yeh_1991": "S5",
+      "redgirl_1996": "S2",
+      "lake_red_dress_13": "S2",
+      "stone_grandpa": "S3"
+    },
+    "visit_counts": {},
+    "last_landmark_id": null
   },
   "characters": {
     "G-273": {
@@ -69,57 +79,142 @@
       "node_id": "n_s1_arrive",
       "time": "20:27",
       "place": "湖滨第三把绿色长椅",
-      "unlock": null
+      "short": "湖滨",
+      "unlock": null,
+      "connections": [
+        "S4",
+        "S5",
+        "S7"
+      ]
     },
     {
       "id": "S2",
       "node_id": "n_s2_arrive",
       "time": "21:47",
       "place": "柳浪闻莺 307 阶",
-      "unlock": null
+      "short": "柳浪",
+      "unlock": null,
+      "connections": [
+        "S3",
+        "S4"
+      ]
     },
     {
       "id": "S3",
       "node_id": "n_s3_arrive",
       "time": "22:48",
       "place": "九溪理安寺裂钟",
-      "unlock": null
+      "short": "九溪",
+      "unlock": null,
+      "connections": [
+        "S2"
+      ]
     },
     {
       "id": "S4",
       "node_id": "n_s4_arrive",
       "time": "00:11",
       "place": "中山中路羊血弄 2 号",
-      "unlock": null
+      "short": "羊血",
+      "unlock": null,
+      "connections": [
+        "S1",
+        "S2"
+      ]
     },
     {
       "id": "S5",
       "node_id": "n_s5_arrive",
       "time": "01:08",
       "place": "留下小学 203 琴房",
-      "unlock": null
+      "short": "留下",
+      "unlock": null,
+      "connections": [
+        "S1",
+        "S6"
+      ]
     },
     {
       "id": "S6",
       "node_id": "n_s6_arrive",
       "time": "01:52",
       "place": "联庄站 B4 盾构井",
+      "short": "联庄",
       "unlock": {
         "shifts_completed_min": 3
       },
-      "unlock_hint": "夜班 ≥3 班"
+      "unlock_hint": "夜班 ≥3 班",
+      "connections": [
+        "S5"
+      ]
     },
     {
       "id": "S7",
       "node_id": "n_s7_arrive",
       "time": "04:17",
       "place": "平海街 1 号 · B3 货梯井",
+      "short": "平海",
       "unlock": {
         "shifts_completed_min": 5
       },
-      "unlock_hint": "夜班 ≥5 班(终局)"
+      "unlock_hint": "夜班 ≥5 班(终局)",
+      "connections": [
+        "S1"
+      ]
     }
   ],
+  "npcs": {
+    "linmou_coat": {
+      "label": "无头风衣 · 林某",
+      "initial_location": "S1",
+      "_description": "湖滨第三把绿色长椅旁。穿米色风衣,无头。"
+    },
+    "old_grandma": {
+      "label": "老婆婆 · 1959 粮票",
+      "initial_location": "S4",
+      "_description": "羊血弄 2 号门口的吊膀婆婆。"
+    },
+    "yeh_1991": {
+      "label": "叶某 · 1991-04-23",
+      "initial_location": "S5",
+      "_description": "留下小学 203 琴房,坐在最后一排弹童谣。"
+    },
+    "redgirl_1996": {
+      "label": "红衣女孩 · 何小燕",
+      "initial_location": "S2",
+      "_description": "柳浪闻莺 308 阶,抱 14 寸黑白电视。"
+    },
+    "predecessor_g272": {
+      "label": "前任 G-272(频段)",
+      "initial_location": null,
+      "_description": "只在对讲机里。但你听够 3 次,他可能会出现。"
+    },
+    "seven_workers": {
+      "label": "7 工人(钱塘江)",
+      "initial_location": null,
+      "_description": "1986 年沉船。只有夜班 ≥4 才看得见 S6 井底。"
+    },
+    "lake_red_dress_13": {
+      "label": "13 号红衣替死鬼",
+      "initial_location": "S2",
+      "_description": "柳浪闻莺 308 阶上,数到 1987 就消失。"
+    },
+    "stone_grandpa": {
+      "label": "九溪石碑老人",
+      "initial_location": "S3",
+      "_description": "理安寺裂钟旁拐杖老人 — 只夜里出现。"
+    },
+    "broadcast_voice": {
+      "label": "夜班论坛 · 匿名楼层",
+      "initial_location": null,
+      "_description": "夜班论坛的水楼,只在你发帖后回应。"
+    },
+    "archive_keeper": {
+      "label": "档案守门人",
+      "initial_location": null,
+      "_description": "遗失档案室的看守者。访问 ≥2 次才出现。"
+    }
+  },
   "tools": [
     {
       "id": "radio",
@@ -156,6 +251,66 @@
       "state_flag": "forum_posted",
       "on_text": "已发帖",
       "off_text": "未发帖"
+    },
+    {
+      "id": "lore_leifeng",
+      "label": "雷峰塔白虫",
+      "icon": "🐛",
+      "node_id": "n_lore_leifeng_worm",
+      "state_flag": "recorded_white_worm",
+      "on_text": "已记录",
+      "off_text": "未记录",
+      "unlock": {
+        "shifts_completed_min": 2
+      }
+    },
+    {
+      "id": "lore_songmuchang",
+      "label": "松木场酒店 217",
+      "icon": "🏚",
+      "node_id": "n_lore_songmuchang_inn",
+      "state_flag": "asked_room_217",
+      "on_text": "已问",
+      "off_text": "未问",
+      "unlock": {
+        "shifts_completed_min": 2
+      }
+    },
+    {
+      "id": "lore_zheda",
+      "label": "浙大钟楼 99",
+      "icon": "🔔",
+      "node_id": "n_lore_zheda_clock_girl",
+      "state_flag": "counted_99",
+      "on_text": "已数",
+      "off_text": "未数",
+      "unlock": {
+        "shifts_completed_min": 3
+      }
+    },
+    {
+      "id": "lore_wulinmen",
+      "label": "武林门刑场 7",
+      "icon": "⚰",
+      "node_id": "n_lore_wulinmen_execution",
+      "state_flag": "avoided_wulinmen",
+      "on_text": "已避开",
+      "off_text": "未到",
+      "unlock": {
+        "shifts_completed_min": 3
+      }
+    },
+    {
+      "id": "lore_kongque",
+      "label": "孔雀大厦乌龙王",
+      "icon": "🦚",
+      "node_id": "n_lore_kongque_collapse",
+      "state_flag": "burned_incense_kongque",
+      "on_text": "已祭",
+      "off_text": "未祭",
+      "unlock": {
+        "shifts_completed_min": 4
+      }
     }
   ],
   "endings": {
@@ -234,9 +389,290 @@
     }
   },
   "nodes": {
+    "n_lore_leifeng_worm": {
+      "scene": "NPC",
+      "_is_tool": true,
+      "_tool_id": "lore_leifeng",
+      "_tool_label": "雷峰塔白虫",
+      "_foreshadow_slot": [],
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_lore_leifeng_worm": 2
+            }
+          },
+          "text": "你又翻开手机里那张 1924 年的旧照——\n\n雷峰塔倒下的那一夜。\n\n塔砖崩开,从砖缝里钻出来**白色的、米粒大的虫子**——\n\n老杭州人说那是「**塔砖辟邪**」吐出的怨气,谁捡了砖回家,谁家人就会**夜夜看见白蛇**。\n\n你手腕上的铜印,这次是冷的——\n\n冷得像**塔砖**。\n\n你低头看自己刚才放在裂钟上的手——\n\n指甲缝里,**有一只白虫**。\n\n虫子还在动。"
+        },
+        {
+          "if": {},
+          "text": "你打开手机,翻出杭州地方志的扫描页。\n\n1924 年 9 月 25 日 13 时,雷峰塔倒。\n\n塔砖里钻出**白虫**——不是寻常虫子,是**没有眼睛、没有节肢**的小白蛆。\n\n民间叫它「白蛇骨」。\n\n捡到塔砖的人家,一夜之间瓦上结**白霜**——但 9 月还没冷到结霜。\n\n你看着九溪理安寺这口裂钟身上的铜锈面孔——\n\n面孔的眼睛位置,有**两只白虫**正在爬出来。\n\n你想起队长今晚走前说过一句:**「裂钟下面是 1924 的塔砖。」**"
+        }
+      ],
+      "narrative": "(占位 — 此节点应该总是命中某个 narrative_variant)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "拍照存证。把白虫记进《异常事件记录表》。",
+          "effects": {
+            "PR": 2,
+            "flags": {
+              "recorded_white_worm": true
+            },
+            "stay": true
+          },
+          "next": "n_lore_leifeng_worm"
+        },
+        {
+          "text": "用打火机烧一只虫看看。",
+          "effects": {
+            "PR": 5,
+            "GR": 3,
+            "flags": {
+              "burned_white_worm": true
+            }
+          },
+          "next": "n_npc_corrosion_face"
+        },
+        {
+          "text": "走开。这不是你今晚要管的。",
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
+    "n_lore_songmuchang_inn": {
+      "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "lore_songmuchang",
+      "_tool_label": "松木场老酒店",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_lore_songmuchang_inn": 2
+            }
+          },
+          "text": "你又来到松木场。\n\n老酒店还在那。\n\n3 楼第二个窗——\n\n窗里站着的那个女人,**朝你笑了**。\n\n你听到 217 房有人**剧烈敲门**——\n\n敲门的人在**屋里**,敲的是**自己屋的门**。\n\n你前两次没敢上去 3 楼。\n\n这次,门厅服务台的钥匙板上——\n\n**217 的钥匙不在了**。"
+        },
+        {
+          "if": {},
+          "text": "你绕到松木场。\n\n这里 1980 年代是杭州第三批知青返城的安置点,后来盖了一家三星老酒店。\n\n2007 年,SLH 论坛发过一个长帖:\n\n「松木场 X 大酒店 217 房,夜里敲门声不停。 经理说,1987 年有个温州女人在这间房上吊。 报纸只登了第三版,题目是『**因情自缢**』。」\n\n现在酒店还开着,门厅亮着昏黄的灯。\n\n你站在马路对面,看 3 楼。\n\n3 楼第二个窗,窗帘**自己拉开了一条缝**。\n\n缝里有人。\n\n那个人,穿**红色**。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "进酒店,问 217 房。",
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {
+              "asked_room_217": true
+            }
+          },
+          "next": "n_npc_red_dress_girl"
+        },
+        {
+          "text": "拍下 3 楼的窗。发夜班论坛。",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "posted_song_inn": true
+            },
+            "stay": true
+          },
+          "next": "n_lore_songmuchang_inn"
+        },
+        {
+          "text": "走开,这不是你的打卡点。",
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
+    "n_lore_zheda_clock_girl": {
+      "scene": "NPC",
+      "_is_tool": true,
+      "_tool_id": "lore_zheda",
+      "_tool_label": "浙大钟楼跳绳女生",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_lore_zheda_clock_girl": 2
+            }
+          },
+          "text": "你又站在浙大老校区钟楼下。\n\n这次,钟敲了**第 99 下**——\n\n你听见自己**忍不住数**。\n\n一根麻绳从 4 楼窗口慢慢垂下来——\n\n绳尾打了一个**11 岁孩子能伸进去的圈**。\n\n你想起 203 琴房 1959 年外婆死时也用过这种绳。\n\n你想起留下小学叶某 1991 年也用过这种绳。\n\n绳子是**一种花**。\n\n它在杭州不同年份里**开**。\n\n第 100 下钟还没敲。"
+        },
+        {
+          "if": {},
+          "text": "浙大老校区钟楼。\n\n这是夜班论坛 2009 年最热的传闻——\n\n「浙大钟楼,夜里 11 点一刻,有个女生**跳绳**。 她数到 99,如果你也跟着数,数到 100 那一刻你就**死了**。 但如果你不数,她数到 99 就**走过来站在你身后**。」\n\n你站在钟楼下。\n\n钟敲了一下,你抬头——\n\n钟楼 4 楼有个穿白色短袖、马尾辫的女学生在跳绳。\n\n绳子是**真的**——你能听见绳子打地的声音。\n\n但 4 楼的窗户**关着**。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "跟着数。1, 2, 3...",
+          "effects": {
+            "PR": 12,
+            "GR": 10,
+            "flags": {
+              "counted_99": true
+            },
+            "puzzle_add": "piece_99_count"
+          },
+          "next": "n_npc_eight_self"
+        },
+        {
+          "text": "不数。摀住耳朵走开。",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "refused_99": true
+            },
+            "stay": true
+          },
+          "next": "n_lore_zheda_clock_girl"
+        },
+        {
+          "text": "拍下来,带去留下小学 203 琴房比对。",
+          "effects": {
+            "inv_add": [
+              "浙大钟楼跳绳照片"
+            ],
+            "PR": 5
+          },
+          "next": "n_s5_arrive"
+        }
+      ]
+    },
+    "n_lore_wulinmen_execution": {
+      "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "lore_wulinmen",
+      "_tool_label": "武林门刑场地脉",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_lore_wulinmen_execution": 2
+            }
+          },
+          "text": "你又站在武林广场地下通道口。\n\n这次,通道里**没有路灯**。\n\n但你看得见——\n\n地面上**蹲着 7 个人**,排成一排。\n\n他们都穿着不同年代的衣服:\n- 1947 年:长衫\n- 1958 年:中山装\n- 1965 年:军装\n- 1970 年:工装\n- 1979 年:旧式蓝制服\n- 1983 年:夹克\n- 1995 年:港式衬衫\n\n他们都低着头,看自己的**手**。\n\n他们的手腕,都有**铜印**。\n\n你认得那个铜印——\n\n是**你今晚刚被印上的**。"
+        },
+        {
+          "if": {},
+          "text": "武林门。\n\n白天是杭州地铁 1 号线和 2 号线的换乘大站。\n\n但你走的是 19:00 之后的地下通道。\n\n地方志记载:**武林门是清代刑场。**\n\n民国 36 年最后一次正式行刑,枪决了 7 人。\n\n之后再没有用过。\n\n但**那 7 个人**没有走。\n\n你站在通道入口,感觉一阵冷气从脚底往上爬——\n\n不是空调冷气。\n\n是**地脉**的冷气,从你脚下 1 米的位置渗上来。\n\n墙上的『禁止吸烟』标识,荧光在闪烁。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "蹲下去问那 7 个人,他们的工号。",
+          "effects": {
+            "PR": 15,
+            "GR": 12,
+            "puzzle_add": "piece_wulinmen_7"
+          },
+          "next": "n_npc_helmet_workers"
+        },
+        {
+          "text": "走快点,出通道。",
+          "effects": {
+            "PR": 2,
+            "flags": {
+              "avoided_wulinmen": true
+            },
+            "stay": true
+          },
+          "next": "n_lore_wulinmen_execution"
+        },
+        {
+          "text": "录音。带回 S7 平海街地下听。",
+          "effects": {
+            "inv_add": [
+              "武林门 7 人录音"
+            ],
+            "PR": 5
+          },
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
+    "n_lore_kongque_collapse": {
+      "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "lore_kongque",
+      "_tool_label": "孔雀大厦塌楼",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_lore_kongque_collapse": 2
+            }
+          },
+          "text": "你又拐到孔雀大厦楼下。\n\n施工围栏上,**第 13 张『施工告示』**贴上去了。\n\n第 13 张告示的日期是**今晚**。\n\n围栏后面那块塌了又重砌的水泥地——\n\n这次,地面**渗血**。\n\n血是从**水泥下**渗上来的。\n\n你想起 2007 年的传闻——施工队在塌楼那块地基里挖出**一尊小石像**,五官模糊,是**乌龙庙的乌龙王**。\n\n施工队把石像砸了。\n\n夜里,工地**死了一个工人**。\n\n你前两次来,水泥地都是干的。\n\n这一次,渗血的方向**指着你的鞋**。"
+        },
+        {
+          "if": {},
+          "text": "孔雀大厦。\n\n这是 1980 年代杭州的高档写字楼,曾经是杭州第一高。\n\n2007 年,大厦**第 9 层临街那一段塌了**——\n\n官方公告说是「**施工质量问题**」。\n\n但坊间传说不是。\n\n**坊间传说是:**施工队在地基里挖出了**乌龙王石像**,把它砸了。\n\n乌龙庙曾在 1957 年被拆。\n\n那块**地基,就是乌龙庙原址**。\n\n你站在大厦楼下,围栏还在那。\n\n围栏写着「**施工中,请绕行**」。\n\n但围栏后面,没人施工。\n\n围栏后面是一块**被反复修补过的**水泥地。\n\n夜风吹过,你听到围栏铁丝在晃——\n\n但晃的频率,**和你心跳一致**。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "翻过围栏,看那块水泥地。",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "climbed_kongque_fence": true
+            },
+            "puzzle_add": "piece_kongque_stone"
+          },
+          "next": "n_scene_lake_underwater"
+        },
+        {
+          "text": "在围栏外烧三柱香。",
+          "effects": {
+            "PR": 5,
+            "GR": -3,
+            "inv_remove": [
+              "三柱香"
+            ],
+            "flags": {
+              "burned_incense_kongque": true
+            },
+            "stay": true
+          },
+          "next": "n_lore_kongque_collapse"
+        },
+        {
+          "text": "拍照,发夜班论坛。继续巡逻。",
+          "effects": {
+            "PR": 2,
+            "flags": {
+              "posted_kongque": true
+            }
+          },
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
     "n_s1_arrive": {
       "scene": "S1",
       "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_s1_arrive": 3
+            }
+          },
+          "text": "你已经第 3 次回到湖滨。\n\n第三把长椅,今天晚上看了你三次。\n\n风衣还在。\n\n但这次它**坐得更深了**——背靠在椅背上,袖口耷拉到地面,像在等谁说话。\n\n远处雷峰塔的轮廓在月色里偏了一点角度,你说不上是塔斜了,还是你站歪了。\n\n你听见自己第三次「嘀」打卡机的声音——\n\n「嘀。」\n「嘀。」\n「嘀——」\n\n第三声「嘀」拖得格外长。\n\n屏幕上跳出一行字,是上次没有的:\n\n「该名打卡员已记 3 次,核对工号册。」"
+        },
         {
           "if": {
             "flags": {
@@ -841,6 +1277,14 @@
       "narrative_variants": [
         {
           "if": {
+            "visit_count_min": {
+              "n_s2_arrive": 3
+            }
+          },
+          "text": "你已经第 3 次站在 307 阶的入口。\n\n第 1 阶上的湿手掌印,叠成了三只——三个不同尺寸,小的、中的、大的。\n\n它们重合在同一个位置。\n\n灯泡里的「雪花」飘得更密了,像有人把电视雪花搬到了树梢。\n\n柳浪闻莺夜里有过吊死人,1987 年报纸登过——红衣女人,数到 1987 跳的湖。\n\n你打卡机叫了第 3 声「嘀」,这次屏幕没闪。\n\n屏幕黑了。\n\n屏幕里映出**你自己**——\n\n但你的左肩,坐着一个红衣的小孩。"
+        },
+        {
+          "if": {
             "flags": {
               "s2_revisit_stairs": true
             }
@@ -1383,6 +1827,14 @@
       "narrative_variants": [
         {
           "if": {
+            "visit_count_min": {
+              "n_s3_arrive": 3
+            }
+          },
+          "text": "你已经第 3 次站在理安寺门外。\n\n寺门**第三次**自己开了一条缝。\n\n但这次,缝里飘出来一股**檀香**——\n\n不是早晚课的清香,是**葬礼**的浓檀。\n\n殿里那口裂钟——\n\n**两半合上了**。\n\n钟身上只剩一行新刻的字:\n\n「H = 第 13 任 · 已收。」\n\n钟身底部,那块铜锈面孔——\n\n这一次,**睁眼了**。\n\n眼睛里映着的是——飞来峰。\n\n飞来峰的那块「会动的石头」,据老杭州人说,夜里挪一寸,就有一个本地人**睡过去不再醒**。\n\n你来过 3 次,石头挪过 3 寸。"
+        },
+        {
+          "if": {
             "flags": {
               "s3_revisit_temple": true
             }
@@ -1841,6 +2293,14 @@
       "narrative_variants": [
         {
           "if": {
+            "visit_count_min": {
+              "n_s4_arrive": 3
+            }
+          },
+          "text": "你已经第 3 次转进羊血弄。\n\n弄堂尽头的铁钩——\n\n挂着 **3 只**黑山羊。\n\n3 只都没头。\n\n3 只腿都在蹬。\n\n蹬的节拍**完全一致**。\n\n弄口胡庆余堂那块「戒欺」匾,你今晚看了三次,匾上的字**每次少一笔**。\n\n现在这块匾上——\n\n只剩下「**欺**」。\n\n墙根的青砖缝里,挤出一道**红水**——是雨水洗过羊血混着青苔。\n\n往年羊血弄夜里只听屠夫剁骨。\n\n今晚是**屠夫剁你**。"
+        },
+        {
+          "if": {
             "flags": {
               "s4_revisit_alley": true
             }
@@ -2292,6 +2752,14 @@
     "n_s5_arrive": {
       "scene": "S5",
       "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_s5_arrive": 3
+            }
+          },
+          "text": "你已经第 3 次站在 203 琴房门外。\n\n这次门没有虚掩。\n\n门是**敞开**的。\n\n钢琴**响着**——\n\n不是单音了。\n\n是一首完整的童谣,《祖母的歌》。\n\n这是 1959 年浙大幼师班毕业的那一年,留下小学外婆教过的童谣——\n\n但她 1959 年就在这间琴房**自缢**了。\n\n她还在弹。\n\n她不是给叶某弹。\n\n她在给**第三个回来的人**弹。\n\n你听见自己脚下,木地板**温的**——\n\n你前两次的脚印,还没散。"
+        },
         {
           "if": {
             "flags": {
@@ -3595,7 +4063,18 @@
     },
     "n_npc_predecessor_voice": {
       "scene": "NPC",
+      "_is_tool": true,
+      "_tool_id": "radio",
+      "_tool_label": "对讲机",
       "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_npc_predecessor_voice": 5
+            }
+          },
+          "text": "你按下对讲机第 5 次。\n\n这次没有「滋——」。\n\n是**你自己的声音**。\n\n一字不差,从对讲机另一头传回来:\n\n「这里是 G-273。\n我接班今天。\n别接班。」\n\n你听了三遍才确认那是你昨天下午刚来报到时说的话。\n\n但**没人**录过你昨天下午说的话。\n\n你抬头看湖,湖面突然全是话筒。"
+        },
         {
           "if": {
             "flags": {
@@ -3656,10 +4135,7 @@
           "text": "挂断,回去。",
           "next": "n_landmark_picker"
         }
-      ],
-      "_is_tool": true,
-      "_tool_id": "radio",
-      "_tool_label": "对讲机"
+      ]
     },
     "n_npc_red_dress_girl": {
       "scene": "NPC",
@@ -4621,6 +5097,8 @@
     },
     "n_scene_lake_underwater": {
       "scene": "SCENE",
+      "_one_way": true,
+      "_one_way_hint": "西湖水下 — 你已经沉下来,湖面在头顶。回不去了。",
       "narrative_variants": [
         {
           "if": {
@@ -4949,10 +5427,21 @@
     },
     "n_scene_lost_archive": {
       "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "archive",
+      "_tool_label": "遗失档案",
       "_foreshadow_slot": [
         "all_archive_truths"
       ],
       "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_scene_lost_archive": 3
+            }
+          },
+          "text": "你已经第 3 次踏进这间档案室。\n\n这次,**有人在等你**。\n\n窗边的椅子上坐着一个穿灰色制服的男人——\n\n他没有抬头,只是把一本档案推到桌上。\n\n档案封面写着:\n\n「档案守门人 · 第 12 任 · 闭档时间:2024-04-30」\n\n他终于抬头——\n\n他**没有脸**。\n\n声音从档案里传出来:「你来第 3 次了。 我也接到第 3 个 G-273 号档案。 上一个,我还来不及合卷。 这次,**你帮我合**。」"
+        },
         {
           "if": {
             "flags": {
@@ -5079,10 +5568,7 @@
           "text": "合上档案,离开。",
           "next": "n_landmark_picker"
         }
-      ],
-      "_is_tool": true,
-      "_tool_id": "archive",
-      "_tool_label": "遗失档案"
+      ]
     },
     "n_scene_red_telephone": {
       "scene": "SCENE",
@@ -5159,6 +5645,8 @@
     },
     "n_scene_morning_lakeside": {
       "scene": "SCENE",
+      "_one_way": true,
+      "_one_way_hint": "06:03 · 湖滨 — 夜班已经结束。回不去地图了。",
       "narrative_variants": [
         {
           "if": {
@@ -5283,6 +5771,12 @@
     },
     "n_s7_arrive": {
       "scene": "S7",
+      "_one_way": true,
+      "_one_way_hint": "B3 走廊 — 钢门开了就是终局。没有楼梯回到 B1。",
+      "_landmark_header": {
+        "time": "04:17",
+        "place": "平海街 1 号 · B3 货梯井"
+      },
       "narrative": "04:17。平海街 1 号,商场地下。\n\n你刷工卡进员工通道,按下「B3」。\n\n电梯应该没有 B3。\n\n楼层显示是 B1 / B2 / 停车场。\n\n但你按 B3,按钮自己**亮了**。\n\n电梯下降。\n\n30 秒。\n\n超过了 B2 应该到达的时间。\n\n你看楼层指示灯——\n\n它从 B2 跳到一个**没有数字**的位置。\n\n你的胃悬空一下,像电梯**短暂失重**。\n\n然后,门开。\n\n冷气从外面涌进来,带着 1980 年代潮湿水泥的腥味。\n\n你站在 B3 走廊。\n\n墙是粗糙的灰色混凝土,每隔 5 米嵌着一根荧光灯——\n\n荧光灯一根接一根**为你**亮起,你走到哪一根,前一根就**灭一根**。\n\n走廊只有你的脚下是亮的。\n\n走廊尽头,大约 30 米外,是一扇**钢门**。\n\n钢门是 1986 年款式的防火门,漆色掉光,只剩铁锈红。\n\n门上没有任何标识。\n\n只有**一个钥匙孔**。\n\n钥匙孔的形状,你不认得。\n\n但你身上带着的钥匙,**自己**在你口袋里发烫。",
       "choices": [
         {
@@ -5332,11 +5826,7 @@
             }
           }
         }
-      ],
-      "_landmark_header": {
-        "time": "04:17",
-        "place": "平海街 1 号 · B3 货梯井"
-      }
+      ]
     },
     "n_end_true": {
       "scene": "END",

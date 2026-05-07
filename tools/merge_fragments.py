@@ -42,6 +42,11 @@ STORY_META = {
         "puzzle_pieces": [],
         "character": "G-273",
         "meta_flags": {},
+        # NPC 初始位置 — 由 STORY_META.npcs[i].initial_location 自动注入(merge 时填充)
+        "npc_locations": {},
+        # 节点访问计数 — 给 NPC 重访对话用
+        "visit_counts": {},
+        "last_landmark_id": None,
     },
     # v7 多角色伏笔基础设施(schema 接口,等 v8 写入)
     # 当前只有 G-273 主角。将来可扩展 linmou_1985 / yeh_1991 / redgirl_1996 等。
@@ -95,27 +100,99 @@ STORY_META = {
         "未注明物品": "(待说明)"
     },
     # 夜班路线图 — 7 地标的元数据,player 用来渲染地图屏 + picker 视图
+    # short:在拓扑地图里显示的中文短名(2 字,等宽对齐)
+    # connections:可直接走到的相邻地标 ID(用于"自由移动"机制)
+    # 现实地理参考(西湖周边):
+    #   S5(留下) ── S1(湖滨) ── S7(平海·武林门)
+    #     │              │
+    #   S6(联庄)     S4(羊血弄)
+    #                    │
+    #                  S2(柳浪) ── S3(九溪)
     "landmark_map": [
         {"id": "S1", "node_id": "n_s1_arrive", "time": "20:27",
-         "place": "湖滨第三把绿色长椅", "unlock": None},
+         "place": "湖滨第三把绿色长椅", "short": "湖滨", "unlock": None,
+         "connections": ["S4", "S5", "S7"]},
         {"id": "S2", "node_id": "n_s2_arrive", "time": "21:47",
-         "place": "柳浪闻莺 307 阶", "unlock": None},
+         "place": "柳浪闻莺 307 阶", "short": "柳浪", "unlock": None,
+         "connections": ["S3", "S4"]},
         {"id": "S3", "node_id": "n_s3_arrive", "time": "22:48",
-         "place": "九溪理安寺裂钟", "unlock": None},
+         "place": "九溪理安寺裂钟", "short": "九溪", "unlock": None,
+         "connections": ["S2"]},
         {"id": "S4", "node_id": "n_s4_arrive", "time": "00:11",
-         "place": "中山中路羊血弄 2 号", "unlock": None},
+         "place": "中山中路羊血弄 2 号", "short": "羊血", "unlock": None,
+         "connections": ["S1", "S2"]},
         {"id": "S5", "node_id": "n_s5_arrive", "time": "01:08",
-         "place": "留下小学 203 琴房", "unlock": None},
+         "place": "留下小学 203 琴房", "short": "留下", "unlock": None,
+         "connections": ["S1", "S6"]},
         {"id": "S6", "node_id": "n_s6_arrive", "time": "01:52",
-         "place": "联庄站 B4 盾构井",
+         "place": "联庄站 B4 盾构井", "short": "联庄",
          "unlock": {"shifts_completed_min": 3},
-         "unlock_hint": "夜班 ≥3 班"},
+         "unlock_hint": "夜班 ≥3 班",
+         "connections": ["S5"]},
         {"id": "S7", "node_id": "n_s7_arrive", "time": "04:17",
-         "place": "平海街 1 号 · B3 货梯井",
+         "place": "平海街 1 号 · B3 货梯井", "short": "平海",
          "unlock": {"shifts_completed_min": 5},
-         "unlock_hint": "夜班 ≥5 班(终局)"},
+         "unlock_hint": "夜班 ≥5 班(终局)",
+         "connections": ["S1"]},
     ],
+    # NPC 元数据 — 可在地图上"出没"的角色。每个 NPC 有 label/初始位置。
+    # state.npc_locations 跟踪当前位置(运行时改变),地图屏会列出"今夜在场"。
+    # initial_location 为 None 表示开局不在任何地标(如对讲机的前任只在频段里)。
+    "npcs": {
+        "linmou_coat": {
+            "label": "无头风衣 · 林某",
+            "initial_location": "S1",
+            "_description": "湖滨第三把绿色长椅旁。穿米色风衣,无头。"
+        },
+        "old_grandma": {
+            "label": "老婆婆 · 1959 粮票",
+            "initial_location": "S4",
+            "_description": "羊血弄 2 号门口的吊膀婆婆。"
+        },
+        "yeh_1991": {
+            "label": "叶某 · 1991-04-23",
+            "initial_location": "S5",
+            "_description": "留下小学 203 琴房,坐在最后一排弹童谣。"
+        },
+        "redgirl_1996": {
+            "label": "红衣女孩 · 何小燕",
+            "initial_location": "S2",
+            "_description": "柳浪闻莺 308 阶,抱 14 寸黑白电视。"
+        },
+        "predecessor_g272": {
+            "label": "前任 G-272(频段)",
+            "initial_location": None,
+            "_description": "只在对讲机里。但你听够 3 次,他可能会出现。"
+        },
+        "seven_workers": {
+            "label": "7 工人(钱塘江)",
+            "initial_location": None,
+            "_description": "1986 年沉船。只有夜班 ≥4 才看得见 S6 井底。"
+        },
+        "lake_red_dress_13": {
+            "label": "13 号红衣替死鬼",
+            "initial_location": "S2",
+            "_description": "柳浪闻莺 308 阶上,数到 1987 就消失。"
+        },
+        "stone_grandpa": {
+            "label": "九溪石碑老人",
+            "initial_location": "S3",
+            "_description": "理安寺裂钟旁拐杖老人 — 只夜里出现。"
+        },
+        "broadcast_voice": {
+            "label": "夜班论坛 · 匿名楼层",
+            "initial_location": None,
+            "_description": "夜班论坛的水楼,只在你发帖后回应。"
+        },
+        "archive_keeper": {
+            "label": "档案守门人",
+            "initial_location": None,
+            "_description": "遗失档案室的看守者。访问 ≥2 次才出现。"
+        }
+    },
     # 工具栏 — 可重访的"开关"节点,在地图屏作为状态 toggle 显示
+    # unlock 字段(可选):同 require 语义。tools 在 picker 里默认全显示,
+    # 但被 picker_choices 过滤 — 仅 unlock 满足才出现。
     "tools": [
         {"id": "radio", "label": "对讲机", "icon": "📻",
          "node_id": "n_npc_predecessor_voice",
@@ -133,6 +210,33 @@ STORY_META = {
          "node_id": "n_npc_forum_lurkers",
          "state_flag": "forum_posted",
          "on_text": "已发帖", "off_text": "未发帖"},
+        # 民间传闻线索组 — shifts ≥2 后浮现。每个都有 unlock 隐藏,
+        # 玩家在地标里碰到对应触发点后才显示。
+        {"id": "lore_leifeng", "label": "雷峰塔白虫", "icon": "🐛",
+         "node_id": "n_lore_leifeng_worm",
+         "state_flag": "recorded_white_worm",
+         "on_text": "已记录", "off_text": "未记录",
+         "unlock": {"shifts_completed_min": 2}},
+        {"id": "lore_songmuchang", "label": "松木场酒店 217", "icon": "🏚",
+         "node_id": "n_lore_songmuchang_inn",
+         "state_flag": "asked_room_217",
+         "on_text": "已问", "off_text": "未问",
+         "unlock": {"shifts_completed_min": 2}},
+        {"id": "lore_zheda", "label": "浙大钟楼 99", "icon": "🔔",
+         "node_id": "n_lore_zheda_clock_girl",
+         "state_flag": "counted_99",
+         "on_text": "已数", "off_text": "未数",
+         "unlock": {"shifts_completed_min": 3}},
+        {"id": "lore_wulinmen", "label": "武林门刑场 7", "icon": "⚰",
+         "node_id": "n_lore_wulinmen_execution",
+         "state_flag": "avoided_wulinmen",
+         "on_text": "已避开", "off_text": "未到",
+         "unlock": {"shifts_completed_min": 3}},
+        {"id": "lore_kongque", "label": "孔雀大厦乌龙王", "icon": "🦚",
+         "node_id": "n_lore_kongque_collapse",
+         "state_flag": "burned_incense_kongque",
+         "on_text": "已祭", "off_text": "未祭",
+         "unlock": {"shifts_completed_min": 4}},
     ],
     "endings": {
         "E_TRUE": "关闭杭州常数 (True · 调查派完整)",
@@ -322,7 +426,12 @@ def merge(story_dir: Path, output_path: Path, check_only: bool = False) -> int:
         print("\n[--check 模式] 不写入输出文件。")
         return 0 if not (missing or orphans) else 1
 
-    # 写出 tree.json
+    # 写出 tree.json — 先把 npcs[i].initial_location 注入 initial_state.npc_locations
+    npc_meta = STORY_META.get("npcs") or {}
+    for npc_id, info in npc_meta.items():
+        loc = info.get("initial_location")
+        if loc:
+            STORY_META["initial_state"]["npc_locations"][npc_id] = loc
     tree = {**STORY_META, "nodes": merged_nodes}
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f:

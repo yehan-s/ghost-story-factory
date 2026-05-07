@@ -275,6 +275,10 @@ class GhostStoryApp(App):
             return
 
         self.visited.append(self.current_id)
+        # 累计节点访问次数(给 NPC 重访 narrative_variants 用)
+        self.state.visit_counts[self.current_id] = (
+            self.state.visit_counts.get(self.current_id, 0) + 1
+        )
         # 地标入场 banner — 节点带 _landmark_header 时显示
         header = node.get("_landmark_header")
         if header and isinstance(header, dict):
@@ -329,6 +333,11 @@ class GhostStoryApp(App):
                     log.write(text)
             log.write(f"\n[dim]{'─' * 58}[/]\n")
         else:
+            # _one_way 节点 — 在 narrative 前打一条红色"无回头路"横条
+            if node.get("_one_way"):
+                hint = node.get("_one_way_hint",
+                                "无回头路 — 你已经踏入此地。")
+                log.write(f"\n[bold red]  🔒 {hint}[/]\n")
             narrative = resolve_narrative(node, self.state)
             if narrative:
                 # 分隔线
@@ -421,16 +430,25 @@ class GhostStoryApp(App):
             return
 
         # 选项分类:visible / locked / hidden
-        all_choices = node.get("choices", []) or []
-        self.visible_choices = []
-        locked: List[tuple] = []
-        for c in all_choices:
-            status, hint = self.state.get_choice_status(c)
-            if status == "visible":
-                self.visible_choices.append(c)
-            elif status == "locked":
-                locked.append((c, hint))
-            # hidden 跳过
+        if node.get("_is_map_picker"):
+            from ghost_story_factory.v7.map_view import picker_choices
+            generated = picker_choices(self._tree, self.state)
+            self.visible_choices = [c for c in generated if c.get("_picker_kind") != "locked"]
+            locked: List[tuple] = [
+                (c, c.get("text", "").split("(")[-1].rstrip(")"))
+                for c in generated if c.get("_picker_kind") == "locked"
+            ]
+        else:
+            all_choices = node.get("choices", []) or []
+            self.visible_choices = []
+            locked: List[tuple] = []
+            for c in all_choices:
+                status, hint = self.state.get_choice_status(c)
+                if status == "visible":
+                    self.visible_choices.append(c)
+                elif status == "locked":
+                    locked.append((c, hint))
+                # hidden 跳过
 
         opts = self.query_one("#choices", OptionList)
         opts.clear_options()
@@ -531,7 +549,7 @@ class GhostStoryApp(App):
         self._apply_choice(idx)
 
     def action_show_map(self) -> None:
-        """m 键 — 弹出夜班路线图(只读)。"""
+        """m 键 — 弹出夜班路线图(只读)。_one_way 节点照样允许查看。"""
         story_id = str(self._tree.get("story_id") or self._tree_path.stem)
         self.push_screen(MapScreen(
             self._tree, self.state, self.save_manager,

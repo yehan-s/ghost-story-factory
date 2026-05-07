@@ -1,0 +1,244 @@
+{
+  "_comment": "杭州民间传闻 NPC / 场景包(v7+)。每个节点都是 stay-effect 工具节点,可重访。所有节点都从 picker / 现有地标 narrative_variants 通过新选项进入。",
+  "fragment_owner": "folklore-pack-v1",
+  "_dispatch_notes": "已挂的入口:n_landmark_picker 选『松木场老酒店』、n_s2_close_kid 选『浙大钟楼传闻』、n_s4_alley_inside 选『孔雀大厦塌楼』、n_s7_arrive 选『武林门刑场地脉』、n_npc_corrosion_face 选『雷峰塔白虫』。所有这些『新选项』在原 fragment 里以 require flag 隐藏,需要解锁才显示。当前不挂入口,等内容稳定后再挂。",
+  "nodes": {
+    "n_lore_leifeng_worm": {
+      "scene": "NPC",
+      "_is_tool": true,
+      "_tool_id": "lore_leifeng",
+      "_tool_label": "雷峰塔白虫",
+      "_foreshadow_slot": [],
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_lore_leifeng_worm": 2}
+          },
+          "text": "你又翻开手机里那张 1924 年的旧照——\n\n雷峰塔倒下的那一夜。\n\n塔砖崩开,从砖缝里钻出来**白色的、米粒大的虫子**——\n\n老杭州人说那是「**塔砖辟邪**」吐出的怨气,谁捡了砖回家,谁家人就会**夜夜看见白蛇**。\n\n你手腕上的铜印,这次是冷的——\n\n冷得像**塔砖**。\n\n你低头看自己刚才放在裂钟上的手——\n\n指甲缝里,**有一只白虫**。\n\n虫子还在动。"
+        },
+        {
+          "if": {},
+          "text": "你打开手机,翻出杭州地方志的扫描页。\n\n1924 年 9 月 25 日 13 时,雷峰塔倒。\n\n塔砖里钻出**白虫**——不是寻常虫子,是**没有眼睛、没有节肢**的小白蛆。\n\n民间叫它「白蛇骨」。\n\n捡到塔砖的人家,一夜之间瓦上结**白霜**——但 9 月还没冷到结霜。\n\n你看着九溪理安寺这口裂钟身上的铜锈面孔——\n\n面孔的眼睛位置,有**两只白虫**正在爬出来。\n\n你想起队长今晚走前说过一句:**「裂钟下面是 1924 的塔砖。」**"
+        }
+      ],
+      "narrative": "(占位 — 此节点应该总是命中某个 narrative_variant)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "拍照存证。把白虫记进《异常事件记录表》。",
+          "effects": {
+            "PR": 2,
+            "flags": {"recorded_white_worm": true},
+            "stay": true
+          },
+          "next": "n_lore_leifeng_worm"
+        },
+        {
+          "text": "用打火机烧一只虫看看。",
+          "effects": {
+            "PR": 5,
+            "GR": 3,
+            "flags": {"burned_white_worm": true}
+          },
+          "next": "n_npc_corrosion_face"
+        },
+        {
+          "text": "走开。这不是你今晚要管的。",
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
+    "n_lore_songmuchang_inn": {
+      "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "lore_songmuchang",
+      "_tool_label": "松木场老酒店",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_lore_songmuchang_inn": 2}
+          },
+          "text": "你又来到松木场。\n\n老酒店还在那。\n\n3 楼第二个窗——\n\n窗里站着的那个女人,**朝你笑了**。\n\n你听到 217 房有人**剧烈敲门**——\n\n敲门的人在**屋里**,敲的是**自己屋的门**。\n\n你前两次没敢上去 3 楼。\n\n这次,门厅服务台的钥匙板上——\n\n**217 的钥匙不在了**。"
+        },
+        {
+          "if": {},
+          "text": "你绕到松木场。\n\n这里 1980 年代是杭州第三批知青返城的安置点,后来盖了一家三星老酒店。\n\n2007 年,SLH 论坛发过一个长帖:\n\n「松木场 X 大酒店 217 房,夜里敲门声不停。 经理说,1987 年有个温州女人在这间房上吊。 报纸只登了第三版,题目是『**因情自缢**』。」\n\n现在酒店还开着,门厅亮着昏黄的灯。\n\n你站在马路对面,看 3 楼。\n\n3 楼第二个窗,窗帘**自己拉开了一条缝**。\n\n缝里有人。\n\n那个人,穿**红色**。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "进酒店,问 217 房。",
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {"asked_room_217": true}
+          },
+          "next": "n_npc_red_dress_girl"
+        },
+        {
+          "text": "拍下 3 楼的窗。发夜班论坛。",
+          "effects": {
+            "PR": 3,
+            "flags": {"posted_song_inn": true},
+            "stay": true
+          },
+          "next": "n_lore_songmuchang_inn"
+        },
+        {
+          "text": "走开,这不是你的打卡点。",
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
+    "n_lore_zheda_clock_girl": {
+      "scene": "NPC",
+      "_is_tool": true,
+      "_tool_id": "lore_zheda",
+      "_tool_label": "浙大钟楼跳绳女生",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_lore_zheda_clock_girl": 2}
+          },
+          "text": "你又站在浙大老校区钟楼下。\n\n这次,钟敲了**第 99 下**——\n\n你听见自己**忍不住数**。\n\n一根麻绳从 4 楼窗口慢慢垂下来——\n\n绳尾打了一个**11 岁孩子能伸进去的圈**。\n\n你想起 203 琴房 1959 年外婆死时也用过这种绳。\n\n你想起留下小学叶某 1991 年也用过这种绳。\n\n绳子是**一种花**。\n\n它在杭州不同年份里**开**。\n\n第 100 下钟还没敲。"
+        },
+        {
+          "if": {},
+          "text": "浙大老校区钟楼。\n\n这是夜班论坛 2009 年最热的传闻——\n\n「浙大钟楼,夜里 11 点一刻,有个女生**跳绳**。 她数到 99,如果你也跟着数,数到 100 那一刻你就**死了**。 但如果你不数,她数到 99 就**走过来站在你身后**。」\n\n你站在钟楼下。\n\n钟敲了一下,你抬头——\n\n钟楼 4 楼有个穿白色短袖、马尾辫的女学生在跳绳。\n\n绳子是**真的**——你能听见绳子打地的声音。\n\n但 4 楼的窗户**关着**。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "跟着数。1, 2, 3...",
+          "effects": {
+            "PR": 12,
+            "GR": 10,
+            "flags": {"counted_99": true},
+            "puzzle_add": "piece_99_count"
+          },
+          "next": "n_npc_eight_self"
+        },
+        {
+          "text": "不数。摀住耳朵走开。",
+          "effects": {
+            "PR": 3,
+            "flags": {"refused_99": true},
+            "stay": true
+          },
+          "next": "n_lore_zheda_clock_girl"
+        },
+        {
+          "text": "拍下来,带去留下小学 203 琴房比对。",
+          "effects": {
+            "inv_add": ["浙大钟楼跳绳照片"],
+            "PR": 5
+          },
+          "next": "n_s5_arrive"
+        }
+      ]
+    },
+    "n_lore_wulinmen_execution": {
+      "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "lore_wulinmen",
+      "_tool_label": "武林门刑场地脉",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_lore_wulinmen_execution": 2}
+          },
+          "text": "你又站在武林广场地下通道口。\n\n这次,通道里**没有路灯**。\n\n但你看得见——\n\n地面上**蹲着 7 个人**,排成一排。\n\n他们都穿着不同年代的衣服:\n- 1947 年:长衫\n- 1958 年:中山装\n- 1965 年:军装\n- 1970 年:工装\n- 1979 年:旧式蓝制服\n- 1983 年:夹克\n- 1995 年:港式衬衫\n\n他们都低着头,看自己的**手**。\n\n他们的手腕,都有**铜印**。\n\n你认得那个铜印——\n\n是**你今晚刚被印上的**。"
+        },
+        {
+          "if": {},
+          "text": "武林门。\n\n白天是杭州地铁 1 号线和 2 号线的换乘大站。\n\n但你走的是 19:00 之后的地下通道。\n\n地方志记载:**武林门是清代刑场。**\n\n民国 36 年最后一次正式行刑,枪决了 7 人。\n\n之后再没有用过。\n\n但**那 7 个人**没有走。\n\n你站在通道入口,感觉一阵冷气从脚底往上爬——\n\n不是空调冷气。\n\n是**地脉**的冷气,从你脚下 1 米的位置渗上来。\n\n墙上的『禁止吸烟』标识,荧光在闪烁。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "蹲下去问那 7 个人,他们的工号。",
+          "effects": {
+            "PR": 15,
+            "GR": 12,
+            "puzzle_add": "piece_wulinmen_7"
+          },
+          "next": "n_npc_helmet_workers"
+        },
+        {
+          "text": "走快点,出通道。",
+          "effects": {
+            "PR": 2,
+            "flags": {"avoided_wulinmen": true},
+            "stay": true
+          },
+          "next": "n_lore_wulinmen_execution"
+        },
+        {
+          "text": "录音。带回 S7 平海街地下听。",
+          "effects": {
+            "inv_add": ["武林门 7 人录音"],
+            "PR": 5
+          },
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
+    "n_lore_kongque_collapse": {
+      "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "lore_kongque",
+      "_tool_label": "孔雀大厦塌楼",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_lore_kongque_collapse": 2}
+          },
+          "text": "你又拐到孔雀大厦楼下。\n\n施工围栏上,**第 13 张『施工告示』**贴上去了。\n\n第 13 张告示的日期是**今晚**。\n\n围栏后面那块塌了又重砌的水泥地——\n\n这次,地面**渗血**。\n\n血是从**水泥下**渗上来的。\n\n你想起 2007 年的传闻——施工队在塌楼那块地基里挖出**一尊小石像**,五官模糊,是**乌龙庙的乌龙王**。\n\n施工队把石像砸了。\n\n夜里,工地**死了一个工人**。\n\n你前两次来,水泥地都是干的。\n\n这一次,渗血的方向**指着你的鞋**。"
+        },
+        {
+          "if": {},
+          "text": "孔雀大厦。\n\n这是 1980 年代杭州的高档写字楼,曾经是杭州第一高。\n\n2007 年,大厦**第 9 层临街那一段塌了**——\n\n官方公告说是「**施工质量问题**」。\n\n但坊间传说不是。\n\n**坊间传说是:**施工队在地基里挖出了**乌龙王石像**,把它砸了。\n\n乌龙庙曾在 1957 年被拆。\n\n那块**地基,就是乌龙庙原址**。\n\n你站在大厦楼下,围栏还在那。\n\n围栏写着「**施工中,请绕行**」。\n\n但围栏后面,没人施工。\n\n围栏后面是一块**被反复修补过的**水泥地。\n\n夜风吹过,你听到围栏铁丝在晃——\n\n但晃的频率,**和你心跳一致**。"
+        }
+      ],
+      "narrative": "(占位)",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "翻过围栏,看那块水泥地。",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {"climbed_kongque_fence": true},
+            "puzzle_add": "piece_kongque_stone"
+          },
+          "next": "n_scene_lake_underwater"
+        },
+        {
+          "text": "在围栏外烧三柱香。",
+          "effects": {
+            "PR": 5,
+            "GR": -3,
+            "inv_remove": ["三柱香"],
+            "flags": {"burned_incense_kongque": true},
+            "stay": true
+          },
+          "next": "n_lore_kongque_collapse"
+        },
+        {
+          "text": "拍照,发夜班论坛。继续巡逻。",
+          "effects": {
+            "PR": 2,
+            "flags": {"posted_kongque": true}
+          },
+          "next": "n_landmark_picker"
+        }
+      ]
+    }
+  }
+}

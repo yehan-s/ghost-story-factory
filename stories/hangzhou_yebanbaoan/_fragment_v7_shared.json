@@ -289,7 +289,16 @@
     },
     "n_npc_predecessor_voice": {
       "scene": "NPC",
+      "_is_tool": true,
+      "_tool_id": "radio",
+      "_tool_label": "对讲机",
       "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_npc_predecessor_voice": 5}
+          },
+          "text": "你按下对讲机第 5 次。\n\n这次没有「滋——」。\n\n是**你自己的声音**。\n\n一字不差,从对讲机另一头传回来:\n\n「这里是 G-273。\n我接班今天。\n别接班。」\n\n你听了三遍才确认那是你昨天下午刚来报到时说的话。\n\n但**没人**录过你昨天下午说的话。\n\n你抬头看湖,湖面突然全是话筒。"
+        },
         {
           "if": {
             "flags": {
@@ -1315,6 +1324,8 @@
     },
     "n_scene_lake_underwater": {
       "scene": "SCENE",
+      "_one_way": true,
+      "_one_way_hint": "西湖水下 — 你已经沉下来,湖面在头顶。回不去了。",
       "narrative_variants": [
         {
           "if": {
@@ -1643,10 +1654,19 @@
     },
     "n_scene_lost_archive": {
       "scene": "SCENE",
+      "_is_tool": true,
+      "_tool_id": "archive",
+      "_tool_label": "遗失档案",
       "_foreshadow_slot": [
         "all_archive_truths"
       ],
       "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {"n_scene_lost_archive": 3}
+          },
+          "text": "你已经第 3 次踏进这间档案室。\n\n这次,**有人在等你**。\n\n窗边的椅子上坐着一个穿灰色制服的男人——\n\n他没有抬头,只是把一本档案推到桌上。\n\n档案封面写着:\n\n「档案守门人 · 第 12 任 · 闭档时间:2024-04-30」\n\n他终于抬头——\n\n他**没有脸**。\n\n声音从档案里传出来:「你来第 3 次了。 我也接到第 3 个 G-273 号档案。 上一个,我还来不及合卷。 这次,**你帮我合**。」"
+        },
         {
           "if": {
             "flags": {
@@ -1853,6 +1873,8 @@
     },
     "n_scene_morning_lakeside": {
       "scene": "SCENE",
+      "_one_way": true,
+      "_one_way_hint": "06:03 · 湖滨 — 夜班已经结束。回不去地图了。",
       "narrative_variants": [
         {
           "if": {
@@ -1977,6 +1999,9 @@
     },
     "n_s7_arrive": {
       "scene": "S7",
+      "_one_way": true,
+      "_one_way_hint": "B3 走廊 — 钢门开了就是终局。没有楼梯回到 B1。",
+      "_landmark_header": {"time": "04:17", "place": "平海街 1 号 · B3 走廊"},
       "narrative": "04:17。平海街 1 号,商场地下。\n\n你刷工卡进员工通道,按下「B3」。\n\n电梯应该没有 B3。\n\n楼层显示是 B1 / B2 / 停车场。\n\n但你按 B3,按钮自己**亮了**。\n\n电梯下降。\n\n30 秒。\n\n超过了 B2 应该到达的时间。\n\n你看楼层指示灯——\n\n它从 B2 跳到一个**没有数字**的位置。\n\n你的胃悬空一下,像电梯**短暂失重**。\n\n然后,门开。\n\n冷气从外面涌进来,带着 1980 年代潮湿水泥的腥味。\n\n你站在 B3 走廊。\n\n墙是粗糙的灰色混凝土,每隔 5 米嵌着一根荧光灯——\n\n荧光灯一根接一根**为你**亮起,你走到哪一根,前一根就**灭一根**。\n\n走廊只有你的脚下是亮的。\n\n走廊尽头,大约 30 米外,是一扇**钢门**。\n\n钢门是 1986 年款式的防火门,漆色掉光,只剩铁锈红。\n\n门上没有任何标识。\n\n只有**一个钥匙孔**。\n\n钥匙孔的形状,你不认得。\n\n但你身上带着的钥匙,**自己**在你口袋里发烫。",
       "choices": [
         {
