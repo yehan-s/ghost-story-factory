@@ -1705,16 +1705,16 @@
         },
         {
           "if": {
-            "flags": {
-              "s1_revisit_close": true
+            "visit_count_min": {
+              "n_s1_arrive": 2
             }
           },
           "text": "你又回到第三把长椅前。\n\n刚才你已经走得很近——你知道风衣里没有人。但你的手电还沾着一点湿,手心皮肤还在起鸡皮疙瘩。\n\n风衣还在那里。\n\n它好像比刚才微微挺直了一点点。\n\n或者只是你的眼睛在骗你。\n\n你低头看《异常事件记录表》[01]栏——光标还在等你写字。"
         },
         {
           "if": {
-            "flags": {
-              "s1_revisit_wet_shoes": true
+            "visit_count_min": {
+              "n_s1_arrive": 2
             }
           },
           "text": "你又回到长椅前。\n\n那双湿鞋还摆在长椅另一头,鞋头朝外。\n\n它们没动。\n\n但鞋后跟,慢慢渗出黑水,在长椅木板上画出一道细线,直指你的脚。\n\n你的鞋干的。它们的鞋,等你走过去。"
@@ -1775,8 +1775,8 @@
             }
           },
           "require": {
-            "flags": {
-              "s1_revisit_close": true
+            "visit_count_min": {
+              "n_s1_arrive": 2
             }
           }
         }
@@ -1803,38 +1803,22 @@
         {
           "text": "伸手摸一下风衣。",
           "next": "n_s1_close_touch",
-          "effects": {
-            "flags": {
-              "s1_revisit_close": true
-            }
-          }
+          "effects": {}
         },
         {
           "text": "翻一翻风衣口袋。",
           "next": "n_s1_pocket_book",
-          "effects": {
-            "flags": {
-              "s1_revisit_close": true
-            }
-          }
+          "effects": {}
         },
         {
           "text": "把手电对准领口照进去。",
           "next": "n_s1_close_flashlight",
-          "effects": {
-            "flags": {
-              "s1_revisit_close": true
-            }
-          }
+          "effects": {}
         },
         {
           "text": "站起来,退回打卡机前再想。",
           "next": "n_s1_arrive",
-          "effects": {
-            "flags": {
-              "s1_revisit_close": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -1946,11 +1930,7 @@
         {
           "text": "退到长椅旁,继续观察。",
           "next": "n_s1_close",
-          "effects": {
-            "flags": {
-              "s1_revisit_close": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -1975,7 +1955,6 @@
           "effects": {
             "PR": -3,
             "flags": {
-              "s1_revisit_close": true,
               "oneshot.s1_panic": true
             }
           }
@@ -2081,20 +2060,13 @@
         {
           "text": "什么都不做,退回打卡机。",
           "next": "n_s1_arrive",
-          "effects": {
-            "flags": {
-              "s1_revisit_wet_shoes": true
-            }
-          }
+          "effects": {}
         },
         {
           "text": "蹲下,把鞋翻过来看鞋底。",
           "next": "n_s1_shoe_sole",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "s1_revisit_wet_shoes": true
-            }
+            "PR": 3
           }
         }
       ]
@@ -2109,8 +2081,7 @@
           "effects": {
             "PR": -3,
             "flags": {
-              "oneshot.s1_marked_wait": true,
-              "s1_revisit_close": true
+              "oneshot.s1_marked_wait": true
             }
           }
         }
@@ -2135,7 +2106,6 @@
           "next": "n_s1_arrive",
           "effects": {
             "flags": {
-              "s1_revisit_wet_shoes": true,
               "oneshot.s1_saw_coin": true
             }
           }
@@ -2337,8 +2307,8 @@
         },
         {
           "if": {
-            "flags": {
-              "s2_revisit_stairs": true
+            "visit_count_min": {
+              "n_s2_arrive": 2
             }
           },
           "text": "你又站在 307 阶的入口。\n\n灯柱比刚才暗一格。\n\n第 1 阶上,刚才你蹲下擦鞋的位置——多了一个**手掌印**。\n\n手掌印是湿的,五指张开,大小是个 11 岁女孩的。\n\n她在等你回来。"
@@ -2389,8 +2359,8 @@
           },
           "require": {
             "not": {
-              "flags": {
-                "s2_revisit_stairs": true
+              "visit_count_min": {
+                "n_s2_arrive": 2
               }
             }
           }
@@ -2406,8 +2376,8 @@
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s2_revisit_stairs": true
+                "visit_count_min": {
+                  "n_s2_arrive": 2
                 }
               },
               {
@@ -2429,8 +2399,8 @@
       "narrative_variants": [
         {
           "if": {
-            "flags": {
-              "s2_revisit_stairs": true
+            "visit_count_min": {
+              "n_s2_arrive": 2
             }
           },
           "text": "你又开始数。\n\n但这次,你**已经知道结果**——\n\n307 阶完了,会出现 308。\n\n你数到 100 阶,数到 200 阶——\n\n你的脚步声**和身后的脚步声错开半拍**。\n\n这一次,你**不回头**。\n\n你数到 307 阶——\n\n你前面,**直接是 308 阶**。\n\n红木门**已经开**了一条缝。\n\n它在等你。"
@@ -2469,10 +2439,7 @@
           "text": "停在 307,蹲下系鞋带,等天亮。",
           "next": "n_s2_wait_307",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "s2_revisit_stairs": true
-            }
+            "PR": 3
           }
         },
         {
@@ -2543,7 +2510,6 @@
           "next": "n_s2_arrive",
           "effects": {
             "flags": {
-              "s2_revisit_stairs": true,
               "oneshot.s2_closed_door": true
             }
           }
@@ -2819,10 +2785,7 @@
           "text": "干脆坐下,等天亮。",
           "next": "n_s2_wait_307",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "s2_revisit_stairs": true
-            }
+            "PR": -3
           }
         },
         {
@@ -2885,8 +2848,8 @@
         },
         {
           "if": {
-            "flags": {
-              "s3_revisit_temple": true
+            "visit_count_min": {
+              "n_s3_arrive": 2
             }
           },
           "text": "你又来到理安寺。\n\n刚才的钟摆,现在反着摆。\n\n你的指纹还留在第二片铜锈上——\n\n现在,**铜锈自己长回去了**,但形状变成你的指纹。\n\n寺门开着。等你。"
@@ -2937,8 +2900,8 @@
           },
           "require": {
             "not": {
-              "flags": {
-                "s3_revisit_temple": true
+              "visit_count_min": {
+                "n_s3_arrive": 2
               }
             }
           }
@@ -2954,8 +2917,8 @@
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s3_revisit_temple": true
+                "visit_count_min": {
+                  "n_s3_arrive": 2
                 }
               },
               {
@@ -2991,20 +2954,14 @@
             "PR": 5,
             "inv_add": [
               "铜锈片"
-            ],
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            ]
           }
         },
         {
           "text": "对着侧脸说话:『你想让我做什么?』",
           "next": "n_npc_corrosion_face",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            "PR": 8
           }
         },
         {
@@ -3020,11 +2977,7 @@
         {
           "text": "退后,绕到钟另一面。",
           "next": "n_s3_other_side",
-          "effects": {
-            "flags": {
-              "s3_revisit_temple": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -3057,10 +3010,7 @@
           "text": "放回去,告诉它你不要。",
           "next": "n_npc_corrosion_face",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            "PR": 3
           }
         }
       ]
@@ -3197,7 +3147,6 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s3_revisit_temple": true,
               "oneshot.s3_reclaimed_id": true
             }
           }
@@ -3233,20 +3182,13 @@
             "PR": 5,
             "inv_add": [
               "红衣女孩铜锈"
-            ],
-            "flags": {
-              "s3_revisit_temple": true
-            }
+            ]
           }
         },
         {
           "text": "退回正面,继续看男人侧脸。",
           "next": "n_s3_examine_face",
-          "effects": {
-            "flags": {
-              "s3_revisit_temple": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -3292,7 +3234,6 @@
           "next": "n_s3_arrive",
           "effects": {
             "flags": {
-              "s3_revisit_temple": true,
               "oneshot.s3_saw_well": true
             }
           }
@@ -3330,7 +3271,6 @@
           "effects": {
             "GR": 5,
             "flags": {
-              "s3_revisit_temple": true,
               "hung_up_predecessor": true
             }
           }
@@ -3350,8 +3290,8 @@
         },
         {
           "if": {
-            "flags": {
-              "s4_revisit_alley": true
+            "visit_count_min": {
+              "n_s4_arrive": 2
             }
           },
           "text": "你又转进羊血弄。\n\n弄堂尽头的灯,亮一阵灭一阵——\n\n刚才你看见的黑山羊,现在**多了一具**,挂在第二个铁钩上。\n\n第二具,有头。\n\n头是**你的**。"
@@ -3402,8 +3342,8 @@
           },
           "require": {
             "not": {
-              "flags": {
-                "s4_revisit_alley": true
+              "visit_count_min": {
+                "n_s4_arrive": 2
               }
             }
           }
@@ -3419,8 +3359,8 @@
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s4_revisit_alley": true
+                "visit_count_min": {
+                  "n_s4_arrive": 2
                 }
               },
               {
@@ -3446,10 +3386,7 @@
           "next": "n_s4_blood_face",
           "effects": {
             "PR": 8,
-            "GR": 3,
-            "flags": {
-              "s4_revisit_alley": true
-            }
+            "GR": 3
           }
         },
         {
@@ -3482,11 +3419,7 @@
         {
           "text": "退后,先去看「⺶」字匾。",
           "next": "n_s4_examine_sign",
-          "effects": {
-            "flags": {
-              "s4_revisit_alley": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -3546,7 +3479,6 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s4_revisit_alley": true,
               "oneshot.s4_lifted_brush": true
             }
           }
@@ -3558,7 +3490,6 @@
             "PR": 8,
             "GR": 10,
             "flags": {
-              "s4_revisit_alley": true,
               "oneshot.s4_broke_brush": true
             }
           }
@@ -3572,7 +3503,6 @@
             ],
             "puzzle_add": "piece_yang_brush",
             "flags": {
-              "s4_revisit_alley": true,
               "oneshot.s4_kept_brush": true
             }
           }
@@ -3698,7 +3628,6 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s4_revisit_alley": true,
               "oneshot.s4_waved_camera": true
             }
           }
@@ -3719,7 +3648,6 @@
           "effects": {
             "PR": -5,
             "flags": {
-              "s4_revisit_alley": true,
               "oneshot.s4_fled_room": true
             }
           }
@@ -3832,8 +3760,8 @@
         },
         {
           "if": {
-            "flags": {
-              "s5_revisit_piano": true
+            "visit_count_min": {
+              "n_s5_arrive": 2
             }
           },
           "text": "你又站在 203 琴房门外。\n\n刚才你已经听过钢琴。\n\n现在,门把手是**温的**。\n\n是被人**握过**的温度。\n\n那个人,刚刚才离开。\n\n但走廊空无一人。"
@@ -3885,8 +3813,8 @@
           },
           "require": {
             "not": {
-              "flags": {
-                "s5_revisit_piano": true
+              "visit_count_min": {
+                "n_s5_arrive": 2
               }
             }
           }
@@ -3902,8 +3830,8 @@
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s5_revisit_piano": true
+                "visit_count_min": {
+                  "n_s5_arrive": 2
                 }
               },
               {
@@ -3928,20 +3856,14 @@
           "text": "走过去,坐到琴凳上。",
           "next": "n_s5_sit_piano",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 8
           }
         },
         {
           "text": "蹲下,把布鞋拎起来检查。",
           "next": "n_s5_inspect_shoes",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 5
           }
         },
         {
@@ -3966,7 +3888,6 @@
           "next": "n_s5_arrive",
           "effects": {
             "flags": {
-              "s5_revisit_piano": true,
               "oneshot.s5_left_room": true
             }
           }
@@ -3981,10 +3902,7 @@
           "text": "起身,推开琴凳。",
           "next": "n_s5_open_bench",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 8
           }
         },
         {
@@ -4066,10 +3984,7 @@
           "text": "什么都不做,关上琴凳盖子。",
           "next": "n_s5_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": -3
           }
         }
       ]
@@ -4133,8 +4048,8 @@
         },
         {
           "if": {
-            "flags": {
-              "s5_revisit_piano": true
+            "visit_count_min": {
+              "n_s5_arrive": 2
             }
           },
           "text": "你又来到这里。\n\n请假条已经被你签了。\n\n但 203 琴房的钢琴,**还在响**——\n\n这次不是《小星星》。\n\n是**1991 年那天叶某妈妈在外面叫她的声音**——\n\n「叶某,饭好了!」\n\n这是叶某 33 年没听到的话。\n\n她已经走出校门——\n\n她**朝家的方向跑**。\n\n你低头——\n\n请假条上,**多了一行**:\n\n「叶某 已下班。\n  下一份『未结』:**红衣女孩 何小燕**。」"
@@ -4210,10 +4125,7 @@
           "text": "推门进去,告诉她不要倒带。",
           "next": "n_s5_grant_leave",
           "effects": {
-            "PR": 15,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "PR": 15
           }
         },
         {
@@ -4251,10 +4163,7 @@
           "next": "n_s5_chalk_name",
           "effects": {
             "PR": 10,
-            "GR": 8,
-            "flags": {
-              "s5_revisit_piano": true
-            }
+            "GR": 8
           }
         },
         {
@@ -4281,11 +4190,7 @@
         {
           "text": "退回 203 琴房。",
           "next": "n_s5_open_door",
-          "effects": {
-            "flags": {
-              "s5_revisit_piano": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -4347,8 +4252,8 @@
       "narrative_variants": [
         {
           "if": {
-            "flags": {
-              "s6_revisit_well": true
+            "visit_count_min": {
+              "n_s6_arrive": 2
             }
           },
           "text": "你又下到联庄站底层。\n\n刚才你看过盾构井。\n\n现在,井口**多了一顶柳条安全帽**——\n\n第 8 顶。\n\n第 8 顶的内侧,刻着「G-273」。"
@@ -4399,8 +4304,8 @@
           },
           "require": {
             "not": {
-              "flags": {
-                "s6_revisit_well": true
+              "visit_count_min": {
+                "n_s6_arrive": 2
               }
             }
           }
@@ -4416,8 +4321,8 @@
           "require": {
             "any_of": [
               {
-                "flags": {
-                  "s6_revisit_well": true
+                "visit_count_min": {
+                  "n_s6_arrive": 2
                 }
               },
               {
@@ -4442,10 +4347,7 @@
           "text": "「7 人归航」——把头上戴着的柳条帽递给第一个工人。",
           "next": "n_npc_helmet_workers",
           "effects": {
-            "PR": 15,
-            "flags": {
-              "s6_revisit_well": true
-            }
+            "PR": 15
           }
         },
         {
@@ -4465,10 +4367,7 @@
           "text": "把对讲机贴近井口,听轮渡引擎声。",
           "next": "n_s6_listen_engine",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "s6_revisit_well": true
-            }
+            "PR": 8
           }
         },
         {
@@ -4477,7 +4376,6 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "s6_revisit_well": true,
               "oneshot.s6_dropped_coin": true
             }
           },
@@ -4520,7 +4418,6 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s6_revisit_well": true,
               "oneshot.s6_inverted_seventh": true
             }
           }
@@ -4567,7 +4464,6 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "s6_revisit_well": true,
               "saw_27th_floor": true
             }
           }
@@ -4575,11 +4471,7 @@
         {
           "text": "不去。退回井边。",
           "next": "n_s6_arrive",
-          "effects": {
-            "flags": {
-              "s6_revisit_well": true
-            }
-          }
+          "effects": {}
         },
         {
           "text": "把工牌塞进电梯按钮里。",
@@ -4631,7 +4523,6 @@
           "effects": {
             "GR": 5,
             "flags": {
-              "s6_revisit_well": true,
               "hung_up_predecessor": true
             }
           }
@@ -4693,11 +4584,7 @@
         {
           "text": "回到井边,继续巡逻。",
           "next": "n_s6_look_down",
-          "effects": {
-            "flags": {
-              "s6_revisit_well": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -4765,11 +4652,7 @@
         {
           "text": "退回井边,不进操作间。",
           "next": "n_s6_arrive",
-          "effects": {
-            "flags": {
-              "s6_revisit_well": true
-            }
-          }
+          "effects": {}
         }
       ]
     },
@@ -4837,7 +4720,6 @@
             "PR": -10,
             "GR": 8,
             "flags": {
-              "s6_revisit_well": true,
               "oneshot.s6_unjammed": true
             }
           }
@@ -4869,7 +4751,6 @@
             "PR": -15,
             "GR": 5,
             "flags": {
-              "s6_revisit_well": true,
               "oneshot.s6_chickened": true
             }
           }
@@ -5402,8 +5283,8 @@
         },
         {
           "if": {
-            "flags": {
-              "s4_revisit_alley": true
+            "visit_count_min": {
+              "n_s4_arrive": 2
             }
           },
           "text": "你又来到羊血弄尽头。\n\n刚才你已经看过黑山羊。\n\n这次它的腿**蹬得更慢**——\n\n慢到你能看清每一蹬之间的间隔。\n\n这个节奏——\n\n是你的心跳。"
@@ -5808,8 +5689,10 @@
         {
           "if": {
             "flags": {
-              "s3_revisit_temple": true,
               "rang_seven": false
+            },
+            "visit_count_min": {
+              "n_s3_arrive": 2
             }
           },
           "text": "你又来了。\n\n但你还没敲。\n\n钟里铜锈侧脸睁开眼——\n\n这次它**眨了 3 次**。\n\n3 次,意味着:\n\n「再过 3 年,H = 1990。\n  你还是不敲,就 H = 1993。\n  我等你 1987 年了。\n  现在是 2024。\n  还有,**37 年**给你考虑。」\n\n它的语气,**很耐心**。\n\n它已经习惯耐心。"
