@@ -3952,7 +3952,7 @@
             "GR": 5,
             "flags": {
               "piano_appeased": true,
-              "s5_offered_newspaper": true
+              "oneshot.s5_offered_newspaper": true
             }
           },
           "require": {
@@ -3967,7 +3967,7 @@
           "effects": {
             "flags": {
               "s5_revisit_piano": true,
-              "s5_left_room": true
+              "oneshot.s5_left_room": true
             }
           }
         }
@@ -4018,7 +4018,7 @@
             "PR": 18,
             "GR": 5,
             "flags": {
-              "s5_granted_leave": true
+              "oneshot.s5_granted_leave": true
             }
           }
         }
@@ -4046,7 +4046,7 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "s5_self_noosed": true,
+              "oneshot.s5_self_noosed": true,
               "marked_lamb": true
             }
           }
@@ -4095,7 +4095,7 @@
             ],
             "puzzle_add": "piece_eight_zhao",
             "flags": {
-              "s5_remembered_school": true
+              "oneshot.s5_remembered_school": true
             }
           }
         },
@@ -4126,7 +4126,7 @@
         {
           "if": {
             "flags": {
-              "s5_erased_self": true
+              "oneshot.s5_erased_self": true
             }
           },
           "text": "你刚把自己的名字从 205 黑板上擦掉。\n\n你回到 203——\n\n请假条**自己改字**——\n\n「不准」变成「准」。\n\n但请假条上的「申请人」一栏,**多了一行**——\n\n「**赵某 G-273**」。\n\n你和叶某,一起准假 33 年。\n\n窗外两个孩子走出校门,**一前一后**——\n\n第一个是叶某。\n\n第二个,**穿白衬衫**,11 岁的你。"
@@ -4150,7 +4150,7 @@
             "GR": -5,
             "puzzle_add": "piece_piano_girl_freed",
             "flags": {
-              "s5_freed_yeh": true
+              "oneshot.s5_freed_yeh": true
             }
           }
         }
@@ -4168,7 +4168,7 @@
             "GR": 5,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "s5_returned_shoes": true
+              "oneshot.s5_returned_shoes": true
             }
           }
         },
@@ -4178,7 +4178,7 @@
           "effects": {
             "GR": 18,
             "flags": {
-              "s5_wore_girl_shoes": true,
+              "oneshot.s5_wore_girl_shoes": true,
               "marked_lamb": true
             }
           }
@@ -4189,7 +4189,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s5_threw_shoes_lake": true
+              "oneshot.s5_threw_shoes_lake": true
             }
           }
         }
@@ -4236,7 +4236,7 @@
               "1959-043 磁带"
             ],
             "flags": {
-              "s5_recorded_piano": true
+              "oneshot.s5_recorded_piano": true
             }
           }
         }
@@ -4300,7 +4300,7 @@
             "PR": 25,
             "GR": -10,
             "flags": {
-              "s5_erased_self": true
+              "oneshot.s5_erased_self": true
             }
           }
         },
@@ -4309,7 +4309,7 @@
           "next": "n_end_data",
           "effects": {
             "flags": {
-              "s5_replaced_yeh": true
+              "oneshot.s5_replaced_yeh": true
             }
           }
         }
@@ -4394,7 +4394,7 @@
           "effects": {
             "landmark_skipped": "S6",
             "flags": {
-              "s6_aborted": true
+              "oneshot.s6_aborted": true
             }
           },
           "require": {
@@ -4410,7 +4410,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "s6_clean_leave": true
+              "oneshot.s6_clean_leave": true
             }
           },
           "require": {
@@ -4478,7 +4478,7 @@
             "PR": 12,
             "flags": {
               "s6_revisit_well": true,
-              "s6_dropped_coin": true
+              "oneshot.s6_dropped_coin": true
             }
           },
           "require": {
@@ -4590,7 +4590,7 @@
               "27F 铜钥匙"
             ],
             "flags": {
-              "s6_id_into_button": true,
+              "oneshot.s6_id_into_button": true,
               "promised_relieve_predecessor": true
             }
           }
@@ -4686,7 +4686,7 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "s6_burned_id": true
+              "oneshot.s6_burned_id": true
             }
           }
         },
@@ -4784,7 +4784,7 @@
             "PR": 25,
             "puzzle_add": "piece_linmou_full",
             "flags": {
-              "s6_corrected_linmou": true,
+              "oneshot.s6_corrected_linmou": true,
               "claimed_linmou": true
             }
           }
@@ -4870,7 +4870,7 @@
             "GR": 5,
             "flags": {
               "s6_revisit_well": true,
-              "s6_chickened": true
+              "oneshot.s6_chickened": true
             }
           }
         }
@@ -5387,7 +5387,7 @@
         {
           "if": {
             "flags": {
-              "s6_corrected_linmou": true
+              "oneshot.s6_corrected_linmou": true
             }
           },
           "text": "你刚在 S6 操作间帮林某改了工号牌。\n\n你转身进羊血弄——\n\n黑山羊**已经放下来了**。\n\n它躺在地上,没有头,但**有头骨的轮廓**——\n\n是林某的。\n\n胸腔里啼哭的婴儿,慢慢说话:\n\n「林某改名了。\n  那么 1986 沉船第 8 个,就轮到**你**了。」"
@@ -5662,7 +5662,7 @@
         {
           "if": {
             "flags": {
-              "s5_recorded_piano": true
+              "oneshot.s5_recorded_piano": true
             }
           },
           "text": "你录下了我弹的钢琴。\n\n磁带是 1959-043 号——\n\n那不是 1991 年的磁带。\n\n那是我**外婆**1959 年的磁带。\n\n外婆 1959 年也是 11 岁。\n\n外婆 1959 年也死在 203 琴房。\n\n这间琴房,从 1959 年就开始等。\n\n等一个夜班保安,把我们 33 年(我)+ 65 年(外婆)的磁带,**带出去**。"
@@ -5707,7 +5707,7 @@
             "puzzle_add": "piece_piano_girl_freed",
             "flags": {
               "piano_appeased": true,
-              "s5_freed_yeh": true
+              "oneshot.s5_freed_yeh": true
             }
           },
           "require": {
@@ -6085,7 +6085,7 @@
         {
           "if": {
             "flags": {
-              "s5_remembered_school": true
+              "oneshot.s5_remembered_school": true
             }
           },
           "text": "你在 S5 留下小学,看见 1991 年班级合照里**有自己的脸**。\n\n你来到 8 棺前——\n\n第 7 棺(1991 标签)的盖子**自己掀起来**。\n\n里面是**11 岁的你**——\n\n穿着白衬衫,留下小学校服。\n\n11 岁的你睁眼,认出 27 岁的你:\n\n「哥哥,你也是 G-273 了。\n  我是 1991 年那个班里**第二个死的**。\n  叶某是第一个,**我是第二个**。\n  没人记得我。\n  因为我妈把我档案撤了。」"
@@ -7121,7 +7121,7 @@
         {
           "if": {
             "flags": {
-              "s5_freed_yeh": true
+              "oneshot.s5_freed_yeh": true
             }
           },
           "text": "你给了 1991 年自缢的叶某一张准假条。\n\n这张准假条,33 年没人签。\n\n你签了。\n\n《异常事件记录表》最后一栏,你没填官方需要的格式。\n\n你抄了一段话:\n\n「叶某,11 岁,1991 年因为考 87 分自缢。\n  她的请假条至今未归档。\n  我把它归档在这里。\n  ——赵某 G-273  2024」\n\n27 台电视墙不播恐怖片了。\n\n第 14 台电视播的是 1991 年 4 月 23 日那个春天的下午——\n\n一个 11 岁的女孩,背着书包,**正常**走出留下小学校门。\n\n她回头,看着镜头,鞠了一躬。\n\n她说:「叔叔,谢谢你。」\n\n你回到更衣室。胸袋里那张请假条,变成了一张干净的白纸。"
@@ -7162,7 +7162,7 @@
         {
           "if": {
             "flags": {
-              "s5_replaced_yeh": true
+              "oneshot.s5_replaced_yeh": true
             }
           },
           "text": "你成了第 1988 个『叶某』。\n\n203 琴房的钢琴,从今天起,弹奏**你的心跳节奏**。\n\n下一任 G-273 在 01:08 推开 203 琴房门时——\n\n他会听见钢琴在弹他出生那天的童谣。\n\n他会看见琴凳前一双白布鞋。\n\n他不知道这双鞋,曾经穿在你的脚上。\n\n他不知道,1991 年那个 11 岁的女孩,**早就被你放走了**。\n\n他不知道,他听见的钢琴,是**你**在弹。\n\n你成了一个新的叶某。\n\n比叶某活得更久——叶某只困了 33 年,你会困到杭州常数被另一个 G-273 关闭为止。\n\n如果有的话。"
@@ -7260,7 +7260,7 @@
         {
           "if": {
             "flags": {
-              "s5_self_noosed": true
+              "oneshot.s5_self_noosed": true
             }
           },
           "text": "你把 1991 年的钢丝绳套在自己脖子上。\n\n钢丝绳是新的——但**贴**得像它就是为你的脖子做的。\n\n钢丝绳确实是为你做的。\n\n它从 1991 年开始,**等你 33 年**。\n\n你站到琴凳上。\n\n琴凳变成 1991 年那把摇晃的木椅。\n\n你的脚尖,慢慢离地。\n\n203 琴房的钢琴自己弹《小星星》——\n\n你听见的不是 1991 年叶某的节奏。\n\n你听见的是 1959 年第一个在留下小学自缢的女老师的节奏。\n\n再之前,1933 年的版本。\n\n再之前——\n\n你不知道。\n\n你只知道,你成了这条循环里的**最新一个**。"
@@ -7268,7 +7268,7 @@
         {
           "if": {
             "flags": {
-              "s6_grab_seven": true
+              "oneshot.s6_grab_seven": true
             }
           },
           "text": "你薅下了 7 顶柳条帽。\n\n7 个工人爬上井壁,他们没有脸,但你能感觉到他们**笑了**。\n\n他们要的不是帽子。\n\n他们要**你的脖子**。\n\n你戴上第 8 顶,跟他们沉进井底。\n\n沉船备份池正在等下一班『轮渡』。\n\n你成了第 8 个工人。\n\n但你不是 1986 年的工人——你是 2024 年的。\n\n井底,8 个工人围成一圈,**面面相觑**。\n\n他们用 1986 年的方言问你:『你是哪个工地的?』\n\n你不知道怎么回答。\n\n你只能说:『湖滨国际名品街,夜班保安。』\n\n他们沉默了。\n\n然后,**齐声笑**——笑得很久。\n\n你不知道他们在笑什么。\n\n你以后会有 38 年时间,**慢慢想**。"
