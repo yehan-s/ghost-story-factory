@@ -110,20 +110,6 @@ def screen_intro(sm: SaveManager) -> bool:
     pause(0.3)
     print()
 
-    # T=2.5:存档摘要
-    if sm.endings_seen:
-        summary = (
-            f"上次:{sm.data.get('last_played', '')[:10]}  ·  "
-            f"已通关 {len(sm.endings_seen)} 种结局  ·  "
-            f"解锁 {len(sm.unlocked_characters)} 个角色"
-        )
-        # 居中(用空格 padding,中文按 2 宽度近似)
-        summary_padded = summary.center(56)
-        type_text(summary_padded, delay=0.015,
-                  color_fn=lambda c: dim(c))
-        print()
-        pause(0.25)
-
     # T=3.0:呼吸闪烁按钮
     prompt = "  按 Enter 开始    q 退出  "
     pulse_text(
@@ -155,17 +141,8 @@ def screen_city(sm: SaveManager) -> Optional[City]:
     if not cities:
         print(red("\n  [错误] stories/ 下没有任何城市目录。"))
         return None
-    _banner("鬼夜班", "选一座城。")
-    # 存档摘要 — 加伏笔进度(横跨所有故事汇总)
-    fs_seen_total = sum(len(v) for v in sm.data.get("foreshadows_seen", {}).values())
-    fs_resolved_total = sum(len(v) for v in sm.data.get("foreshadows_resolved", {}).values())
-    fs_str = ""
-    if fs_seen_total or fs_resolved_total:
-        fs_str = f" · 伏笔 {fs_resolved_total} 解 / {fs_seen_total} 见"
-    print(dim(f"\n  存档:已通关 {len(sm.endings_seen)} 种结局 · "
-              f"解锁 {len(sm.unlocked_characters)} 个角色{fs_str} · "
-              f"共 {sm.data.get('playthroughs', 0)} 次"))
-    print(bold(cyan("\n  ┌── 选择城市 ──")))
+    _banner("选择城市", "")
+    print(bold(cyan("\n  ┌── 城市列表 ──")))
     print()
     for i, c in enumerate(cities, start=1):
         if c.playable:

@@ -145,7 +145,6 @@ class IntroScreen(Screen):
         yield Static("", id="intro-banner")
         yield Static("", id="intro-subtitle")
         yield Static("", id="intro-tagline")
-        yield Static("", id="intro-summary")
         yield Static("", id="intro-prompt")
         yield Footer()
 
@@ -162,7 +161,6 @@ class IntroScreen(Screen):
                 self._reveal_next_ascii_line()
             self._show_subtitle()
             self._show_tagline()
-            self._show_summary()
             self._show_prompt()
             return
 
@@ -173,9 +171,8 @@ class IntroScreen(Screen):
             self.set_timer(0.45 + i * 0.10, self._reveal_next_ascii_line)
         self.set_timer(1.4, self._show_subtitle)
         self.set_timer(2.0, self._show_tagline)
-        self.set_timer(2.6, self._show_summary)
-        self.set_timer(3.1, self._show_prompt)
-        self.set_timer(3.3, self._start_pulse)
+        self.set_timer(2.6, self._show_prompt)
+        self.set_timer(2.8, self._start_pulse)
 
     # --- 阶段 ---
 
@@ -204,21 +201,6 @@ class IntroScreen(Screen):
         self.query_one("#intro-tagline", Static).update(
             f"[dim]{self._pieces['tagline']}[/]"
         )
-
-    def _show_summary(self) -> None:
-        sm: SaveManager = self.app.save_manager  # type: ignore[attr-defined]
-        if sm.endings_seen:
-            summary = (
-                f"上次:{sm.data.get('last_played', '')[:10]}  ·  "
-                f"已通关 [bold]{len(sm.endings_seen)}[/] 种结局  ·  "
-                f"解锁 [bold]{len(sm.unlocked_characters)}[/] 个角色  ·  "
-                f"共 [bold]{sm.data.get('playthroughs', 0)}[/] 次"
-            )
-            self.query_one("#intro-summary", Static).update(summary)
-        else:
-            self.query_one("#intro-summary", Static).update(
-                "[dim]这是你的第一次班。[/]"
-            )
 
     def _show_prompt(self) -> None:
         self.query_one("#intro-prompt", Static).update(
@@ -254,16 +236,8 @@ class CityScreen(Screen):
 
     def compose(self) -> ComposeResult:
         yield Header(show_clock=False)
-        sm: SaveManager = self.app.save_manager  # type: ignore[attr-defined]
         yield Static(
-            f"[yellow]存档[/]:已通关 [bold]{len(sm.endings_seen)}[/] 种结局 · "
-            f"解锁 [bold]{len(sm.unlocked_characters)}[/] 个角色 · "
-            f"共 [bold]{sm.data.get('playthroughs', 0)}[/] 次",
-            id="status",
-        )
-        yield Static(
-            "[bold red]鬼夜班[/]\n"
-            "[dim]选一座城。[/]",
+            "[bold]选择城市[/]",
             id="title",
         )
         opts = OptionList(id="options")
