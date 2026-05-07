@@ -124,11 +124,13 @@ CHARACTER_ROSTER: List[Dict[str, Any]] = [
 
 # --- 默认存档 ---
 
-SAVE_VERSION = 4  # v4:加 achievements_unlocked
+SAVE_VERSION = 5  # v5:endings_seen list → dict[story_id, list](ADR-009 跨周目)
 DEFAULT_SAVE: Dict[str, Any] = {
     "version": SAVE_VERSION,
     "unlocked_characters": ["G-273"],
-    "endings_seen": [],
+    # endings_seen: dict[story_id, list[ending_id]]
+    # 旧版 list 由 load() 自动迁移为 {"杭州_v7": [...]}。
+    "endings_seen": {},
     "last_played": "",
     "playthroughs": 0,
     "stories_completed": {},
@@ -160,6 +162,7 @@ class SaveManager:
         self.path: Path = path if path is not None else _save_path()
         self.data: Dict[str, Any] = dict(DEFAULT_SAVE)
         self.data["unlocked_characters"] = list(DEFAULT_SAVE["unlocked_characters"])
+        self.data["endings_seen"] = {}
         self.data["foreshadows_seen"] = {}
         self.data["foreshadows_resolved"] = {}
         self.data["foreshadow_shards"] = {}
@@ -185,7 +188,17 @@ class SaveManager:
         if "G-273" not in unlocked:
             unlocked = ["G-273"] + list(unlocked)
         self.data["unlocked_characters"] = list(unlocked)
-        self.data["endings_seen"] = list(raw.get("endings_seen") or [])
+        # v5 schema: endings_seen 是 dict[story_id, list[ending_id]]
+        # 旧版 list → 自动迁移归入 杭州_v7
+        es_raw = raw.get("endings_seen")
+        if isinstance(es_raw, list):
+            self.data["endings_seen"] = {"杭州_v7": list(es_raw)} if es_raw else {}
+        elif isinstance(es_raw, dict):
+            self.data["endings_seen"] = {
+                k: list(v) for k, v in es_raw.items() if isinstance(v, list)
+            }
+        else:
+            self.data["endings_seen"] = {}
         self.data["last_played"] = str(raw.get("last_played") or "")
         self.data["playthroughs"] = int(raw.get("playthroughs") or 0)
         self.data["stories_completed"] = dict(raw.get("stories_completed") or {})
@@ -236,13 +249,27 @@ class SaveManager:
 
     @property
     def endings_seen(self) -> List[str]:
-        return list(self.data.get("endings_seen", []))
+        """所有 story 的 ending 扁平 list(向后兼容旧调用方)。
+
+        v5+ 内部存储为 dict[story_id, list];本 property 返回扁平合并 list。
+        """
+        es = self.data.get("endings_seen", {})
+        if isinstance(es, dict):
+            out: List[str] = []
+            for v in es.values():
+                if isinstance(v, list):
+                    out.extend(v)
+            return out
+        if isinstance(es, list):
+            return list(es)
+        return []
 
     def is_unlocked(self, character_id: str) -> bool:
         return character_id in self.data.get("unlocked_characters", [])
 
     def has_seen_ending(self, ending_type: str) -> bool:
-        return ending_type in self.data.get("endings_seen", [])
+        """跨所有 story 检查 ending 是否被见过(向后兼容)。"""
+        return ending_type in self.endings_seen
 
     # --- 修改 API ---
 
@@ -262,9 +289,15 @@ class SaveManager:
 
         newly_unlocked: List[str] = []
 
-        endings = self.data.setdefault("endings_seen", [])
-        if ending_type not in endings:
-            endings.append(ending_type)
+        # v5: endings_seen 是 dict[story_id, list]
+        es = self.data.setdefault("endings_seen", {})
+        if not isinstance(es, dict):
+            # 防御性:旧版 list 漂进来 → 强制迁移
+            es = {"杭州_v7": list(es)} if es else {}
+            self.data["endings_seen"] = es
+        story_eds = es.setdefault(story_id, [])
+        if ending_type not in story_eds:
+            story_eds.append(ending_type)
 
         unlocked = self.data.setdefault("unlocked_characters", ["G-273"])
         target = ENDING_UNLOCKS.get(ending_type)
