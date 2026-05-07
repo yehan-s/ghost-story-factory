@@ -29,6 +29,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, FrozenSet, Iterable, List, Optional, Set, Tuple
 
+# 确保直接用 `python tools/path_explorer.py` 运行时也能找到 tools 包
+_PROJECT_ROOT = Path(__file__).parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
+
+from tools._state_sim import SimState, meets
+
 
 # ─────────────────────────────────────────────────────────────────────
 # ANSI 颜色(从 player.py 复用,简化)
@@ -57,176 +64,75 @@ def magenta(s: str) -> str: return _c("35", s)
 
 
 # ─────────────────────────────────────────────────────────────────────
-# 状态(简化版,与 player.State.apply 行为一致)
+# effects 应用(BFS 状态推进,path_explorer 专用)
 # ─────────────────────────────────────────────────────────────────────
+# SimState 和 meets() 从 tools._state_sim 导入。
+# with_effects 保留在这里——它属于模拟器的"推进"逻辑,
+# 不是 require 检查,不需要与 player.py 行为对齐。
 
-@dataclass
-class SimState:
-    PR: int = 0
-    GR: int = 0
-    shifts_completed: int = 0
-    shifts_skipped: int = 0
-    inv: Tuple[str, ...] = field(default_factory=tuple)
-    flags: Tuple[Tuple[str, bool], ...] = field(default_factory=tuple)
-    route: Optional[str] = None
-    visited_landmarks: Tuple[str, ...] = field(default_factory=tuple)
-    skipped_landmarks: Tuple[str, ...] = field(default_factory=tuple)
-    puzzle_pieces: Tuple[str, ...] = field(default_factory=tuple)
+def with_effects(state: SimState, effects: Optional[Dict[str, Any]]) -> Tuple[SimState, List[str]]:
+    """返回(新 state, 应用过程中的警告列表)。不修改原 state。
+    仅在上界越界时报警(下界 clamp 是正常的"地板效应",不是 bug)。"""
+    warnings: List[str] = []
+    if not effects:
+        return state, warnings
 
-    def signature(self) -> Tuple:
-        """用作访问去重(忽略 visited 节点列表,仅快照游戏状态)。"""
-        return (
-            self.PR, self.GR,
-            self.shifts_completed, self.shifts_skipped,
-            self.inv, self.flags, self.route,
-            self.visited_landmarks, self.skipped_landmarks, self.puzzle_pieces,
-        )
+    new_PR = state.PR
+    new_GR = state.GR
+    new_sc = state.shifts_completed
+    new_sk = state.shifts_skipped
+    new_inv = list(state.inv)
+    new_flags = dict(state.flags)
+    new_route = state.route
+    new_vl = list(state.visited_landmarks)
+    new_skl = list(state.skipped_landmarks)
+    new_pp = list(state.puzzle_pieces)
 
-    @classmethod
-    def from_initial(cls, initial: Dict[str, Any]) -> "SimState":
-        flags = initial.get("flags") or {}
-        return cls(
-            PR=int(initial.get("PR", 0)),
-            GR=int(initial.get("GR", 0)),
-            shifts_completed=int(initial.get("shifts_completed", 0)),
-            shifts_skipped=int(initial.get("shifts_skipped", 0)),
-            inv=tuple(initial.get("inv") or []),
-            flags=tuple(sorted((k, bool(v)) for k, v in flags.items())),
-            route=initial.get("route"),
-            visited_landmarks=tuple(initial.get("visited_landmarks") or []),
-            skipped_landmarks=tuple(initial.get("skipped_landmarks") or []),
-            puzzle_pieces=tuple(initial.get("puzzle_pieces") or []),
-        )
+    if "PR" in effects:
+        new_PR_raw = state.PR + int(effects["PR"])
+        if new_PR_raw > 100:
+            warnings.append(f"PR 上溢: {state.PR}+{effects['PR']}={new_PR_raw} (clamp to 100)")
+        new_PR = max(0, min(100, new_PR_raw))
+    if "GR" in effects:
+        new_GR_raw = state.GR + int(effects["GR"])
+        if new_GR_raw > 100:
+            warnings.append(f"GR 上溢: {state.GR}+{effects['GR']}={new_GR_raw} (clamp to 100)")
+        new_GR = max(0, min(100, new_GR_raw))
+    if "shifts_completed" in effects:
+        new_sc += int(effects["shifts_completed"])
+    if "shifts_skipped" in effects:
+        new_sk += int(effects["shifts_skipped"])
+    for item in effects.get("inv_add", []) or []:
+        if item not in new_inv:
+            new_inv.append(item)
+    for item in effects.get("inv_remove", []) or []:
+        if item in new_inv:
+            new_inv.remove(item)
+    for k, v in (effects.get("flags") or {}).items():
+        new_flags[k] = bool(v)
+    if "route" in effects and effects["route"]:
+        new_route = effects["route"]
+    for lm in effects.get("visited_landmarks_add", []) or []:
+        if lm not in new_vl:
+            new_vl.append(lm)
+    for lm in effects.get("skipped_landmarks_add", []) or []:
+        if lm not in new_skl:
+            new_skl.append(lm)
+    for p in effects.get("puzzle_pieces_add", []) or []:
+        if p not in new_pp:
+            new_pp.append(p)
 
-    def with_effects(self, effects: Optional[Dict[str, Any]]) -> Tuple["SimState", List[str]]:
-        """返回(新 state, 应用过程中的警告列表)。不修改自身。
-        仅在上界越界时报警(下界 clamp 是正常的"地板效应",不是 bug)。"""
-        warnings: List[str] = []
-        if not effects:
-            return self, warnings
-
-        new_PR = self.PR
-        new_GR = self.GR
-        new_sc = self.shifts_completed
-        new_sk = self.shifts_skipped
-        new_inv = list(self.inv)
-        new_flags = dict(self.flags)
-        new_route = self.route
-        new_vl = list(self.visited_landmarks)
-        new_skl = list(self.skipped_landmarks)
-        new_pp = list(self.puzzle_pieces)
-
-        if "PR" in effects:
-            new_PR_raw = self.PR + int(effects["PR"])
-            if new_PR_raw > 100:
-                warnings.append(f"PR 上溢: {self.PR}+{effects['PR']}={new_PR_raw} (clamp to 100)")
-            new_PR = max(0, min(100, new_PR_raw))
-        if "GR" in effects:
-            new_GR_raw = self.GR + int(effects["GR"])
-            if new_GR_raw > 100:
-                warnings.append(f"GR 上溢: {self.GR}+{effects['GR']}={new_GR_raw} (clamp to 100)")
-            new_GR = max(0, min(100, new_GR_raw))
-        if "shifts_completed" in effects:
-            new_sc += int(effects["shifts_completed"])
-        if "shifts_skipped" in effects:
-            new_sk += int(effects["shifts_skipped"])
-        for item in effects.get("inv_add", []) or []:
-            if item not in new_inv:
-                new_inv.append(item)
-        for item in effects.get("inv_remove", []) or []:
-            if item in new_inv:
-                new_inv.remove(item)
-        for k, v in (effects.get("flags") or {}).items():
-            new_flags[k] = bool(v)
-        if "route" in effects and effects["route"]:
-            new_route = effects["route"]
-        for lm in effects.get("visited_landmarks_add", []) or []:
-            if lm not in new_vl:
-                new_vl.append(lm)
-        for lm in effects.get("skipped_landmarks_add", []) or []:
-            if lm not in new_skl:
-                new_skl.append(lm)
-        for p in effects.get("puzzle_pieces_add", []) or []:
-            if p not in new_pp:
-                new_pp.append(p)
-
-        ns = SimState(
-            PR=new_PR, GR=new_GR,
-            shifts_completed=new_sc, shifts_skipped=new_sk,
-            inv=tuple(new_inv),
-            flags=tuple(sorted(new_flags.items())),
-            route=new_route,
-            visited_landmarks=tuple(new_vl),
-            skipped_landmarks=tuple(new_skl),
-            puzzle_pieces=tuple(new_pp),
-        )
-        return ns, warnings
-
-
-# ─────────────────────────────────────────────────────────────────────
-# require 检查(支持 v5 AND-only 与 v6 any_of/all_of 嵌套)
-# ─────────────────────────────────────────────────────────────────────
-
-def _flags_dict(state: SimState) -> Dict[str, bool]:
-    return dict(state.flags)
-
-
-def _check_leaf(state: SimState, req: Dict[str, Any]) -> bool:
-    """检查不含 any_of / all_of 的"叶子"require。"""
-    if "PR_min" in req and state.PR < int(req["PR_min"]):
-        return False
-    if "PR_max" in req and state.PR > int(req["PR_max"]):
-        return False
-    if "GR_min" in req and state.GR < int(req["GR_min"]):
-        return False
-    if "GR_max" in req and state.GR > int(req["GR_max"]):
-        return False
-    inv_set = set(state.inv)
-    for item in req.get("inv_has", []) or []:
-        if item not in inv_set:
-            return False
-    for item in req.get("inv_lacks", []) or []:
-        if item in inv_set:
-            return False
-    fd = _flags_dict(state)
-    for k, v in (req.get("flags") or {}).items():
-        if bool(fd.get(k, False)) != bool(v):
-            return False
-    if "shifts_skipped_min" in req and state.shifts_skipped < int(req["shifts_skipped_min"]):
-        return False
-    if "shifts_completed_min" in req and state.shifts_completed < int(req["shifts_completed_min"]):
-        return False
-    if "route" in req and state.route != req["route"]:
-        return False
-    for lm in req.get("visited_landmarks_has", []) or []:
-        if lm not in state.visited_landmarks:
-            return False
-    for p in req.get("puzzle_pieces_has", []) or []:
-        if p not in state.puzzle_pieces:
-            return False
-    if "puzzle_pieces_min" in req and len(state.puzzle_pieces) < int(req["puzzle_pieces_min"]):
-        return False
-    return True
-
-
-def check_require(state: SimState, require: Optional[Dict[str, Any]]) -> bool:
-    """v6 schema:支持 any_of / all_of 嵌套。"""
-    if not require:
-        return True
-    if "any_of" in require:
-        sub_list = require["any_of"] or []
-        if sub_list and not any(check_require(state, r) for r in sub_list):
-            return False
-    if "all_of" in require:
-        sub_list = require["all_of"] or []
-        if not all(check_require(state, r) for r in sub_list):
-            return False
-    leaf_keys = {k for k in require.keys() if k not in ("any_of", "all_of")}
-    if leaf_keys:
-        leaf = {k: require[k] for k in leaf_keys}
-        if not _check_leaf(state, leaf):
-            return False
-    return True
+    ns = SimState(
+        PR=new_PR, GR=new_GR,
+        shifts_completed=new_sc, shifts_skipped=new_sk,
+        inv=tuple(new_inv),
+        flags=tuple(sorted(new_flags.items())),
+        route=new_route,
+        visited_landmarks=tuple(new_vl),
+        skipped_landmarks=tuple(new_skl),
+        puzzle_pieces=tuple(new_pp),
+    )
+    return ns, warnings
 
 
 # ─────────────────────────────────────────────────────────────────────
@@ -237,7 +143,7 @@ def resolve_next(choice: Dict[str, Any], state: SimState) -> Optional[str]:
     """v6 next_variants 优先;无匹配则回退到 next。"""
     for variant in choice.get("next_variants", []) or []:
         cond = variant.get("if") or {}
-        if check_require(state, cond):
+        if meets(state, cond):
             nxt = variant.get("next")
             if nxt:
                 return nxt
@@ -362,7 +268,7 @@ def explore(tree: Dict[str, Any], max_depth: int = 80, max_states: int = 200_000
        这样既避免状态爆炸,又能给出真实数值边界。"""
     nodes: Dict[str, Dict[str, Any]] = tree.get("nodes", {}) or {}
     start = tree.get("start_node", "n_intro")
-    initial = SimState.from_initial(tree.get("initial_state", {}) or {})
+    initial = SimState.from_dict(tree.get("initial_state", {}) or {})
 
     report = DynamicReport()
 
@@ -436,12 +342,12 @@ def explore(tree: Dict[str, Any], max_depth: int = 80, max_states: int = 200_000
             report.truncated_at_depth += 1
             continue
         for idx, ch in enumerate(node.get("choices") or []):
-            if not check_require(state, ch.get("require")):
+            if not meets(state, ch.get("require")):
                 continue
             nxt = resolve_next(ch, state)
             if not nxt or nxt not in nodes:
                 continue
-            new_state, ws = state.with_effects(ch.get("effects"))
+            new_state, ws = with_effects(state, ch.get("effects"))
             for w in ws:
                 msg = f"{cur_id}#{idx}: {w}"
                 if msg not in report.boundary_warnings:
