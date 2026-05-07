@@ -615,6 +615,23 @@ class GhostStoryApp(App):
                 log.write(f"  [bold green]▌ 踏入 {ev['key']} ▐[/]")
             elif t == "landmark_skipped":
                 log.write(f"  [bold red]▌ 绕开 {ev['key']} ▐[/]")
+            elif t == "knowledge_learned":
+                # Pass2 反馈条:正文打字结束后先 400ms 停顿,再整行淡入。
+                # 载体三态:复读(已知 · X)/ 档案补遗(archive/corruption)/ 默认值班记录本。
+                # 文案禁用 ▌▐ HUD 符号,只用 [dim] 着色保持 Lore 物件感。
+                from ghost_story_factory.v7.animate import pause as _pause
+                key = ev["key"]
+                know_text = key[len("know."):] if key.startswith("know.") else key
+                is_first = ev.get("is_first_time", True)
+                is_archive = ("archive" in key) or ("corruption" in key)
+                _pause(0.4)
+                if not is_first:
+                    log.write(f"[dim]  (已知 · {know_text})[/]")
+                elif is_archive:
+                    log.write(f"[dim]  档案补遗 · {know_text}[/]")
+                else:
+                    log.write(f"[dim]  (你在值班记录本上记下:{know_text})[/]")
+
     def action_select_choice(self, idx: int) -> None:
         """1-9 数字键快选。"""
         self._apply_choice(idx)
