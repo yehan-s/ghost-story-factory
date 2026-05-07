@@ -252,6 +252,42 @@ class State:
             elif isinstance(expected, list):
                 if self.character not in expected:
                     return False
+        # 反应机制(ADR-008):跨周目持久化层条件 — 单一真相源 = save_manager。
+        # list 是 ANY 语义(任一满足即 True);ALL 用 all_of 显式。
+        # save_manager / story_id / tree 任一缺失 → 安全降级返回 False。
+        if "deduction_resolved" in require:
+            sm = self.save_manager
+            if sm is None or self.story_id is None:
+                return False
+            ids = require["deduction_resolved"]
+            ids = [ids] if isinstance(ids, str) else list(ids or [])
+            if not any(sm.is_deduction_resolved(self.story_id, x) for x in ids):
+                return False
+        if "foreshadow_resolved" in require:
+            sm = self.save_manager
+            if sm is None or self.story_id is None:
+                return False
+            ids = require["foreshadow_resolved"]
+            ids = [ids] if isinstance(ids, str) else list(ids or [])
+            if not any(sm.is_foreshadow_resolved(self.story_id, x) for x in ids):
+                return False
+        if "theme_resolved" in require:
+            sm = self.save_manager
+            if sm is None or self.story_id is None or self.tree is None:
+                return False
+            ids = require["theme_resolved"]
+            ids = [ids] if isinstance(ids, str) else list(ids or [])
+            themes = (self.tree.get("themes") or {})
+            resolved = sm.get_resolved_foreshadows(self.story_id)
+
+            def _theme_done(tid: str) -> bool:
+                meta = themes.get(tid) or {}
+                manif = set(meta.get("manifestations") or [])
+                # 空 manifestations 视作未通透(避免 set().issubset 永真陷阱)
+                return bool(manif) and manif.issubset(resolved)
+
+            if not any(_theme_done(x) for x in ids):
+                return False
         return True
 
     def meets(self, require: Optional[Dict[str, Any]]) -> bool:
