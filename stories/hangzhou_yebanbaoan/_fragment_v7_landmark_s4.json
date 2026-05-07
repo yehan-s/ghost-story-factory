@@ -1,0 +1,251 @@
+{
+  "_comment": "v7 S4 羊血弄 2 号 + 无头黑山羊",
+  "_meta": {
+    "fragment_owner": "team-lead-pickup",
+    "version": "v7",
+    "landmark": "S4",
+    "node_count": 16,
+    "internal_loops": 5,
+    "cross_scene_exits": 4,
+    "shared_npc_exits": 5,
+    "mini_endings": 2
+  },
+  "nodes": {
+    "n_s4_arrive": {
+      "scene": "S4",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s4_revisit_alley": true}},
+          "text": "你又转进羊血弄。\n\n弄堂尽头的灯,亮一阵灭一阵——\n\n刚才你看见的黑山羊,现在**多了一具**,挂在第二个铁钩上。\n\n第二具,有头。\n\n头是**你的**。"
+        },
+        {
+          "if": {"flags": {"completed_yang": true}},
+          "text": "你已经补全了「⺶」字。\n\n但你回来时——\n\n匾上的字**又少了一笔**。\n\n弄堂里有人在用毛笔涂字。\n\n那个人,穿着 1933 年的长衫。"
+        }
+      ],
+      "narrative": "00:11 的中山中路。\n\n清河坊。这条街白天是游客拍照的网红老街。\n\n但「羊血弄 2 号」白天根本找不到。\n\n晚上,它在「胡庆余堂」对面**自己长出来**——\n\n一条不到 1.5 米宽的弄堂,青砖铺地,潮湿的腥味。\n\n你转进去,第一件事就是看见弄口的木匾——\n\n「⺶记屠铺」。\n\n「⺶」字,**缺了最下面那一笔**。\n\n弄堂尽头亮着一盏 25 瓦灯泡,灯泡下,挂着一只**黑山羊**。\n\n山羊倒吊在铁钩上,没有头。\n\n但它的腿——\n\n**还在蹬**。",
+      "choices": [
+        {
+          "text": "走过去,近距离看那只黑山羊。",
+          "next": "n_s4_approach_goat",
+          "effects": {"PR": 5, "landmark_visited": "S4"}
+        },
+        {
+          "text": "先走到「⺶」字匾下,看那一笔。",
+          "next": "n_s4_examine_sign",
+          "effects": {"PR": 3, "landmark_visited": "S4"}
+        },
+        {
+          "text": "弄堂半路有一扇半开的门,推门看看。",
+          "next": "n_s4_open_door",
+          "effects": {"GR": 5, "landmark_visited": "S4"}
+        },
+        {
+          "text": "不进去,绕路走。",
+          "next": "n_landmark_picker",
+          "effects": {"shifts_skipped": 1, "landmark_skipped": "S4", "flags": {"s4_aborted": true}},
+          "require": {"not": {"flags": {"s4_revisit_alley": true}}}
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {"flags": {"s4_clean_leave": true}},
+          "require": {"any_of": [{"flags": {"s4_revisit_alley": true}}, {"flags": {"completed_yang": true}}]}
+        }
+      ]
+    },
+    "n_s4_approach_goat": {
+      "scene": "S4",
+      "narrative": "你走到铁钩下。\n\n黑山羊的腿,确实在蹬——\n\n但它**没有头**。\n\n脖子的断面是齐的,像被一刀割掉。\n\n你蹲下,听——\n\n你以为你会听见羊的喘息。\n\n你听见的是**婴儿的啼哭**。\n\n哭声从山羊的**胸腔**里传出来,清楚到你能数出每一声哭的间隔。\n\n地上有一滩血,正好在山羊脖子下面。\n\n血里——\n\n**有半张脸的轮廓**。",
+      "choices": [
+        {
+          "text": "蹲下,把那半张脸的轮廓看清楚。",
+          "next": "n_s4_blood_face",
+          "effects": {"PR": 8, "GR": 3, "flags": {"s4_revisit_alley": true}}
+        },
+        {
+          "text": "用手指蘸一点血,补「⺶」字最下面那一笔。",
+          "next": "n_npc_yang_butcher",
+          "effects": {"PR": 12, "GR": 8, "inv_add": ["⺶ 符文"], "flags": {"completed_yang": true, "s4_blood_signed": true}}
+        },
+        {
+          "text": "割断绳索,让羊落地。",
+          "next": "n_s4_cut_rope",
+          "effects": {"GR": 15, "flags": {"freed_yang": true, "marked_lamb": true, "s4_kneeled_three_times": false}}
+        },
+        {
+          "text": "退后,先去看「⺶」字匾。",
+          "next": "n_s4_examine_sign",
+          "effects": {"flags": {"s4_revisit_alley": true}}
+        }
+      ]
+    },
+    "n_s4_blood_face": {
+      "scene": "S4",
+      "narrative": "你蹲下,凑近血滩。\n\n血里有一张半边脸。\n\n是个男人,40 多岁,左眼下方有一颗痣。\n\n你认识。\n\n你今晚在 S1 长椅风衣里如果翻过账本——\n\n账本第一行写「林某 1985-10-18 投湖」。\n\n这张脸,是**林某**。\n\n但林某 1985 年就死在西湖。\n\n他的脸,怎么会在 2024 年的羊血里浮出来?\n\n血里的脸,**眨了一下眼**。\n\n它的嘴动了——\n\n但没有声音。\n\n你只看清三个字的口型:\n\n「**别跪**。」",
+      "choices": [
+        {
+          "text": "听他的,不跪,转身离开。",
+          "next": "n_npc_drowned_official",
+          "effects": {"PR": 15, "puzzle_add": "piece_linmou_full", "flags": {"s4_heard_warning": true}}
+        },
+        {
+          "text": "不听,我跪三个。",
+          "next": "n_s4_kneel_three",
+          "effects": {"GR": 20, "flags": {"s4_kneeled_three_times": true, "marked_lamb": true}}
+        },
+        {
+          "text": "拍照。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {"PR": 12, "flags": {"posted_photo": true, "s4_posted_blood_face": true}}
+        }
+      ]
+    },
+    "n_s4_kneel_three": {
+      "scene": "S4",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你跪下。\n\n青砖很硬,冷气从膝盖钻进去。\n\n第一拜。\n\n弄堂深处,17 个**「羊公会」火死灵**,从墙缝里**挤出半张脸**,看你。\n\n第二拜。\n\n墙缝里,17 张脸,**齐齐张嘴**——\n\n但他们没有声音。他们用空气念你的工号。\n\n第三拜。\n\n你的额头**贴上**青砖——\n\n青砖**张开**,像一张嘴。\n\n你被吞下去。\n\n弄堂尽头铁钩上,黑山羊**多了一具**。\n\n第二具有头。\n\n头戴着工牌:「赵某 G-273」。\n\n婴儿的啼哭,从你**胸腔**里传出来。",
+      "show_hud": true
+    },
+    "n_s4_examine_sign": {
+      "scene": "S4",
+      "narrative": "你站在「⺶记屠铺」匾下。\n\n「⺶」字,缺最下面那一笔——\n\n也就是说,严格来说,匾上写的是「未」。\n\n「未记屠铺」。\n\n但你刚才进弄堂时,匾上明明是「⺶」。\n\n你抬头第二次看——\n\n「⺶」。完整的「⺶」。\n\n你低头第三次抬头——\n\n「未」。\n\n这块匾,根据你看它的角度,自己**切换**字。\n\n匾下挂着一支毛笔,毛笔是干的,但笔尖**沾着新鲜的血**。\n\n你有一种冲动:\n\n你想把那一笔补上。",
+      "choices": [
+        {
+          "text": "拿起毛笔,补「⺶」字最下面那一笔。",
+          "next": "n_s4_paint_stroke",
+          "effects": {"PR": 5, "flags": {"s4_revisit_alley": true, "s4_lifted_brush": true}}
+        },
+        {
+          "text": "把毛笔折断,扔掉。",
+          "next": "n_s4_break_brush",
+          "effects": {"PR": 8, "GR": 10, "flags": {"s4_revisit_alley": true, "s4_broke_brush": true}}
+        },
+        {
+          "text": "把毛笔收进背包。",
+          "next": "n_s4_arrive",
+          "effects": {"inv_add": ["血毛笔"], "puzzle_add": "piece_yang_brush", "flags": {"s4_revisit_alley": true, "s4_kept_brush": true}}
+        }
+      ]
+    },
+    "n_s4_paint_stroke": {
+      "scene": "S4",
+      "narrative": "你举起毛笔。\n\n你的手腕**自己**画下那一笔——\n\n你不是主动画的。\n\n是毛笔**带着**你的手画。\n\n一笔下去,「⺶」完整了。\n\n弄堂尽头,黑山羊的腿,**停了**。\n\n婴儿啼哭,**停了**。\n\n安静得让人发慌。\n\n墙缝里,17 张脸,慢慢**缩回去**。\n\n但他们缩回去之前,你听见他们一齐说一句话:\n\n「⺶ 完整 = 我们归位 = 你**接班**。」\n\n你的工牌反面,自己烫出一行字:\n\n「羊公会 第 18 任 名册编号 014」",
+      "choices": [
+        {
+          "text": "接受。把工牌挂回脖子。",
+          "next": "n_npc_yang_butcher",
+          "effects": {"PR": 10, "GR": 15, "inv_add": ["⺶ 符文", "羊公会名册"], "flags": {"completed_yang": true, "s4_joined_yanggui": true, "marked_lamb": true}}
+        },
+        {
+          "text": "拒绝。把工牌摔在地上。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {"PR": 15, "flags": {"s4_refused_yanggui": true, "got_judge_seal": true}}
+        },
+        {
+          "text": "把毛笔再画一笔,**多画一笔**。",
+          "next": "n_s4_extra_stroke",
+          "effects": {"GR": 20, "flags": {"s4_overstroke": true}}
+        }
+      ]
+    },
+    "n_s4_extra_stroke": {
+      "scene": "S4",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative": "你多画一笔。\n\n「⺶」变成一个不存在的字。\n\n墙缝里 17 张脸,**齐齐爆开**——\n\n青砖墙在你眼前**烧起来**。\n\n但火不烫,是冷的。\n\n这是 1933 年的火——\n\n那一年,羊血弄第一次发生命案。\n\n开山首刀的男人,被仇家烧死在这条弄堂里。\n\n你的衣服自己变成 1933 年的长衫。\n\n你的手里,自己握着一把**屠羊刀**。\n\n你回头——\n\n弄堂尽头铁钩上,黑山羊**有头**。\n\n头是 1933 年那个男人的。\n\n你成了**他**。\n\n你将在每个夜班 00:11,**永远**站在羊血弄,等下一个 G-273 进来。",
+      "show_hud": true
+    },
+    "n_s4_break_brush": {
+      "scene": "S4",
+      "narrative": "你把毛笔从中间折断。\n\n「咔」。\n\n笔杆裂开,里面**不是竹子**。\n\n是一根**人的指骨**。\n\n指骨断面,渗出黑红色的血。\n\n血滴到青砖上,自己写出三个字:\n\n「**谢谢你**」\n\n指骨慢慢风化成灰。\n\n你抬头——\n\n「⺶记屠铺」的匾,**消失**了。\n\n弄堂尽头的灯泡,**亮**了正常的光。\n\n黑山羊**也不见了**。\n\n弄堂尽头,只有一个老婆婆,在收摊。\n\n她抬头,对你笑:\n\n「小赵啊,这么晚还上班呐?」",
+      "choices": [
+        {
+          "text": "走过去,跟老婆婆说话。",
+          "next": "n_s4_old_woman",
+          "effects": {"PR": 8, "flags": {"s4_broke_yang_curse": true}}
+        },
+        {
+          "text": "不去。直接转身离开。",
+          "next": "n_landmark_picker",
+          "effects": {"PR": 15, "puzzle_add": "piece_yang_freed", "flags": {"s4_clean_exit": true}}
+        }
+      ]
+    },
+    "n_s4_old_woman": {
+      "scene": "S4",
+      "narrative": "你走过去。\n\n老婆婆 70 来岁,围裙上沾着豆腐渣。\n\n她递给你一碗豆腐脑:\n\n「小赵,记得吗?\n  你 1933 年也走过这条弄堂。\n  那一次你救了我外公。\n  这一次,你救了我。\n\n  你下班吧。」\n\n她从围裙口袋里摸出一张**老粮票**——\n\n是 1959-043 号。\n\n她把粮票塞进你手里。",
+      "choices": [
+        {
+          "text": "收下粮票,鞠躬,离开。",
+          "next": "n_landmark_picker",
+          "effects": {"PR": 20, "inv_add": ["1959-043 粮票"], "puzzle_add": "piece_yang_freed", "flags": {"s4_grandma_blessing": true}}
+        },
+        {
+          "text": "把豆腐脑喝了。",
+          "next": "n_scene_lost_archive",
+          "effects": {"PR": 10, "puzzle_add": "piece_grandma_blessing", "flags": {"s4_drank_tofu": true}}
+        }
+      ]
+    },
+    "n_s4_open_door": {
+      "scene": "S4",
+      "narrative": "弄堂半路,有一扇木门半开。\n\n门里——是一个无人的小房间。\n\n房间正中央,放着一台 1980 年代的**黑白监视器**。\n\n屏幕**亮着**。\n\n屏幕上的画面——\n\n是这条弄堂。\n\n是**这一刻**的弄堂。\n\n是你**从背后**看自己,正在推这扇门。\n\n监视器画面里——\n\n你身后还有一个人。\n\n那个人没有脸。\n\n他穿着清洁工的制服,正在拖地。\n\n你猛回头——\n\n弄堂里**只有你一个人**。",
+      "choices": [
+        {
+          "text": "对着监视器挥手。",
+          "next": "n_npc_cleaner_null",
+          "effects": {"PR": 8, "flags": {"s4_revisit_alley": true, "s4_waved_camera": true}}
+        },
+        {
+          "text": "把监视器砸了。",
+          "next": "n_s4_smash_monitor",
+          "effects": {"GR": 15, "flags": {"s4_smashed_monitor": true}}
+        },
+        {
+          "text": "退出房间,转身就跑。",
+          "next": "n_s4_arrive",
+          "effects": {"PR": -5, "flags": {"s4_revisit_alley": true, "s4_fled_room": true}}
+        },
+        {
+          "text": "把记录表伸进监视器画面里。",
+          "next": "n_scene_lost_archive",
+          "effects": {"PR": 12, "puzzle_add": "piece_camera_self", "flags": {"s4_self_archived": true}}
+        }
+      ]
+    },
+    "n_s4_smash_monitor": {
+      "scene": "S4",
+      "narrative": "你抓起墙边的扫帚,砸向监视器。\n\n屏幕碎了。\n\n但屏幕**碎成雪花**——\n\n不是玻璃碎,是**1984 年电视的雪花噪点**,从屏幕里**漏出来**,飘满整个房间。\n\n雪花颗粒落在你身上,**渗进皮肤**。\n\n你低头看自己手腕——\n\n你的皮肤上,出现一行**滚动字幕**:\n\n「Channel 273  Live  00:14」\n\n你的左眼,变得能**自动对焦**。\n\n你的耳朵,听见自己的呼吸**通过广播信号**回放。\n\nHUD 提示:「不存在的清洁工 Tier 上升。」",
+      "choices": [
+        {
+          "text": "出门继续巡逻。",
+          "next": "n_npc_cleaner_null",
+          "effects": {"PR": 8, "GR": 10, "flags": {"s4_static_in_skin": true}}
+        }
+      ]
+    },
+    "n_s4_cut_rope": {
+      "scene": "S4",
+      "narrative": "你拿起地上的一把锈剪刀。\n\n你割断绳索。\n\n黑山羊「咚」地落地——\n\n落地的不是羊。\n\n是**一个人**。\n\n人穿着 1933 年的长衫,没有头。\n\n但他的胸腔里,**还在哭婴儿**。\n\n你蹲下,听——\n\n哭声变成话:\n\n「我被人冤死。\n  你割了我,我替你担一刀。\n\n  你身上**多了一刀债**。\n  你想把它还给谁?」",
+      "choices": [
+        {
+          "text": "还给「夜班评议会」。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {"PR": 15, "puzzle_add": "piece_yang_debt", "flags": {"s4_debt_to_evaluator": true}}
+        },
+        {
+          "text": "还给上一任 G-273。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {"PR": 10, "flags": {"s4_debt_to_predecessor": true}}
+        },
+        {
+          "text": "我来还。我自己背。",
+          "next": "n_landmark_picker",
+          "effects": {"GR": 25, "PR": 20, "inv_add": ["羊公会欠条"], "flags": {"yang_debt": true, "marked_lamb": true, "s4_self_debt": true}}
+        }
+      ]
+    }
+  }
+}

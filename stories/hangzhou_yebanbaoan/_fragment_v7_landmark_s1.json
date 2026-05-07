@@ -1,0 +1,377 @@
+{
+  "_comment": "v7 标杆迷宫 - S1 湖滨第三把绿色长椅 + 空风衣实体",
+  "_meta": {
+    "fragment_owner": "team-lead",
+    "version": "v7",
+    "landmark": "S1",
+    "node_count": 22,
+    "internal_loops": 7,
+    "cross_scene_exits": 4,
+    "shared_npc_exits": 6,
+    "_design_notes": "示范要求: (1)每个选项都不立刻汇合,后面还有2-4层选项 (2)入口节点 n_s1_arrive 有 narrative_variants 反映多次回访 (3)多入口汇合点至少3个(n_s1_pocket_book有4入边、n_s1_close有3入边、n_s1_arrive是入口+5个环回入边) (4)6 个 next 出口指向 n_npc_*/n_scene_* 共享节点(不在本 fragment,由 lead W1 写) (5)死胡同设计: n_s1_eyes_attack 损失 PR 后强制回入口"
+  },
+
+  "nodes": {
+    "n_s1_arrive": {
+      "scene": "S1",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s1_revisit_close": true}},
+          "text": "你又回到第三把长椅前。\n\n刚才你已经走得很近——你知道风衣里没有人。但你的手电还沾着一点湿,手心皮肤还在起鸡皮疙瘩。\n\n风衣还在那里。\n\n它好像比刚才微微挺直了一点点。\n\n或者只是你的眼睛在骗你。\n\n你低头看《异常事件记录表》[01]栏——光标还在等你写字。"
+        },
+        {
+          "if": {"flags": {"s1_revisit_wet_shoes": true}},
+          "text": "你又回到长椅前。\n\n那双湿鞋还摆在长椅另一头,鞋头朝外。\n\n它们没动。\n\n但鞋后跟,慢慢渗出黑水,在长椅木板上画出一道细线,直指你的脚。\n\n你的鞋干的。它们的鞋,等你走过去。"
+        },
+        {
+          "if": {"flags": {"s1_post_forum": true}, "PR_min": 25},
+          "text": "你又站到第三把长椅前。\n\n手机屏幕亮着——夜班论坛上你那条「空风衣」的帖子,点赞数还在涨。\n\n+1991...+1996...+2007...\n\n点赞数像是在数你听过的所有「事故年份」。\n\n风衣已经瘪下去,只是一件普通湿衣服。\n\n但《异常事件记录表》[01]栏还没填——它要的不是『削弱实体』,要的是你写一行字。"
+        }
+      ],
+      "narrative": "20:27 的湖滨。\n\n风从西湖吹过来,带一股说不清的潮味——像有人把湖水煮熟,又冷掉。\n\n你站在第一个打卡机前,「嘀」一声,屏幕闪过雪花。\n\n你抬头——第三把绿色长椅上,多了一件风衣。\n\n米色,双排扣,湿漉漉的,像刚从湖里捞上来。可西湖离你 50 米,今晚没下雨。\n\n你打开手电,光柱扫过去——\n\n风衣是空的,却鼓成人形,领口以上一片空白。\n\n摄像头红灯灭了。HUD 跳出:「死角累积 00:02:00」。\n\n《异常事件记录表》[01]栏自动浮现,光标在闪。\n\n你的脚还没动。",
+      "choices": [
+        {
+          "text": "走近,看清楚一点。",
+          "next": "n_s1_close",
+          "effects": {"PR": 2, "landmark_visited": "S1"}
+        },
+        {
+          "text": "站着不动,等它先动。",
+          "next": "n_s1_standoff",
+          "effects": {"GR": 2, "landmark_visited": "S1"}
+        },
+        {
+          "text": "拿起手机,先拍一张。",
+          "next": "n_s1_photo",
+          "effects": {"PR": 5, "landmark_visited": "S1", "flags": {"s1_post_forum": true}}
+        },
+        {
+          "text": "假装没看见,加快脚步。",
+          "next": "n_s1_walk_past",
+          "effects": {"shifts_skipped": 0, "landmark_visited": "S1"}
+        },
+        {
+          "text": "退回打卡机,跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {"shifts_skipped": 1, "landmark_skipped": "S1", "flags": {"s1_aborted": true}},
+          "require": {"flags": {"s1_revisit_close": true}}
+        }
+      ]
+    },
+
+    "n_s1_close": {
+      "scene": "S1",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s1_touched_coat": true}},
+          "text": "你又走到风衣边上。\n\n刚才你摸过它了——湿,冷,皮肤底下没有骨头。\n\n你这次不敢再用手了。\n\n但你的手,自己抬起来。"
+        }
+      ],
+      "narrative": "你走到长椅旁。\n\n3 步。你以为是 5 步——\n\n你的脚比判断**多迈了 2 步**,把你**推**到长椅前。\n\n你站定,听见自己的呼吸有点快。\n\n手电光柱稳稳照在风衣上。\n\n风衣的双排扣是错位的,第二粒扣到了第四个扣眼。\n\n这是个职业的细节——醉酒的人会扣错,死了 30 多年的人也会。\n\n你蹲下来。\n\n膝盖压住青石板,冷气从裤腿钻进来。\n\n你闻到风衣袖口的味道——\n\n不是潮味,不是霉味。\n\n是**1985 年湖底淤泥**特有的腥味,带着一点点铜锈。\n\n你不知道你为什么能分辨这种味道。\n\n你这辈子从没下过西湖。\n\n你抬头看领口。\n\n领口里面是空的——\n\n但不是黑,是一种你眼睛**不肯聚焦**的灰。\n\n你试着看清楚。\n\n你的视线**自动滑开**,像两块同极磁铁。\n\n你能感觉到领口里**有什么东西**。\n\n你不知道是头,是脸,是**别的什么**。\n\n但它**也在看你**。",
+      "choices": [
+        {
+          "text": "伸手摸一下风衣。",
+          "next": "n_s1_close_touch",
+          "effects": {"flags": {"s1_revisit_close": true}}
+        },
+        {
+          "text": "翻一翻风衣口袋。",
+          "next": "n_s1_pocket_book",
+          "effects": {"flags": {"s1_revisit_close": true}}
+        },
+        {
+          "text": "把手电对准领口照进去。",
+          "next": "n_s1_close_flashlight",
+          "effects": {"flags": {"s1_revisit_close": true}}
+        },
+        {
+          "text": "站起来,退回打卡机前再想。",
+          "next": "n_s1_arrive",
+          "effects": {"flags": {"s1_revisit_close": true}}
+        }
+      ]
+    },
+
+    "n_s1_close_touch": {
+      "scene": "S1",
+      "narrative": "你伸手按上风衣袖子。\n\n指尖一沉——\n\n衣料是湿的,但下面不是棉花,不是手臂,是某种**正在轻轻起伏**的东西。\n\n像有人在用呼吸的节奏,顶你的手心。\n\n但风衣的领口是空的。没有头,没有肩。\n\n你低头,看见自己制服袖口上,印出一只湿的手印。\n\n那只手印,比你的手大一号。",
+      "choices": [
+        {
+          "text": "抓起风衣,扔进西湖。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"GR": 8, "flags": {"s1_threw_coat": true, "s1_touched_coat": true}}
+        },
+        {
+          "text": "翻进风衣里面找东西。",
+          "next": "n_s1_pocket_book",
+          "effects": {"flags": {"s1_touched_coat": true}}
+        },
+        {
+          "text": "缩手,扔下风衣后退。",
+          "next": "n_s1_close",
+          "effects": {"PR": 3, "flags": {"s1_touched_coat": true, "s1_hand_shaking": true}}
+        }
+      ]
+    },
+
+    "n_s1_pocket_book": {
+      "scene": "S1",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s1_book_seen": true}},
+          "text": "你又把手伸进风衣口袋。\n\n那本黑色帆布封面的账本还在那里——\n\n但它现在比刚才薄了一点。\n\n好像里面的某些页,自己出去了。"
+        }
+      ],
+      "narrative": "你的手伸进风衣内袋——\n\n摸到一本黑色帆布封面的账本。边角发霉,封面有水渍。\n\n你拿出来,翻开。\n\n密密麻麻的钢笔字,是 1980 年代的笔迹。\n\n第一行写着:\n\n「1985-10-18  ¥27,300.00  柳浪闻莺  林某  当夜投湖」\n\n你翻到中间——\n\n每一栏的最后,都被人用红笔画了一个圈,圈里写「未结」。\n\n最末一栏是空白的。\n\n光标——\n\n等你签名。",
+      "choices": [
+        {
+          "text": "在最末一栏抄录一行数字(不写名字)。",
+          "next": "n_s1_book_copy",
+          "effects": {"PR": 5, "puzzle_add": "piece_account", "flags": {"s1_book_seen": true}}
+        },
+        {
+          "text": "把账本整本拿走,塞进自己背包。",
+          "next": "n_npc_faceless_coat",
+          "effects": {"GR": 10, "inv_add": ["林副科长账本残页"], "flags": {"s1_book_grabbed": true, "s1_book_seen": true, "linmou_marked": true}}
+        },
+        {
+          "text": "在最末一栏写「赵某 G-273」。",
+          "next": "n_npc_drowned_official",
+          "effects": {"PR": 10, "GR": 5, "flags": {"s1_signed_book": true, "s1_book_seen": true}}
+        },
+        {
+          "text": "把账本放回去,关上风衣。",
+          "next": "n_s1_close",
+          "effects": {"flags": {"s1_book_seen": true, "s1_book_returned": true}}
+        }
+      ]
+    },
+
+    "n_s1_book_copy": {
+      "scene": "S1",
+      "narrative": "你掏出钢笔,在最末一栏抄了三行数字。\n\n数字是:27、307、1987。\n\n这是你这一夜后面会反复见到的三个数。\n\n你抄完,合上账本,放回风衣口袋。\n\n风衣领口里,某种灰色的东西**叹了一口气**。\n\n你听见的不是声音,是空气的密度变了。\n\n你的指尖,沾上了一小块铜锈色的水印。\n\nHUD 提示:拼图碎片 +1。",
+      "choices": [
+        {
+          "text": "退到长椅旁,继续观察。",
+          "next": "n_s1_close",
+          "effects": {"flags": {"s1_revisit_close": true}}
+        }
+      ]
+    },
+
+    "n_s1_close_flashlight": {
+      "scene": "S1",
+      "narrative": "你把手电对准风衣领口。\n\n光柱进去了。\n\n但没有「打到底」——\n\n光,在领口里面**消失**了,像被一块干燥的毛巾吸走。\n\n你换大功率档,光柱变白——\n\n领口里浮现出一张脸。\n\n是你自己的脸。\n\n没有眼睛,只有两个**摄像头镜头**,正在对焦。\n\n你听见快门声。\n\n你的手机自己拍了一张照片,自动上传到夜班论坛。",
+      "choices": [
+        {
+          "text": "打开夜班论坛,看那张照片。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {"PR": 8, "flags": {"s1_post_forum": true, "s1_auto_posted": true}}
+        },
+        {
+          "text": "关手电,转身就跑。",
+          "next": "n_s1_arrive",
+          "effects": {"PR": -3, "flags": {"s1_revisit_close": true, "s1_panic": true}}
+        },
+        {
+          "text": "对着领口大声喊『有人吗』。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {"PR": 5, "GR": 3, "flags": {"s1_yelled": true}}
+        }
+      ]
+    },
+
+    "n_s1_standoff": {
+      "scene": "S1",
+      "narrative": "你站着不动。\n\nHUD 倒计时:01:43...01:42...01:41...\n\n风从西湖刮过来,带着潮味。风衣的下摆,**逆着风**飘起一点。\n\n01:01...00:30...00:15...\n\n摄像头红灯,在你眼睛余光里,**眨了三下**。\n\n00:00。「死角累积」消失。\n\n摄像头红灯重新亮起。\n\n风衣还在,但下摆正常垂着。\n\n你的对讲机,「滋——」一声响。",
+      "choices": [
+        {
+          "text": "接对讲机。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {"flags": {"s1_radio_answered": true}}
+        },
+        {
+          "text": "冲过去,直接摸风衣。",
+          "next": "n_s1_close_touch",
+          "effects": {"PR": 5, "GR": 3}
+        },
+        {
+          "text": "闭眼,数到 30。",
+          "next": "n_s1_eyes_closed",
+          "effects": {"GR": 5}
+        },
+        {
+          "text": "退回打卡机前。",
+          "next": "n_s1_arrive",
+          "effects": {}
+        }
+      ]
+    },
+
+    "n_s1_eyes_closed": {
+      "scene": "S1",
+      "narrative": "你闭上眼。\n\n1...2...3...\n\n你听见自己的呼吸,也听见湖水的声音。\n\n9...10...11...\n\n湖水不该这么近。\n\n14...15...16...\n\n17 ——\n\n你听见**一声水花**。\n\n离你不到 1 米。\n\n好像有什么东西,从长椅上,跳进了湖里。\n\n你还闭着眼。",
+      "choices": [
+        {
+          "text": "睁眼。",
+          "next": "n_s1_wet_shoes",
+          "effects": {"PR": 5}
+        },
+        {
+          "text": "继续闭着,数完 30。",
+          "next": "n_s1_eyes_attack",
+          "effects": {"PR": -5, "GR": 8, "flags": {"s1_eyes_attacked": true}}
+        }
+      ]
+    },
+
+    "n_s1_wet_shoes": {
+      "scene": "S1",
+      "narrative": "你睁开眼。\n\n风衣不见了。\n\n长椅上,代替它的是一双**湿的男士皮鞋**——\n\n1980 年代的款式,鞋头有点磨损。\n\n鞋的尺码,和你穿的一样。\n\n鞋头朝外,正对着你。\n\n你不敢动。\n\n但你的脚,**自己往前迈了半步**。\n\n《异常事件记录表》[01]栏的光标,等你写。",
+      "choices": [
+        {
+          "text": "脱下自己的警用皮鞋,把这双穿上。",
+          "next": "n_npc_drowned_official",
+          "effects": {"PR": 10, "GR": 8, "flags": {"s1_wore_shoes": true, "linmou_marked": true}}
+        },
+        {
+          "text": "把湿鞋扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"GR": 10, "flags": {"s1_threw_shoes": true}}
+        },
+        {
+          "text": "什么都不做,退回打卡机。",
+          "next": "n_s1_arrive",
+          "effects": {"flags": {"s1_revisit_wet_shoes": true}}
+        },
+        {
+          "text": "蹲下,把鞋翻过来看鞋底。",
+          "next": "n_s1_shoe_sole",
+          "effects": {"PR": 3, "flags": {"s1_revisit_wet_shoes": true}}
+        }
+      ]
+    },
+
+    "n_s1_eyes_attack": {
+      "scene": "S1",
+      "narrative": "你继续闭着眼。\n\n18...19...\n\n有什么东西在你脸前——\n\n你能感觉到一个**冰凉的、湿的脸**,贴上你的鼻尖。\n\n26...27...\n\n它没动。\n\n但你能数清楚:它的鼻尖到你的鼻尖,距离是 0 厘米。\n\n29...\n\n30。\n\n你睁眼。\n\n什么都没有。\n\n但你的工牌掉在脚边,反面被人用湿手指写了一个字:\n\n「等」",
+      "choices": [
+        {
+          "text": "捡起工牌,退回打卡机。",
+          "next": "n_s1_arrive",
+          "effects": {"PR": -3, "flags": {"s1_marked_wait": true, "s1_revisit_close": true}}
+        }
+      ]
+    },
+
+    "n_s1_shoe_sole": {
+      "scene": "S1",
+      "narrative": "你蹲下,把湿鞋翻过来。\n\n鞋底沾着黑色泥沙。\n\n泥沙里嵌着一枚硬币。\n\n硬币是 1986 年的 1 角——\n\n背面有个划痕,是用刀片刻的「林」字。\n\n你认得这个字。账本上签过。\n\n你刚把硬币抠出来——\n\n硬币烫了一下你的指尖。然后变冷。\n\n然后,你听见对讲机里传来一声极轻的「嘀」。",
+      "choices": [
+        {
+          "text": "把硬币收好,接对讲机。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {"inv_add": ["1986 林字硬币"], "puzzle_add": "piece_coin"}
+        },
+        {
+          "text": "把硬币扔回湿鞋,退回打卡机。",
+          "next": "n_s1_arrive",
+          "effects": {"flags": {"s1_revisit_wet_shoes": true, "s1_saw_coin": true}}
+        }
+      ]
+    },
+
+    "n_s1_photo": {
+      "scene": "S1",
+      "narrative": "你举起手机。\n\n咔嚓。\n\n照片里——风衣有了脸。\n\n是你的脸。没有眼睛。\n\n夜班论坛页面自动打开了。\n\n你的发帖:「湖滨 G-273 第一夜班」。\n\n点赞数从 0 开始跳。+1...+3...+7...+27...\n\n你还没决定要不要发出去。\n\n但帖子已经在那里了——上传时间显示**昨晚 23:47**。\n\n昨晚你还没入职。",
+      "choices": [
+        {
+          "text": "等点赞数涨,看看会发生什么。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {"PR": 8, "flags": {"s1_post_forum": true}}
+        },
+        {
+          "text": "立刻删帖。",
+          "next": "n_s1_arrive",
+          "effects": {"PR": 3, "flags": {"s1_post_deleted": true}}
+        },
+        {
+          "text": "把照片单独发到一个加密的小群。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {"PR": 5, "flags": {"s1_sent_private": true}}
+        },
+        {
+          "text": "把手机扔进西湖。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"GR": 12, "inv_remove": ["前任电话号码"], "flags": {"s1_phone_lost": true}}
+        }
+      ]
+    },
+
+    "n_s1_walk_past": {
+      "scene": "S1",
+      "narrative": "你低头,加快脚步。\n\n你走过长椅,数自己的步数:1、2、3...\n\n第 7 步——\n\n你的鞋,**湿了**。\n\n你不记得自己踩进了水。\n\n你低头看脚——\n\n左脚的鞋面湿到鞋带。右脚干的。\n\n打卡时间,自动出现在《异常事件记录表》[01]栏:\n\n「20:31  G-273  未观察。但已被观察。」\n\n光标停在「但已被观察」后面,等你写下一句。",
+      "choices": [
+        {
+          "text": "回头,看长椅。",
+          "next": "n_s1_arrive",
+          "effects": {"PR": -3, "flags": {"s1_observed_back": true}}
+        },
+        {
+          "text": "加快脚步,跑出湖滨。",
+          "next": "n_s1_lake_chase",
+          "effects": {"PR": -5, "flags": {"s1_running": true}}
+        },
+        {
+          "text": "蹲下,擦干左脚的鞋。",
+          "next": "n_s1_dry_shoe",
+          "effects": {"PR": 3}
+        },
+        {
+          "text": "直接跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {"shifts_skipped": 1, "landmark_skipped": "S1", "flags": {"s1_aborted": true}}
+        }
+      ]
+    },
+
+    "n_s1_lake_chase": {
+      "scene": "S1",
+      "narrative": "你跑起来。\n\n身后传来鞋底踏水的声音——\n\n不是湿,是**真的踩在水面上**的那种「啪嗒」。\n\n你不敢回头。\n\n但你知道——\n\n那双跟在你身后的鞋,**是男士皮鞋**。\n\n是 1980 年代的款式。\n\n鞋码,和你一样。\n\n你跑到湖滨边缘——\n\n你停下,因为你听见湖里有人**轻轻**喊了你的工号。",
+      "choices": [
+        {
+          "text": "跳进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"PR": 10, "GR": 5, "flags": {"s1_jumped_lake": true}}
+        },
+        {
+          "text": "捂住耳朵,继续跑。",
+          "next": "n_landmark_picker",
+          "effects": {"PR": -8, "shifts_skipped": 1, "landmark_skipped": "S1", "flags": {"s1_fled": true}}
+        },
+        {
+          "text": "回头,面对它。",
+          "next": "n_s1_arrive",
+          "effects": {"PR": 5, "flags": {"s1_faced_it": true}}
+        }
+      ]
+    },
+
+    "n_s1_dry_shoe": {
+      "scene": "S1",
+      "narrative": "你蹲下,从兜里抽出一张湿巾,擦左脚的鞋。\n\n湿巾擦过,鞋面**确实**变干了。\n\n但湿巾,变成了暗红色。\n\n你低头看湿巾——\n\n它沾的不是水,是**血色的湖泥**。\n\n泥的味道,不是西湖的潮味,是**铁锈味**。\n\n你抬头——\n\n第三把长椅,**多了一双湿的男士皮鞋**。\n\n鞋头朝着你蹲的位置。",
+      "choices": [
+        {
+          "text": "走过去,看湿鞋。",
+          "next": "n_s1_wet_shoes",
+          "effects": {"PR": 3}
+        },
+        {
+          "text": "把沾血泥的湿巾收好,继续走。",
+          "next": "n_landmark_picker",
+          "effects": {"inv_add": ["铁锈湖泥湿巾"], "puzzle_add": "piece_blood_mud", "flags": {"s1_kept_mud": true}}
+        }
+      ]
+    }
+  }
+}

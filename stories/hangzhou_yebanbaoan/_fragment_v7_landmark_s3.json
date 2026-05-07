@@ -1,0 +1,266 @@
+{
+  "_comment": "v7 S3 九溪理安寺 + 裂钟铜锈侧脸",
+  "_meta": {
+    "fragment_owner": "team-lead-pickup",
+    "version": "v7",
+    "landmark": "S3",
+    "node_count": 16,
+    "internal_loops": 5,
+    "cross_scene_exits": 4,
+    "shared_npc_exits": 5,
+    "mini_endings": 2
+  },
+  "nodes": {
+    "n_s3_arrive": {
+      "scene": "S3",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s3_revisit_temple": true}},
+          "text": "你又来到理安寺。\n\n刚才的钟摆,现在反着摆。\n\n你的指纹还留在第二片铜锈上——\n\n现在,**铜锈自己长回去了**,但形状变成你的指纹。\n\n寺门开着。等你。"
+        },
+        {
+          "if": {"flags": {"rang_seven": true}},
+          "text": "你已经敲过七下钟。\n\n寺院应该归位。\n\n但你回来时——\n\n**钟没了**。\n\n钟架上空空的,只挂着一行字:\n\n「H = 你」"
+        }
+      ],
+      "narrative": "22:48 的九溪。\n\n打车来这里花了 35 分钟,司机在最后 1 公里下车,说他不进去。\n\n9 溪 18 涧的尽头,理安寺。\n\n寺门虚掩。门额上「理安」两个字的金漆掉了一半。\n\n你推门进去——\n\n大殿中央悬着一口宋代古铜钟。\n\n钟从中间**裂成两半**,但裂缝处不是黑的,是**蓝绿色的铜锈**。\n\n铜锈拼成一张**侧脸**——\n\n那张脸,**倒挂着**,眼睛是闭的。\n\n钟旁有一根撞钟木。\n\n墙上挂着一块木牌:「23:45 前敲七下,不可多敲一下。」\n\n你的手机显示 22:48。\n\n你有 57 分钟。",
+      "choices": [
+        {
+          "text": "走近,看那张倒挂的侧脸。",
+          "next": "n_s3_examine_face",
+          "effects": {"PR": 3, "landmark_visited": "S3"}
+        },
+        {
+          "text": "直接拿撞钟木,准备 23:45 敲。",
+          "next": "n_s3_wait_to_ring",
+          "effects": {"GR": 3, "landmark_visited": "S3"}
+        },
+        {
+          "text": "绕过钟,看看大殿后面有什么。",
+          "next": "n_s3_temple_back",
+          "effects": {"PR": 5, "landmark_visited": "S3"}
+        },
+        {
+          "text": "退回门口,打卡走人。",
+          "next": "n_landmark_picker",
+          "effects": {"shifts_skipped": 1, "landmark_skipped": "S3", "flags": {"s3_aborted": true}},
+          "require": {"not": {"flags": {"s3_revisit_temple": true}}}
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {"flags": {"s3_clean_leave": true}},
+          "require": {"any_of": [{"flags": {"s3_revisit_temple": true}}, {"flags": {"rang_seven": true}}]}
+        },
+        {
+          "text": "你的对讲机突然响了——先接对讲机。",
+          "next": "n_s3_temple_radio",
+          "effects": {"landmark_visited": "S3", "PR": 3}
+        }
+      ]
+    },
+    "n_s3_examine_face": {
+      "scene": "S3",
+      "narrative": "你绕到钟旁,蹲下来。\n\n铜锈的「侧脸」很清晰——\n\n是一个中年男人,鼻梁很高,嘴唇很薄。\n\n你看了 30 秒。\n\n眼睛——\n\n**睁了**。\n\n不是慢慢睁,是「啪」地一下,像有人按了开关。\n\n眼睛是铜锈做的,但它**会动**。\n\n它的视线扫过你的脸,停在你的工牌上,然后,\n\n停在你的左手腕。\n\n你低头——\n\n你的手腕上,**多了一个铜锈印**,形状像一只小手按过的痕迹。",
+      "choices": [
+        {
+          "text": "用指甲刮一片铜锈下来。",
+          "next": "n_s3_scrape_corrosion",
+          "effects": {"PR": 5, "inv_add": ["铜锈片"], "flags": {"s3_revisit_temple": true}}
+        },
+        {
+          "text": "对着侧脸说话:『你想让我做什么?』",
+          "next": "n_npc_corrosion_face",
+          "effects": {"PR": 8, "flags": {"s3_revisit_temple": true}}
+        },
+        {
+          "text": "把工牌摘下来,挂在钟上。",
+          "next": "n_s3_offer_id",
+          "effects": {"GR": 12, "flags": {"s3_offered_id": true}}
+        },
+        {
+          "text": "退后,绕到钟另一面。",
+          "next": "n_s3_other_side",
+          "effects": {"flags": {"s3_revisit_temple": true}}
+        }
+      ]
+    },
+    "n_s3_scrape_corrosion": {
+      "scene": "S3",
+      "narrative": "你用指甲,刮下一片铜锈。\n\n铜锈片很轻,蓝绿色,带着金属的腥味。\n\n你把它放进工牌夹层。\n\n你抬头——\n\n钟上的「侧脸」少了**眼睛**。\n\n那只眼睛,被你刮下来了。\n\n现在它是空洞。\n\n空洞里——\n\n你听见水声。\n\n是从钟**内部**传来的。\n\n钟里有水。\n\n钟里有**很深的水**。",
+      "choices": [
+        {
+          "text": "把头探进钟内,听水声。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"PR": 8, "flags": {"s3_into_bell": true}}
+        },
+        {
+          "text": "把铜锈片烫在自己手腕的铜印上。",
+          "next": "n_s3_match_print",
+          "effects": {"PR": 12, "puzzle_add": "piece_h1987", "flags": {"s3_marked_self": true}}
+        },
+        {
+          "text": "放回去,告诉它你不要。",
+          "next": "n_npc_corrosion_face",
+          "effects": {"PR": 3, "flags": {"s3_revisit_temple": true}}
+        }
+      ]
+    },
+    "n_s3_match_print": {
+      "scene": "S3",
+      "narrative": "你把铜锈片,贴在自己左手腕的铜印上。\n\n严丝合缝。\n\n铜锈片**渗进皮肤**——\n\n你的皮肤变成蓝绿色,然后变回正常。\n\n但你低头看时,你的左手腕,有一行**纹身**:\n\n「H = 1987」\n\n是用铜锈烫出来的。\n\n你这一辈子,这行字,擦不掉。\n\n《异常事件记录表》[03]栏自己浮现一行字:\n\n「赵某 G-273 已认领 1987-12-24-013 编号。」\n\n光标在闪。等你写「不」。",
+      "choices": [
+        {
+          "text": "在记录表写「不」。",
+          "next": "n_s3_refuse_h1987",
+          "effects": {"PR": 15, "puzzle_add": "piece_refused_h", "flags": {"s3_refused_h1987": true}}
+        },
+        {
+          "text": "什么都不写。",
+          "next": "n_s3_temple_descend_h",
+          "effects": {"GR": 12, "flags": {"s3_accepted_h1987": true, "marked_lamb": true}}
+        }
+      ]
+    },
+    "n_s3_refuse_h1987": {
+      "scene": "S3",
+      "narrative": "你写「不」。\n\n光标停了一下,然后**整页消失**。\n\n[03] 栏的标题,从「九溪理安寺」变成「拒绝接受 H 编号 — 候选 1 / 9」。\n\n你听见「侧脸」笑了一声。\n\n是钟的回声。\n\n它的声音很轻,但很清楚:\n\n「9 个候选,你是第 1 个有这个胆子的。\n  剩下 8 个,在水底。\n  你想去看看吗?」",
+      "choices": [
+        {
+          "text": "去看。我也是 G-273。",
+          "next": "n_npc_eight_self",
+          "effects": {"PR": 15, "flags": {"linked_to_eight_self": true}}
+        },
+        {
+          "text": "不去。我打卡走人。",
+          "next": "n_landmark_picker",
+          "effects": {"PR": 8, "puzzle_add": "piece_refused_h", "flags": {"s3_clean_exit": true}}
+        }
+      ]
+    },
+    "n_s3_temple_descend_h": {
+      "scene": "S3",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你不写。\n\n你接受了 H = 1987。\n\n你的左手腕烫出新的字:\n\n「H = 1987 — 编号 014」\n\n14。\n\n你成了 1987 年踩踏事故里,本来不该死的**第 14 个**。\n\n但 H 不止 1987。\n\nH 还有 1985、1991、1996、1986...\n\n每一个 H,都需要一个候补。\n\n钟的「侧脸」张开嘴——\n\n吐出一池**水**。\n\n大殿瞬间淹到天花板。\n\n你浮起来,然后**沉下去**。\n\n你最后看见的是 8 口冷冻舱,加你**第 9 口**,正在合拢。\n\n第 9 口刻着「2024 G-273 赵某」。\n\n钟,合拢。",
+      "show_hud": true
+    },
+    "n_s3_wait_to_ring": {
+      "scene": "S3",
+      "narrative": "你抓起撞钟木,等到 23:45。\n\n手机显示 23:44。\n\n23:45。\n\n你撞——\n\n咚。\n\n钟声很沉,像把整个九溪压下去 3 厘米。\n\n第 2 下。第 3 下。\n\n第 4 下时——\n\n你听见钟里**有人也在数**:\n\n「4。\n  5。\n  6。」\n\n他比你慢半拍。\n\n你撞第 7 下时,他**也撞了第 7 下**——\n\n但他撞的是钟**内壁**。\n\n钟里的人,在敲**你**。",
+      "choices": [
+        {
+          "text": "停在第 7 下,放下木槌。",
+          "next": "n_npc_corrosion_face",
+          "effects": {"PR": 10, "GR": 8, "inv_add": ["铜锈护符"], "flags": {"rang_seven": true}}
+        },
+        {
+          "text": "撞第 8 下。",
+          "next": "n_s3_eighth_strike",
+          "effects": {"PR": -10, "GR": 20, "flags": {"s3_struck_eighth": true}}
+        },
+        {
+          "text": "把撞钟木丢进钟里,跑。",
+          "next": "n_s3_temple_back",
+          "effects": {"GR": 5, "flags": {"s3_dumped_mallet": true}}
+        }
+      ]
+    },
+    "n_s3_eighth_strike": {
+      "scene": "S3",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative": "你撞第 8 下。\n\n咚。\n\n钟,**自己崩裂**。\n\n两半铜钟没有掉下来——\n\n它们**朝你飞过来**。\n\n你来不及躲。\n\n两半铜钟在你身体处合拢——\n\n你成了**钟的内里**。\n\n你听见外面一片寂静。\n\n你听见自己的呼吸,在铜壳里回响。\n\n你听见 8 个声音齐声说:\n\n「第 9 任。\n  欢迎。」\n\n外面,大殿恢复正常。\n\n钟挂回钟架,「侧脸」少了第 9 颗铜锈。\n\n那颗铜锈,是**你的脸**。\n\n23:45 的钟声响了。\n\n7 下。\n\n第 7 下里,有你的尖叫。",
+      "show_hud": true
+    },
+    "n_s3_offer_id": {
+      "scene": "S3",
+      "narrative": "你摘下工牌,挂在钟的木架上。\n\n工牌上,「赵某 G-273」**自己**消失了。\n\n钟的「侧脸」,**眼睛睁开**,看着你。\n\n它说:\n\n「你确定要把名字给我?\n  我有 8 个名字了。\n  我只缺 1 个。」",
+      "choices": [
+        {
+          "text": "确定。把工牌彻底交给它。",
+          "next": "n_end_data",
+          "effects": {"inv_remove": ["工牌 G-273"], "flags": {"sacrificed_id": true}}
+        },
+        {
+          "text": "反悔。把工牌摘回来。",
+          "next": "n_s3_arrive",
+          "effects": {"PR": -5, "flags": {"s3_revisit_temple": true, "s3_reclaimed_id": true}}
+        },
+        {
+          "text": "问它另外 8 个是谁。",
+          "next": "n_npc_eight_self",
+          "effects": {"PR": 10, "puzzle_add": "piece_eight_zhao"}
+        }
+      ]
+    },
+    "n_s3_other_side": {
+      "scene": "S3",
+      "narrative": "你绕到钟的另一面。\n\n这一面,铜锈拼出**另外一张脸**——\n\n是 11 岁的小女孩,穿红色连衣裙。\n\n她的眼睛是铜锈做的,但她在**看你**。\n\n你认识她。\n\n你刚才在 S2(如果你去过)的红木门里见过她。\n\n或者你将在 S2 见到她。\n\n或者你不会见到她——\n\n但她已经认识你了。",
+      "choices": [
+        {
+          "text": "对她说:『27 楼怎么走?』",
+          "next": "n_npc_red_dress_girl",
+          "effects": {"PR": 10, "flags": {"s3_met_red_girl_here": true}}
+        },
+        {
+          "text": "刮下她那张脸的一片铜锈。",
+          "next": "n_s3_scrape_corrosion",
+          "effects": {"PR": 5, "inv_add": ["红衣女孩铜锈"], "flags": {"s3_revisit_temple": true}}
+        },
+        {
+          "text": "退回正面,继续看男人侧脸。",
+          "next": "n_s3_examine_face",
+          "effects": {"flags": {"s3_revisit_temple": true}}
+        }
+      ]
+    },
+    "n_s3_temple_back": {
+      "scene": "S3",
+      "narrative": "你绕到大殿后面。\n\n后面是一个小院。\n\n院里有一口井。\n\n井口盖着木板。\n\n木板上,用粉笔写了一行字:\n\n「9 = 1987 + 1985 + 1991 + 1996 + 1986 + 1959 + 1933 + 1997 + ?」\n\n8 个年份,一个空格。\n\n你的手机时间是 23:21。\n\n井里**有声音**——\n\n是裂钟在井底的回声。\n\n但回声里夹着**8 个人的呼吸**。",
+      "choices": [
+        {
+          "text": "推开木板,跳下去。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"PR": 10, "GR": 8, "flags": {"s3_jumped_well": true}}
+        },
+        {
+          "text": "在空格里写「2024」。",
+          "next": "n_npc_eight_self",
+          "effects": {"PR": 15, "puzzle_add": "piece_h1987", "flags": {"s3_filled_2024": true}}
+        },
+        {
+          "text": "用粉笔擦掉所有年份。",
+          "next": "n_scene_lost_archive",
+          "effects": {"PR": 8, "GR": -5, "flags": {"s3_erased_years": true}}
+        },
+        {
+          "text": "退出小院,回大殿。",
+          "next": "n_s3_arrive",
+          "effects": {"flags": {"s3_revisit_temple": true, "s3_saw_well": true}}
+        }
+      ]
+    },
+    "n_s3_temple_radio": {
+      "scene": "S3",
+      "narrative": "你的对讲机在大殿里突然「滋——」一声。\n\n不是普通的电流声。\n\n是水声。\n\n是水**穿过对讲机**的声音。\n\n一个男声,慢:\n\n「赵某。\n  我是 G-272。\n  我在水里。\n  这里很冷。\n\n  钟敲第 7 下,你就走。\n  钟敲第 8 下,你就来陪我。\n\n  别多敲。」",
+      "choices": [
+        {
+          "text": "回话:『我会敲 7 下。』",
+          "next": "n_s3_wait_to_ring",
+          "effects": {"PR": 10, "flags": {"s3_promised_seven": true, "contacted_predecessor": true}}
+        },
+        {
+          "text": "回话:『我不打算敲。』",
+          "next": "n_npc_predecessor_voice",
+          "effects": {"PR": 5, "flags": {"contacted_predecessor": true}}
+        },
+        {
+          "text": "挂掉对讲机。",
+          "next": "n_s3_arrive",
+          "effects": {"GR": 5, "flags": {"s3_revisit_temple": true, "hung_up_predecessor": true}}
+        }
+      ]
+    }
+  }
+}

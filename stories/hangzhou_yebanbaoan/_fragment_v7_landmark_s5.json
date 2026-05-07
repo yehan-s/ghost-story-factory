@@ -1,0 +1,276 @@
+{
+  "_comment": "v7 S5 留下小学旧楼 203 琴房 + 钢琴幽灵 + 空布鞋",
+  "_meta": {
+    "fragment_owner": "team-lead-pickup",
+    "version": "v7",
+    "landmark": "S5",
+    "node_count": 16,
+    "internal_loops": 5,
+    "cross_scene_exits": 4,
+    "shared_npc_exits": 5,
+    "mini_endings": 2
+  },
+  "nodes": {
+    "n_s5_arrive": {
+      "scene": "S5",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s5_revisit_piano": true}},
+          "text": "你又站在 203 琴房门外。\n\n刚才你已经听过钢琴。\n\n现在,门把手是**温的**。\n\n是被人**握过**的温度。\n\n那个人,刚刚才离开。\n\n但走廊空无一人。"
+        },
+        {
+          "if": {"flags": {"piano_appeased": true}},
+          "text": "你已经把 1987 年 6 月 1 日的报纸放在琴盖上了。\n\n但你回来时——\n\n报纸**消失**了。\n\n钢琴自己又掀开了盖子。\n\n键上,留着一张**新的纸条**:\n\n「叔叔,我妈妈来过。她说我可以下来了。\n  谢谢叔叔。」"
+        }
+      ],
+      "narrative": "01:08 的留下小学旧楼。\n\n这栋楼 1992 年就停用了。\n\n白天用一圈黄色警戒线围着,门挂着锁。\n\n但今晚,锁开了——\n\n是从**里面**开的。\n\n你打开手电,推开生锈的铁门。\n\n楼道里的灯,一盏接一盏**自己亮起来**——\n\n但灯泡里没有钨丝,是**月光**。\n\n2 楼。203 琴房。\n\n你站在门口。\n\n门虚掩着。\n\n里面传来钢琴声。\n\n不是连贯的曲子,是**单音**——\n\n弹一下,停 2 秒,弹一下,停 2 秒。\n\n你伸手摸自己的脉搏——\n\n钢琴的节奏,**和你的心跳一致**。",
+      "choices": [
+        {
+          "text": "推门进去。",
+          "next": "n_s5_open_door",
+          "effects": {"PR": 5, "landmark_visited": "S5"}
+        },
+        {
+          "text": "在门外听,等钢琴停。",
+          "next": "n_s5_listen_outside",
+          "effects": {"PR": 3, "GR": 5, "landmark_visited": "S5"}
+        },
+        {
+          "text": "沿走廊往里走,看其他教室。",
+          "next": "n_s5_corridor",
+          "effects": {"GR": 3, "landmark_visited": "S5"}
+        },
+        {
+          "text": "退出旧楼,跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {"shifts_skipped": 1, "landmark_skipped": "S5", "flags": {"s5_aborted": true}},
+          "require": {"not": {"flags": {"s5_revisit_piano": true}}}
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {"flags": {"s5_clean_leave": true}},
+          "require": {"any_of": [{"flags": {"s5_revisit_piano": true}}, {"flags": {"piano_appeased": true}}]}
+        }
+      ]
+    },
+    "n_s5_open_door": {
+      "scene": "S5",
+      "narrative": "你推开门。\n\n203 琴房。\n\n中央立着一台 1980 年代旧立式钢琴。\n\n琴盖**自己**掀开。\n\n琴凳前面——\n\n摆着一双**空布鞋**。\n\n白色,女孩款式,11 岁尺码。\n\n鞋摆得很整齐,鞋头朝着钢琴。\n\n等人坐。\n\n你看了三秒,鞋**没动**。\n\n但你转身关门时——\n\n你回头——\n\n鞋**朝你**了。",
+      "choices": [
+        {
+          "text": "走过去,坐到琴凳上。",
+          "next": "n_s5_sit_piano",
+          "effects": {"PR": 8, "flags": {"s5_revisit_piano": true}}
+        },
+        {
+          "text": "蹲下,把布鞋拎起来检查。",
+          "next": "n_s5_inspect_shoes",
+          "effects": {"PR": 5, "flags": {"s5_revisit_piano": true}}
+        },
+        {
+          "text": "把 1987 年 6 月 1 日的报纸放在琴盖上。",
+          "next": "n_npc_piano_ghost",
+          "effects": {"PR": 12, "GR": 5, "flags": {"piano_appeased": true, "s5_offered_newspaper": true}},
+          "require": {"inv_has": ["1987 告示残页"]}
+        },
+        {
+          "text": "退出琴房,关门。",
+          "next": "n_s5_arrive",
+          "effects": {"flags": {"s5_revisit_piano": true, "s5_left_room": true}}
+        }
+      ]
+    },
+    "n_s5_sit_piano": {
+      "scene": "S5",
+      "narrative": "你坐到琴凳上。\n\n琴凳很冷,温度像在冰箱里放过。\n\n你把布鞋拨到一边——\n\n布鞋**自己挪了回来**,贴在你脚边。\n\n你低头——\n\n你的脚下,踩着一张**1991 年的请假条**:\n\n「申请人:叶某,11 岁,女。\n  请假原因:头疼,头疼太久了。\n  班主任批示:不准。\n\n  日期:1991-04-23」\n\n那一天就是叶某自缢的日子。\n\n钢琴键自己**摁下一个 C 音**——\n\n是琴凳**底下**摁的。\n\n琴凳里,**有人**。",
+      "choices": [
+        {
+          "text": "起身,推开琴凳。",
+          "next": "n_s5_open_bench",
+          "effects": {"PR": 8, "flags": {"s5_revisit_piano": true}}
+        },
+        {
+          "text": "坐着不动,弹一首她想听的曲子。",
+          "next": "n_npc_piano_ghost",
+          "effects": {"PR": 10, "inv_add": ["倒带背书声"], "flags": {"played_for_her": true}}
+        },
+        {
+          "text": "把 1991 年的请假条收起来。",
+          "next": "n_scene_lost_archive",
+          "effects": {"PR": 12, "inv_add": ["1991 请假条"], "puzzle_add": "piece_piano_girl"}
+        },
+        {
+          "text": "把请假条划掉「不准」,改成「准」。",
+          "next": "n_s5_grant_leave",
+          "effects": {"PR": 18, "GR": 5, "flags": {"s5_granted_leave": true}}
+        }
+      ]
+    },
+    "n_s5_open_bench": {
+      "scene": "S5",
+      "narrative": "你掀开琴凳的盖子。\n\n琴凳里——\n\n是空的。\n\n但有一根**钢丝绳**。\n\n钢丝绳是**新的**。\n\n绳头打着活结,套圈正好是 11 岁女孩脖子的尺寸。\n\n绳头底下,压着一张纸:\n\n「我妈妈说我考不到 100 分她就不要我了。\n  这次我考了 87。\n  对不起妈妈。\n\n  叶某  1991-04-23」",
+      "choices": [
+        {
+          "text": "把绳子拿出来,带走。",
+          "next": "n_s5_take_rope",
+          "effects": {"PR": 5, "GR": 5, "inv_add": ["1991 钢丝绳"], "puzzle_add": "piece_piano_girl"}
+        },
+        {
+          "text": "把绳子套在自己脖子上。",
+          "next": "n_s5_self_hang",
+          "effects": {"GR": 25, "flags": {"s5_self_noosed": true, "marked_lamb": true}}
+        },
+        {
+          "text": "用打火机烧绳子。",
+          "next": "n_npc_piano_ghost",
+          "effects": {"PR": 12, "flags": {"s5_burned_rope": true, "piano_appeased": true}}
+        },
+        {
+          "text": "什么都不做,关上琴凳盖子。",
+          "next": "n_s5_arrive",
+          "effects": {"PR": -3, "flags": {"s5_revisit_piano": true}}
+        }
+      ]
+    },
+    "n_s5_self_hang": {
+      "scene": "S5",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你把钢丝绳套在自己脖子上。\n\n绳子是新的,但**很贴**。\n\n好像它就是为你的脖子尺寸做的。\n\n你站到琴凳上——\n\n琴凳**自己升高**。\n\n琴凳变成 1991 年那把摇晃的木椅。\n\n你的脚尖,慢慢离地。\n\n你听见钢琴自己弹《小星星》。\n\n弹得**慢半拍**——\n\n那是 1991 年叶某弹错的节奏。\n\n你最后看见的画面是——\n\n203 琴房窗外,天**亮了**。\n\n但你下班的时间,**永远不会到**。",
+      "show_hud": true
+    },
+    "n_s5_take_rope": {
+      "scene": "S5",
+      "narrative": "你把钢丝绳放进背包。\n\n钢丝绳进背包后,自己**变软**——\n\n变成一根**红色头绳**。\n\n红色头绳上,系着一颗 1991 年的**糖**。\n\n糖纸还能看清:「上海大白兔」。\n\n糖纸里面包着一张照片——\n\n小学毕业照。\n\n第三排第二个,是叶某。\n\n第三排第二个**旁边**,是**你**。\n\n你的脸,11 岁,穿白衬衫。\n\n但你不记得自己上过留下小学。",
+      "choices": [
+        {
+          "text": "把照片塞回糖纸,带走。",
+          "next": "n_scene_lost_archive",
+          "effects": {"PR": 15, "inv_add": ["1991 班级合照"], "puzzle_add": "piece_eight_zhao", "flags": {"s5_remembered_school": true}}
+        },
+        {
+          "text": "把照片烧了。",
+          "next": "n_npc_piano_ghost",
+          "effects": {"PR": -10, "GR": 8, "flags": {"s5_burned_photo": true}}
+        }
+      ]
+    },
+    "n_s5_grant_leave": {
+      "scene": "S5",
+      "narrative_variants": [
+        {
+          "if": {"flags": {"s5_burned_rope": true}},
+          "text": "你已经烧了那根钢丝绳。\n\n你又来到 203——\n\n请假条还在地上。\n\n但**字迹自己改了**——\n\n「不准」自己变成了「准」。\n\n钢琴键自己摁出最后一个完整的 C 大调。\n\n窗外,11 岁的女孩,**已经走出校门**——\n\n她在校门口回头,对你**鞠躬**。\n\n但她**比第一次走出校门**时,多了一个动作:\n\n她对你**眨了一下眼睛**——\n\n是 1991 年她妈妈最疼她那次,她对妈妈眨过的眼睛。"
+        },
+        {
+          "if": {"flags": {"s5_erased_self": true}},
+          "text": "你刚把自己的名字从 205 黑板上擦掉。\n\n你回到 203——\n\n请假条**自己改字**——\n\n「不准」变成「准」。\n\n但请假条上的「申请人」一栏,**多了一行**——\n\n「**赵某 G-273**」。\n\n你和叶某,一起准假 33 年。\n\n窗外两个孩子走出校门,**一前一后**——\n\n第一个是叶某。\n\n第二个,**穿白衬衫**,11 岁的你。"
+        },
+        {
+          "if": {"flags": {"s5_revisit_piano": true}},
+          "text": "你又来到这里。\n\n请假条已经被你签了。\n\n但 203 琴房的钢琴,**还在响**——\n\n这次不是《小星星》。\n\n是**1991 年那天叶某妈妈在外面叫她的声音**——\n\n「叶某,饭好了!」\n\n这是叶某 33 年没听到的话。\n\n她已经走出校门——\n\n她**朝家的方向跑**。\n\n你低头——\n\n请假条上,**多了一行**:\n\n「叶某 已下班。\n  下一份『未结』:**红衣女孩 何小燕**。」"
+        }
+      ],
+      "narrative": "你拿出钢笔,在请假条「班主任批示」一栏,把「不准」划掉,改成「准」。\n\n你的笔迹,变成 1991 年的**圆珠笔字迹**。\n\n请假条**自己**冒出一行:\n\n「叶某,准假 33 年。\n  现在,可以回家。」\n\n钢琴**最后弹了一个完整的 C 大调**。\n\n然后,完全停了。\n\n203 琴房的空气变暖。\n\n窗外,你看见一个 11 岁的女孩,**背着书包**,慢慢走出校门。\n\n她回头,对你**鞠了一躬**。\n\n然后她**消失**在 1991 年的春日下午。",
+      "choices": [
+        {
+          "text": "鞠躬回礼。",
+          "next": "n_landmark_picker",
+          "effects": {"PR": 25, "GR": -5, "puzzle_add": "piece_piano_girl_freed", "flags": {"s5_freed_yeh": true}}
+        }
+      ]
+    },
+    "n_s5_inspect_shoes": {
+      "scene": "S5",
+      "narrative": "你蹲下,拎起左边那只布鞋。\n\n鞋很轻。\n\n鞋底沾着**一点红色舞台粉**——\n\n你想起来了——\n\n这种粉,是 1996 年六一儿童节学校彩排用的。\n\n但叶某 1991 年就死了。\n\n她不可能踩到 1996 年的彩排粉。\n\n除非——\n\n这双鞋不是叶某的。\n\n这双鞋是**你在 S2 看见的那个红衣女孩**的。\n\n两个学校,两个时间,两个女孩,**共用一双鞋**。",
+      "choices": [
+        {
+          "text": "把鞋带去给红衣女孩。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {"PR": 12, "GR": 5, "puzzle_add": "piece_red_girl_truth", "flags": {"s5_returned_shoes": true}}
+        },
+        {
+          "text": "把鞋穿在自己脚上。",
+          "next": "n_s5_wear_shoes",
+          "effects": {"GR": 18, "flags": {"s5_wore_girl_shoes": true, "marked_lamb": true}}
+        },
+        {
+          "text": "把鞋扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {"GR": 10, "flags": {"s5_threw_shoes_lake": true}}
+        }
+      ]
+    },
+    "n_s5_wear_shoes": {
+      "scene": "S5",
+      "is_ending": true,
+      "ending_type": "E_DATA",
+      "narrative": "你脱下自己的警用皮鞋。\n\n你套上那双白布鞋。\n\n布鞋是 11 岁女孩尺码——\n\n但你穿上去**严丝合缝**。\n\n你的脚,**变小了**。\n\n你的腿,**变细了**。\n\n你的制服,变成红色连衣裙。\n\n你的工牌,变成 14 寸黑白电视。\n\n你成了红衣电视女孩——\n\n你也成了 1991 年自缢的叶某。\n\n你也成了 1996 年货梯里的那个孩子。\n\n你成了**所有「11 岁女孩死在杭州」的合体**。\n\n下一个 G-273 第一夜班,在 S2 看见的红木门里——\n\n会是**你**问他:\n\n「叔叔,27 楼怎么走?」",
+      "show_hud": true
+    },
+    "n_s5_listen_outside": {
+      "scene": "S5",
+      "narrative": "你站在 203 门外。\n\n钢琴单音继续:\n\n弹、停 2 秒、弹、停 2 秒。\n\n你掏出秒表,数:\n\n7 下。\n\n14 下。\n\n21 下。\n\n第 27 下时——\n\n钢琴突然**变成连贯的旋律**:\n\n《小星星》。\n\n但是**倒着弹**。\n\n你听清楚了——\n\n是 1991 年那个女孩,在弹**自己出生那天**电视里放的童谣。\n\n她在**倒带**自己的人生。\n\n第 27 下,是她**11 岁那天**——\n\n她要弹回**婴儿时**。",
+      "choices": [
+        {
+          "text": "推门进去,告诉她不要倒带。",
+          "next": "n_s5_grant_leave",
+          "effects": {"PR": 15, "flags": {"s5_revisit_piano": true}}
+        },
+        {
+          "text": "把对讲机调到 1991-04-23 频段。",
+          "next": "n_scene_red_telephone",
+          "effects": {"PR": 10, "puzzle_add": "piece_radio_call", "flags": {"called_1987": true}}
+        },
+        {
+          "text": "录下钢琴声,准备给前任听。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {"PR": 8, "inv_add": ["1959-043 磁带"], "flags": {"s5_recorded_piano": true}}
+        }
+      ]
+    },
+    "n_s5_corridor": {
+      "scene": "S5",
+      "narrative": "你不进 203,沿走廊继续。\n\n205 教室门半开。\n\n你探头——\n\n205 教室里,黑板上写满**同一个名字**:\n\n「叶某  叶某  叶某  叶某  叶某......」\n\n写了整整一面黑板。\n\n粉笔还在自己写。\n\n粉笔**没有手拿着**。\n\n它自己悬空,在写。\n\n写到第 1987 个「叶某」时——\n\n粉笔停了。\n\n粉笔**转向**,对着你。\n\n它准备写**第 1988 个名字**。\n\n那个名字,**不是叶某**。",
+      "choices": [
+        {
+          "text": "等粉笔写出名字。",
+          "next": "n_s5_chalk_name",
+          "effects": {"PR": 10, "GR": 8, "flags": {"s5_revisit_piano": true}}
+        },
+        {
+          "text": "抓住粉笔,折断。",
+          "next": "n_npc_piano_ghost",
+          "effects": {"PR": 5, "GR": 5, "flags": {"s5_broke_chalk": true}}
+        },
+        {
+          "text": "用黑板擦,擦掉所有「叶某」。",
+          "next": "n_s5_grant_leave",
+          "effects": {"PR": 15, "flags": {"s5_erased_blackboard": true}}
+        },
+        {
+          "text": "退回 203 琴房。",
+          "next": "n_s5_open_door",
+          "effects": {"flags": {"s5_revisit_piano": true}}
+        }
+      ]
+    },
+    "n_s5_chalk_name": {
+      "scene": "S5",
+      "narrative": "你站着不动。\n\n粉笔写下:\n\n「赵某 G-273」\n\n是你的名字。\n\n粉笔写完,「啪」地掉在地上,断成两截。\n\n黑板上,1988 个名字静静躺着。\n\n你的名字是最后一个。\n\n排在 1987 个「叶某」后面。\n\n这意味着——\n\n你的名字,**接替了**叶某的循环。\n\n203 琴房的钢琴,**停了**。\n\n你听见走廊尽头,有人**关门**的声音。\n\n是叶某下班的声音。",
+      "choices": [
+        {
+          "text": "走到黑板前,把自己的名字也擦掉。",
+          "next": "n_s5_grant_leave",
+          "effects": {"PR": 25, "GR": -10, "flags": {"s5_erased_self": true}}
+        },
+        {
+          "text": "把自己的名字留在黑板上,接替叶某。",
+          "next": "n_end_data",
+          "effects": {"flags": {"s5_replaced_yeh": true}}
+        }
+      ]
+    }
+  }
+}

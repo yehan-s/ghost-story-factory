@@ -1,0 +1,5479 @@
+{
+  "story_id": "hangzhou_yebanbaoan",
+  "title": "断桥残雪 · 夜班外卖 (v7 真迷宫图)",
+  "display_name": "断桥残雪 · 夜班外卖",
+  "display_subtitle": "完整版 · 8 主结局 · 13 NPC · 7 共享场景",
+  "protagonist": "赵某 (G-273) · 湖滨国际名品街夜班保安",
+  "version": "7.0",
+  "author": "Claude Opus 4.7 + team ghost-v7-maze (handcrafted maze)",
+  "start_node": "n_intro",
+  "initial_state": {
+    "PR": 0,
+    "GR": 0,
+    "shifts_completed": 0,
+    "shifts_skipped": 0,
+    "inv": [],
+    "flags": {},
+    "route": null,
+    "skipped_landmarks": [],
+    "visited_landmarks": [],
+    "puzzle_pieces": [],
+    "character": "G-273",
+    "meta_flags": {}
+  },
+  "characters": {
+    "G-273": {
+      "label": "赵某 G-273 · 现役夜班保安(主角)",
+      "start_node": "n_intro",
+      "initial_inv": [],
+      "initial_flags": {},
+      "_description": "2024 年新入职的夜班保安。本届主角。"
+    }
+  },
+  "inv_descriptions": {
+    "商场总控钥匙": "总控柜 / B3 货梯 / 部分巡逻点门锁。你的工作钥匙。",
+    "工牌 G-273": "你的身份证明。某些 NPC 会盯着工牌看。失去它,你就『不存在』了。",
+    "前任电话号码": "上一任 G-273 的对讲频段 / 红色电话亭可拨。",
+    "林副科长账本残页": "1985 年贪污账本。能解锁档案室 / 林某真相对话。",
+    "1986 林字硬币": "钱塘江沉船工人借林某的硬币。能影响 S6 井底剧情。",
+    "铜锈片": "S3 钟里的铜锈。可烫在手腕铜印上,认领或拒绝 H 编号。",
+    "铜锈护符": "S3 钟身碎片。带在身上,某些 NPC 反应不同。",
+    "⺶ 符文": "S4 羊血弄归位的符文。E_TRUE 真结局必要前置之一。",
+    "羊公会欠条": "你欠羊公会一刀债。会带来夜班评议会注意。",
+    "羊公会名册": "你被列入羊公会第 18 任。E_HIDDEN 路径加分。",
+    "1991 请假条": "叶某 1991-04-23 没批准的请假条。能交给她改命。",
+    "1991 钢丝绳": "203 琴房琴凳里的钢丝绳。带走会触发班级合照剧情。",
+    "1991 班级合照": "第三排第二个『11 岁的你』。揭开你与叶某的隐藏关联。",
+    "倒带背书声": "为叶某弹过琴的回响。S5 / 共享场景能听到。",
+    "1959-043 磁带": "叶某外婆 1959 年的童谣录音。遗失档案室入口之一。",
+    "1959-043 粮票": "S4 老婆婆塞给你的纪念品。",
+    "1987 告示残页": "S2 红木门上的『请勿打扰 1987』告示。能影响 NPC 反应。",
+    "1987 录像带": "1996 红衣女孩抢电视时拿到。",
+    "27 楼通道钥匙": "红衣女孩给的。开 B3 走廊的 27 楼通道。",
+    "27F 铜钥匙": "上一任 G-273 给的。开 S7 终局区钢门。",
+    "G-272 工牌": "上一任 G-273 的工牌。挂回 27F 墙上能影响某些走向。",
+    "米色风衣": "你穿上了林某的风衣。NPC 会以为你是他。",
+    "14 寸黑白电视": "1996 红衣女孩抱过的玩具电视。屏幕里有她。",
+    "7 顶柳条安全帽": "你薅光了归航帽。E_BAD_DROWN 已锁定。",
+    "柳条安全帽 (粘住)": "粘在你头上摘不掉。S6 工人认你是第 8 个。",
+    "7 工人速写": "你画下的归航工人 7 张脸。可去档案室核对工号册。",
+    "十三号湿巾": "S2 擦出血的湿巾。第 13 号 — 前面 12 个 G-273 也擦过。",
+    "铁锈湖泥湿巾": "S1 沾血泥的湿巾。能交给档案室。",
+    "血毛笔": "S4 弄堂的笔杆是人骨做的。",
+    "红衣女孩铜锈": "S3 钟另一面的红衣女孩侧脸铜锈。",
+    "未注明物品": "(待说明)"
+  },
+  "endings": {
+    "E_TRUE": "关闭杭州常数 (True · 调查派完整)",
+    "E_TRUTH": "揭穿真相 (Truth · 调查派 + 拒绝献祭)",
+    "E_DATA": "数据化 雪花频道 (任意路线 + 献祭)",
+    "E_BROADCAST": "永生于夜班论坛 (围观派 + 论坛点赞 + 掠夺)",
+    "E_BAD_1987": "无尽 1987 (漏卡 ≥3)",
+    "E_BAD_DROWN": "沉船替死鬼 (拾满 7 帽)",
+    "E_NEUTRAL": "平安下班 (但什么都没改变)",
+    "E_HIDDEN": "幽灵保安重投胎 (三路并行隐藏)"
+  },
+  "foreshadows": {
+    "1985_linmou_other26": {
+      "title": "26 笔贪污的另一签字人",
+      "summary_locked": "档案显示 27 笔贪污,只 13 笔指向林某。剩下 14 笔的另一签字人是谁?为何从未被追责?",
+      "summary_resolved": "另一签字人是杭州常数当年的『内部人』。林某是替罪羊。",
+      "explained_by_character": "linmou_1985",
+      "explained_by_ending": null
+    },
+    "1986_lin_coin": {
+      "title": "1986 林字硬币的来源",
+      "summary_locked": "钱塘江沉船 7 工人之一手里捏着一枚『林』字硬币 — 林某 1985 年才投湖,这枚硬币怎么会到 1986 年的工人手上?",
+      "summary_resolved": "硬币是林某死后『欠下的债』,杭州常数允许他以鬼身归还。",
+      "explained_by_character": "linmou_1985",
+      "explained_by_ending": null
+    },
+    "1986_no_eighth": {
+      "title": "为何只有 7 顶帽子",
+      "summary_locked": "联庄站盾构井明明卖了 8 张归航船票,沉船时只 7 个工人。第 8 个买票没上船的人去哪了?",
+      "summary_resolved": "第 8 个是林某的鬼,他在 1986 年用鬼身买了票。",
+      "explained_by_character": "worker_1986",
+      "explained_by_ending": null
+    },
+    "1987_red_dress_truth": {
+      "title": "308 阶上的红衣是谁",
+      "summary_locked": "柳浪闻莺 308 阶台阶上有个数到 1987 就消失的红衣女人。她不是 1996 年的红衣女孩。",
+      "summary_resolved": "她是 1987 年最后的『13 号替死鬼』,数到 1987 是她死亡的那一年。",
+      "explained_by_character": "red_victim_13",
+      "explained_by_ending": "E_BAD_1987"
+    },
+    "1991_yeh_classmate": {
+      "title": "11 岁的你与叶某",
+      "summary_locked": "1991 班级合照第三排第二个孩子和你长得一模一样。你 11 岁那年并没有上过留下小学。",
+      "summary_resolved": "11 岁的『你』是叶某的同桌 — 杭州常数让多个时间线的你都在场。",
+      "explained_by_character": "yeh_1991",
+      "explained_by_ending": "E_TRUE"
+    },
+    "1991_grandma_link": {
+      "title": "外婆与 1959-043 磁带",
+      "summary_locked": "叶某的童谣磁带编号 1959-043 — 1959 年同一间琴房有过一次自缢,编号档案室收着。",
+      "summary_resolved": "外婆 1959 年也死在那间琴房,叶某的死是『循环回归』。",
+      "explained_by_character": "yeh_1991",
+      "explained_by_ending": null
+    },
+    "1996_red_girl_truth": {
+      "title": "红衣女孩到底是谁",
+      "summary_locked": "她抱着 14 寸黑白电视,屏幕里是她自己。1996-08-23,万象城货梯,有个孩子失踪。",
+      "summary_resolved": "她叫何小燕。被她的『继父』在货梯里推下,杭州常数把她数据化保留。",
+      "explained_by_character": "red_girl_1996",
+      "explained_by_ending": "E_TRUTH"
+    },
+    "G272_predecessor_identity": {
+      "title": "前任 G-273 的真身",
+      "summary_locked": "对讲机里那个声音,自称记了 11 年班。但夜班保安岗位每 2 年换一次,11 年应是 5-6 任前。",
+      "summary_resolved": "他是 12 任 G-273 的最后一任,数据化以后留在了对讲频段。",
+      "explained_by_character": "predecessor_2009",
+      "explained_by_ending": "E_DATA"
+    },
+    "8_self_roster": {
+      "title": "8 棺里的『另一个你』",
+      "summary_locked": "S7 终局区有 8 口棺材,每口里都有一个不同年份的『你』。他们是谁?",
+      "summary_resolved": "8 个棺材是 8 个时间线分支的你,每个对应一个能成为夜班保安的『候补』。",
+      "explained_by_character": null,
+      "explained_by_ending": "E_TRUE"
+    }
+  },
+  "nodes": {
+    "n_s1_arrive": {
+      "scene": "S1",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          },
+          "text": "你又回到第三把长椅前。\n\n刚才你已经走得很近——你知道风衣里没有人。但你的手电还沾着一点湿,手心皮肤还在起鸡皮疙瘩。\n\n风衣还在那里。\n\n它好像比刚才微微挺直了一点点。\n\n或者只是你的眼睛在骗你。\n\n你低头看《异常事件记录表》[01]栏——光标还在等你写字。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s1_revisit_wet_shoes": true
+            }
+          },
+          "text": "你又回到长椅前。\n\n那双湿鞋还摆在长椅另一头,鞋头朝外。\n\n它们没动。\n\n但鞋后跟,慢慢渗出黑水,在长椅木板上画出一道细线,直指你的脚。\n\n你的鞋干的。它们的鞋,等你走过去。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s1_post_forum": true
+            },
+            "PR_min": 25
+          },
+          "text": "你又站到第三把长椅前。\n\n手机屏幕亮着——夜班论坛上你那条「空风衣」的帖子,点赞数还在涨。\n\n+1991...+1996...+2007...\n\n点赞数像是在数你听过的所有「事故年份」。\n\n风衣已经瘪下去,只是一件普通湿衣服。\n\n但《异常事件记录表》[01]栏还没填——它要的不是『削弱实体』,要的是你写一行字。"
+        }
+      ],
+      "narrative": "20:27 的湖滨。\n\n风从西湖吹过来,带一股说不清的潮味——像有人把湖水煮熟,又冷掉。\n\n你站在第一个打卡机前,「嘀」一声,屏幕闪过雪花。\n\n你抬头——第三把绿色长椅上,多了一件风衣。\n\n米色,双排扣,湿漉漉的,像刚从湖里捞上来。可西湖离你 50 米,今晚没下雨。\n\n你打开手电,光柱扫过去——\n\n风衣是空的,却鼓成人形,领口以上一片空白。\n\n摄像头红灯灭了。HUD 跳出:「死角累积 00:02:00」。\n\n《异常事件记录表》[01]栏自动浮现,光标在闪。\n\n你的脚还没动。",
+      "choices": [
+        {
+          "text": "走近,看清楚一点。",
+          "next": "n_s1_close",
+          "effects": {
+            "PR": 2,
+            "landmark_visited": "S1"
+          }
+        },
+        {
+          "text": "站着不动,等它先动。",
+          "next": "n_s1_standoff",
+          "effects": {
+            "GR": 2,
+            "landmark_visited": "S1"
+          }
+        },
+        {
+          "text": "拿起手机,先拍一张。",
+          "next": "n_s1_photo",
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S1",
+            "flags": {
+              "s1_post_forum": true
+            }
+          }
+        },
+        {
+          "text": "假装没看见,加快脚步。",
+          "next": "n_s1_walk_past",
+          "effects": {
+            "shifts_skipped": 0,
+            "landmark_visited": "S1"
+          }
+        },
+        {
+          "text": "退回打卡机,跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S1",
+            "flags": {
+              "s1_aborted": true
+            }
+          },
+          "require": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_close": {
+      "scene": "S1",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s1_touched_coat": true
+            }
+          },
+          "text": "你又走到风衣边上。\n\n刚才你摸过它了——湿,冷,皮肤底下没有骨头。\n\n你这次不敢再用手了。\n\n但你的手,自己抬起来。"
+        }
+      ],
+      "narrative": "你走到长椅旁。\n\n3 步。你以为是 5 步——\n\n你的脚比判断**多迈了 2 步**,把你**推**到长椅前。\n\n你站定,听见自己的呼吸有点快。\n\n手电光柱稳稳照在风衣上。\n\n风衣的双排扣是错位的,第二粒扣到了第四个扣眼。\n\n这是个职业的细节——醉酒的人会扣错,死了 30 多年的人也会。\n\n你蹲下来。\n\n膝盖压住青石板,冷气从裤腿钻进来。\n\n你闻到风衣袖口的味道——\n\n不是潮味,不是霉味。\n\n是**1985 年湖底淤泥**特有的腥味,带着一点点铜锈。\n\n你不知道你为什么能分辨这种味道。\n\n你这辈子从没下过西湖。\n\n你抬头看领口。\n\n领口里面是空的——\n\n但不是黑,是一种你眼睛**不肯聚焦**的灰。\n\n你试着看清楚。\n\n你的视线**自动滑开**,像两块同极磁铁。\n\n你能感觉到领口里**有什么东西**。\n\n你不知道是头,是脸,是**别的什么**。\n\n但它**也在看你**。",
+      "choices": [
+        {
+          "text": "伸手摸一下风衣。",
+          "next": "n_s1_close_touch",
+          "effects": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          }
+        },
+        {
+          "text": "翻一翻风衣口袋。",
+          "next": "n_s1_pocket_book",
+          "effects": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          }
+        },
+        {
+          "text": "把手电对准领口照进去。",
+          "next": "n_s1_close_flashlight",
+          "effects": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          }
+        },
+        {
+          "text": "站起来,退回打卡机前再想。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_close_touch": {
+      "scene": "S1",
+      "narrative": "你伸手按上风衣袖子。\n\n指尖一沉——\n\n衣料是湿的,但下面不是棉花,不是手臂,是某种**正在轻轻起伏**的东西。\n\n像有人在用呼吸的节奏,顶你的手心。\n\n但风衣的领口是空的。没有头,没有肩。\n\n你低头,看见自己制服袖口上,印出一只湿的手印。\n\n那只手印,比你的手大一号。",
+      "choices": [
+        {
+          "text": "抓起风衣,扔进西湖。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 8,
+            "flags": {
+              "s1_threw_coat": true,
+              "s1_touched_coat": true
+            }
+          }
+        },
+        {
+          "text": "翻进风衣里面找东西。",
+          "next": "n_s1_pocket_book",
+          "effects": {
+            "flags": {
+              "s1_touched_coat": true
+            }
+          }
+        },
+        {
+          "text": "缩手,扔下风衣后退。",
+          "next": "n_s1_close",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s1_touched_coat": true,
+              "s1_hand_shaking": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_pocket_book": {
+      "scene": "S1",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s1_book_seen": true
+            }
+          },
+          "text": "你又把手伸进风衣口袋。\n\n那本黑色帆布封面的账本还在那里——\n\n但它现在比刚才薄了一点。\n\n好像里面的某些页,自己出去了。"
+        }
+      ],
+      "narrative": "你的手伸进风衣内袋——\n\n摸到一本黑色帆布封面的账本。边角发霉,封面有水渍。\n\n你拿出来,翻开。\n\n密密麻麻的钢笔字,是 1980 年代的笔迹。\n\n第一行写着:\n\n「1985-10-18  ¥27,300.00  柳浪闻莺  林某  当夜投湖」\n\n你翻到中间——\n\n每一栏的最后,都被人用红笔画了一个圈,圈里写「未结」。\n\n最末一栏是空白的。\n\n光标——\n\n等你签名。",
+      "choices": [
+        {
+          "text": "在最末一栏抄录一行数字(不写名字)。",
+          "next": "n_s1_book_copy",
+          "effects": {
+            "PR": 5,
+            "puzzle_add": "piece_account",
+            "flags": {
+              "s1_book_seen": true
+            }
+          }
+        },
+        {
+          "text": "把账本整本拿走,塞进自己背包。",
+          "next": "n_npc_faceless_coat",
+          "effects": {
+            "GR": 10,
+            "inv_add": [
+              "林副科长账本残页"
+            ],
+            "flags": {
+              "s1_book_grabbed": true,
+              "s1_book_seen": true,
+              "linmou_marked": true
+            }
+          }
+        },
+        {
+          "text": "在最末一栏写「赵某 G-273」。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 10,
+            "GR": 5,
+            "flags": {
+              "s1_signed_book": true,
+              "s1_book_seen": true
+            }
+          }
+        },
+        {
+          "text": "把账本放回去,关上风衣。",
+          "next": "n_s1_close",
+          "effects": {
+            "flags": {
+              "s1_book_seen": true,
+              "s1_book_returned": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_book_copy": {
+      "scene": "S1",
+      "narrative": "你掏出钢笔,在最末一栏抄了三行数字。\n\n数字是:27、307、1987。\n\n这是你这一夜后面会反复见到的三个数。\n\n你抄完,合上账本,放回风衣口袋。\n\n风衣领口里,某种灰色的东西**叹了一口气**。\n\n你听见的不是声音,是空气的密度变了。\n\n你的指尖,沾上了一小块铜锈色的水印。\n\nHUD 提示:拼图碎片 +1。",
+      "choices": [
+        {
+          "text": "退到长椅旁,继续观察。",
+          "next": "n_s1_close",
+          "effects": {
+            "flags": {
+              "s1_revisit_close": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_close_flashlight": {
+      "scene": "S1",
+      "narrative": "你把手电对准风衣领口。\n\n光柱进去了。\n\n但没有「打到底」——\n\n光,在领口里面**消失**了,像被一块干燥的毛巾吸走。\n\n你换大功率档,光柱变白——\n\n领口里浮现出一张脸。\n\n是你自己的脸。\n\n没有眼睛,只有两个**摄像头镜头**,正在对焦。\n\n你听见快门声。\n\n你的手机自己拍了一张照片,自动上传到夜班论坛。",
+      "choices": [
+        {
+          "text": "打开夜班论坛,看那张照片。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s1_post_forum": true,
+              "s1_auto_posted": true
+            }
+          }
+        },
+        {
+          "text": "关手电,转身就跑。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s1_revisit_close": true,
+              "s1_panic": true
+            }
+          }
+        },
+        {
+          "text": "对着领口大声喊『有人吗』。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 5,
+            "GR": 3,
+            "flags": {
+              "s1_yelled": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_standoff": {
+      "scene": "S1",
+      "narrative": "你站着不动。\n\nHUD 倒计时:01:43...01:42...01:41...\n\n风从西湖刮过来,带着潮味。风衣的下摆,**逆着风**飘起一点。\n\n01:01...00:30...00:15...\n\n摄像头红灯,在你眼睛余光里,**眨了三下**。\n\n00:00。「死角累积」消失。\n\n摄像头红灯重新亮起。\n\n风衣还在,但下摆正常垂着。\n\n你的对讲机,「滋——」一声响。",
+      "choices": [
+        {
+          "text": "接对讲机。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "flags": {
+              "s1_radio_answered": true
+            }
+          }
+        },
+        {
+          "text": "冲过去,直接摸风衣。",
+          "next": "n_s1_close_touch",
+          "effects": {
+            "PR": 5,
+            "GR": 3
+          }
+        },
+        {
+          "text": "闭眼,数到 30。",
+          "next": "n_s1_eyes_closed",
+          "effects": {
+            "GR": 5
+          }
+        },
+        {
+          "text": "退回打卡机前。",
+          "next": "n_s1_arrive",
+          "effects": {}
+        }
+      ]
+    },
+    "n_s1_eyes_closed": {
+      "scene": "S1",
+      "narrative": "你闭上眼。\n\n1...2...3...\n\n你听见自己的呼吸,也听见湖水的声音。\n\n9...10...11...\n\n湖水不该这么近。\n\n14...15...16...\n\n17 ——\n\n你听见**一声水花**。\n\n离你不到 1 米。\n\n好像有什么东西,从长椅上,跳进了湖里。\n\n你还闭着眼。",
+      "choices": [
+        {
+          "text": "睁眼。",
+          "next": "n_s1_wet_shoes",
+          "effects": {
+            "PR": 5
+          }
+        },
+        {
+          "text": "继续闭着,数完 30。",
+          "next": "n_s1_eyes_attack",
+          "effects": {
+            "PR": -5,
+            "GR": 8,
+            "flags": {
+              "s1_eyes_attacked": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_wet_shoes": {
+      "scene": "S1",
+      "narrative": "你睁开眼。\n\n风衣不见了。\n\n长椅上,代替它的是一双**湿的男士皮鞋**——\n\n1980 年代的款式,鞋头有点磨损。\n\n鞋的尺码,和你穿的一样。\n\n鞋头朝外,正对着你。\n\n你不敢动。\n\n但你的脚,**自己往前迈了半步**。\n\n《异常事件记录表》[01]栏的光标,等你写。",
+      "choices": [
+        {
+          "text": "脱下自己的警用皮鞋,把这双穿上。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s1_wore_shoes": true,
+              "linmou_marked": true
+            }
+          }
+        },
+        {
+          "text": "把湿鞋扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s1_threw_shoes": true
+            }
+          }
+        },
+        {
+          "text": "什么都不做,退回打卡机。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "flags": {
+              "s1_revisit_wet_shoes": true
+            }
+          }
+        },
+        {
+          "text": "蹲下,把鞋翻过来看鞋底。",
+          "next": "n_s1_shoe_sole",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s1_revisit_wet_shoes": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_eyes_attack": {
+      "scene": "S1",
+      "narrative": "你继续闭着眼。\n\n18...19...\n\n有什么东西在你脸前——\n\n你能感觉到一个**冰凉的、湿的脸**,贴上你的鼻尖。\n\n26...27...\n\n它没动。\n\n但你能数清楚:它的鼻尖到你的鼻尖,距离是 0 厘米。\n\n29...\n\n30。\n\n你睁眼。\n\n什么都没有。\n\n但你的工牌掉在脚边,反面被人用湿手指写了一个字:\n\n「等」",
+      "choices": [
+        {
+          "text": "捡起工牌,退回打卡机。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s1_marked_wait": true,
+              "s1_revisit_close": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_shoe_sole": {
+      "scene": "S1",
+      "narrative": "你蹲下,把湿鞋翻过来。\n\n鞋底沾着黑色泥沙。\n\n泥沙里嵌着一枚硬币。\n\n硬币是 1986 年的 1 角——\n\n背面有个划痕,是用刀片刻的「林」字。\n\n你认得这个字。账本上签过。\n\n你刚把硬币抠出来——\n\n硬币烫了一下你的指尖。然后变冷。\n\n然后,你听见对讲机里传来一声极轻的「嘀」。",
+      "choices": [
+        {
+          "text": "把硬币收好,接对讲机。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "inv_add": [
+              "1986 林字硬币"
+            ],
+            "puzzle_add": "piece_coin"
+          }
+        },
+        {
+          "text": "把硬币扔回湿鞋,退回打卡机。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "flags": {
+              "s1_revisit_wet_shoes": true,
+              "s1_saw_coin": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_photo": {
+      "scene": "S1",
+      "narrative": "你举起手机。\n\n咔嚓。\n\n照片里——风衣有了脸。\n\n是你的脸。没有眼睛。\n\n夜班论坛页面自动打开了。\n\n你的发帖:「湖滨 G-273 第一夜班」。\n\n点赞数从 0 开始跳。+1...+3...+7...+27...\n\n你还没决定要不要发出去。\n\n但帖子已经在那里了——上传时间显示**昨晚 23:47**。\n\n昨晚你还没入职。",
+      "choices": [
+        {
+          "text": "等点赞数涨,看看会发生什么。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s1_post_forum": true
+            }
+          }
+        },
+        {
+          "text": "立刻删帖。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s1_post_deleted": true
+            }
+          }
+        },
+        {
+          "text": "把照片单独发到一个加密的小群。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s1_sent_private": true
+            }
+          }
+        },
+        {
+          "text": "把手机扔进西湖。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 12,
+            "inv_remove": [
+              "前任电话号码"
+            ],
+            "flags": {
+              "s1_phone_lost": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_walk_past": {
+      "scene": "S1",
+      "narrative": "你低头,加快脚步。\n\n你走过长椅,数自己的步数:1、2、3...\n\n第 7 步——\n\n你的鞋,**湿了**。\n\n你不记得自己踩进了水。\n\n你低头看脚——\n\n左脚的鞋面湿到鞋带。右脚干的。\n\n打卡时间,自动出现在《异常事件记录表》[01]栏:\n\n「20:31  G-273  未观察。但已被观察。」\n\n光标停在「但已被观察」后面,等你写下一句。",
+      "choices": [
+        {
+          "text": "回头,看长椅。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s1_observed_back": true
+            }
+          }
+        },
+        {
+          "text": "加快脚步,跑出湖滨。",
+          "next": "n_s1_lake_chase",
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s1_running": true
+            }
+          }
+        },
+        {
+          "text": "蹲下,擦干左脚的鞋。",
+          "next": "n_s1_dry_shoe",
+          "effects": {
+            "PR": 3
+          }
+        },
+        {
+          "text": "直接跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S1",
+            "flags": {
+              "s1_aborted": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_lake_chase": {
+      "scene": "S1",
+      "narrative": "你跑起来。\n\n身后传来鞋底踏水的声音——\n\n不是湿,是**真的踩在水面上**的那种「啪嗒」。\n\n你不敢回头。\n\n但你知道——\n\n那双跟在你身后的鞋,**是男士皮鞋**。\n\n是 1980 年代的款式。\n\n鞋码,和你一样。\n\n你跑到湖滨边缘——\n\n你停下,因为你听见湖里有人**轻轻**喊了你的工号。",
+      "choices": [
+        {
+          "text": "跳进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "PR": 10,
+            "GR": 5,
+            "flags": {
+              "s1_jumped_lake": true
+            }
+          }
+        },
+        {
+          "text": "捂住耳朵,继续跑。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -8,
+            "shifts_skipped": 1,
+            "landmark_skipped": "S1",
+            "flags": {
+              "s1_fled": true
+            }
+          }
+        },
+        {
+          "text": "回头,面对它。",
+          "next": "n_s1_arrive",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s1_faced_it": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s1_dry_shoe": {
+      "scene": "S1",
+      "narrative": "你蹲下,从兜里抽出一张湿巾,擦左脚的鞋。\n\n湿巾擦过,鞋面**确实**变干了。\n\n但湿巾,变成了暗红色。\n\n你低头看湿巾——\n\n它沾的不是水,是**血色的湖泥**。\n\n泥的味道,不是西湖的潮味,是**铁锈味**。\n\n你抬头——\n\n第三把长椅,**多了一双湿的男士皮鞋**。\n\n鞋头朝着你蹲的位置。",
+      "choices": [
+        {
+          "text": "走过去,看湿鞋。",
+          "next": "n_s1_wet_shoes",
+          "effects": {
+            "PR": 3
+          }
+        },
+        {
+          "text": "把沾血泥的湿巾收好,继续走。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "inv_add": [
+              "铁锈湖泥湿巾"
+            ],
+            "puzzle_add": "piece_blood_mud",
+            "flags": {
+              "s1_kept_mud": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_arrive": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          },
+          "text": "你又站在 307 阶的入口。\n\n灯柱比刚才暗一格。\n\n第 1 阶上,刚才你蹲下擦鞋的位置——多了一个**手掌印**。\n\n手掌印是湿的,五指张开,大小是个 11 岁女孩的。\n\n她在等你回来。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_heard_tv": true
+            }
+          },
+          "text": "你又来到 307 阶。\n\n柳浪闻莺的雾比刚才浓——\n\n你能听见**雪花声**从台阶尽头传过来,清清楚楚。\n\n14 寸黑白电视,在某一阶上等你。\n\n但你不知道是第几阶。\n\n《异常事件记录表》[02]栏的光标,等你写。"
+        }
+      ],
+      "narrative": "21:47 的柳浪闻莺。\n\n夜雾像洗碗水,一层灰白盖在湖面。\n\n307 阶。这是当地老人对这条山道的别名——\n\n上去 307 阶,你就到老和山观景台。\n\n但你今晚的打卡点不是观景台。\n\n你的打卡点,在第 308 阶。\n\n据队长说:**「上到 307,你就别往上数了。」**\n\n你抬头——\n\n第一根灯柱,亮的。第二根,暗的。第三根,亮的——\n\n但灯泡里**没有钨丝**,是雪花在里面晃。\n\n你的脚还没踩第一阶。",
+      "choices": [
+        {
+          "text": "一阶一阶数着上去。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 2,
+            "landmark_visited": "S2"
+          }
+        },
+        {
+          "text": "不数,跑步上山。",
+          "next": "n_s2_run_up",
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S2"
+          }
+        },
+        {
+          "text": "蹲下,先擦干净自己鞋上沾的湖泥。",
+          "next": "n_s2_clean_shoes",
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S2"
+          }
+        },
+        {
+          "text": "退回打卡机,跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S2",
+            "flags": {
+              "s2_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s2_revisit_stairs": true
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "s2_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s2_revisit_stairs": true
+                }
+              },
+              {
+                "flags": {
+                  "s2_heard_tv": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "n_s2_count_stairs": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          },
+          "text": "你又开始数。\n\n但这次,你**已经知道结果**——\n\n307 阶完了,会出现 308。\n\n你数到 100 阶,数到 200 阶——\n\n你的脚步声**和身后的脚步声错开半拍**。\n\n这一次,你**不回头**。\n\n你数到 307 阶——\n\n你前面,**直接是 308 阶**。\n\n红木门**已经开**了一条缝。\n\n它在等你。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_following_footprints": true
+            }
+          },
+          "text": "你跟着两个潮湿的脚印往上数。\n\n你的脚和女孩的脚**重叠着前进**。\n\n你的脚印踩在她的脚印上——\n\n严丝合缝。\n\n你 27 岁的脚,踩进 11 岁的脚里。\n\n这不应该。\n\n但你抬头——\n\n307 阶尽头,**红木门为你打开**。\n\n比第一次开得更宽。"
+        },
+        {
+          "if": {
+            "PR_min": 30,
+            "flags": {
+              "s2_pushed_through": true
+            }
+          },
+          "text": "你已经在跑。\n\n你不数。\n\n你只跑。\n\n但你的喉咙,**自己发出数字**——\n\n100、200、307。\n\n你的喉咙**比你的脚先到 307**。\n\n你的脚还在第 50 阶。\n\n但你的喉咙数完了。\n\n红木门**自动闭合**——\n\n你今晚不能进了。\n\n你**白来一趟**。"
+        }
+      ],
+      "narrative": "你开始数。\n\n1、2、3...\n\n台阶是青石的,每一阶都被磨出一个浅坑——是几十年踩出来的。\n\n你数到 100 阶时,第一次抬头——\n\n看不到山顶。\n\n200 阶。雾把你前面的台阶全吞了。\n\n307 阶。\n\n你停下,脚还在第 307 阶上。\n\n你应该已经到山顶了。\n\n但你前面**还有台阶**。\n\n你低头数自己的脚下——\n\n是第 307 阶。\n\n再下一阶——\n\n是第 308 阶。",
+      "choices": [
+        {
+          "text": "踏上第 308 阶。",
+          "next": "n_s2_step_308",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s2_stepped_308": true
+            }
+          }
+        },
+        {
+          "text": "停在 307,蹲下系鞋带,等天亮。",
+          "next": "n_s2_wait_307",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          }
+        },
+        {
+          "text": "倒着下山,数着倒数。",
+          "next": "n_s2_descend_count",
+          "effects": {
+            "GR": 3,
+            "flags": {
+              "s2_descending": true
+            }
+          }
+        },
+        {
+          "text": "继续往上数:309、310、311...",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {
+              "s2_kept_counting": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_step_308": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s2_closed_door": true
+            }
+          },
+          "text": "你又上 308 阶。\n\n这次门没『自己』开。\n\n门**已经开了**——\n\n开得很宽。\n\n你能看见门里——\n\n14 寸电视前,**多了一双白布鞋**。\n\n鞋朝着门口。\n\n鞋后跟,有 1996 年的红色舞台粉。\n\n红衣女孩,**站在电视后**——\n\n这次她对你说:「叔叔,你**关过门一次**。\n  关一次,我等 7 年。\n  你又来了。\n  我等了 14 年。\n\n  你想再关吗?」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_offered_candy": true
+            }
+          },
+          "text": "你前面给过她一颗糖。\n\n你又上 308 阶——\n\n红木门**自己开**——\n\n开成 11 岁女孩**正好钻得过**的缝。\n\n你的脚,**自己变小**——\n\n你也变成 11 岁。\n\n11 岁的你,钻过门缝。\n\n门里,红衣女孩对**11 岁的你**鞠躬:\n\n「同学,**一起走 27 楼**。」"
+        }
+      ],
+      "narrative": "你抬脚,踏上第 308 阶。\n\n第 308 阶不是台阶——\n\n是一扇红木门的门槛。\n\n门是横在山道中央的,1980 年代旧式公寓门,深红漆斑驳。\n\n门上贴着一张泛黄的告示:\n\n「请勿打扰  1987」\n\n门没锁。\n\n门**自己**开了一条缝。\n\n里面,雪花声从一台 14 寸电视里漏出来。\n\n一个红色的影子,站在电视旁边,**等了你很久**。",
+      "choices": [
+        {
+          "text": "推开门,进去。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "敲门——「有人吗?」",
+          "next": "n_s2_knock_door",
+          "effects": {
+            "PR": 5,
+            "GR": 3
+          }
+        },
+        {
+          "text": "把门关上,退回 307 阶。",
+          "next": "n_s2_arrive",
+          "effects": {
+            "flags": {
+              "s2_revisit_stairs": true,
+              "s2_closed_door": true
+            }
+          }
+        },
+        {
+          "text": "扯下「请勿打扰 1987」的告示,塞进背包。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "1987 告示残页"
+            ],
+            "puzzle_add": "piece_1987_notice"
+          }
+        },
+        {
+          "text": "我累了,不开门,直接下山打卡走人。",
+          "next": "n_s2_red_door_skip",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s2_skipped_door": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_knock_door": {
+      "scene": "S2",
+      "narrative": "你敲门。\n\n咚。咚。咚。\n\n第三声敲完——\n\n门里**敲了回来**。\n\n咚。咚。咚——\n\n第三声,**敲在你脖子后面**。\n\n你猛回头——\n\n身后的台阶上空无一人。\n\n但你脖子后面那块皮肤,**冷的**。\n\n像被一根手指按了一下。\n\n门缝里,一个童音飘出来:\n\n「叔叔,27 楼怎么走?」",
+      "choices": [
+        {
+          "text": "推门,告诉她。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "回答她:『27 楼不在 27 层。』",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_27th_clue",
+            "flags": {
+              "s2_answered_riddle": true
+            }
+          }
+        },
+        {
+          "text": "什么都不说,转身下山。",
+          "next": "n_s2_descend_count",
+          "effects": {
+            "PR": -3,
+            "GR": 5,
+            "flags": {
+              "s2_fled_door": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_run_up": {
+      "scene": "S2",
+      "narrative": "你不数。\n\n你跑上山。\n\n一口气冲到第 50 阶时——\n\n你听见**自己的脚步声**,在你身后响。\n\n不是回声——是错开半拍的、**第二个人**的脚步。\n\n你停下。\n\n身后的脚步,也停下。\n\n但停得**慢半拍**。\n\n你低头看自己的影子——\n\n月光下,你的影子,有**两个**。\n\n一个是你。\n\n另一个,扎着小辫,穿连衣裙。",
+      "choices": [
+        {
+          "text": "猛回头。",
+          "next": "n_s2_turn_back",
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {
+              "s2_saw_double_shadow": true
+            }
+          }
+        },
+        {
+          "text": "继续跑,一口气冲到顶。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s2_pushed_through": true
+            }
+          }
+        },
+        {
+          "text": "蹲下,两脚踩住自己的影子。",
+          "next": "n_s2_step_on_shadow",
+          "effects": {
+            "GR": 8
+          }
+        },
+        {
+          "text": "丢下《异常事件记录表》,跑下山。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S2",
+            "PR": -8,
+            "flags": {
+              "s2_dropped_record": true,
+              "s2_aborted": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_turn_back": {
+      "scene": "S2",
+      "narrative": "你猛回头。\n\n台阶上空无一人。\n\n但你的左脚边,**有一只布鞋**。\n\n白色,女孩款,鞋头朝着山下,鞋后跟刚刚被脱掉。\n\n鞋底沾着**红色舞台粉**——是 1996 年六一儿童节学校彩排用的那种。\n\n你的呼吸停了半秒。\n\n你听见——\n\n**鞋的另一只**,从台阶上方**跳着**下来。\n\n啪嗒。啪嗒。\n\n离你 5 阶。",
+      "choices": [
+        {
+          "text": "捡起布鞋,放在台阶上,鞋头朝山顶。",
+          "next": "n_s2_step_308",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "s2_redirected_shoe": true
+            }
+          }
+        },
+        {
+          "text": "踩烂布鞋。",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "GR": 12,
+            "flags": {
+              "s2_crushed_shoe": true
+            }
+          }
+        },
+        {
+          "text": "把布鞋扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s2_threw_shoe_lake": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_step_on_shadow": {
+      "scene": "S2",
+      "narrative": "你蹲下,两只脚同时踩住地上**两个影子**——\n\n一个是你的,一个是那个扎小辫的。\n\n你以为踩住,影子就不动。\n\n影子动了。\n\n它从你脚底**抽出去**——\n\n像被从下面拽走。\n\n你脚下的青石,出现两个**潮湿的脚印**——\n\n一个是你穿着皮鞋的脚印。\n\n另一个,是赤脚,11 岁女孩的尺码。\n\n两个脚印,**朝山顶**走去。",
+      "choices": [
+        {
+          "text": "跟着潮湿的脚印,继续上山。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s2_following_footprints": true
+            }
+          }
+        },
+        {
+          "text": "脱下自己的鞋,光脚踩在两个脚印中间。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 12,
+            "GR": 8,
+            "flags": {
+              "s2_barefoot_match": true,
+              "s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "拍照发夜班论坛。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "posted_photo": true,
+              "s2_posted_shadow": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_clean_shoes": {
+      "scene": "S2",
+      "narrative": "你蹲在第一阶,从兜里抽出一张湿巾,擦自己制服皮鞋上的湖泥。\n\n湿巾擦过——\n\n泥被擦下来,湿巾变红。\n\n你以为是 S1 长椅那边沾的铜锈水。\n\n你低头看——\n\n是**血**。\n\n血是新鲜的,温的。\n\n湿巾上面,渐渐浮现一行字:\n\n「你不是第一个想擦干净的。\n  你是第 13 个。」",
+      "choices": [
+        {
+          "text": "把湿巾收好,继续上山。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 3,
+            "inv_add": [
+              "十三号湿巾"
+            ],
+            "puzzle_add": "piece_13th"
+          }
+        },
+        {
+          "text": "把湿巾扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 8,
+            "flags": {
+              "s2_dumped_wipe": true
+            }
+          }
+        },
+        {
+          "text": "用湿巾擦自己的脸。",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "PR": 10,
+            "GR": 12,
+            "flags": {
+              "s2_smeared_face": true,
+              "marked_lamb": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_wait_307": {
+      "scene": "S2",
+      "narrative": "你蹲在第 307 阶。\n\n你不上去,也不下来。\n\n你以为这样就能耗到天亮。\n\n你的手机时间,卡在 22:13。\n\n22:13。22:13。22:13——\n\n你看了一千下,数字没动。\n\n但夜雾**变厚了**。\n\n你听见第 308 阶上,有人**穿着布鞋**走来走去。\n\n啪嗒、啪嗒、啪嗒。\n\n绕着你蹲的位置走圈。\n\n第 7 圈走完——\n\n她**蹲下**了。\n\n蹲在你正前方 10 厘米。\n\n虽然你看不见她。",
+      "choices": [
+        {
+          "text": "睁眼,直视她。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s2_heard_tv": true,
+              "s2_faced_her": true
+            }
+          }
+        },
+        {
+          "text": "闭着眼,等她走。",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "PR": -5,
+            "GR": 15,
+            "flags": {
+              "s2_avoided_her": true
+            }
+          }
+        },
+        {
+          "text": "从口袋里掏出一颗糖,放在面前。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "s2_offered_candy": true,
+              "s2_heard_tv": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_descend_count": {
+      "scene": "S2",
+      "narrative": "你转身下山,倒数:307、306、305...\n\n你以为下山很快。\n\n你数到 200 阶时,抬头——\n\n你前面**还有 100 多阶**。\n\n你下到 100 阶——\n\n你前面**还有 100 多阶**。\n\n你下到 50 阶——\n\n你前面,还有 100 多阶。\n\n你低头看自己的脚下——\n\n是第 307 阶。\n\n你**没动**。",
+      "choices": [
+        {
+          "text": "干脆坐下,等天亮。",
+          "next": "n_s2_wait_307",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s2_revisit_stairs": true
+            }
+          }
+        },
+        {
+          "text": "回头,跑上 308 阶。",
+          "next": "n_s2_step_308",
+          "effects": {
+            "PR": 5
+          }
+        },
+        {
+          "text": "拨打前任电话求助。",
+          "next": "n_scene_red_telephone",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "called_1987": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "前任电话号码"
+            ]
+          }
+        }
+      ]
+    },
+    "n_s2_endless_loop": {
+      "scene": "S2",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative": "你继续往上数。\n\n308、309、310、500、1000、1987...\n\n你停不下来。\n\n你的脚自己迈,你的嘴自己数。\n\n第 1987 阶,你抬头——\n\n你**还在第 1 阶**。\n\n你回头——\n\n柳浪闻莺的雾里,站着一排小学生,穿着 1987 年的红白校服,排成两列,**等你领他们上山**。\n\n你想停下。\n\n你的腿不听。\n\n你的口水变成砂砾。\n\n你的喉咙喊不出。\n\n《异常事件记录表》[02]栏自己写完了:\n\n「赵某 G-273  21:47-永远  自愿替补 1987-12-24-013」\n\n你成了 1987 年踩踏事故里,**那个原本不应该死**的第 14 个人。",
+      "show_hud": true
+    },
+    "n_s2_red_door_skip": {
+      "scene": "S2",
+      "narrative": "你站在 308 阶红木门前。\n\n门里有一个红衣女孩。\n\n你不想进去——\n\n不是怕,是**累**。\n\n你已经看过 1987 的告示。你已经看过双影子。你已经擦出血色的湿巾。\n\n你想下班。\n\n你转身,走下 307 阶。\n\n下山的路上,雾散了。\n\n柳浪闻莺,现在只是一个普通的湿冷的山道。\n\n你回到打卡机前,自动盖章。\n\n[02]栏: 「无观察。亦未被观察。」\n\n你以为你赢了。\n\n但是你回到记录表第一页时,光标停在那里——\n\n等你写下一栏。",
+      "choices": [
+        {
+          "text": "继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s2_skipped_door": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_arrive": {
+      "scene": "S3",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          },
+          "text": "你又来到理安寺。\n\n刚才的钟摆,现在反着摆。\n\n你的指纹还留在第二片铜锈上——\n\n现在,**铜锈自己长回去了**,但形状变成你的指纹。\n\n寺门开着。等你。"
+        },
+        {
+          "if": {
+            "flags": {
+              "rang_seven": true
+            }
+          },
+          "text": "你已经敲过七下钟。\n\n寺院应该归位。\n\n但你回来时——\n\n**钟没了**。\n\n钟架上空空的,只挂着一行字:\n\n「H = 你」"
+        }
+      ],
+      "narrative": "22:48 的九溪。\n\n打车来这里花了 35 分钟,司机在最后 1 公里下车,说他不进去。\n\n9 溪 18 涧的尽头,理安寺。\n\n寺门虚掩。门额上「理安」两个字的金漆掉了一半。\n\n你推门进去——\n\n大殿中央悬着一口宋代古铜钟。\n\n钟从中间**裂成两半**,但裂缝处不是黑的,是**蓝绿色的铜锈**。\n\n铜锈拼成一张**侧脸**——\n\n那张脸,**倒挂着**,眼睛是闭的。\n\n钟旁有一根撞钟木。\n\n墙上挂着一块木牌:「23:45 前敲七下,不可多敲一下。」\n\n你的手机显示 22:48。\n\n你有 57 分钟。",
+      "choices": [
+        {
+          "text": "走近,看那张倒挂的侧脸。",
+          "next": "n_s3_examine_face",
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S3"
+          }
+        },
+        {
+          "text": "直接拿撞钟木,准备 23:45 敲。",
+          "next": "n_s3_wait_to_ring",
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S3"
+          }
+        },
+        {
+          "text": "绕过钟,看看大殿后面有什么。",
+          "next": "n_s3_temple_back",
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S3"
+          }
+        },
+        {
+          "text": "退回门口,打卡走人。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S3",
+            "flags": {
+              "s3_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s3_revisit_temple": true
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "s3_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s3_revisit_temple": true
+                }
+              },
+              {
+                "flags": {
+                  "rang_seven": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "你的对讲机突然响了——先接对讲机。",
+          "next": "n_s3_temple_radio",
+          "effects": {
+            "landmark_visited": "S3",
+            "PR": 3
+          }
+        }
+      ]
+    },
+    "n_s3_examine_face": {
+      "scene": "S3",
+      "narrative": "你绕到钟旁,蹲下来。\n\n铜锈的「侧脸」很清晰——\n\n是一个中年男人,鼻梁很高,嘴唇很薄。\n\n你看了 30 秒。\n\n眼睛——\n\n**睁了**。\n\n不是慢慢睁,是「啪」地一下,像有人按了开关。\n\n眼睛是铜锈做的,但它**会动**。\n\n它的视线扫过你的脸,停在你的工牌上,然后,\n\n停在你的左手腕。\n\n你低头——\n\n你的手腕上,**多了一个铜锈印**,形状像一只小手按过的痕迹。",
+      "choices": [
+        {
+          "text": "用指甲刮一片铜锈下来。",
+          "next": "n_s3_scrape_corrosion",
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "铜锈片"
+            ],
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
+        },
+        {
+          "text": "对着侧脸说话:『你想让我做什么?』",
+          "next": "n_npc_corrosion_face",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
+        },
+        {
+          "text": "把工牌摘下来,挂在钟上。",
+          "next": "n_s3_offer_id",
+          "effects": {
+            "GR": 12,
+            "flags": {
+              "s3_offered_id": true
+            }
+          }
+        },
+        {
+          "text": "退后,绕到钟另一面。",
+          "next": "n_s3_other_side",
+          "effects": {
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_scrape_corrosion": {
+      "scene": "S3",
+      "narrative": "你用指甲,刮下一片铜锈。\n\n铜锈片很轻,蓝绿色,带着金属的腥味。\n\n你把它放进工牌夹层。\n\n你抬头——\n\n钟上的「侧脸」少了**眼睛**。\n\n那只眼睛,被你刮下来了。\n\n现在它是空洞。\n\n空洞里——\n\n你听见水声。\n\n是从钟**内部**传来的。\n\n钟里有水。\n\n钟里有**很深的水**。",
+      "choices": [
+        {
+          "text": "把头探进钟内,听水声。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s3_into_bell": true
+            }
+          }
+        },
+        {
+          "text": "把铜锈片烫在自己手腕的铜印上。",
+          "next": "n_s3_match_print",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_h1987",
+            "flags": {
+              "s3_marked_self": true
+            }
+          }
+        },
+        {
+          "text": "放回去,告诉它你不要。",
+          "next": "n_npc_corrosion_face",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_match_print": {
+      "scene": "S3",
+      "narrative": "你把铜锈片,贴在自己左手腕的铜印上。\n\n严丝合缝。\n\n铜锈片**渗进皮肤**——\n\n你的皮肤变成蓝绿色,然后变回正常。\n\n但你低头看时,你的左手腕,有一行**纹身**:\n\n「H = 1987」\n\n是用铜锈烫出来的。\n\n你这一辈子,这行字,擦不掉。\n\n《异常事件记录表》[03]栏自己浮现一行字:\n\n「赵某 G-273 已认领 1987-12-24-013 编号。」\n\n光标在闪。等你写「不」。",
+      "choices": [
+        {
+          "text": "在记录表写「不」。",
+          "next": "n_s3_refuse_h1987",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_refused_h",
+            "flags": {
+              "s3_refused_h1987": true
+            }
+          }
+        },
+        {
+          "text": "什么都不写。",
+          "next": "n_s3_temple_descend_h",
+          "effects": {
+            "GR": 12,
+            "flags": {
+              "s3_accepted_h1987": true,
+              "marked_lamb": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_refuse_h1987": {
+      "scene": "S3",
+      "narrative": "你写「不」。\n\n光标停了一下,然后**整页消失**。\n\n[03] 栏的标题,从「九溪理安寺」变成「拒绝接受 H 编号 — 候选 1 / 9」。\n\n你听见「侧脸」笑了一声。\n\n是钟的回声。\n\n它的声音很轻,但很清楚:\n\n「9 个候选,你是第 1 个有这个胆子的。\n  剩下 8 个,在水底。\n  你想去看看吗?」",
+      "choices": [
+        {
+          "text": "去看。我也是 G-273。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "linked_to_eight_self": true
+            }
+          }
+        },
+        {
+          "text": "不去。我打卡走人。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 8,
+            "puzzle_add": "piece_refused_h",
+            "flags": {
+              "s3_clean_exit": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_temple_descend_h": {
+      "scene": "S3",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你不写。\n\n你接受了 H = 1987。\n\n你的左手腕烫出新的字:\n\n「H = 1987 — 编号 014」\n\n14。\n\n你成了 1987 年踩踏事故里,本来不该死的**第 14 个**。\n\n但 H 不止 1987。\n\nH 还有 1985、1991、1996、1986...\n\n每一个 H,都需要一个候补。\n\n钟的「侧脸」张开嘴——\n\n吐出一池**水**。\n\n大殿瞬间淹到天花板。\n\n你浮起来,然后**沉下去**。\n\n你最后看见的是 8 口冷冻舱,加你**第 9 口**,正在合拢。\n\n第 9 口刻着「2024 G-273 赵某」。\n\n钟,合拢。",
+      "show_hud": true
+    },
+    "n_s3_wait_to_ring": {
+      "scene": "S3",
+      "narrative": "你抓起撞钟木,等到 23:45。\n\n手机显示 23:44。\n\n23:45。\n\n你撞——\n\n咚。\n\n钟声很沉,像把整个九溪压下去 3 厘米。\n\n第 2 下。第 3 下。\n\n第 4 下时——\n\n你听见钟里**有人也在数**:\n\n「4。\n  5。\n  6。」\n\n他比你慢半拍。\n\n你撞第 7 下时,他**也撞了第 7 下**——\n\n但他撞的是钟**内壁**。\n\n钟里的人,在敲**你**。",
+      "choices": [
+        {
+          "text": "停在第 7 下,放下木槌。",
+          "next": "n_npc_corrosion_face",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "inv_add": [
+              "铜锈护符"
+            ],
+            "flags": {
+              "rang_seven": true
+            }
+          }
+        },
+        {
+          "text": "撞第 8 下。",
+          "next": "n_s3_eighth_strike",
+          "effects": {
+            "PR": -10,
+            "GR": 20,
+            "flags": {
+              "s3_struck_eighth": true
+            }
+          }
+        },
+        {
+          "text": "把撞钟木丢进钟里,跑。",
+          "next": "n_s3_temple_back",
+          "effects": {
+            "GR": 5,
+            "flags": {
+              "s3_dumped_mallet": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_eighth_strike": {
+      "scene": "S3",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative": "你撞第 8 下。\n\n咚。\n\n钟,**自己崩裂**。\n\n两半铜钟没有掉下来——\n\n它们**朝你飞过来**。\n\n你来不及躲。\n\n两半铜钟在你身体处合拢——\n\n你成了**钟的内里**。\n\n你听见外面一片寂静。\n\n你听见自己的呼吸,在铜壳里回响。\n\n你听见 8 个声音齐声说:\n\n「第 9 任。\n  欢迎。」\n\n外面,大殿恢复正常。\n\n钟挂回钟架,「侧脸」少了第 9 颗铜锈。\n\n那颗铜锈,是**你的脸**。\n\n23:45 的钟声响了。\n\n7 下。\n\n第 7 下里,有你的尖叫。",
+      "show_hud": true
+    },
+    "n_s3_offer_id": {
+      "scene": "S3",
+      "narrative": "你摘下工牌,挂在钟的木架上。\n\n工牌上,「赵某 G-273」**自己**消失了。\n\n钟的「侧脸」,**眼睛睁开**,看着你。\n\n它说:\n\n「你确定要把名字给我?\n  我有 8 个名字了。\n  我只缺 1 个。」",
+      "choices": [
+        {
+          "text": "确定。把工牌彻底交给它。",
+          "next": "n_end_data",
+          "effects": {
+            "inv_remove": [
+              "工牌 G-273"
+            ],
+            "flags": {
+              "sacrificed_id": true
+            }
+          }
+        },
+        {
+          "text": "反悔。把工牌摘回来。",
+          "next": "n_s3_arrive",
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s3_revisit_temple": true,
+              "s3_reclaimed_id": true
+            }
+          }
+        },
+        {
+          "text": "问它另外 8 个是谁。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_eight_zhao"
+          }
+        }
+      ]
+    },
+    "n_s3_other_side": {
+      "scene": "S3",
+      "narrative": "你绕到钟的另一面。\n\n这一面,铜锈拼出**另外一张脸**——\n\n是 11 岁的小女孩,穿红色连衣裙。\n\n她的眼睛是铜锈做的,但她在**看你**。\n\n你认识她。\n\n你刚才在 S2(如果你去过)的红木门里见过她。\n\n或者你将在 S2 见到她。\n\n或者你不会见到她——\n\n但她已经认识你了。",
+      "choices": [
+        {
+          "text": "对她说:『27 楼怎么走?』",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "s3_met_red_girl_here": true
+            }
+          }
+        },
+        {
+          "text": "刮下她那张脸的一片铜锈。",
+          "next": "n_s3_scrape_corrosion",
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "红衣女孩铜锈"
+            ],
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
+        },
+        {
+          "text": "退回正面,继续看男人侧脸。",
+          "next": "n_s3_examine_face",
+          "effects": {
+            "flags": {
+              "s3_revisit_temple": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_temple_back": {
+      "scene": "S3",
+      "narrative": "你绕到大殿后面。\n\n后面是一个小院。\n\n院里有一口井。\n\n井口盖着木板。\n\n木板上,用粉笔写了一行字:\n\n「9 = 1987 + 1985 + 1991 + 1996 + 1986 + 1959 + 1933 + 1997 + ?」\n\n8 个年份,一个空格。\n\n你的手机时间是 23:21。\n\n井里**有声音**——\n\n是裂钟在井底的回声。\n\n但回声里夹着**8 个人的呼吸**。",
+      "choices": [
+        {
+          "text": "推开木板,跳下去。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s3_jumped_well": true
+            }
+          }
+        },
+        {
+          "text": "在空格里写「2024」。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_h1987",
+            "flags": {
+              "s3_filled_2024": true
+            }
+          }
+        },
+        {
+          "text": "用粉笔擦掉所有年份。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 8,
+            "GR": -5,
+            "flags": {
+              "s3_erased_years": true
+            }
+          }
+        },
+        {
+          "text": "退出小院,回大殿。",
+          "next": "n_s3_arrive",
+          "effects": {
+            "flags": {
+              "s3_revisit_temple": true,
+              "s3_saw_well": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s3_temple_radio": {
+      "scene": "S3",
+      "narrative": "你的对讲机在大殿里突然「滋——」一声。\n\n不是普通的电流声。\n\n是水声。\n\n是水**穿过对讲机**的声音。\n\n一个男声,慢:\n\n「赵某。\n  我是 G-272。\n  我在水里。\n  这里很冷。\n\n  钟敲第 7 下,你就走。\n  钟敲第 8 下,你就来陪我。\n\n  别多敲。」",
+      "choices": [
+        {
+          "text": "回话:『我会敲 7 下。』",
+          "next": "n_s3_wait_to_ring",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "s3_promised_seven": true,
+              "contacted_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "回话:『我不打算敲。』",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "contacted_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "挂掉对讲机。",
+          "next": "n_s3_arrive",
+          "effects": {
+            "GR": 5,
+            "flags": {
+              "s3_revisit_temple": true,
+              "hung_up_predecessor": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_arrive": {
+      "scene": "S4",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          },
+          "text": "你又转进羊血弄。\n\n弄堂尽头的灯,亮一阵灭一阵——\n\n刚才你看见的黑山羊,现在**多了一具**,挂在第二个铁钩上。\n\n第二具,有头。\n\n头是**你的**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "completed_yang": true
+            }
+          },
+          "text": "你已经补全了「⺶」字。\n\n但你回来时——\n\n匾上的字**又少了一笔**。\n\n弄堂里有人在用毛笔涂字。\n\n那个人,穿着 1933 年的长衫。"
+        }
+      ],
+      "narrative": "00:11 的中山中路。\n\n清河坊。这条街白天是游客拍照的网红老街。\n\n但「羊血弄 2 号」白天根本找不到。\n\n晚上,它在「胡庆余堂」对面**自己长出来**——\n\n一条不到 1.5 米宽的弄堂,青砖铺地,潮湿的腥味。\n\n你转进去,第一件事就是看见弄口的木匾——\n\n「⺶记屠铺」。\n\n「⺶」字,**缺了最下面那一笔**。\n\n弄堂尽头亮着一盏 25 瓦灯泡,灯泡下,挂着一只**黑山羊**。\n\n山羊倒吊在铁钩上,没有头。\n\n但它的腿——\n\n**还在蹬**。",
+      "choices": [
+        {
+          "text": "走过去,近距离看那只黑山羊。",
+          "next": "n_s4_approach_goat",
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S4"
+          }
+        },
+        {
+          "text": "先走到「⺶」字匾下,看那一笔。",
+          "next": "n_s4_examine_sign",
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S4"
+          }
+        },
+        {
+          "text": "弄堂半路有一扇半开的门,推门看看。",
+          "next": "n_s4_open_door",
+          "effects": {
+            "GR": 5,
+            "landmark_visited": "S4"
+          }
+        },
+        {
+          "text": "不进去,绕路走。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S4",
+            "flags": {
+              "s4_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s4_revisit_alley": true
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "s4_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s4_revisit_alley": true
+                }
+              },
+              {
+                "flags": {
+                  "completed_yang": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "n_s4_approach_goat": {
+      "scene": "S4",
+      "narrative": "你走到铁钩下。\n\n黑山羊的腿,确实在蹬——\n\n但它**没有头**。\n\n脖子的断面是齐的,像被一刀割掉。\n\n你蹲下,听——\n\n你以为你会听见羊的喘息。\n\n你听见的是**婴儿的啼哭**。\n\n哭声从山羊的**胸腔**里传出来,清楚到你能数出每一声哭的间隔。\n\n地上有一滩血,正好在山羊脖子下面。\n\n血里——\n\n**有半张脸的轮廓**。",
+      "choices": [
+        {
+          "text": "蹲下,把那半张脸的轮廓看清楚。",
+          "next": "n_s4_blood_face",
+          "effects": {
+            "PR": 8,
+            "GR": 3,
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          }
+        },
+        {
+          "text": "用手指蘸一点血,补「⺶」字最下面那一笔。",
+          "next": "n_npc_yang_butcher",
+          "effects": {
+            "PR": 12,
+            "GR": 8,
+            "inv_add": [
+              "⺶ 符文"
+            ],
+            "flags": {
+              "completed_yang": true,
+              "s4_blood_signed": true
+            }
+          }
+        },
+        {
+          "text": "割断绳索,让羊落地。",
+          "next": "n_s4_cut_rope",
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "freed_yang": true,
+              "marked_lamb": true,
+              "s4_kneeled_three_times": false
+            }
+          }
+        },
+        {
+          "text": "退后,先去看「⺶」字匾。",
+          "next": "n_s4_examine_sign",
+          "effects": {
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_blood_face": {
+      "scene": "S4",
+      "narrative": "你蹲下,凑近血滩。\n\n血里有一张半边脸。\n\n是个男人,40 多岁,左眼下方有一颗痣。\n\n你认识。\n\n你今晚在 S1 长椅风衣里如果翻过账本——\n\n账本第一行写「林某 1985-10-18 投湖」。\n\n这张脸,是**林某**。\n\n但林某 1985 年就死在西湖。\n\n他的脸,怎么会在 2024 年的羊血里浮出来?\n\n血里的脸,**眨了一下眼**。\n\n它的嘴动了——\n\n但没有声音。\n\n你只看清三个字的口型:\n\n「**别跪**。」",
+      "choices": [
+        {
+          "text": "听他的,不跪,转身离开。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "s4_heard_warning": true
+            }
+          }
+        },
+        {
+          "text": "不听,我跪三个。",
+          "next": "n_s4_kneel_three",
+          "effects": {
+            "GR": 20,
+            "flags": {
+              "s4_kneeled_three_times": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "拍照。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "posted_photo": true,
+              "s4_posted_blood_face": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_kneel_three": {
+      "scene": "S4",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你跪下。\n\n青砖很硬,冷气从膝盖钻进去。\n\n第一拜。\n\n弄堂深处,17 个**「羊公会」火死灵**,从墙缝里**挤出半张脸**,看你。\n\n第二拜。\n\n墙缝里,17 张脸,**齐齐张嘴**——\n\n但他们没有声音。他们用空气念你的工号。\n\n第三拜。\n\n你的额头**贴上**青砖——\n\n青砖**张开**,像一张嘴。\n\n你被吞下去。\n\n弄堂尽头铁钩上,黑山羊**多了一具**。\n\n第二具有头。\n\n头戴着工牌:「赵某 G-273」。\n\n婴儿的啼哭,从你**胸腔**里传出来。",
+      "show_hud": true
+    },
+    "n_s4_examine_sign": {
+      "scene": "S4",
+      "narrative": "你站在「⺶记屠铺」匾下。\n\n「⺶」字,缺最下面那一笔——\n\n也就是说,严格来说,匾上写的是「未」。\n\n「未记屠铺」。\n\n但你刚才进弄堂时,匾上明明是「⺶」。\n\n你抬头第二次看——\n\n「⺶」。完整的「⺶」。\n\n你低头第三次抬头——\n\n「未」。\n\n这块匾,根据你看它的角度,自己**切换**字。\n\n匾下挂着一支毛笔,毛笔是干的,但笔尖**沾着新鲜的血**。\n\n你有一种冲动:\n\n你想把那一笔补上。",
+      "choices": [
+        {
+          "text": "拿起毛笔,补「⺶」字最下面那一笔。",
+          "next": "n_s4_paint_stroke",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_lifted_brush": true
+            }
+          }
+        },
+        {
+          "text": "把毛笔折断,扔掉。",
+          "next": "n_s4_break_brush",
+          "effects": {
+            "PR": 8,
+            "GR": 10,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_broke_brush": true
+            }
+          }
+        },
+        {
+          "text": "把毛笔收进背包。",
+          "next": "n_s4_arrive",
+          "effects": {
+            "inv_add": [
+              "血毛笔"
+            ],
+            "puzzle_add": "piece_yang_brush",
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_kept_brush": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_paint_stroke": {
+      "scene": "S4",
+      "narrative": "你举起毛笔。\n\n你的手腕**自己**画下那一笔——\n\n你不是主动画的。\n\n是毛笔**带着**你的手画。\n\n一笔下去,「⺶」完整了。\n\n弄堂尽头,黑山羊的腿,**停了**。\n\n婴儿啼哭,**停了**。\n\n安静得让人发慌。\n\n墙缝里,17 张脸,慢慢**缩回去**。\n\n但他们缩回去之前,你听见他们一齐说一句话:\n\n「⺶ 完整 = 我们归位 = 你**接班**。」\n\n你的工牌反面,自己烫出一行字:\n\n「羊公会 第 18 任 名册编号 014」",
+      "choices": [
+        {
+          "text": "接受。把工牌挂回脖子。",
+          "next": "n_npc_yang_butcher",
+          "effects": {
+            "PR": 10,
+            "GR": 15,
+            "inv_add": [
+              "⺶ 符文",
+              "羊公会名册"
+            ],
+            "flags": {
+              "completed_yang": true,
+              "s4_joined_yanggui": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "拒绝。把工牌摔在地上。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s4_refused_yanggui": true,
+              "got_judge_seal": true
+            }
+          }
+        },
+        {
+          "text": "把毛笔再画一笔,**多画一笔**。",
+          "next": "n_s4_extra_stroke",
+          "effects": {
+            "GR": 20,
+            "flags": {
+              "s4_overstroke": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_extra_stroke": {
+      "scene": "S4",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative": "你多画一笔。\n\n「⺶」变成一个不存在的字。\n\n墙缝里 17 张脸,**齐齐爆开**——\n\n青砖墙在你眼前**烧起来**。\n\n但火不烫,是冷的。\n\n这是 1933 年的火——\n\n那一年,羊血弄第一次发生命案。\n\n开山首刀的男人,被仇家烧死在这条弄堂里。\n\n你的衣服自己变成 1933 年的长衫。\n\n你的手里,自己握着一把**屠羊刀**。\n\n你回头——\n\n弄堂尽头铁钩上,黑山羊**有头**。\n\n头是 1933 年那个男人的。\n\n你成了**他**。\n\n你将在每个夜班 00:11,**永远**站在羊血弄,等下一个 G-273 进来。",
+      "show_hud": true
+    },
+    "n_s4_break_brush": {
+      "scene": "S4",
+      "narrative": "你把毛笔从中间折断。\n\n「咔」。\n\n笔杆裂开,里面**不是竹子**。\n\n是一根**人的指骨**。\n\n指骨断面,渗出黑红色的血。\n\n血滴到青砖上,自己写出三个字:\n\n「**谢谢你**」\n\n指骨慢慢风化成灰。\n\n你抬头——\n\n「⺶记屠铺」的匾,**消失**了。\n\n弄堂尽头的灯泡,**亮**了正常的光。\n\n黑山羊**也不见了**。\n\n弄堂尽头,只有一个老婆婆,在收摊。\n\n她抬头,对你笑:\n\n「小赵啊,这么晚还上班呐?」",
+      "choices": [
+        {
+          "text": "走过去,跟老婆婆说话。",
+          "next": "n_s4_old_woman",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s4_broke_yang_curse": true
+            }
+          }
+        },
+        {
+          "text": "不去。直接转身离开。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_yang_freed",
+            "flags": {
+              "s4_clean_exit": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_old_woman": {
+      "scene": "S4",
+      "narrative": "你走过去。\n\n老婆婆 70 来岁,围裙上沾着豆腐渣。\n\n她递给你一碗豆腐脑:\n\n「小赵,记得吗?\n  你 1933 年也走过这条弄堂。\n  那一次你救了我外公。\n  这一次,你救了我。\n\n  你下班吧。」\n\n她从围裙口袋里摸出一张**老粮票**——\n\n是 1959-043 号。\n\n她把粮票塞进你手里。",
+      "choices": [
+        {
+          "text": "收下粮票,鞠躬,离开。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 20,
+            "inv_add": [
+              "1959-043 粮票"
+            ],
+            "puzzle_add": "piece_yang_freed",
+            "flags": {
+              "s4_grandma_blessing": true
+            }
+          }
+        },
+        {
+          "text": "把豆腐脑喝了。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_grandma_blessing",
+            "flags": {
+              "s4_drank_tofu": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_open_door": {
+      "scene": "S4",
+      "narrative": "弄堂半路,有一扇木门半开。\n\n门里——是一个无人的小房间。\n\n房间正中央,放着一台 1980 年代的**黑白监视器**。\n\n屏幕**亮着**。\n\n屏幕上的画面——\n\n是这条弄堂。\n\n是**这一刻**的弄堂。\n\n是你**从背后**看自己,正在推这扇门。\n\n监视器画面里——\n\n你身后还有一个人。\n\n那个人没有脸。\n\n他穿着清洁工的制服,正在拖地。\n\n你猛回头——\n\n弄堂里**只有你一个人**。",
+      "choices": [
+        {
+          "text": "对着监视器挥手。",
+          "next": "n_npc_cleaner_null",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_waved_camera": true
+            }
+          }
+        },
+        {
+          "text": "把监视器砸了。",
+          "next": "n_s4_smash_monitor",
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "s4_smashed_monitor": true
+            }
+          }
+        },
+        {
+          "text": "退出房间,转身就跑。",
+          "next": "n_s4_arrive",
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "s4_revisit_alley": true,
+              "s4_fled_room": true
+            }
+          }
+        },
+        {
+          "text": "把记录表伸进监视器画面里。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_camera_self",
+            "flags": {
+              "s4_self_archived": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_smash_monitor": {
+      "scene": "S4",
+      "narrative": "你抓起墙边的扫帚,砸向监视器。\n\n屏幕碎了。\n\n但屏幕**碎成雪花**——\n\n不是玻璃碎,是**1984 年电视的雪花噪点**,从屏幕里**漏出来**,飘满整个房间。\n\n雪花颗粒落在你身上,**渗进皮肤**。\n\n你低头看自己手腕——\n\n你的皮肤上,出现一行**滚动字幕**:\n\n「Channel 273  Live  00:14」\n\n你的左眼,变得能**自动对焦**。\n\n你的耳朵,听见自己的呼吸**通过广播信号**回放。\n\nHUD 提示:「不存在的清洁工 Tier 上升。」",
+      "choices": [
+        {
+          "text": "出门继续巡逻。",
+          "next": "n_npc_cleaner_null",
+          "effects": {
+            "PR": 8,
+            "GR": 10,
+            "flags": {
+              "s4_static_in_skin": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s4_cut_rope": {
+      "scene": "S4",
+      "narrative": "你拿起地上的一把锈剪刀。\n\n你割断绳索。\n\n黑山羊「咚」地落地——\n\n落地的不是羊。\n\n是**一个人**。\n\n人穿着 1933 年的长衫,没有头。\n\n但他的胸腔里,**还在哭婴儿**。\n\n你蹲下,听——\n\n哭声变成话:\n\n「我被人冤死。\n  你割了我,我替你担一刀。\n\n  你身上**多了一刀债**。\n  你想把它还给谁?」",
+      "choices": [
+        {
+          "text": "还给「夜班评议会」。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_yang_debt",
+            "flags": {
+              "s4_debt_to_evaluator": true
+            }
+          }
+        },
+        {
+          "text": "还给上一任 G-273。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "s4_debt_to_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "我来还。我自己背。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 25,
+            "PR": 20,
+            "inv_add": [
+              "羊公会欠条"
+            ],
+            "flags": {
+              "yang_debt": true,
+              "marked_lamb": true,
+              "s4_self_debt": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_arrive": {
+      "scene": "S5",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          },
+          "text": "你又站在 203 琴房门外。\n\n刚才你已经听过钢琴。\n\n现在,门把手是**温的**。\n\n是被人**握过**的温度。\n\n那个人,刚刚才离开。\n\n但走廊空无一人。"
+        },
+        {
+          "if": {
+            "flags": {
+              "piano_appeased": true
+            }
+          },
+          "text": "你已经把 1987 年 6 月 1 日的报纸放在琴盖上了。\n\n但你回来时——\n\n报纸**消失**了。\n\n钢琴自己又掀开了盖子。\n\n键上,留着一张**新的纸条**:\n\n「叔叔,我妈妈来过。她说我可以下来了。\n  谢谢叔叔。」"
+        }
+      ],
+      "narrative": "01:08 的留下小学旧楼。\n\n这栋楼 1992 年就停用了。\n\n白天用一圈黄色警戒线围着,门挂着锁。\n\n但今晚,锁开了——\n\n是从**里面**开的。\n\n你打开手电,推开生锈的铁门。\n\n楼道里的灯,一盏接一盏**自己亮起来**——\n\n但灯泡里没有钨丝,是**月光**。\n\n2 楼。203 琴房。\n\n你站在门口。\n\n门虚掩着。\n\n里面传来钢琴声。\n\n不是连贯的曲子,是**单音**——\n\n弹一下,停 2 秒,弹一下,停 2 秒。\n\n你伸手摸自己的脉搏——\n\n钢琴的节奏,**和你的心跳一致**。",
+      "choices": [
+        {
+          "text": "推门进去。",
+          "next": "n_s5_open_door",
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S5"
+          }
+        },
+        {
+          "text": "在门外听,等钢琴停。",
+          "next": "n_s5_listen_outside",
+          "effects": {
+            "PR": 3,
+            "GR": 5,
+            "landmark_visited": "S5"
+          }
+        },
+        {
+          "text": "沿走廊往里走,看其他教室。",
+          "next": "n_s5_corridor",
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S5"
+          }
+        },
+        {
+          "text": "退出旧楼,跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S5",
+            "flags": {
+              "s5_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s5_revisit_piano": true
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "s5_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s5_revisit_piano": true
+                }
+              },
+              {
+                "flags": {
+                  "piano_appeased": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "n_s5_open_door": {
+      "scene": "S5",
+      "narrative": "你推开门。\n\n203 琴房。\n\n中央立着一台 1980 年代旧立式钢琴。\n\n琴盖**自己**掀开。\n\n琴凳前面——\n\n摆着一双**空布鞋**。\n\n白色,女孩款式,11 岁尺码。\n\n鞋摆得很整齐,鞋头朝着钢琴。\n\n等人坐。\n\n你看了三秒,鞋**没动**。\n\n但你转身关门时——\n\n你回头——\n\n鞋**朝你**了。",
+      "choices": [
+        {
+          "text": "走过去,坐到琴凳上。",
+          "next": "n_s5_sit_piano",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        },
+        {
+          "text": "蹲下,把布鞋拎起来检查。",
+          "next": "n_s5_inspect_shoes",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        },
+        {
+          "text": "把 1987 年 6 月 1 日的报纸放在琴盖上。",
+          "next": "n_npc_piano_ghost",
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "flags": {
+              "piano_appeased": true,
+              "s5_offered_newspaper": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1987 告示残页"
+            ]
+          }
+        },
+        {
+          "text": "退出琴房,关门。",
+          "next": "n_s5_arrive",
+          "effects": {
+            "flags": {
+              "s5_revisit_piano": true,
+              "s5_left_room": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_sit_piano": {
+      "scene": "S5",
+      "narrative": "你坐到琴凳上。\n\n琴凳很冷,温度像在冰箱里放过。\n\n你把布鞋拨到一边——\n\n布鞋**自己挪了回来**,贴在你脚边。\n\n你低头——\n\n你的脚下,踩着一张**1991 年的请假条**:\n\n「申请人:叶某,11 岁,女。\n  请假原因:头疼,头疼太久了。\n  班主任批示:不准。\n\n  日期:1991-04-23」\n\n那一天就是叶某自缢的日子。\n\n钢琴键自己**摁下一个 C 音**——\n\n是琴凳**底下**摁的。\n\n琴凳里,**有人**。",
+      "choices": [
+        {
+          "text": "起身,推开琴凳。",
+          "next": "n_s5_open_bench",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        },
+        {
+          "text": "坐着不动,弹一首她想听的曲子。",
+          "next": "n_npc_piano_ghost",
+          "effects": {
+            "PR": 10,
+            "inv_add": [
+              "倒带背书声"
+            ],
+            "flags": {
+              "played_for_her": true
+            }
+          }
+        },
+        {
+          "text": "把 1991 年的请假条收起来。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 12,
+            "inv_add": [
+              "1991 请假条"
+            ],
+            "puzzle_add": "piece_piano_girl"
+          }
+        },
+        {
+          "text": "把请假条划掉「不准」,改成「准」。",
+          "next": "n_s5_grant_leave",
+          "effects": {
+            "PR": 18,
+            "GR": 5,
+            "flags": {
+              "s5_granted_leave": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_open_bench": {
+      "scene": "S5",
+      "narrative": "你掀开琴凳的盖子。\n\n琴凳里——\n\n是空的。\n\n但有一根**钢丝绳**。\n\n钢丝绳是**新的**。\n\n绳头打着活结,套圈正好是 11 岁女孩脖子的尺寸。\n\n绳头底下,压着一张纸:\n\n「我妈妈说我考不到 100 分她就不要我了。\n  这次我考了 87。\n  对不起妈妈。\n\n  叶某  1991-04-23」",
+      "choices": [
+        {
+          "text": "把绳子拿出来,带走。",
+          "next": "n_s5_take_rope",
+          "effects": {
+            "PR": 5,
+            "GR": 5,
+            "inv_add": [
+              "1991 钢丝绳"
+            ],
+            "puzzle_add": "piece_piano_girl"
+          }
+        },
+        {
+          "text": "把绳子套在自己脖子上。",
+          "next": "n_s5_self_hang",
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "s5_self_noosed": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "用打火机烧绳子。",
+          "next": "n_npc_piano_ghost",
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "s5_burned_rope": true,
+              "piano_appeased": true
+            }
+          }
+        },
+        {
+          "text": "什么都不做,关上琴凳盖子。",
+          "next": "n_s5_arrive",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_self_hang": {
+      "scene": "S5",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你把钢丝绳套在自己脖子上。\n\n绳子是新的,但**很贴**。\n\n好像它就是为你的脖子尺寸做的。\n\n你站到琴凳上——\n\n琴凳**自己升高**。\n\n琴凳变成 1991 年那把摇晃的木椅。\n\n你的脚尖,慢慢离地。\n\n你听见钢琴自己弹《小星星》。\n\n弹得**慢半拍**——\n\n那是 1991 年叶某弹错的节奏。\n\n你最后看见的画面是——\n\n203 琴房窗外,天**亮了**。\n\n但你下班的时间,**永远不会到**。",
+      "show_hud": true
+    },
+    "n_s5_take_rope": {
+      "scene": "S5",
+      "narrative": "你把钢丝绳放进背包。\n\n钢丝绳进背包后,自己**变软**——\n\n变成一根**红色头绳**。\n\n红色头绳上,系着一颗 1991 年的**糖**。\n\n糖纸还能看清:「上海大白兔」。\n\n糖纸里面包着一张照片——\n\n小学毕业照。\n\n第三排第二个,是叶某。\n\n第三排第二个**旁边**,是**你**。\n\n你的脸,11 岁,穿白衬衫。\n\n但你不记得自己上过留下小学。",
+      "choices": [
+        {
+          "text": "把照片塞回糖纸,带走。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 15,
+            "inv_add": [
+              "1991 班级合照"
+            ],
+            "puzzle_add": "piece_eight_zhao",
+            "flags": {
+              "s5_remembered_school": true
+            }
+          }
+        },
+        {
+          "text": "把照片烧了。",
+          "next": "n_npc_piano_ghost",
+          "effects": {
+            "PR": -10,
+            "GR": 8,
+            "flags": {
+              "s5_burned_photo": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_grant_leave": {
+      "scene": "S5",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s5_burned_rope": true
+            }
+          },
+          "text": "你已经烧了那根钢丝绳。\n\n你又来到 203——\n\n请假条还在地上。\n\n但**字迹自己改了**——\n\n「不准」自己变成了「准」。\n\n钢琴键自己摁出最后一个完整的 C 大调。\n\n窗外,11 岁的女孩,**已经走出校门**——\n\n她在校门口回头,对你**鞠躬**。\n\n但她**比第一次走出校门**时,多了一个动作:\n\n她对你**眨了一下眼睛**——\n\n是 1991 年她妈妈最疼她那次,她对妈妈眨过的眼睛。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s5_erased_self": true
+            }
+          },
+          "text": "你刚把自己的名字从 205 黑板上擦掉。\n\n你回到 203——\n\n请假条**自己改字**——\n\n「不准」变成「准」。\n\n但请假条上的「申请人」一栏,**多了一行**——\n\n「**赵某 G-273**」。\n\n你和叶某,一起准假 33 年。\n\n窗外两个孩子走出校门,**一前一后**——\n\n第一个是叶某。\n\n第二个,**穿白衬衫**,11 岁的你。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          },
+          "text": "你又来到这里。\n\n请假条已经被你签了。\n\n但 203 琴房的钢琴,**还在响**——\n\n这次不是《小星星》。\n\n是**1991 年那天叶某妈妈在外面叫她的声音**——\n\n「叶某,饭好了!」\n\n这是叶某 33 年没听到的话。\n\n她已经走出校门——\n\n她**朝家的方向跑**。\n\n你低头——\n\n请假条上,**多了一行**:\n\n「叶某 已下班。\n  下一份『未结』:**红衣女孩 何小燕**。」"
+        }
+      ],
+      "narrative": "你拿出钢笔,在请假条「班主任批示」一栏,把「不准」划掉,改成「准」。\n\n你的笔迹,变成 1991 年的**圆珠笔字迹**。\n\n请假条**自己**冒出一行:\n\n「叶某,准假 33 年。\n  现在,可以回家。」\n\n钢琴**最后弹了一个完整的 C 大调**。\n\n然后,完全停了。\n\n203 琴房的空气变暖。\n\n窗外,你看见一个 11 岁的女孩,**背着书包**,慢慢走出校门。\n\n她回头,对你**鞠了一躬**。\n\n然后她**消失**在 1991 年的春日下午。",
+      "choices": [
+        {
+          "text": "鞠躬回礼。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 25,
+            "GR": -5,
+            "puzzle_add": "piece_piano_girl_freed",
+            "flags": {
+              "s5_freed_yeh": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_inspect_shoes": {
+      "scene": "S5",
+      "narrative": "你蹲下,拎起左边那只布鞋。\n\n鞋很轻。\n\n鞋底沾着**一点红色舞台粉**——\n\n你想起来了——\n\n这种粉,是 1996 年六一儿童节学校彩排用的。\n\n但叶某 1991 年就死了。\n\n她不可能踩到 1996 年的彩排粉。\n\n除非——\n\n这双鞋不是叶某的。\n\n这双鞋是**你在 S2 看见的那个红衣女孩**的。\n\n两个学校,两个时间,两个女孩,**共用一双鞋**。",
+      "choices": [
+        {
+          "text": "把鞋带去给红衣女孩。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "s5_returned_shoes": true
+            }
+          }
+        },
+        {
+          "text": "把鞋穿在自己脚上。",
+          "next": "n_s5_wear_shoes",
+          "effects": {
+            "GR": 18,
+            "flags": {
+              "s5_wore_girl_shoes": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "把鞋扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s5_threw_shoes_lake": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_wear_shoes": {
+      "scene": "S5",
+      "is_ending": true,
+      "ending_type": "E_DATA",
+      "narrative": "你脱下自己的警用皮鞋。\n\n你套上那双白布鞋。\n\n布鞋是 11 岁女孩尺码——\n\n但你穿上去**严丝合缝**。\n\n你的脚,**变小了**。\n\n你的腿,**变细了**。\n\n你的制服,变成红色连衣裙。\n\n你的工牌,变成 14 寸黑白电视。\n\n你成了红衣电视女孩——\n\n你也成了 1991 年自缢的叶某。\n\n你也成了 1996 年货梯里的那个孩子。\n\n你成了**所有「11 岁女孩死在杭州」的合体**。\n\n下一个 G-273 第一夜班,在 S2 看见的红木门里——\n\n会是**你**问他:\n\n「叔叔,27 楼怎么走?」",
+      "show_hud": true
+    },
+    "n_s5_listen_outside": {
+      "scene": "S5",
+      "narrative": "你站在 203 门外。\n\n钢琴单音继续:\n\n弹、停 2 秒、弹、停 2 秒。\n\n你掏出秒表,数:\n\n7 下。\n\n14 下。\n\n21 下。\n\n第 27 下时——\n\n钢琴突然**变成连贯的旋律**:\n\n《小星星》。\n\n但是**倒着弹**。\n\n你听清楚了——\n\n是 1991 年那个女孩,在弹**自己出生那天**电视里放的童谣。\n\n她在**倒带**自己的人生。\n\n第 27 下,是她**11 岁那天**——\n\n她要弹回**婴儿时**。",
+      "choices": [
+        {
+          "text": "推门进去,告诉她不要倒带。",
+          "next": "n_s5_grant_leave",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        },
+        {
+          "text": "把对讲机调到 1991-04-23 频段。",
+          "next": "n_scene_red_telephone",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_radio_call",
+            "flags": {
+              "called_1987": true
+            }
+          }
+        },
+        {
+          "text": "录下钢琴声,准备给前任听。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 8,
+            "inv_add": [
+              "1959-043 磁带"
+            ],
+            "flags": {
+              "s5_recorded_piano": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_corridor": {
+      "scene": "S5",
+      "narrative": "你不进 203,沿走廊继续。\n\n205 教室门半开。\n\n你探头——\n\n205 教室里,黑板上写满**同一个名字**:\n\n「叶某  叶某  叶某  叶某  叶某......」\n\n写了整整一面黑板。\n\n粉笔还在自己写。\n\n粉笔**没有手拿着**。\n\n它自己悬空,在写。\n\n写到第 1987 个「叶某」时——\n\n粉笔停了。\n\n粉笔**转向**,对着你。\n\n它准备写**第 1988 个名字**。\n\n那个名字,**不是叶某**。",
+      "choices": [
+        {
+          "text": "等粉笔写出名字。",
+          "next": "n_s5_chalk_name",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        },
+        {
+          "text": "抓住粉笔,折断。",
+          "next": "n_npc_piano_ghost",
+          "effects": {
+            "PR": 5,
+            "GR": 5,
+            "flags": {
+              "s5_broke_chalk": true
+            }
+          }
+        },
+        {
+          "text": "用黑板擦,擦掉所有「叶某」。",
+          "next": "n_s5_grant_leave",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s5_erased_blackboard": true
+            }
+          }
+        },
+        {
+          "text": "退回 203 琴房。",
+          "next": "n_s5_open_door",
+          "effects": {
+            "flags": {
+              "s5_revisit_piano": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s5_chalk_name": {
+      "scene": "S5",
+      "narrative": "你站着不动。\n\n粉笔写下:\n\n「赵某 G-273」\n\n是你的名字。\n\n粉笔写完,「啪」地掉在地上,断成两截。\n\n黑板上,1988 个名字静静躺着。\n\n你的名字是最后一个。\n\n排在 1987 个「叶某」后面。\n\n这意味着——\n\n你的名字,**接替了**叶某的循环。\n\n203 琴房的钢琴,**停了**。\n\n你听见走廊尽头,有人**关门**的声音。\n\n是叶某下班的声音。",
+      "choices": [
+        {
+          "text": "走到黑板前,把自己的名字也擦掉。",
+          "next": "n_s5_grant_leave",
+          "effects": {
+            "PR": 25,
+            "GR": -10,
+            "flags": {
+              "s5_erased_self": true
+            }
+          }
+        },
+        {
+          "text": "把自己的名字留在黑板上,接替叶某。",
+          "next": "n_end_data",
+          "effects": {
+            "flags": {
+              "s5_replaced_yeh": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_arrive": {
+      "scene": "S6",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          },
+          "text": "你又下到联庄站底层。\n\n刚才你看过盾构井。\n\n现在,井口**多了一顶柳条安全帽**——\n\n第 8 顶。\n\n第 8 顶的内侧,刻着「G-273」。"
+        },
+        {
+          "if": {
+            "flags": {
+              "seven_returned": true
+            }
+          },
+          "text": "你已经把帽子还给了 7 个工人。\n\n但你回来时——\n\n7 顶帽子**全部漂在井口水面**。\n\n7 个工人**一个都不在**。\n\n7 顶帽子在水面拼出一个字:\n\n「**等**」"
+        }
+      ],
+      "narrative": "01:52 的滨江·联庄站。\n\n地铁早就停运。\n\n站厅一片漆黑,但你的工卡能解锁。\n\n你走下 B1、B2、B3、B4。\n\nB4 是「盾构井维护层」,白天工人在这里下井检修地铁隧道。\n\n你走到 DK30+477 处——\n\n那是一口直径 6 米的圆形深井,井底是积水,深不可见。\n\n井口围着 80 年代的红色铁栏杆。\n\n栏杆上,挂着 7 顶**柳条安全帽**——\n\n柳条是 80 年代的款式,现在工人都戴黄色塑料盔了。\n\n7 顶帽子,在你刚下到 B4 时,**齐齐自己晃了一下**。\n\n井底有水声。\n\n是**轮渡引擎**的声音。\n\n但 1986 年那条沉的轮渡,**早就被打捞**了。",
+      "choices": [
+        {
+          "text": "走到井边,看井底。",
+          "next": "n_s6_look_down",
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S6"
+          }
+        },
+        {
+          "text": "拿起一顶柳条安全帽,看内侧。",
+          "next": "n_s6_inspect_helmet",
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S6"
+          }
+        },
+        {
+          "text": "沿 B4 走廊往里走,看盾构机。",
+          "next": "n_s6_go_to_machine",
+          "effects": {
+            "GR": 5,
+            "landmark_visited": "S6"
+          }
+        },
+        {
+          "text": "上去打卡,跳下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "shifts_skipped": 1,
+            "landmark_skipped": "S6",
+            "flags": {
+              "s6_aborted": true
+            }
+          },
+          "require": {
+            "not": {
+              "flags": {
+                "s6_revisit_well": true
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "s6_clean_leave": true
+            }
+          },
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "s6_revisit_well": true
+                }
+              },
+              {
+                "flags": {
+                  "seven_returned": true
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "n_s6_look_down": {
+      "scene": "S6",
+      "narrative": "你走到井边。\n\n井深得看不到底。\n\n你打开手电,光柱往下射——\n\n光柱**没打到底**。\n\n但光柱沿途,出现了 7 个**戴柳条安全帽**的人,**站着**——\n\n他们**站在井壁上**。\n\n他们的脚,**和井壁垂直**。\n\n他们的脸,朝向井口,朝向你。\n\n他们一齐抬头。\n\n他们没有脸。\n\n他们的安全帽,内侧有红色的字——\n\n你看不清,但你知道是「H = 1987」。",
+      "choices": [
+        {
+          "text": "「7 人归航」——把头上戴着的柳条帽递给第一个工人。",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
+        },
+        {
+          "text": "把 7 顶帽子全部从栏杆薅下来。",
+          "next": "n_s6_grab_seven",
+          "effects": {
+            "GR": 22,
+            "inv_add": [
+              "7 顶柳条安全帽"
+            ],
+            "flags": {
+              "drown_marked": true
+            }
+          }
+        },
+        {
+          "text": "把对讲机贴近井口,听轮渡引擎声。",
+          "next": "n_s6_listen_engine",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
+        },
+        {
+          "text": "把 1986 年硬币(如果有)扔进井里。",
+          "next": "n_s6_drop_coin",
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_dropped_coin": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          }
+        }
+      ]
+    },
+    "n_s6_grab_seven": {
+      "scene": "S6",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你薅下 7 顶柳条帽,塞进背包。\n\n你以为你赢了。\n\n你回头——\n\n井壁上**7 个工人,贴着井壁,慢慢走上来**。\n\n他们的脚不发出声音。\n\n他们爬到井口。\n\n他们没有脸。\n\n他们伸出手——\n\n他们要的不是帽子。\n\n他们要**戴帽子的脑袋**。\n\n你的脖子,**自己往前伸**。\n\n第一个工人摸到你的喉结。\n\n他说:「这一顶,你戴。」\n\n你的脑袋上,**多了一顶第 8 帽子**。\n\n柳条紧紧箍住你的颅骨。\n\n你跟着 7 个工人,走回井底。\n\n沉船备份池,正在等下一班「轮渡」。\n\n你成了**第 8 个工人**。\n\n下一任 G-273 来到 B4 时,他会数到**8 顶帽子**。",
+      "show_hud": true
+    },
+    "n_s6_inspect_helmet": {
+      "scene": "S6",
+      "narrative": "你拿起最近的一顶柳条安全帽。\n\n内侧——\n\n用墨写着工号:「闸口路 03 号 钱某 1986-08-17」。\n\n1986-08-17,是钱塘江轮渡沉船的日子。\n\n钱某是船上 7 个工人之一。\n\n你翻第二顶——\n\n「闸口路 04 号 孙某 1986-08-17」。\n\n第三顶,第四顶,第五顶,第六顶——\n\n都是 1986-08-17。\n\n第七顶——\n\n内侧是空白的。\n\n但空白处,**慢慢渗出红字**:\n\n「赵某 G-273  2024-XX-XX」\n\n日期没写完。\n\n等你写。",
+      "choices": [
+        {
+          "text": "把第七顶戴在自己头上。",
+          "next": "n_s6_wear_seventh",
+          "effects": {
+            "GR": 18,
+            "inv_add": [
+              "柳条安全帽 (粘住)"
+            ],
+            "flags": {
+              "helmet_stuck": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "把第七顶倒扣在地上。",
+          "next": "n_s6_revisit_well_alt",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_inverted_seventh": true
+            }
+          }
+        },
+        {
+          "text": "把日期写成「永不」。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 18,
+            "puzzle_add": "piece_judge_seal",
+            "flags": {
+              "got_judge_seal": true,
+              "s6_wrote_never": true
+            }
+          }
+        },
+        {
+          "text": "把 7 顶帽子整齐归位回栏杆。",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "flags": {
+              "s6_returned_helmets": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_wear_seventh": {
+      "scene": "S6",
+      "is_ending": true,
+      "ending_type": "E_DATA",
+      "narrative": "你戴上第七顶柳条帽。\n\n柳条**收紧**——\n\n紧到你的太阳穴出血。\n\n你想摘下来——\n\n摘不动。\n\n柳条已经**长进**你的颅骨。\n\n你的视野,变成 1986-08-17 那一天的钱塘江——\n\n上午 9:14,轮渡。\n\n你和 6 个工人坐在船尾,**笑**——\n\n工人之一回头,他的脸是空的。\n\n他指着船头:「那里,有人 wave。」\n\n船头无人。\n\n但你看到一个**穿警服**的男人——是你自己,2024 年的你——\n\n站在船头,手里举着工牌。\n\n2024 的你,对 1986 的你说:「上船。」\n\n船,翻了。\n\n你成了 1986 沉船第 8 名。\n\nB4 盾构井,8 顶帽子等下一个 G-273。",
+      "show_hud": true
+    },
+    "n_s6_revisit_well_alt": {
+      "scene": "S6",
+      "narrative": "你把第七顶帽子倒扣在地上。\n\n帽内的红字朝下。\n\n红字渗进**地面混凝土**——\n\n混凝土地面上,慢慢浮现一行字:\n\n「赵某,你不戴。\n  那么你必须找到第 8 个戴的人。\n  他在 27 楼。」\n\n你抬头——\n\nB4 走廊尽头,出现一道**电梯门**。\n\n电梯门是黑色的。\n\n按钮只有一个:「27」。\n\n按钮亮着红光。",
+      "choices": [
+        {
+          "text": "走过去,按 27。",
+          "next": "n_scene_27th_floor_corridor",
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "s6_revisit_well": true,
+              "saw_27th_floor": true
+            }
+          }
+        },
+        {
+          "text": "不去。退回井边。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
+        },
+        {
+          "text": "把工牌塞进电梯按钮里。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 8,
+            "inv_add": [
+              "27F 铜钥匙"
+            ],
+            "flags": {
+              "s6_id_into_button": true,
+              "promised_relieve_predecessor": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_listen_engine": {
+      "scene": "S6",
+      "narrative": "你把对讲机贴近井口。\n\n对讲机「滋——」一声。\n\n井底的轮渡引擎声,**变成人声**:\n\n「G-273,听到请回答。\n  我们 7 个,1986 年 8 月 17 日,在钱塘江口集体翻船。\n  当时船上还有第 8 个人,买了票但没上船。\n  那个人,是上一任 G-273。\n  这一次,他没买票。\n  这一次,你**自己来**了。」",
+      "choices": [
+        {
+          "text": "回答:『我替他来了。』",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "s6_volunteered": true,
+              "seven_returned": true
+            }
+          }
+        },
+        {
+          "text": "回答:『你们是 7 个,我是 1 个。我不替他,我替你们。』",
+          "next": "n_s6_replace_seven",
+          "effects": {
+            "PR": 25,
+            "puzzle_add": "piece_seven_returned",
+            "flags": {
+              "seven_returned": true,
+              "s6_replaced_seven": true,
+              "b3_unlocked": true
+            }
+          }
+        },
+        {
+          "text": "挂掉对讲机。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "GR": 5,
+            "flags": {
+              "s6_revisit_well": true,
+              "hung_up_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "问:『1986 年那天,第 8 个人为什么没上船?』",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_truancy"
+          }
+        }
+      ]
+    },
+    "n_s6_replace_seven": {
+      "scene": "S6",
+      "narrative": "你的话音落下时,7 顶帽子从栏杆上**自己**飘起来——\n\n它们围成一圈,绕你**转一圈**——\n\n然后,7 顶帽子**整齐地戴回栏杆**。\n\n井底,轮渡引擎声**停了**。\n\nB3 走廊尽头的钢门,远远传来「咔哒」一声——\n\n那扇门,**为你开了**。\n\n你听见井底,7 个声音齐声说:\n\n「替死鬼,我们不要。\n  你这一夜,是替活人的。\n  你下班吧。」\n\n井口出现一阵晚风——\n\n但 B4 是地下 4 层,不可能有风。\n\n这阵风,带着 1986 年钱塘江的潮味。\n\n是 7 个工人,**送你**。",
+      "choices": [
+        {
+          "text": "鞠躬,继续巡逻。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 30,
+            "GR": -10,
+            "puzzle_add": "piece_seven_freed",
+            "flags": {
+              "s6_seven_freed": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_drop_coin": {
+      "scene": "S6",
+      "narrative": "你把 1986 年的「林」字硬币扔进井里。\n\n你听见硬币沿井壁,叮、叮、叮——\n\n响 17 声,然后**没有水声**。\n\n它没落进水里。\n\n它落到**别的东西**上。\n\n井底有声音传上来:\n\n「钱,我收到了。\n  谢谢你帮林某还的。\n\n  现在,**你借了林某 27 块**。\n  夜班评议会的账本上,你欠 27 笔。」\n\n你的工牌反面,自己烫出 27 道竖线。\n\n这是**未结**的标记。",
+      "choices": [
+        {
+          "text": "把工牌反过来,接受 27 笔欠债。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "got_judge_seal": true,
+              "s6_owes_27": true
+            }
+          }
+        },
+        {
+          "text": "把工牌烧了。",
+          "next": "n_s6_burn_id",
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "s6_burned_id": true
+            }
+          }
+        },
+        {
+          "text": "回到井边,继续巡逻。",
+          "next": "n_s6_look_down",
+          "effects": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_burn_id": {
+      "scene": "S6",
+      "narrative": "你掏出打火机,烧自己的工牌。\n\n工牌是塑料的,本来应该立刻熔化。\n\n但工牌**不熔**。\n\n火苗烧了 30 秒,工牌完好如初。\n\n但你的**手指**——\n\n烫黑了。\n\n你低头看自己的手——\n\n你的指纹**消失**了。\n\nHUD 提示:「身份残值 -50%。摄像头死角累积加速。」\n\n你的工牌,自动浮现一行字:\n\n「未注销。但已无指纹归属。\n  夜班评议会处理中。」",
+      "choices": [
+        {
+          "text": "去 B3 档案室,看处理结果。",
+          "next": "n_scene_evaluator_room",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "s6_no_fingerprint": true
+            }
+          }
+        },
+        {
+          "text": "继续巡逻,假装没事。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "s6_no_fingerprint": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_go_to_machine": {
+      "scene": "S6",
+      "narrative": "你沿 B4 走廊往里。\n\n50 米尽头,是「钱塘一号」盾构机。\n\n8 米直径的钢铁怪物,前面装着 17 把巨型刀片,叫「刀盘」。\n\n刀盘,**自己**慢慢转。\n\n但盾构机的电源**是关的**。\n\n你走近——\n\n刀盘的每一片刀,都**沾着新鲜的红色**。\n\n不是铁锈红。\n\n是**血红**。\n\n刀盘后面的操作间,亮着灯。\n\n操作间里,一个人影在背对你**敲键盘**。",
+      "choices": [
+        {
+          "text": "走进操作间,看那个人。",
+          "next": "n_s6_operator_room",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "s6_into_operator": true
+            }
+          }
+        },
+        {
+          "text": "用扳手卡住刀盘。",
+          "next": "n_s6_jam_blade",
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "s6_jammed_blade": true
+            }
+          }
+        },
+        {
+          "text": "走到盾构机正面,挡住刀盘。",
+          "next": "n_s6_stand_blade",
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "s6_stood_blade": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "退回井边,不进操作间。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "flags": {
+              "s6_revisit_well": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_operator_room": {
+      "scene": "S6",
+      "narrative": "你推开操作间的玻璃门。\n\n屋里很冷。\n\n那个背对你的人,**慢慢回头**。\n\n他穿着 1980 年代的工装,胸前别着工号牌:\n\n「钱塘一号 操作员 林某 1986-08-17」\n\n林某。\n\n又是林某。\n\n他的脸是湿的——\n\n是**淹死的人**的脸。\n\n他对你说:\n\n「我不是开盾构机的。\n  我是 1985 年投湖的。\n  但我的尸体被打捞工人捞起来,捞错了——\n  他们以为我是 1986 钱塘江沉船的工人。\n  所以我成了**他们的第 8 个**。\n  你能帮我**改名字**吗?」",
+      "choices": [
+        {
+          "text": "在他工号牌上,把「1986-08-17」改成「1985-10-18」。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 25,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "s6_corrected_linmou": true,
+              "claimed_linmou": true
+            }
+          }
+        },
+        {
+          "text": "拒绝。这不是我能改的。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -8,
+            "flags": {
+              "s6_refused_correction": true
+            }
+          }
+        },
+        {
+          "text": "把自己的工牌也放进操作间,『让我也当第 8 个』。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 20,
+            "flags": {
+              "s6_offered_self": true,
+              "linked_to_eight_self": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_jam_blade": {
+      "scene": "S6",
+      "narrative": "你拿起墙边的扳手,塞进刀盘缝隙。\n\n刀盘**停了**。\n\n操作间里,人影**回头**——\n\n他的脸,是**雪花**。\n\n他对着你的方向,**张嘴**。\n\n他的雪花脸里,字幕浮现:\n\n「你卡了我的进度。\n  我现在不能挖到 27 楼了。\n  你帮了上一任 G-273。\n  上一任 G-273 在 27 楼,记了 11 年。\n  现在他可以下班了。」\n\n操作间的灯**灭了**。",
+      "choices": [
+        {
+          "text": "去 27 楼接前任。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 18,
+            "inv_add": [
+              "27F 铜钥匙"
+            ],
+            "puzzle_add": "piece_27th_clue",
+            "flags": {
+              "promised_relieve_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "把扳手拿出来,让刀盘继续转。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "PR": -10,
+            "GR": 8,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_unjammed": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_stand_blade": {
+      "scene": "S6",
+      "narrative": "你站到盾构机正面,挡住刀盘。\n\n17 把刀片转向你。\n\n你以为它们会绞碎你。\n\n它们**停下来**。\n\n刀片离你胸口 1 厘米,纹丝不动。\n\n刀盘上的血,**自动倒流**回刀片的缝隙里。\n\n你听见盾构机内部传来一句话——\n\n是 7 个工人齐声说的:\n\n「这是上一任 G-273 用过的姿势。\n  他比你早 11 年,挡了一次。\n  这次你挡的话,他可以下班。」\n\n你低头——\n\n你的胸前,出现一道**11 厘米长的红印**。\n\n是 11 年前,前任 G-273 留下的。\n\n现在,**传给你**。",
+      "choices": [
+        {
+          "text": "接受这道红印。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 25,
+            "GR": 10,
+            "puzzle_add": "piece_predecessor_log",
+            "flags": {
+              "s6_inherited_scar": true,
+              "promised_relieve_predecessor": true,
+              "marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "退后,让刀盘继续转。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "PR": -15,
+            "GR": 5,
+            "flags": {
+              "s6_revisit_well": true,
+              "s6_chickened": true
+            }
+          }
+        }
+      ]
+    },
+    "n_intro": {
+      "scene": "S0",
+      "narrative": "你叫赵某,工牌编号 G-273。\n\n面试那天,HR 反复跟你强调:「夜班就是坐岗,每小时巡一次,有空调,有夜宵,没事刷手机。」她笑得太用力,嘴角的弧度像是练过的。\n\n你刚签完合同,领了「商场总控钥匙」。钥匙圈上贴着一张泛黄的小票:\n\n「1984/06/15  西湖牌 14 寸黑白电视  ¥273.00」\n\n——和你的工号尾号一样。\n\n你把小票翻过来,背面用铅笔写着一行字:\n\n「夜班没有尽头,只有下一班。」\n\n字迹有点像你自己的笔迹,但你不记得自己写过。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "把小票折好,放进胸袋。",
+          "next": "n_briefing",
+          "effects": {
+            "inv_add": [
+              "商场总控钥匙",
+              "工牌 G-273"
+            ]
+          }
+        },
+        {
+          "text": "撕掉小票。",
+          "next": "n_briefing",
+          "effects": {
+            "inv_add": [
+              "商场总控钥匙",
+              "工牌 G-273"
+            ],
+            "PR": 2,
+            "flags": {
+              "defied_token": true
+            }
+          }
+        },
+        {
+          "text": "拍照发给上一任 G-273。",
+          "next": "n_briefing",
+          "effects": {
+            "inv_add": [
+              "商场总控钥匙",
+              "工牌 G-273",
+              "前任电话号码"
+            ],
+            "PR": 5,
+            "flags": {
+              "contacted_predecessor": true
+            }
+          }
+        }
+      ]
+    },
+    "n_briefing": {
+      "scene": "S0",
+      "narrative": "更衣室。\n\n队长把一本卷边的《异常事件记录表》摔在你面前:「7 个打卡点,见到不对劲就填表。漏一栏扣 10%,连续三栏空白——你就别来了。」\n\n你翻开记录表:\n\n[01] 湖滨长椅\n[02] 柳浪闻莺 307 阶\n[03] 九溪理安寺\n[04] 中山中路·羊血弄 2 号\n[05] 留下小学旧楼 203 琴房\n[06] 滨江·联庄站盾构井\n[07] 平海街 1 号货梯井\n\n表格最下方:\n\n「填完才能走。」\n\n墙上挂钟:20:27。\n\n打卡顺序——\n\n队长说:「随便。先去哪个,你自己定。」",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "继续。",
+          "next": "n_landmark_picker",
+          "effects": {}
+        }
+      ]
+    },
+    "n_landmark_picker": {
+      "scene": "MAP",
+      "narrative_variants": [
+        {
+          "if": {
+            "shifts_completed_min": 1
+          },
+          "text": "你又站在地图前。\n\n墙上的杭州夜班巡逻图,被前任用红笔画过:7 个打卡点,4 个画了圈,3 个画了叉。\n\n你不知道圈和叉是什么意思。\n\n你只知道——\n\n你要去下一个。\n\n《异常事件记录表》在胸袋里发烫。"
+        },
+        {
+          "if": {
+            "flags": {
+              "saw_predecessor_map": true
+            }
+          },
+          "text": "你又站在地图前。\n\n你已经听过前任的对讲机录音了——\n\n他说:「不要按顺序。它会**跟着顺序**追你。」\n\n所以你打乱顺序。\n\n但你也不知道,你打乱的顺序,是不是它**已经知道**的顺序。"
+        }
+      ],
+      "narrative": "更衣室外,墙上挂着一张杭州地铁夜班巡逻图。\n\n7 个打卡点,用红圈标着:\n\n[01] 湖滨长椅 — 西湖东岸,5 分钟内到达\n[02] 柳浪闻莺 307 阶 — 老和山方向,15 分钟\n[03] 九溪理安寺 — 远,坐车 30 分钟\n[04] 羊血弄 2 号 — 清河坊,10 分钟\n[05] 留下小学旧楼 — 西湖区,25 分钟\n[06] 联庄站盾构井 — 滨江,坐 1 号线 35 分钟\n[07] 平海街 1 号货梯 — 就在你脚下,商场地下\n\n你今晚 8 个小时,要打完这 7 个点。\n\n顺序你自己定。",
+      "show_hud": true,
+      "choices": [
+        {
+          "text": "[01] 湖滨长椅 — 第一站从近的开始。",
+          "next": "n_s1_arrive",
+          "require": {
+            "not": {
+              "landmark_visited": [
+                "S1"
+              ]
+            }
+          }
+        },
+        {
+          "text": "[02] 柳浪闻莺 307 阶。",
+          "next": "n_s2_arrive",
+          "require": {
+            "not": {
+              "landmark_visited": [
+                "S2"
+              ]
+            }
+          }
+        },
+        {
+          "text": "[03] 九溪理安寺。",
+          "next": "n_s3_arrive",
+          "require": {
+            "not": {
+              "landmark_visited": [
+                "S3"
+              ]
+            }
+          }
+        },
+        {
+          "text": "[04] 羊血弄 2 号。",
+          "next": "n_s4_arrive",
+          "require": {
+            "not": {
+              "landmark_visited": [
+                "S4"
+              ]
+            }
+          }
+        },
+        {
+          "text": "[05] 留下小学旧楼。",
+          "next": "n_s5_arrive",
+          "require": {
+            "not": {
+              "landmark_visited": [
+                "S5"
+              ]
+            }
+          }
+        },
+        {
+          "text": "[06] 联庄站盾构井。",
+          "next": "n_s6_arrive",
+          "require": {
+            "not": {
+              "landmark_visited": [
+                "S6"
+              ]
+            }
+          }
+        },
+        {
+          "text": "[07] 平海街 1 号货梯 — 直接下到 B3。",
+          "next": "n_s7_arrive",
+          "require": {
+            "shifts_completed_min": 3
+          }
+        },
+        {
+          "text": "[结束] 你已经打了至少 4 个点,直接交班。",
+          "next": "n_scene_morning_lakeside",
+          "require": {
+            "shifts_completed_min": 4
+          }
+        }
+      ]
+    },
+    "n_npc_faceless_coat": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s1_book_grabbed": true
+            }
+          },
+          "text": "你抱着账本想跑——\n\n但风衣站起来了。\n\n它没有头,但它有**手**——\n\n两只米色的、湿的手,从袖口伸出来。\n\n它没追你。\n\n它对你说话——声音从风衣领口里直接冒出来,像广播:\n\n「赵某。账本是我的。\n  你想要它,可以。\n  但你要回答我一个问题。」"
+        }
+      ],
+      "narrative": "风衣站起来了。\n\n领口是空的,声音却从里面**直接**传出来,像有人把广播塞进了一件衣服:\n\n「我叫林某,1985 年 10 月 18 日,贪污被举报。我在柳浪闻莺投了湖。\n  账本里 27 笔贪污款,只有第 13 笔是我做的。\n  其他 26 笔,是另一个人。\n  那个人,现在还活着。\n  你想知道他是谁吗?」",
+      "choices": [
+        {
+          "text": "想。告诉我。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 8,
+            "puzzle_add": "piece_27_accounts",
+            "flags": {
+              "linmou_question_yes": true
+            }
+          }
+        },
+        {
+          "text": "不想。我只是个夜班保安。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -3,
+            "GR": 5,
+            "flags": {
+              "declined_truth": true
+            }
+          }
+        },
+        {
+          "text": "把账本扔回风衣怀里,转身跑。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "inv_remove": [
+              "林副科长账本残页"
+            ],
+            "PR": -5,
+            "flags": {
+              "returned_book_in_panic": true
+            }
+          }
+        },
+        {
+          "text": "穿上风衣。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "PR": 15,
+            "GR": 10,
+            "inv_add": [
+              "米色风衣"
+            ],
+            "flags": {
+              "wore_coat": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_drowned_official": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s1_signed_book": true
+            }
+          },
+          "text": "你刚把『赵某 G-273』写在账本最末一栏——\n\n第三把长椅旁,湖水**自己**漫上岸。\n\n一个穿着 1980 年代中山装、湿透的男人,从湖里**走**出来。\n\n他没有撑伞。\n\n他对你说:\n\n「赵某,你签了。\n  欢迎加入第 14 任 G-273。\n  上一任在 27 楼。下一任在你身后。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s1_wore_shoes": true
+            }
+          },
+          "text": "你刚穿上湿鞋——\n\n你的腿,不听使唤。\n\n它们带你走到湖边。\n\n湖里浮上来一个人——\n\n中山装,湿透,腋下夹着账本。\n\n他没看你的脸,他看你的脚:\n\n「我的鞋,合脚吗?」"
+        }
+      ],
+      "narrative": "湖水自己漫上岸。\n\n你看见一道**水线**,从湖边沿着青石板**朝你延伸**——\n\n3 米长。\n\n它不是水流,是水**主动**贴着地面**爬**过来的。\n\n水线尽头停在你脚前 30 厘米。\n\n然后,水**站起来**。\n\n变成一个人形。\n\n人形从透明慢慢变实——\n\n是一个 50 多岁的男人。\n\n中山装,深灰色,袖口磨白。\n\n胸前左口袋别着一支**英雄牌自来水钢笔**——1985 年的款式。\n\n他全身湿透,湖水从下摆**朝下**滴。\n\n但他**不滴水**。\n\n他的脚下青石板,**是干的**。\n\n你低头看自己的脚——\n\n你的鞋,**也是干的**。\n\n但刚才那道水线明明流到你脚前。\n\n他抬头看你。\n\n他的眼睛非常黑,黑到你能在里面看见自己**举着手电的样子**。\n\n手电的光,**反射在他的瞳孔里**——\n\n但你的手电,**没开**。\n\n你低头确认——你的手电**确实关着**。\n\n他指着第三把长椅,语气很温和,像在跟一个老同事说话:\n\n「我在那里,坐了 41 年。\n  没人来认领我。\n\n  你认领我吗?」",
+      "choices": [
+        {
+          "text": "认领。我替你完成『未结』那 27 笔。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "claimed_linmou": true
+            }
+          }
+        },
+        {
+          "text": "不认领。这不是我的工作。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -5,
+            "GR": 5
+          }
+        },
+        {
+          "text": "我也是 G-273。我们一起。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 20,
+            "flags": {
+              "linked_to_eight_self": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_predecessor_voice": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "contacted_predecessor": true
+            }
+          },
+          "text": "对讲机里,前任 G-273 的声音——\n\n你早上发过照片给他。他没回。\n\n现在他回了:\n\n「你拍的那件风衣,是我。\n  你拍的那个工号牌,也是我。\n  G-273 不是工号,是『等』。\n  你等下一个,下一个等下下个。\n\n  快跑。\n  跑出湖滨,别回头。」"
+        }
+      ],
+      "narrative": "对讲机「滋——」一声,接通。\n\n背景音是水声,很大,像**整个西湖**贴着话筒。\n\n一个男声,慢:\n\n「G-273,我是上一任。\n  我没下班。\n  你也不会。\n  除非你能找到 27 楼。」\n\n他停了一下:\n\n「27 楼不在 27 层。\n  27 楼在你**写完第 7 栏的那一刻**。」",
+      "choices": [
+        {
+          "text": "27 楼怎么找?",
+          "next": "n_scene_27th_floor_corridor",
+          "effects": {
+            "puzzle_add": "piece_27th_clue",
+            "flags": {
+              "asked_27th": true
+            }
+          }
+        },
+        {
+          "text": "我不想下班。我只想回家。",
+          "next": "n_scene_red_telephone",
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "asked_to_quit": true
+            }
+          }
+        },
+        {
+          "text": "你是谁?报全名。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "asked_predecessor_name": true
+            }
+          }
+        },
+        {
+          "text": "挂掉。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 3,
+            "flags": {
+              "hung_up_predecessor": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_red_dress_girl": {
+      "scene": "NPC",
+      "_foreshadow_slot": [
+        "1996_red_girl_truth"
+      ],
+      "_foreshadow_solved_by": [
+        "redgirl_1996_route"
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "told_red_girl_truth": true
+            }
+          },
+          "text": "你刚才告诉过她:『你不该问我。你该问 1987 年那个穿同款裙子的女孩。』\n\n她记住了。\n\n现在她抱着电视,**站在你面前**,但**电视里**她的影像,**站在 1987 年的红衣女孩旁边**。\n\n两个红衣女孩,**手牵手**。\n\n她对你说:「叔叔,我找到 1987 年的姐姐了。\n  她跟我说,她叫**何小燕**。\n  我也叫**何小燕**。\n  我们是同一个名字。\n\n  叔叔,**为什么**?」"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "1991 班级合照"
+            ]
+          },
+          "text": "你身上有 1991 年班级合照。\n\n你来到她面前——\n\n她看见照片,**僵住**。\n\n她抢过照片——\n\n看了 17 秒。\n\n她说:「这个第三排第二个,是**叔叔**。\n  这个第三排第二个旁边,是**叶某**。\n  我不在这张合照里。\n\n  但是 1996 年我死的时候,**听见过这张合照拍的相机咔嚓声**。\n  我以为是货梯门关。\n  原来是**1991 年的相机**。\n\n  时间是**乱的**。\n  叔叔,**带我回去**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_returned_shoes": true
+            }
+          },
+          "text": "你把 S5 那双白布鞋还给她了。\n\n她接过鞋,**穿上**——\n\n严丝合缝。\n\n她笑了。\n\n11 岁的女孩,有 28 年没笑过。\n\n她说:「叔叔,这双鞋是我妈妈 1995 年买给我的。\n  1996 年六一儿童节彩排,我穿这双鞋。\n  彩排完那天我去万象城,在货梯里**鞋掉了一只**。\n  没人帮我捡。\n  我就**回去捡**——\n  门**关了**。\n\n  现在两只都齐了。\n  叔叔,**谢谢**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_heard_tv": true
+            }
+          },
+          "text": "你在 S2 第 308 阶红木门里见过她。\n\n你又见到她——\n\n她手里电视屏幕里的雪花,**少了**——\n\n屏幕清晰起来。\n\n屏幕里是**307 阶**——\n\n她正在 307 阶上**等你**。\n\n但她**也站在你面前**。\n\n两个她。\n\n两个时间。\n\n屏幕里那个,对你**举起一根手指,贴在嘴前**:\n\n「嘘——\n  叔叔,**别告诉真的我**。」"
+        }
+      ],
+      "narrative": "你看见她了。\n\n她出现在你面前,大约 2 米远。\n\n你不记得她是怎么出现的。\n\n刚才那个位置是空的——你眨了一下眼,她**就在那里**。\n\n11 岁,大约你腰部那么高。\n\n红色连衣裙,1996 年的款式——立领、泡泡袖、裙摆刚到膝盖。\n\n这种款式 2024 年的小学生不会穿,但 1996 年六一儿童节学校彩排会穿。\n\n她的头发扎成马尾,蝴蝶结是白色的。\n\n她**没有穿鞋**。\n\n光着两只脚踩在地上。\n\n脚底很干净——白得**不像活人的脚底**。\n\n她抱着一台 14 寸黑白电视。\n\n电视壳上有商标:**西湖牌**。\n\n屏幕上全是雪花,**沙沙**作响。\n\n但你听不见雪花声从电视喇叭出来。\n\n你听见的雪花声,在**你脑后**——\n\n像有人用电视屏幕贴着你后脑勺。\n\n她仰头看你。\n\n她的眼睛是**黑白电视的雪花**——两只眼睛各是一小块雪花屏。\n\n她说话:\n\n「叔叔,27 楼怎么走?」\n\n声音从**她抱着的电视屏幕**里出来,不是从她的嘴里。\n\n她的嘴**没动**。",
+      "choices": [
+        {
+          "text": "我带你去。",
+          "next": "n_scene_27th_floor_corridor",
+          "effects": {
+            "PR": 10,
+            "inv_add": [
+              "27 楼通道钥匙"
+            ],
+            "flags": {
+              "led_red_girl": true
+            }
+          }
+        },
+        {
+          "text": "你不该问我。你该问 1987 年那个穿同款裙子的女孩。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "told_red_girl_truth": true
+            }
+          }
+        },
+        {
+          "text": "把电视抢过来。",
+          "next": "n_scene_27th_floor_corridor",
+          "effects": {
+            "GR": 12,
+            "inv_add": [
+              "14 寸黑白电视",
+              "1987 录像带"
+            ],
+            "flags": {
+              "took_red_girl_tv": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_yang_butcher": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_blood_signed": true
+            }
+          },
+          "text": "你刚用羊血在「⺶」字匾上补完最后一笔。\n\n黑山羊抬头——\n\n它没有头,但它**抬起了脖子的断面**。\n\n断面对准你,像在「看」你。\n\n它的胸腔里,婴儿啼哭**变成了你刚出生那天的录音**。\n\n你怎么会有那段录音?\n\n你妈妈从来没给你看过。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s6_corrected_linmou": true
+            }
+          },
+          "text": "你刚在 S6 操作间帮林某改了工号牌。\n\n你转身进羊血弄——\n\n黑山羊**已经放下来了**。\n\n它躺在地上,没有头,但**有头骨的轮廓**——\n\n是林某的。\n\n胸腔里啼哭的婴儿,慢慢说话:\n\n「林某改名了。\n  那么 1986 沉船第 8 个,就轮到**你**了。」"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "铜锈护符"
+            ]
+          },
+          "text": "你身上揣着 S3 钟里的铜锈护符。\n\n你走进羊血弄——\n\n黑山羊倒吊着,但它的腿**停了**。\n\n你的护符,在胸袋里**发烫**——\n\n护符上 1987 年那张「侧脸」,**对着黑山羊呲牙**。\n\n两个鬼,**互相认识**。\n\n它们在用你**听不懂**的方言争吵。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s4_revisit_alley": true
+            }
+          },
+          "text": "你又来到羊血弄尽头。\n\n刚才你已经看过黑山羊。\n\n这次它的腿**蹬得更慢**——\n\n慢到你能看清每一蹬之间的间隔。\n\n这个节奏——\n\n是你的心跳。"
+        }
+      ],
+      "narrative": "羊血弄尽头,「⺶」字匾还缺一笔。\n\n你抬头第七次看那块木匾。\n\n你能看清木纹里嵌着干掉的旧血,深褐色,渗到匾后面去了。\n\n「⺶」缺最下面那一笔——\n\n那一笔的位置,是一个**指印宽度**的凹槽。\n\n像是有人 1933 年用大拇指按下去,从此再没人补上。\n\n黑山羊倒吊在铁钩上,没有头。\n\n但它**有腿**——\n\n四条腿在你看到的瞬间,**齐齐绷紧**,然后**齐齐松弛**。\n\n这个节奏,是你刚才走进弄堂时心跳的节奏。\n\n它的胸腔里,**婴儿啼哭**——\n\n哭声从皮毛底下、从肋骨之间、从某种你不愿想象的位置漏出来。\n\n啼哭一阵急,一阵缓。\n\n你站着不敢动。\n\n你的手电筒光柱,扫过黑山羊脖子的断面——\n\n断面是**齐**的。\n\n不是被刀劈的齐,是**被光劈**的齐。\n\n地上,一滩半干的血,正好在山羊脖子下方。\n\n你的工牌反面,**自己变冷**——\n\n你不知道这意味着什么,但你知道:\n\n这条弄堂在**等你**做点什么。",
+      "choices": [
+        {
+          "text": "用地上的羊血,补全「⺶」字。",
+          "next": "n_npc_yang_butcher_payoff",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "inv_add": [
+              "⺶ 符文"
+            ],
+            "flags": {
+              "completed_yang": true
+            }
+          }
+        },
+        {
+          "text": "跪下,鞠三个躬。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -5,
+            "inv_add": [
+              "羊公会欠条"
+            ],
+            "flags": {
+              "yang_debt": true
+            }
+          }
+        },
+        {
+          "text": "割断绳索,让羊落地。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "freed_yang": true,
+              "marked_lamb": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_yang_butcher_payoff": {
+      "scene": "NPC",
+      "narrative": "你的指尖蘸着羊血,在「⺶」字最后一笔上落下。\n\n匾额**亮了一下**——\n\n不是发光,是空气里有什么东西**收紧**。\n\n弄堂里 17 个『羊公会』火死灵,**齐齐从墙缝里抽出**——\n\n他们没有声音,但你听见**17 道叹气**,在你脑后掠过。\n\n他们走向弄堂尽头——\n\n第一个,转头对你**鞠躬**。\n\n第二个,**对你眨左眼**。\n\n......\n\n第 17 个走过你身边时,慢慢说:\n\n「我们 17 个,1933-2007 共担一个『未结』。\n  你今晚把它结了。\n\n  我们去**轮回**。\n\n  你这一辈子,以后看到任何**没头的羊**,**都不要再补了**。\n  下一笔,留给下一个 G-273。」\n\n弄堂尽头的灯泡,**亮成正常的暖白光**。\n\n黑山羊不见了。",
+      "choices": [
+        {
+          "text": "看着 17 个死灵走出弄堂,鞠躬目送。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_yang_freed",
+            "flags": {
+              "yang_17_freed": true
+            }
+          }
+        },
+        {
+          "text": "跑过去拦住第 17 个,问他『1933 年那个开山首刀的人,是谁?』",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_yang_origin",
+            "flags": {
+              "asked_yang_1933": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_helmet_workers": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s6_volunteered": true
+            }
+          },
+          "text": "你刚在井口对他们说『我替你们,你们走』。\n\n7 个工人**齐齐转身**——\n\n他们的背后,**贴着 7 张照片**。\n\n7 张照片是他们各自的家人——\n\n第一张:1986 年的妻子,抱着一个 6 个月的婴儿。\n第二张:1986 年的母亲,在灶台前。\n......\n\n第 7 张照片,**模糊**——\n\n上面是**你的妈妈**,你出生那天医院的照片。\n\n第 7 个工人,转头对你说:\n\n「我家的老婆,就是你妈妈的姑姑。\n  我们,亲戚。」"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          },
+          "text": "你掏出 1986 年那枚「林」字硬币。\n\n7 个工人**抬头**——\n\n他们看到硬币,7 顶柳条帽**齐齐落在地上**。\n\n他们没有脸,但你听见有人**哭**。\n\n第 4 个工人开口:\n\n「这枚硬币,是我 1986 年那天**没还给林某**的。\n  我借了他 1 角钱买烟。\n  我没还。\n  船就翻了。\n\n  你能帮我**还**吗?」"
+        },
+        {
+          "if": {
+            "flags": {
+              "saw_underwater_coat": true
+            }
+          },
+          "text": "你在湖底见过那个穿米色风衣的人——林某。\n\n他在水下背对你站着。\n\n你现在站在 S6 盾构井底,7 个工人面前。\n\n7 个工人齐声说:\n\n「我们认识水下那个人。\n  他不是 1986 年和我们一起翻船的。\n  他是 1985 年从西湖**漂过来**的。\n  他在我们 7 个之间,**找过自己的位置**。\n\n  但他没找到。\n  这次,他想让你**替他**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "helmet_stuck": true
+            }
+          },
+          "text": "你头上那顶柳条帽,粘在你头上。\n\n你来到 7 个工人面前——\n\n他们看见你的帽子,**齐齐鞠躬**。\n\n他们认你是**第 8 个**了。\n\n他们的话很轻,像井水拍井壁:\n\n「兄弟,你戴上了。\n  你还来这里干什么?\n  下班吧。\n  井底,我们给你留了位置。」"
+        }
+      ],
+      "narrative": "盾构井底。\n\n你不记得自己怎么下到井底的——你刚才还在井口往下看。\n\n现在你站在井底,脚下是**干的**——\n\n井底应该有积水。\n\n但你脚边的水,**主动让开 1 米**,围成一个干圆圈。\n\n你站在干圆圈中央。\n\n7 个工人站成一排,**面对你**。\n\n他们的高度,大约你肩膀那么高——比正常成年人矮。\n\n1986 年的工人,营养比现在差。\n\n柳条安全帽,1980 年代款式——**黄色油漆已经掉光**,只剩柳条本身的灰褐色。\n\n他们都穿**棕色帆布工装**,膝盖磨破。\n\n他们没有脸。\n\n不是面无表情——是**脖子以上空了一块**。\n\n但你能感觉到他们**在看你**。\n\n他们一起伸出手——\n\n7 双手,7 个掌心,朝上。\n\n掌心是**苍白的**——皮肤泡水泡了 38 年的颜色。\n\n你头顶——\n\n不知道什么时候,**也戴上了一顶柳条安全帽**。\n\n你伸手摸——\n\n柳条扎着你的头皮,真实得不像幻觉。\n\n你摘下它,翻过来看内侧。\n\n内侧用**红色**写着:\n\n「H = 1987」\n\n红色是**新的**。\n\n刚干。",
+      "choices": [
+        {
+          "text": "把头上的帽子递给第一个工人。",
+          "next": "n_npc_helmet_workers_payoff",
+          "effects": {
+            "PR": 8,
+            "GR": 8,
+            "flags": {
+              "seven_returned": true,
+              "b3_unlocked": true
+            }
+          }
+        },
+        {
+          "text": "把 7 顶帽子全部薅下来。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 20,
+            "inv_add": [
+              "7 顶柳条安全帽"
+            ],
+            "flags": {
+              "drown_marked": true
+            }
+          }
+        },
+        {
+          "text": "戴一顶他们的帽子,自己加入。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 12,
+            "inv_add": [
+              "柳条安全帽 (粘住)"
+            ],
+            "flags": {
+              "helmet_stuck": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_helmet_workers_payoff": {
+      "scene": "NPC",
+      "narrative": "你摘下头上那顶柳条帽,递给第一个工人。\n\n他接过去——\n\n他的手是**冷的**。\n\n他戴上帽子。\n\n他的脸——\n\n出现了。\n\n是一个 50 岁的男人,眉眼憨厚。\n\n他对你**鞠躬**。\n\n第二个工人接过你递过去的下一顶——\n\n他的脸出现:30 岁,带笑。\n\n......\n\n直到第 7 个。\n\n7 张脸,7 种表情。\n\n他们一起说:\n\n「赵某,你**完成 7 人归航**了。\n  我们 1986 年没归航。\n  现在归了。\n\n  B3 钢门,**为你开**。\n\n  但是,B3 之下,还有一个东西**也开了**。\n  我们提醒你:**不要往下看**。」\n\n井底,远处传来「咔哒」一声——\n\n是 B3 钢门。\n\n7 个工人**沉进井底**——\n\n这次他们是**回家**,不是被困。",
+      "choices": [
+        {
+          "text": "鞠躬,目送他们沉进井底。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_seven_returned",
+            "flags": {
+              "seven_returned_witnessed": true
+            }
+          }
+        },
+        {
+          "text": "记下他们 7 张脸,以后核对工号册。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_seven_faces",
+            "inv_add": [
+              "7 工人速写"
+            ],
+            "flags": {
+              "sketched_seven": true
+            }
+          }
+        },
+        {
+          "text": "他们说『不要往下看』,你偏要看。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "defied_warning": true,
+              "saw_underwater_coat": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_piano_ghost": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "played_for_her": true
+            }
+          },
+          "text": "你弹完了那首她想听的曲子。\n\n《小星星》。\n\n但是慢半拍。\n\n你弹错的那个 mi——\n\n她**没纠正你**。\n\n她转头,对你笑了一下。\n\n11 岁的女孩,有 33 年没笑过。\n\n这一次,她笑得很轻:\n\n「叔叔,1991 年那天,我也弹错了。\n  我妈说我考 87 分是因为练琴不努力。\n  其实——\n  那个 mi,我也是故意弹错的。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_followed_double_shadow": true,
+              "saw_27th_floor": false
+            }
+          },
+          "text": "你在 S2 见过那个红衣女孩吗?\n\n她和我同岁。\n\n她比我**晚 5 年死**。\n\n但是我们**共用一双布鞋**。\n\n你不知道为什么,对吗?\n\n我也不知道。\n\n但 1996 年她在货梯里死的时候——\n\n我**听见**了。\n\n203 琴房的钢琴,**自己**弹了一首《小星星》。\n\n是我弹的。\n\n但那时我已经死了 5 年。"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "1991 钢丝绳"
+            ]
+          },
+          "text": "你手里拎着我的钢丝绳。\n\n那是新的——\n\n但**对我来说**,它是 33 年前那根。\n\n我妈每年清明,会换一根新的钢丝绳挂在 203 琴房的琴凳里。\n\n她不告诉我爸。\n\n她以为我会在某个夜班保安经过的夜里,**自己来取**。\n\n你来了。\n\n但你**不是来取的**。\n\n你是来**还**的。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s5_recorded_piano": true
+            }
+          },
+          "text": "你录下了我弹的钢琴。\n\n磁带是 1959-043 号——\n\n那不是 1991 年的磁带。\n\n那是我**外婆**1959 年的磁带。\n\n外婆 1959 年也是 11 岁。\n\n外婆 1959 年也死在 203 琴房。\n\n这间琴房,从 1959 年就开始等。\n\n等一个夜班保安,把我们 33 年(我)+ 65 年(外婆)的磁带,**带出去**。"
+        }
+      ],
+      "narrative": "203 琴房。\n\n你站在门口往里看。\n\n这间琴房 1992 年就停用了 — 但里面的灯**亮着**。\n\n月光从窗户进来,但月光**不是白的**——\n\n是钢琴漆面反射的**蓝绿色**,像理安寺铜锈的颜色。\n\n钢琴是一台 1980 年代旧立式,深棕色木壳。\n\n琴盖**自己**慢慢掀开,像有人在水底吐气。\n\n琴凳上,坐着一个**透明的女孩**——\n\n11 岁,白裙子,扎两个小辫,辫梢系红头绳。\n\n她背对你。\n\n她的脚短得**踩不到踏板**——\n\n她的小布鞋离地大约 5 厘米,在空中**轻轻晃**。\n\n你能透过她,看见琴键。\n\n琴键自己**摁下一个 mi**。\n\n那个 mi 弹错了——\n\n应该是 mi,变成了 mi 升半音的 fa。\n\n这是 1991 年那个春日下午,11 岁的叶某弹错的那个音。\n\n她**回头**——\n\n你看见她的脸。\n\n她的眼睛比正常孩子大一圈,瞳孔深得没有底。\n\n她抬起一根手指,**贴在嘴前**:\n\n「嘘——」\n\n这一声『嘘』很轻,但**琴房所有的灰尘**——\n\n都**朝同一个方向飞了 1 厘米**。",
+      "choices": [
+        {
+          "text": "把 1987 年 6 月 1 日的报纸放在琴盖上。",
+          "next": "n_npc_piano_ghost_payoff",
+          "effects": {
+            "PR": 12,
+            "GR": 5,
+            "inv_add": [
+              "1959-043 磁带"
+            ],
+            "puzzle_add": "piece_piano_girl",
+            "flags": {
+              "piano_appeased": true
+            }
+          }
+        },
+        {
+          "text": "弹一首她想听的曲子。",
+          "next": "n_npc_piano_ghost_payoff",
+          "effects": {
+            "PR": 8,
+            "inv_add": [
+              "倒带背书声"
+            ],
+            "flags": {
+              "played_for_her": true
+            }
+          }
+        },
+        {
+          "text": "把 1991 请假条递给她,告诉她已经签了「准」。",
+          "next": "n_npc_piano_ghost_payoff",
+          "effects": {
+            "PR": 20,
+            "GR": -5,
+            "puzzle_add": "piece_piano_girl_freed",
+            "flags": {
+              "piano_appeased": true,
+              "s5_freed_yeh": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1991 请假条"
+            ]
+          }
+        },
+        {
+          "text": "把 1991 班级合照举给她看,问她『这是不是你?』",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 18,
+            "puzzle_add": "piece_eight_zhao",
+            "flags": {
+              "showed_class_photo": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1991 班级合照"
+            ]
+          }
+        },
+        {
+          "text": "把钢琴砸了。",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "GR": 15,
+            "flags": {
+              "smashed_piano": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_piano_ghost_payoff": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "piano_appeased": true
+            }
+          },
+          "text": "你把 1987 年 6 月 1 日的报纸放在琴盖上。\n\n那张报纸,头版头条是『百货大楼踩踏 13 死』——\n\n但叶某不看头版。\n\n她翻到第 7 版——\n\n第 7 版是『六一儿童节学校演出名单』。\n\n名单第 23 个,是她。\n\n她的指尖,**摸过自己的名字**——\n\n她笑了。\n\n11 岁的女孩,有 33 年没在自己名字上**笑**过。\n\n她抱起报纸,**小心翼翼**——\n\n像抱一只**小猫**。\n\n她对你说:「叔叔,谢谢。\n  我妈妈不来 203 接我。\n  但我现在,有这个**名单**。\n  我可以**自己回去**了。\n\n  这盘磁带,送给你。\n  里面是 1959 年我外婆唱的童谣。\n  外婆从来没给我妈妈唱过——\n  她那时候已经死在这间琴房。\n\n  你**带磁带走**。\n  让外面的人,**听见外婆的声音**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "played_for_her": true
+            }
+          },
+          "text": "你弹了一首她想听的曲子。\n\n你以为你弹的是《小星星》。\n\n实际你弹的是——\n\n**你 5 岁那年妈妈哄你睡觉时哼过的小调**。\n\n这首歌没有名字。\n\n你妈妈是临时编的。\n\n你妈妈也不知道自己在哼什么。\n\n但叶某听见了——\n\n她**愣住**——\n\n她的眼睛里第一次**有了光**。\n\n她说:「叔叔,这首歌我也会哼。\n  我妈妈 1991 年那年,**也哼过**。\n  那时候我已经死了 3 个月。\n  她哼这首歌,是哼给**记忆里的我**听。\n\n  你怎么会哼这首歌?\n  你妈妈和我妈妈,**认识**吗?」"
+        }
+      ],
+      "narrative": "钢琴凳上的 11 岁女孩,**笑了**。\n\n你拿到了她的礼物。",
+      "choices": [
+        {
+          "text": "把磁带 / 童谣记在心里,继续巡逻。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 8,
+            "puzzle_add": "piece_piano_freed",
+            "flags": {
+              "piano_blessing": true
+            }
+          }
+        },
+        {
+          "text": "问她:『1991 年班级合照里第三排第二个,真的是我吗?』",
+          "next": "n_scene_lost_archive",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_eight_zhao",
+            "flags": {
+              "asked_class_photo": true
+            }
+          }
+        },
+        {
+          "text": "蹲下,陪她坐到天亮。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 18,
+            "GR": -5,
+            "flags": {
+              "sat_with_yeh": true,
+              "linked_to_eight_self": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_corrosion_face": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s3_revisit_temple": true,
+              "rang_seven": false
+            }
+          },
+          "text": "你又来了。\n\n但你还没敲。\n\n钟里铜锈侧脸睁开眼——\n\n这次它**眨了 3 次**。\n\n3 次,意味着:\n\n「再过 3 年,H = 1990。\n  你还是不敲,就 H = 1993。\n  我等你 1987 年了。\n  现在是 2024。\n  还有,**37 年**给你考虑。」\n\n它的语气,**很耐心**。\n\n它已经习惯耐心。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s4_blood_signed": true
+            }
+          },
+          "text": "你身上沾着 S4 弄堂的羊血。\n\n钟里那张铜锈侧脸——\n\n**鼻子动了一下**。\n\n它闻到你身上的羊血。\n\n它说:「弟弟,你刚才喂了那只羊。\n  那只羊是 1933 年的人。\n  我是 1987 年的钟。\n  我们这一族,有 11 个**长辈**在这间寺院里。\n  你想见见吗?」"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          },
+          "text": "你手里那枚 1986 林字硬币——\n\n钟里铜锈侧脸,**张嘴**——\n\n他想吃你的硬币。\n\n他没有牙齿,但你听见**铜与铜**摩擦的声音。\n\n他说:「这枚硬币,1986 年和我**同一炉**铜水。\n  我是钟,他是硬币。\n  我们是**亲戚**。\n  你把他喂给我,我替他**还林某 1 角钱**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "saw_8_zhao": true
+            }
+          },
+          "text": "你在 S3 水下看过 8 棺。\n\n你回到钟前——\n\n钟里铜锈侧脸,**变了**。\n\n它不是中年男人的侧脸了。\n\n它是**8 个不同年龄的侧脸,慢慢切换**。\n\n它们一起对你说:\n\n「我们 8 个,等的不是一个候选。\n  我们等的是一个**说不**的人。\n\n  你能说『不』吗?」"
+        }
+      ],
+      "narrative": "理安寺大殿。\n\n你站在殿中央,抬头——\n\n裂钟悬在你正上方,挂在一根 1980 年代加装的钢梁上。\n\n钟从中间裂成两半,但裂缝**没有合拢**——\n\n两半之间,隔着一拳宽的空气。\n\n空气里有蓝绿色的雾——\n\n是铜锈,**飘**着。\n\n钟内侧,蓝绿色铜锈拼成一张**人脸**——\n\n你第一眼看见时,那张脸是**正面**的。\n\n你眨了一下眼——\n\n它**侧过去**了,变成侧脸。\n\n你再眨一下——\n\n侧脸**倒挂**。\n\n它的眼睛是闭着的,但你能感觉到它在**通过铜锈本身**看你。\n\n殿里没有别人。\n\n但你听见有人**呼吸**——\n\n呼吸声从钟的**内部**传出来,慢、潮湿,像有人嘴里含着水。\n\n那张倒挂侧脸,**张开嘴**。\n\n它没有声音。\n\n但你脑袋里,自动浮现一行字,清楚得像有人**直接打字打进你耳膜**:\n\n「23:45 前敲七下。\n  否则——\n  H = 1987。」\n\n你看手机:22:48。\n\n你有 57 分钟。\n\n钟旁的撞钟木,**自己**轻轻晃了一下。",
+      "choices": [
+        {
+          "text": "敲七下。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 15,
+            "inv_add": [
+              "铜锈护符"
+            ],
+            "flags": {
+              "rang_seven": true
+            }
+          }
+        },
+        {
+          "text": "刮一片铜锈带走,不敲。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 5,
+            "inv_add": [
+              "铜锈护符"
+            ],
+            "flags": {
+              "corroding": true
+            }
+          }
+        },
+        {
+          "text": "进入水下回声副本,看完它要说什么。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_h1987",
+            "flags": {
+              "saw_8_zhao": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_forum_lurkers": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_posted_blood_face": true
+            }
+          },
+          "text": "你刚发了一条:『清河坊羊血弄·林某的脸浮在血滩里·1985 vs 2024』\n\n论坛**炸了**。\n\n第一条评论,@1985_ghostfile:\n\n「这张血滩里的脸,我**认识**。\n  这是我父亲。\n  他 1985 年投湖,尸体被打捞工人捞错日期了。\n  我 1987 年才出生,但我从小做这个梦——\n  梦里这张脸说:『儿子,你能查清楚我有 27 笔贪污里只有 13 笔是我做的吗?』\n\n  你拍下了。谢谢你。我现在 38 岁。\n  我可以**接着查**。」\n\n点赞:+1985 万。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_posted_shadow": true
+            }
+          },
+          "text": "你刚发了一条:『柳浪闻莺 307 阶·双影子·一个我一个 11 岁女孩』\n\n热评第一,@1996货梯亲历:\n\n「这个 11 岁女孩,**穿白布鞋**对吗?\n\n  我 1996 年,在万象城货梯里,**也看见过**。\n  她跟我同班同学一模一样——\n  我同学叫**何小燕**,1996-08-23 失踪。\n  失踪那天她被她妈逼着去货梯参加儿童节彩排。\n  她再也没回来。\n\n  你拍下了她的影子。\n  谢谢你。**我们终于有证据了**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s1_post_forum": true,
+              "s4_posted_blood_face": false,
+              "s2_posted_shadow": false
+            }
+          },
+          "text": "你的发帖只有 S1 长椅那一条。\n\n热度一般。\n\n但有一条**置顶评论**——\n\n@G272_in_27F:\n\n「你拍到了。但你只拍到一张。\n  风衣里那个人,他从 1985 年起被拍了 1987 次。\n  从你拍的角度,他**比之前任何一次都更清楚**。\n  这意味着——\n  他**承认**你了。\n  他要等你拍下一张。\n\n  你下一站去哪?」"
+        },
+        {
+          "if": {
+            "flags": {
+              "live_streaming": true
+            }
+          },
+          "text": "你已经在直播了。\n\n论坛把你**置顶**。\n\n直播间里,在线人数从 1.7 万跳到 27 万。\n\n弹幕分两派:\n\n- **求生派**(85% 弹幕):「快跑!别下 B3!不要去 27 楼!」\n- **求真派**(15% 弹幕,但金币榜全是他们):「再深一点!1985 那 26 笔到底是谁?给个证据!」\n\n弹幕第 1987 条,字最大:\n\n「兄弟,你今晚要么红,要么死。\n  红了你就是雪花频道永久频主。\n  死了——\n  我们继续等下一任 G-273。」"
+        }
+      ],
+      "narrative": "夜班论坛打开了。\n\n你的发帖,匿名。\n\n点赞数:+1...+27...+307...\n\n+1987!\n\n屏幕里实体瘪下去。\n\n弹幕在你脑袋里刷:\n\n「现场!」「我也见过!」「G-273 别签合同!」「快跑!」「继续发!」\n\n弹幕里有一条最长的——\n\n「我是 G-272。\n  我在 27 楼。\n  你拍的所有照片,我都看见。\n  你把它们发出来,我就能多记住自己一天。」",
+      "choices": [
+        {
+          "text": "继续发,把今晚每个地标都直播。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "posted_photo": true,
+              "live_streaming": true
+            }
+          }
+        },
+        {
+          "text": "立刻删帖。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "post_deleted": true
+            }
+          }
+        },
+        {
+          "text": "回 G-272 一句:『我会的。』",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "replied_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "把手机摔了。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 8,
+            "inv_remove": [
+              "前任电话号码"
+            ],
+            "flags": {
+              "phone_broken": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_evaluator_chair": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_refused_yanggui": true
+            }
+          },
+          "text": "你拒绝加入羊公会。\n\n《异常事件记录表》自己翻到最末页:\n\n「夜班评议会案号 G-273-X 第 14 卷:\n  本届巡夜员**拒绝**羊公会名册第 18 号编入。\n  这是 G 字头案件第一次有人拒绝。\n  根据章程第 17 条,授予『候补判官 — 革命党人 第 1 号』。\n  请到 B3 档案室,**审判**前 17 名加入羊公会的死灵。」\n\n你的工牌反面,**烫出『正章』**——\n\n不是『候补』,是直接『正』。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s3_refused_h1987": true
+            }
+          },
+          "text": "你在 S3 钟前写了「不」。\n\n夜班评议会**第一次**记录到这种事。\n\n《异常事件记录表》浮现:\n\n「G-273-X 案号:\n  本届拒绝接受 H = 1987 编号。\n  这是杭州常数运行 37 年来第一次。\n  判定:授予『候补判官 — 边界判例』。\n\n  特别条款:你审判的不是 11 任前任 G-273。\n  你审判的是**杭州常数本身**。」\n\n你的工牌反面,**烫的不是章**——\n\n是一个**问号**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s6_replaced_seven": true
+            }
+          },
+          "text": "你在 S6 井底说『我替七个工人』。\n\n《异常事件记录表》自己翻页:\n\n「夜班评议会注:\n  本届巡夜员愿意替 7 人共担一夜。\n  这超出『候补判官』的章程范围。\n  授予『候补判官 — 担当』。\n  额外津贴:7 顶柳条帽**自动还到栏杆**。\n  你的右肩,**多了一份重量**——\n  那是 7 个工人 38 年的疲惫。」\n\n你的工牌**变重了**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "defied_token": true
+            }
+          },
+          "text": "你刚入职那天撕了 1984 年的小票。\n\n夜班评议会**记得**。\n\n《异常事件记录表》浮现:\n\n「G-273 赵某入职日已留下『违逆标记』。\n  本届表现『非正分类』。\n  授予『候补判官 — 革命党 第 1 号』临时章。\n\n  注:这个章用过 0 次。\n  上一次有人撕入职小票,是 G-001。\n  G-001 的故事,已经无人记得。\n  你可能是第一个**让人记得 G-001 的故事**的人。」"
+        }
+      ],
+      "narrative": "你听见一个很老的声音,从你**胸袋里**传出来——\n\n是《异常事件记录表》自己说的。\n\n不是声音,是字。表的最末页,本来是空白,现在浮现出一段印刷字:\n\n「夜班评议会案号 G-273-X 第 14 卷:\n  本届巡夜员表现『未分类』。\n  根据章程,授予『候补判官』临时章。\n  请到 B3 档案室,报到。」\n\n你的工牌反面,自己**烫**出一个章。\n\n章上写着:「夜班评议会·候补判官」。",
+      "choices": [
+        {
+          "text": "去 B3 档案室报到。",
+          "next": "n_scene_evaluator_room",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_judge_seal",
+            "flags": {
+              "got_judge_seal": true
+            }
+          }
+        },
+        {
+          "text": "把表撕了。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 20,
+            "shifts_skipped": 3,
+            "flags": {
+              "discarded_record": true
+            }
+          }
+        },
+        {
+          "text": "不去。继续巡逻。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "got_judge_seal": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_eight_self": {
+      "scene": "NPC",
+      "_foreshadow_slot": [
+        "8_self_roster",
+        "1985_linmou_other26",
+        "1986_lin_coin",
+        "1991_yeh_classmate",
+        "1996_red_girl_truth"
+      ],
+      "_foreshadow_solved_by": [
+        "linmou_1985_route",
+        "worker_1986_route",
+        "yeh_1991_route",
+        "redgirl_1996_route"
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "linked_to_eight_self": true,
+              "claimed_linmou": true
+            }
+          },
+          "text": "8 棺,你不再是看客。\n\n你和林某——那个 1985 年投湖的——**联通了**。\n\n你看见 8 棺里 8 个『你』中的第 2 棺,**胸口贴的不是赵某的打卡表**——\n\n是**林某 1985 年的会计账**。\n\n林某睁眼,对你说:\n\n「赵某。你是 G-273。我是 G-249。\n  我们之间隔了 24 任。\n  我那年没下班。\n  你今晚下班的时候,**带上我**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s5_remembered_school": true
+            }
+          },
+          "text": "你在 S5 留下小学,看见 1991 年班级合照里**有自己的脸**。\n\n你来到 8 棺前——\n\n第 7 棺(1991 标签)的盖子**自己掀起来**。\n\n里面是**11 岁的你**——\n\n穿着白衬衫,留下小学校服。\n\n11 岁的你睁眼,认出 27 岁的你:\n\n「哥哥,你也是 G-273 了。\n  我是 1991 年那个班里**第二个死的**。\n  叶某是第一个,**我是第二个**。\n  没人记得我。\n  因为我妈把我档案撤了。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "saw_underwater_coat": true,
+              "saw_8_zhao": true
+            }
+          },
+          "text": "你在 S3 水下副本看过 8 棺。\n\n你现在**真正**站在 8 棺前——\n\n你才发现,**水下那次是预演**。\n\n这一次,8 个你同时坐起,**眼神不一样**——\n\n他们看你,不是同情,是**评估**。\n\n他们在选谁是『下一个躺进来』的。\n\n他们 8 个,**其中有 7 个想让你来**。\n\n第 8 个,是**1985 林某**——\n\n他**不想**。"
+        },
+        {
+          "if": {
+            "shifts_completed_min": 5
+          },
+          "text": "你今夜走了 5 个地标。\n\n你脚下的青石板,**沾过 5 个地标的湿气**。\n\n8 棺里 8 个你,看见你脚——\n\n他们说:\n\n「你的脚,**踩过我们 8 个的死法**。\n\n  1985(林某):投湖\n  1986(沉船):钱塘江\n  1987(踩踏):百货大楼\n  1991(自缢):留下小学\n  1996(货梯):万象城\n  1998 / 2009:等下一任来填\n\n  你今晚**没死**。\n  这意味着,**你能替我们 8 个,做一件事**。\n  你愿意吗?」"
+        }
+      ],
+      "narrative": "8 棺残片 Hall。\n\n8 台 1987 年冷冻舱围成八卦,舱盖敞开。\n\n每台舱里,躺着一个**你**。\n\n他们胸口贴着不同年份的打卡表:1987 / 1998 / 2009 / 2024 / 1980 / 1996 / 1991 / 2024。\n\n最末一台 2024 是空的,等你躺进去。\n\n8 个你同时睁眼,同时坐起,同时说:\n\n「填完第 7 栏,你就能不用躺。」",
+      "choices": [
+        {
+          "text": "我替你们填。",
+          "next": "n_end_truth",
+          "effects": {
+            "puzzle_add": "piece_eight_zhao",
+            "flags": {
+              "replaced_eight_self": true
+            }
+          }
+        },
+        {
+          "text": "我也躺进去。",
+          "next": "n_end_data",
+          "effects": {
+            "flags": {
+              "chose_data": true
+            }
+          }
+        },
+        {
+          "text": "我把 8 棺都关上,锁死。",
+          "next": "n_end_true",
+          "effects": {
+            "flags": {
+              "locked_eight_coffins": true
+            }
+          },
+          "require": {
+            "all_of": [
+              {
+                "flags": {
+                  "seven_returned": true
+                }
+              },
+              {
+                "inv_has": [
+                  "⺶ 符文"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "n_npc_cleaner_null": {
+      "scene": "NPC",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_smashed_monitor": true
+            }
+          },
+          "text": "你刚砸了 S4 弄堂房间里的监视器。\n\n清洁工**就是从那台监视器里跑出来的**。\n\n他没有脸,但他**指着你的左眼**——\n\n你的左眼,自从砸了监视器后,就**能自动对焦**。\n\n他用雪花声说:\n\n「兄弟,你**接收**了我的频段。\n  你现在是『可移动的不存在的清洁工』。\n  欢迎入伙。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "s6_no_fingerprint": true
+            }
+          },
+          "text": "你在 S6 烧了工牌,失去指纹。\n\n你转身——\n\n不存在的清洁工**就在你身后 1 米**。\n\n这次你能**清楚看见**他。\n\n他有脸。\n\n他的脸**就是你**——\n\n但他比你**多 5 岁**。\n\n他对你说:「2029 年的你,来接 2024 年的你下班。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "posted_photo": true
+            }
+          },
+          "text": "你今晚发了帖子。\n\n清洁工出现在你**手机屏幕里**——\n\n他没有脸,但他**就在你刚发的帖子背景里**。\n\n你刚才没看见他。\n\n他的雪花声,通过手机扬声器,直接播进你耳朵:\n\n「兄弟,你发的每张照片背景里,**都有我**。\n  你以前没注意。\n  我一直**在**。\n  你想让我**消失**吗?」"
+        }
+      ],
+      "narrative": "你眼角余光看见**有人**在动。\n\n5 米外。\n\n是一个清洁工。\n\n他在拖地——拖把推过地面,**沙、沙、沙**。\n\n但你听这条走廊不是该有清洁工巡逻的位置。\n\n现在是凌晨。\n\n商场清洁工 22 点就下班。\n\n你转头**直视**他——\n\n他**没有动作**。\n\n他**还在拖地**。\n\n但他的拖把**没有沾水**。\n\n他的桶**是空的**。\n\n他的拖把**离地 3 厘米**——他在**空气**里拖。\n\n他抬头。\n\n他没有脸。\n\n不是黑色,不是白色——\n\n他脸的位置,是**1984 年黑白电视的雪花屏**。\n\n雪花屏里隐约有人影,但你眼睛对不上焦。\n\n他播放出**电视开机时的雪花声**。\n\n声音不是从他身上发出来的——\n\n是从你的**对讲机扬声器**和**手机扬声器**和**商场广播喇叭****同时**发出。\n\n三处声音**完全同步**,在你脑袋里**叠成一个频段**。\n\nHUD 提示:「不存在的清洁工 Tier 上升。」\n\n你不知道 Tier 是什么。\n\n他朝你**走过来**。\n\n他每走一步,他**和你的距离不变**。\n\n他**没有靠近你**。\n\n但他**在走**。",
+      "choices": [
+        {
+          "text": "用强光手电照他。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 5,
+            "GR": -2,
+            "flags": {
+              "banished_cleaner": true
+            }
+          }
+        },
+        {
+          "text": "跟着他回工具间。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "followed_cleaner": true
+            }
+          }
+        },
+        {
+          "text": "让他删一件你背包里的物品。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 5,
+            "inv_remove": [
+              "前任电话号码"
+            ],
+            "flags": {
+              "sacrificed_to_cleaner": true
+            }
+          }
+        }
+      ]
+    },
+    "n_npc_ghost_guard": {
+      "scene": "NPC",
+      "_foreshadow_slot": [
+        "G272_predecessor_identity"
+      ],
+      "_foreshadow_solved_by": [
+        "G272_route"
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "contacted_predecessor": true,
+              "asked_predecessor_name": true
+            }
+          },
+          "text": "你早就给前任发过照片。\n\n你早就问过他名字——他没回。\n\n现在他在 27 楼电梯口,**摘下了电视雪花脸**。\n\n他的脸,是**你 5 年前的脸**。\n\n你 5 年前,**面试过这个夜班保安岗位**。\n\n你那次没录取。\n\n你被 HR 婉拒,理由是『性格不适合夜班』。\n\n但 5 年前那个版本的你,**录取了**。\n\n他在 27 楼,记了 11 年——\n\n不,记了 5 年。\n\n外加他**自己折叠成 11 年**的孤独。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s6_inherited_scar": true
+            }
+          },
+          "text": "你接过了 11 厘米红印。\n\n现在你站在 27 楼,看到上一任 G-273——\n\n他**胸口也有一道一模一样的红印**。\n\n他指着自己的红印,对你说:\n\n「我 2013 年接的。\n  接的是 G-271,他 2002 年接的。\n  他接的是 G-270,1991 年接的。\n  你**已经查到 G-249**(林某 1985)。\n\n  红印每接一次,长 1 厘米。\n  到 27 厘米时,会**渗到心脏**。\n  你的红印是 11 厘米。\n  你还有 16 任的窗口。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "took_g272_id": true
+            }
+          },
+          "text": "你已经摘走了第 11 任工牌(G-272)。\n\n你来到 27 楼电梯口——\n\n那里**已经没有上一任了**。\n\n他被你『提前下班』了。\n\n但你看到电梯按钮上,**慢慢浮现一行字**:\n\n「赵某,你接班了。\n  你是新的 G-272。\n  你的下一任,会在 11 年后,某个夜班来摘你的工牌。\n\n  在那之前,**你住 27 楼**。」"
+        }
+      ],
+      "narrative": "你看见上一任 G-273。\n\n他站在 27 楼电梯口,穿着和你一样的制服。\n\n但他的脸——\n\n是 14 寸黑白电视雪花。\n\n他举起手,递给你一把铜钥匙。\n\n钥匙上刻着「27F」。\n\n他的电视脸上,字幕慢慢打出来:\n\n「我在 27 楼,记了 11 年。\n  你能不能,替我下班?」",
+      "choices": [
+        {
+          "text": "接过钥匙,我替你下班。",
+          "next": "n_scene_evaluator_room",
+          "effects": {
+            "PR": 15,
+            "inv_add": [
+              "27F 铜钥匙"
+            ],
+            "flags": {
+              "promised_relieve_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "不接。让他自己解决。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -8,
+            "flags": {
+              "refused_predecessor": true
+            }
+          }
+        },
+        {
+          "text": "把自己的工牌摘下来,递给他。",
+          "next": "n_end_data",
+          "effects": {
+            "inv_remove": [
+              "工牌 G-273"
+            ],
+            "flags": {
+              "sacrificed_id": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_lake_underwater": {
+      "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s1_jumped_lake": true
+            }
+          },
+          "text": "你跳进西湖。\n\n你以为水会淹没你。\n\n水没有。\n\n你在湖底,可以呼吸。\n\n8 口 1987 年冷冻舱浮在水里,像 8 个透明灯笼。\n\n每口舱里,躺着一个你。"
+        }
+      ],
+      "narrative": "西湖水下。\n\n你不知道你怎么下来的。\n\n地板是水,天花板也是水,但你能呼吸。\n\n8 口 1987 年的冷冻舱,悬浮在水中。\n\n舱壁刻着同一行字:\n\n「H = 1987」\n\n远处,有一口巨大的裂钟,铜锈剥落,半张人脸浮雕悬在中央。\n\n再远处——\n\n一个穿米色风衣的人,站在湖底,背对你。",
+      "choices": [
+        {
+          "text": "走向 8 棺。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 8,
+            "puzzle_add": "piece_h1987"
+          }
+        },
+        {
+          "text": "走向裂钟。",
+          "next": "n_npc_corrosion_face",
+          "effects": {
+            "PR": 5
+          }
+        },
+        {
+          "text": "走向风衣的人。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "saw_underwater_coat": true
+            }
+          }
+        },
+        {
+          "text": "把头探出水面,呼吸一下。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "surfaced": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_27th_floor_corridor": {
+      "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "led_red_girl": true
+            }
+          },
+          "text": "你带着红衣电视女孩来到 27 楼。\n\n走廊和你一个人来时**完全不同**——\n\n墙上的工牌**全部背面朝外**。\n\n她举起 14 寸电视,屏幕里出现 11 张脸——\n\n她说:「叔叔,他们都问我『27 楼怎么走』。\n  我也问你。\n  你**真的知道吗**?」"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "27 楼通道钥匙"
+            ],
+            "flags": {
+              "took_g272_id": true
+            }
+          },
+          "text": "你拿着两件事——\n\n红衣女孩给的『27 楼通道钥匙』,\n你刚摘下的『G-272 工牌』。\n\n走廊尽头那扇黑门——\n\n**钥匙孔变了形状**——\n\n变成 G-272 工牌的形状。\n\n你把工牌塞进锁孔。\n\n锁,**咔哒**。\n\n门开了一条缝。\n\n缝里是**1987 年那场踩踏的现场**——慢镜头。"
+        },
+        {
+          "if": {
+            "flags": {
+              "hung_id_27f": true
+            }
+          },
+          "text": "你已经把工牌挂在第 12 任的位置上。\n\n你回到 27 楼走廊——\n\n你**不能动**。\n\n你成了墙上的工牌之一。\n\n你能看见走廊里的一切——\n\n下一任 G-274 在 04:00 走进这条走廊。\n\n他对着你**鞠躬**,然后伸手——\n\n他要摘走你的工牌。\n\n他的指尖,离你 1 厘米。"
+        },
+        {
+          "if": {
+            "flags": {
+              "saw_27th_floor": true,
+              "shifts_completed_min": 4
+            }
+          },
+          "text": "你又来到 27 楼。\n\n你已经走过 4 个地标。\n\n墙上 11 张工牌,**多了一张**——\n\n第 12 张,**贴着你的工号**。\n\n但工牌**没有照片**。\n\n照片位置是**雪花屏**。\n\n你伸手摸——\n\n雪花屏**渗出一点湿气**。\n\n是西湖的潮味。"
+        }
+      ],
+      "narrative": "你在一条不存在的 27 楼走廊里。\n\n走廊尽头,是一扇黑色的门,门上贴着「请勿打扰 1987」。\n\n墙上每隔 2 米,挂着一张 G-273 的工牌——\n\n第 1 任、第 2 任、第 3 任......\n\n第 11 任是上一任。\n\n第 12 任是空白的,等你挂上去。",
+      "choices": [
+        {
+          "text": "把自己的工牌挂上去。",
+          "next": "n_end_data",
+          "effects": {
+            "inv_remove": [
+              "工牌 G-273"
+            ],
+            "flags": {
+              "hung_id_27f": true
+            }
+          }
+        },
+        {
+          "text": "把第 11 任的工牌摘下来,带走。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "inv_add": [
+              "G-272 工牌"
+            ],
+            "PR": 10,
+            "flags": {
+              "took_g272_id": true
+            }
+          }
+        },
+        {
+          "text": "把 G-272 工牌挂回墙上,替前任『下班』。",
+          "next": "n_end_truth",
+          "effects": {
+            "inv_remove": [
+              "G-272 工牌"
+            ],
+            "PR": 25,
+            "puzzle_add": "piece_freed_g272",
+            "flags": {
+              "freed_g272": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "G-272 工牌"
+            ]
+          }
+        },
+        {
+          "text": "推开黑色的门。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 15,
+            "GR": 8
+          }
+        },
+        {
+          "text": "穿着米色风衣走进黑门,1985 年的林某『回家』。",
+          "next": "n_end_truth",
+          "effects": {
+            "inv_remove": [
+              "米色风衣"
+            ],
+            "PR": 25,
+            "GR": 10,
+            "puzzle_add": "piece_linmou_returned",
+            "flags": {
+              "linmou_via_coat": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "米色风衣"
+            ]
+          }
+        },
+        {
+          "text": "退回电梯。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "saw_27th_floor": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_b3_corridor": {
+      "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "b3_unlocked": true
+            }
+          },
+          "text": "你 7 人归航完成,B3 钢门**为你开了**。\n\n你走进 B3 走廊——\n\n27 台电视**没有雪花**。\n\n每台电视屏幕,**都是日出**。\n\n是 6 点的湖滨日出。\n\n但每台电视的湖滨,**视角不一样**——\n\n第 1 台是 1980 年的湖滨。\n第 2 台是 1985 年。\n......\n第 27 台是 2024 年——**今天的湖滨**。\n\n你走进去,每一台电视屏幕,你都能闻到**湖水的味道**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "got_judge_seal": true
+            }
+          },
+          "text": "你身上揣着候补判官章。\n\n你走进 B3——\n\n27 台电视**齐齐切到 1 号台**——\n\n屏幕上,**11 张前任 G-273 的脸**叠在一起,慢慢转动。\n\n他们一起看着你。\n\n他们一起鞠躬。\n\n他们说:「判官大人,**审判我们**。」\n\n你的胸袋里,候补判官章**发烫**。"
+        },
+        {
+          "if": {
+            "shifts_completed_min": 5
+          },
+          "text": "你已经走过 5 个地标。\n\n你的鞋上沾着 5 种不同的湿气——\n\n湖泥、307 阶的青苔、铜锈、羊血、留下小学的粉笔灰。\n\n你走进 B3——\n\n27 台电视屏幕,**按你的鞋印发光**。\n\n第 1 台亮:**湖滨长椅**。\n第 2 台亮:**307 阶**。\n第 3 台亮:**理安寺**。\n第 4 台亮:**羊血弄**。\n第 5 台亮:**203 琴房**。\n\n剩下 22 台,**还没亮**。\n\n它们等你**走完更多**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "sacrificed_id": true
+            }
+          },
+          "text": "你已经把工牌交出去了。\n\n你走进 B3——\n\n27 台电视屏幕,**集体闪烁**。\n\n它们在**辨认你**。\n\n它们认不出。\n\n它们不再播你的名字。\n\n它们播:\n\n「未识别访客。\n  未识别访客。\n  未识别访客。」\n\n你的脚下,**走廊地面消失**。\n\n你飘起来。"
+        }
+      ],
+      "narrative": "B3 走廊。\n\n墙面是粗糙的混凝土,每隔 10 米,一面 14 寸黑白电视嵌在墙里。\n\n屏幕全是雪花。\n\n你听见雪花声里,有人**轻声**念你的名字:\n\n「赵某。\n  赵某。\n  赵某。」\n\n你不知道是哪一台电视在念。\n\n所有 27 台电视,都对着你。",
+      "choices": [
+        {
+          "text": "走到走廊尽头,推开钢门。",
+          "next": "n_s7_arrive",
+          "effects": {
+            "flags": {
+              "entered_b3": true
+            }
+          }
+        },
+        {
+          "text": "敲第 14 台电视的屏幕。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "knocked_tv_14": true
+            }
+          }
+        },
+        {
+          "text": "把工牌塞进第 1 台电视的雪花里。",
+          "next": "n_end_data",
+          "effects": {
+            "inv_remove": [
+              "工牌 G-273"
+            ],
+            "flags": {
+              "sacrificed_id": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_evaluator_room": {
+      "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "puzzle_pieces_min": 5
+          },
+          "text": "你身上有 5 张以上拼图碎片。\n\n你走进档案室——\n\n11 根蜡烛,**齐齐熄灭**。\n\n但你能看清。\n\n因为 11 本《异常事件记录表》**自己亮**——\n\n他们的封面发出微光。\n\n他们的微光,**对着你的胸袋**——\n\n你的胸袋里那 5 张拼图碎片,**和 11 本记录表共振**。\n\n11 个前任 G-273 写过的故事,正在和你的故事**对齐**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "got_judge_seal": true,
+              "completed_yang": true,
+              "seven_returned": true,
+              "piano_appeased": true
+            }
+          },
+          "text": "你集齐了 4 件套——\n\n候补判官章、⺶ 符文、7 人归航印记、安抚叶某。\n\n你走进档案室——\n\n那把空椅子**自己升高 5 厘米**。\n\n这是『正章』级别的椅子。\n\n11 任前任 G-273,**齐齐站起身**——\n\n他们站在 11 根蜡烛后面,鞠躬。\n\n你坐下。\n\n你拿起『正章』。\n\n章在你手里**自己变烫**——\n\n烫到能在金属上烫出字。\n\n你不需要盖。\n\n你只需要**写**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "defied_token": true
+            }
+          },
+          "text": "你刚入职那天撕了 1984 小票。\n\n这个标记,11 任前任 G-273 都没有。\n\n你走进档案室——\n\n11 本记录表**齐齐翻到第一页**。\n\n第一页是 G-001 的入职记录。\n\nG-001 在 1959 年的入职那天,**也撕了一张小票**。\n\nG-001 的章不是『候补判官』,是『**革命党人 第 1 号**』。\n\n你和 G-001 隔了 65 年。\n\n但你们,**做过同一个动作**。\n\nG-001 的椅子,**为你保留**。"
+        }
+      ],
+      "narrative": "B3 档案室。\n\n你以为档案室应该亮着灯。\n\n这里不是。\n\n这里是**蜡烛**。一排一排的蜡烛,每根蜡烛后面,放着一本《异常事件记录表》。\n\n你数了——\n\n11 本。\n\n第 12 本,空白,等你放上去。\n\n蜡烛后,有一把空椅子。椅子扶手上,有一枚未使用的「正章」。\n\n章上刻着:「夜班评议会  正章  G-273 任期」",
+      "choices": [
+        {
+          "text": "在椅子上坐下,把正章盖在自己工牌上。",
+          "next": "n_end_hidden",
+          "effects": {
+            "flags": {
+              "became_judge": true
+            }
+          },
+          "require": {
+            "all_of": [
+              {
+                "flags": {
+                  "got_judge_seal": true
+                }
+              },
+              {
+                "puzzle_pieces_min": 3
+              }
+            ]
+          }
+        },
+        {
+          "text": "把第 12 本空白记录表写完,放上去。",
+          "next": "n_end_truth",
+          "effects": {
+            "flags": {
+              "completed_archive": true
+            }
+          },
+          "require": {
+            "puzzle_pieces_min": 5
+          }
+        },
+        {
+          "text": "看前 11 任的记录表,找前任的下班方法。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_predecessor_log"
+          }
+        },
+        {
+          "text": "退出。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "saw_evaluator_room": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_lost_archive": {
+      "scene": "SCENE",
+      "_foreshadow_slot": [
+        "all_archive_truths"
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "claimed_linmou": true
+            }
+          },
+          "text": "你已经『认领』林副科长。\n\n你走进遗失档案室——\n\n墙上 6 份档案,**第 1 份(林某)消失了**——\n\n它已经『结案』。\n\n剩下 5 份还在。\n\n但你站在第 1 份原本的位置——\n\n空白处,慢慢浮现一行字:\n\n「林某 已结案。\n  接班人:赵某 G-273。\n  下一份『未结』,会自动转给:**1987 红衣女孩**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "all_archives_photoed": true
+            }
+          },
+          "text": "你已经把 6 份档案拍下来了。\n\n你回到遗失档案室——\n\n墙是空的。\n\n6 份档案**自己飞走了**。\n\n他们去哪了?\n\n你的手机相册里。\n\n你想:这下我可以公开了。\n\n但你低头看相册——\n\n6 张照片,**都被像素化**——\n\n每张都打了**马赛克**。\n\n打码的人,不是你。\n\n是**另一个 G-273** —— 你 5 年前没录取的那个版本。"
+        },
+        {
+          "if": {
+            "flags": {
+              "smashed_piano": true
+            }
+          },
+          "text": "你刚在 S5 砸了钢琴。\n\n你以为你结束了什么。\n\n你走进遗失档案室——\n\n墙上 6 份档案,**多了一份**——\n\n第 7 份:『2024 G-273 赵某 暴力倾向记录』。\n\n下面的内容是:**你今晚已经做的所有不可逆动作**。\n\n这份档案,**实时更新**。\n\n它会在你今晚做的每一件事后,**多写一行**。\n\n它的最后一行,等你走到 6:03 时**自动签字**。"
+        }
+      ],
+      "narrative": "遗失档案室。\n\n这里应该不存在。\n\n但你站在这里。\n\n墙上贴着:\n\n- 1985 林副科长 27 笔贪污明细(只有 13 笔被立案)\n- 1987 杭州百货大楼踩踏事故 13 死真实名单\n- 1991 留下小学女生最后一篇日记\n- 1996 货梯红衣女孩真实姓名\n- 1986 沉船 7 工人工号册\n- 2024 G-273 赵某 入职档案 (盖印『**未结**』)\n\n最后一份是你自己。\n\n你的入职档案上,『未结』两个字,是用你**自己的**血盖的。",
+      "choices": [
+        {
+          "text": "把所有档案拍照,准备公开。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {
+            "PR": 15,
+            "puzzle_add": "piece_all_archives",
+            "flags": {
+              "all_archives_photoed": true
+            }
+          }
+        },
+        {
+          "text": "撕掉自己那份『未结』档案。",
+          "next": "n_end_neutral",
+          "effects": {
+            "PR": -10,
+            "flags": {
+              "erased_self": true
+            }
+          }
+        },
+        {
+          "text": "在自己档案上,自己签字结案。",
+          "next": "n_end_truth",
+          "effects": {
+            "PR": 20,
+            "puzzle_add": "piece_self_signed"
+          }
+        },
+        {
+          "text": "用账本对照林某那 27 笔贪污,标出 26 笔真凶。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 20,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "linmou_real_culprit_marked": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "林副科长账本残页"
+            ]
+          }
+        },
+        {
+          "text": "把 1959-043 磁带塞进档案室的旧录音机。",
+          "next": "n_npc_piano_ghost",
+          "effects": {
+            "PR": 15,
+            "GR": -3,
+            "puzzle_add": "piece_grandma_link",
+            "flags": {
+              "played_grandma_tape": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "1959-043 磁带"
+            ]
+          }
+        },
+        {
+          "text": "把 7 工人速写贴在 1986 沉船档案旁边。",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 18,
+            "puzzle_add": "piece_seven_named",
+            "flags": {
+              "named_seven": true
+            }
+          },
+          "require": {
+            "inv_has": [
+              "7 工人速写"
+            ]
+          }
+        },
+        {
+          "text": "退出档案室。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "saw_lost_archive": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_red_telephone": {
+      "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "asked_to_quit": true
+            }
+          },
+          "text": "你之前对前任说过『我只想回家』。\n\n你来到电话亭——\n\n听筒已经拿下来了,**举在半空**。\n\n好像有一个**看不见的人**,正举着听筒等你。\n\n你伸手——\n\n你的手,握住了**另一只手**。\n\n那只手是冷的,湿的,有 1985 年的湖水气。\n\n听筒里,前任的声音:\n\n「赵某,你只想回家?\n  我也想。\n  我等了 11 年这个电话亭。\n  你拨 1987,我替你**接通你妈妈**。」"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "前任电话号码"
+            ]
+          },
+          "text": "你身上有前任的电话号码。\n\n你拨号——\n\n但拨号盘上的数字,**自己变了**——\n\n变成 1987-12-24。\n\n是 1987 年百货大楼踩踏那天的日期。\n\n听筒里**不是**前任的声音。\n\n是一个**11 岁女孩**的:\n\n「叔叔,你拨错了。\n  你拨的是**那一天**。\n  那一天没有信号。\n  我已经等了 37 年。\n  你要不要替我**留个言**?」"
+        },
+        {
+          "if": {
+            "flags": {
+              "called_self": true
+            }
+          },
+          "text": "你之前拨过自己的手机号。\n\n现在你又来——\n\n电话亭**少了**。\n\n它不在原来的位置。\n\n它**搬到你家楼下**——\n\n但你站在湖滨。\n\n你掏出手机——\n\n手机正在**响**。\n\n是公用电话亭打来的。\n\n来电显示:**你自己**。\n\n是 5 年前那个面试夜班保安**没录取**的你。"
+        }
+      ],
+      "narrative": "湖滨某条小巷里,有一个红色公用电话亭。\n\n你不记得湖滨有公用电话亭。\n\n但它就在那里——\n\n1989 年款式,玻璃门半开,听筒挂着。\n\n你拿起听筒——\n\n忙音。\n\n但拨号盘上,有一行字:\n\n「拨 1987,前任会接。」\n\n你的指尖,自己按上去。",
+      "choices": [
+        {
+          "text": "拨 1987。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "called_1987": true
+            }
+          }
+        },
+        {
+          "text": "拨自己的手机号。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 10,
+            "GR": 5,
+            "flags": {
+              "called_self": true
+            }
+          }
+        },
+        {
+          "text": "挂掉,离开电话亭。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "saw_red_phone": true
+            }
+          }
+        }
+      ]
+    },
+    "n_scene_morning_lakeside": {
+      "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "completed_yang": true,
+              "seven_returned": true,
+              "claimed_linmou": true
+            }
+          },
+          "text": "06:03,湖滨。\n\n东方的天,变成**纯橙色**——\n\n这是杭州常数被关闭后的颜色。\n\n第三把长椅上,有**一只麻雀**——\n\n但麻雀**抬头看你**。\n\n它认得你。\n\n它叽叽喳喳叫了一声,飞起来——\n\n它飞过西湖,**翅膀划过湖面**。\n\n湖面没有涟漪。\n\n因为今天的湖,**没有 1985 年的湖水**了。"
+        },
+        {
+          "if": {
+            "shifts_skipped_min": 5
+          },
+          "text": "06:03,湖滨。\n\n你跳过了 5 个打卡点。\n\n东方的天,**还是黑的**。\n\n太阳没升。\n\n你身边的湖,**也是黑的**。\n\n第三把长椅上,**坐着一个穿米色风衣的人**——\n\n他没有头,但他对你**鞠躬**。\n\n他的语气,**像欢迎你**。\n\n他说:「赵某,欢迎来到 1987 年。\n  这一年,**没有日出**。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "got_judge_seal": true,
+              "puzzle_pieces_min": 3
+            }
+          },
+          "text": "06:03,湖滨。\n\n你揣着候补判官章,有 3+ 张拼图碎片。\n\n东方的天,**慢慢亮**——\n\n不是普通的日出。\n\n天空像**有人在拉幕布**——\n\n幕布拉开,你看见**11 个前任 G-273**站成一排,在湖面上方。\n\n他们一起对你**鞠躬**。\n\n他们一起说:「判官大人,**审判我们**。」\n\n你的胸袋里候补判官章,**烫成纯红色**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "posted_photo": true,
+              "all_archives_photoed": true
+            }
+          },
+          "text": "06:03,湖滨。\n\n你今晚拍了无数照片。\n\n东方的天,变成**手机屏幕的颜色**——\n\n蓝白色的扫光。\n\n第三把长椅上,**没人**。\n\n但长椅上空,飘着 27 万条弹幕。\n\n弹幕里有人喊:「兄弟,你**红了**!」\n\n弹幕里有人喊:「兄弟,你**死了**?」\n\n弹幕里有人喊:「兄弟,**继续直播**!」"
+        }
+      ],
+      "narrative": "06:03,湖滨。\n\n你回到夜班开始的位置——第三把绿色长椅。\n\n8 个小时前你站在这里。\n\n感觉像 80 年。\n\n你的腿酸,膝盖疼,鞋底湿了又干、干了又湿。\n\n东方的天,慢慢变成**铜色**——\n\n不是橙,不是金。\n\n是**1986 年的铜锈**和**1985 年的湖水**混在一起的颜色。\n\n你看了 27 秒,确定这种铜色不会变。\n\n它就这样停在那里,像一张永远不会切到下一帧的照片。\n\n第三把长椅上——\n\n**空的**。\n\n风衣不见了。\n\n湿鞋不见了。\n\n那道湿手印,也不见了。\n\n摄像头红灯,**正常亮着**——\n\n但你能感觉到它今晚至少灭过 7 次。\n\n你掏出《异常事件记录表》。\n\n表格已经被翻烂了,纸边卷了。\n\n你翻到最后一页。\n\n光标在你眼前**最后一次**闪烁——\n\n它停在「[终]」栏。\n\n光标的频率,和你的心跳一致。\n\n你听见湖面有早起的渔船马达声,远远地。\n\n远处有人在跑步,运动鞋踩湿地的声音。\n\n你站着,听这些声音 30 秒。\n\n这是**正常的世界**。\n\n你不知道你属不属于它。\n\n你的下班时刻,取决于你这一晚做的事。",
+      "choices": [
+        {
+          "text": "[路径] E_TRUE 关闭杭州常数",
+          "next": "n_end_true",
+          "require": {
+            "all_of": [
+              {
+                "inv_has": [
+                  "⺶ 符文"
+                ]
+              },
+              {
+                "flags": {
+                  "seven_returned": true
+                }
+              },
+              {
+                "shifts_completed_min": 5
+              }
+            ]
+          }
+        },
+        {
+          "text": "[路径] E_TRUTH 揭穿真相",
+          "next": "n_end_truth",
+          "require": {
+            "puzzle_pieces_min": 5
+          }
+        },
+        {
+          "text": "[路径] E_BROADCAST 永生于夜班论坛",
+          "next": "n_end_broadcast",
+          "require": {
+            "all_of": [
+              {
+                "flags": {
+                  "posted_photo": true
+                }
+              },
+              {
+                "PR_min": 50
+              }
+            ]
+          }
+        },
+        {
+          "text": "[路径] E_BAD_1987 无尽 1987",
+          "next": "n_end_bad_1987",
+          "require": {
+            "shifts_skipped_min": 3
+          }
+        },
+        {
+          "text": "[路径] E_BAD_DROWN 沉船替死鬼",
+          "next": "n_end_bad_drown",
+          "require": {
+            "flags": {
+              "drown_marked": true
+            }
+          }
+        },
+        {
+          "text": "[路径] E_HIDDEN 幽灵保安重投胎",
+          "next": "n_end_hidden",
+          "require": {
+            "flags": {
+              "became_judge": true
+            }
+          }
+        },
+        {
+          "text": "[路径] E_DATA 数据化 雪花频道",
+          "next": "n_end_data",
+          "require": {
+            "flags": {
+              "chose_data": true
+            }
+          }
+        },
+        {
+          "text": "[默认] E_NEUTRAL 平安下班",
+          "next": "n_end_neutral"
+        }
+      ]
+    },
+    "n_s7_arrive": {
+      "scene": "S7",
+      "narrative": "04:17。平海街 1 号,商场地下。\n\n你刷工卡进员工通道,按下「B3」。\n\n电梯应该没有 B3。\n\n楼层显示是 B1 / B2 / 停车场。\n\n但你按 B3,按钮自己**亮了**。\n\n电梯下降。\n\n30 秒。\n\n超过了 B2 应该到达的时间。\n\n你看楼层指示灯——\n\n它从 B2 跳到一个**没有数字**的位置。\n\n你的胃悬空一下,像电梯**短暂失重**。\n\n然后,门开。\n\n冷气从外面涌进来,带着 1980 年代潮湿水泥的腥味。\n\n你站在 B3 走廊。\n\n墙是粗糙的灰色混凝土,每隔 5 米嵌着一根荧光灯——\n\n荧光灯一根接一根**为你**亮起,你走到哪一根,前一根就**灭一根**。\n\n走廊只有你的脚下是亮的。\n\n走廊尽头,大约 30 米外,是一扇**钢门**。\n\n钢门是 1986 年款式的防火门,漆色掉光,只剩铁锈红。\n\n门上没有任何标识。\n\n只有**一个钥匙孔**。\n\n钥匙孔的形状,你不认得。\n\n但你身上带着的钥匙,**自己**在你口袋里发烫。",
+      "choices": [
+        {
+          "text": "用 27F 铜钥匙开门。",
+          "next": "n_npc_eight_self",
+          "require": {
+            "inv_has": [
+              "27F 铜钥匙"
+            ]
+          }
+        },
+        {
+          "text": "用 27 楼通道钥匙开门。",
+          "next": "n_scene_27th_floor_corridor",
+          "require": {
+            "inv_has": [
+              "27 楼通道钥匙"
+            ]
+          }
+        },
+        {
+          "text": "把工牌塞进钥匙孔。",
+          "next": "n_end_data",
+          "effects": {
+            "inv_remove": [
+              "工牌 G-273"
+            ],
+            "flags": {
+              "sacrificed_id": true
+            }
+          }
+        },
+        {
+          "text": "踹门。",
+          "next": "n_scene_b3_corridor",
+          "effects": {
+            "PR": -5,
+            "GR": 5
+          }
+        },
+        {
+          "text": "退回电梯,先回去再说。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "flags": {
+              "saw_b3_door": true
+            }
+          }
+        }
+      ]
+    },
+    "n_end_true": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_TRUE",
+      "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "completed_yang": true
+                }
+              },
+              {
+                "flags": {
+                  "seven_returned": true
+                }
+              },
+              {
+                "flags": {
+                  "claimed_linmou": true
+                }
+              }
+            ]
+          },
+          "text": "你完成了三件不可能同时完成的事——\n\n你在 S4 弄堂用羊血补全了「⺶」字,17 个羊公会火死灵归位。\n你在 S6 盾构井底,告诉 7 个工人你替他们,7 顶柳条帽自己飞回栏杆。\n你在 S1 风衣面前,认领了林某 1985 年那 27 笔贪污里**不属于他**的 26 笔。\n\n三件事完成,三个『未结』结案。\n\n8 棺里 8 个『你』,从 1987 / 1998 / 2009 / 2024 / 1980 / 1996 / 1991 / 2024 同时坐起,像终于能睡个好觉。\n\n他们一起说:「替我们填完。」\n\n你写下记录表第 7 栏:**「全部已结。」**\n\n外面是 6:03 的湖滨,日出把湖面染成铜色。你这辈子第一次看见湖面是单纯的橙。\n\n钥匙圈上那张 1984 年的小票,变成了今天的日期。背面那行字变了:「**夜班有了尽头。这一班,你下了。羊归位、船归港、账归案。**」"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "s6_replaced_seven": true
+                }
+              },
+              {
+                "flags": {
+                  "s4_grandma_blessing": true
+                }
+              }
+            ]
+          },
+          "text": "你在 S6 井口对 7 个工人说:『我替你们,你们走。』\n你在 S4 弄堂里收下豆腐脑老婆婆塞给你的 1959-043 号粮票,鞠了一躬,什么都没多说。\n\n这两件小事,加起来,把『杭州常数』从公式里拿掉了。\n\n你不是用咒语关闭它。\n你是用『**承担一刀债 + 接受一份豆腐脑**』关闭它。\n\n8 棺合拢。但棺盖外刻着一行字:\n\n「祝赵某 G-273 平安。\n  我们替你记得 1986。\n  你替我们记得 2024。」\n\n6:03 湖滨。第三把长椅上,有一只麻雀。\n\n你下班了。"
+        },
+        {
+          "if": {
+            "flags": {
+              "locked_eight_coffins": true
+            }
+          },
+          "text": "8 棺,你**亲手锁死**。\n\n你拿着 ⺶ 符文,贴在第一棺盖。\n你戴着 7 顶柳条帽内化的『归航印记』,贴在第二棺盖。\n你拿着林副科长账本完整版,贴在第三棺盖。\n你把 27F 铜钥匙塞进第四棺缝。\n你把 1991 红头绳系在第五棺把手。\n你把铜锈护符焊在第六棺铆钉。\n你把候补判官章按在第七棺。\n第八棺——是你**自己原本应该躺进去**的位置。\n\n你不躺。\n\n你在第八棺盖上,签下你**真正的名字**——不是赵某,不是 G-273。\n\n是你父母给你起的那个名字。\n\n8 棺一起合拢,锁死。\n\n杭州常数,从此失去『候补』。\n\n6:03 湖滨。你听见东方第一声鸟叫,声音清脆得像玻璃没碎之前的音色。"
+        }
+      ],
+      "narrative": "记录表第 7 栏自己写完了。\n\n字迹是你的,也是 8 棺里那 8 个『你』共同的——\n\n他们写完自己那部分,从舱里安静坐起,像终于能睡个好觉。\n\n8 棺合拢。\n\nHUD 弹出系统公告:\n\n「玩家 Guard_Zhao 已完成《异常事件记录表》全部 7 栏。\n  杭州常数 H 已清零。\n  所有 4 年周期裂缝同步关闭。\n  夜班评议会案号 G-273 结案归档。」\n\n你走出货梯。\n\n外面是 6:03 的湖滨,日出把湖面染成铜色——这是你这辈子第一次看见湖面是单纯的橙,而不是带着 1987 年湖水的青灰。\n\n第三把长椅上,只有一只麻雀。\n\n你掏出钥匙圈——那张 1984 年的小票变成了今天的日期。\n\n背面那行字也变了:\n\n「夜班有了尽头。这一班,你下了。」",
+      "show_hud": true
+    },
+    "n_end_truth": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_TRUTH",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s5_freed_yeh": true
+            }
+          },
+          "text": "你给了 1991 年自缢的叶某一张准假条。\n\n这张准假条,33 年没人签。\n\n你签了。\n\n《异常事件记录表》最后一栏,你没填官方需要的格式。\n\n你抄了一段话:\n\n「叶某,11 岁,1991 年因为考 87 分自缢。\n  她的请假条至今未归档。\n  我把它归档在这里。\n  ——赵某 G-273  2024」\n\n27 台电视墙不播恐怖片了。\n\n第 14 台电视播的是 1991 年 4 月 23 日那个春天的下午——\n\n一个 11 岁的女孩,背着书包,**正常**走出留下小学校门。\n\n她回头,看着镜头,鞠了一躬。\n\n她说:「叔叔,谢谢你。」\n\n你回到更衣室。胸袋里那张请假条,变成了一张干净的白纸。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s3_refused_h1987": true
+            }
+          },
+          "text": "你在 S3 理安寺的钟前,刮下了一片铜锈,把它**贴在自己手腕**——\n\n但你没接受『H = 1987』。你写了「不」。\n\n你成了 9 个候选里第一个**拒绝**的人。\n\n剩下 8 个,在水底等。\n\n你回到 B3 档案室,把『拒绝接受 H 编号』这件事写进 5 张拼图碎片里——\n\n这 5 张拼图,本来是要献祭的。\n\n你不献。\n\n你把它们**贴出去**。\n\n27 台电视播放的是 9 个不同年份的『候补编号 014』故事——\n\n他们都选择了接受。\n\n只有第 9 个,你,选择了不。\n\n你写下记录表第 7 栏:**「我读完了。但我没填完。下一任,会有第 10 个候选。她可以选『不』。」**\n\n6:03 湖滨。一只麻雀啄食着你掉的早餐麦片。"
+        },
+        {
+          "if": {
+            "flags": {
+              "all_archives_photoed": true
+            }
+          },
+          "text": "你按下了『公开所有档案』。\n\n夜班论坛的服务器,2024-XX-XX 凌晨 5:47 突然崩溃。\n\n但崩溃前,27 篇匿名帖已经被自动同步到 1.7 万个海外服务器。\n\n包括:\n- 林某 1985 年 27 笔贪污明细。\n- 1987 年百货大楼 13 死真名。\n- 1991 年叶某请假条。\n- 1996 年红衣女孩本名:**何小燕,1996-08-23 货梯事故**。\n- 1986 钱塘江沉船 7 工人工号。\n\n你没有改变历史。\n\n但你让这 5 个『被档案室角落丢弃』的事件,重新出现在 2024 年的搜索结果里。\n\nHUD:「玩家 Guard_Zhao 触发『公共记忆复活』。」\n\n你回到更衣室。胸袋里 5 张拼图碎片,**消失了**——它们已经不需要你保管。"
+        }
+      ],
+      "narrative": "你站在遗失档案室。\n\n你拿着 5 张拼图碎片——\n\n林某账本完整版 / 1987 踩踏死者真名 / 留下小学女生日记 / 沉船工人工号册 / 红衣女孩真名牌。\n\n你把它们贴在墙上。\n\n27 台电视一齐亮起来。\n\n它们不再播恐怖片。\n\n它们播的是这座城市过去 40 年「被丢弃在档案室角落」的真相。\n\n你站着看了整整一夜——27 个故事,27 个本来该有名字的人。\n\nHUD 提示:\n\n「玩家 Guard_Zhao 拒绝献祭,但记忆库新增 27 条认证档案。\n  下一任 G-273 在交班时会读到你的笔记。」\n\n你回到更衣室,在记录表第 7 栏写:\n\n「我没填完。但我读完了。这就够了。」",
+      "show_hud": true
+    },
+    "n_end_data": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_DATA",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "hung_id_27f": true
+            }
+          },
+          "text": "你把工牌挂在 27 楼走廊那面墙上。\n\n第 12 任的位置——本来是空白的——现在是你。\n\n墙上 12 张工牌,从第 1 任到第 12 任,**都在静静观察你**。\n\n你想退后一步。\n\n你的脚不动。\n\n你已经『进墙』了。\n\n你成了一张 14 寸黑白电视——挂在 27 楼走廊,等下一任 G-273。\n\n你的雪花屏会播出每一个进入这条走廊的『下一任』。\n\n他们会在第 13 张工牌前面停下,问:『叔叔,你是谁?』\n\n你会回答——但你的回答只是雪花。\n\n他们会以为你**没有回答**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s5_replaced_yeh": true
+            }
+          },
+          "text": "你成了第 1988 个『叶某』。\n\n203 琴房的钢琴,从今天起,弹奏**你的心跳节奏**。\n\n下一任 G-273 在 01:08 推开 203 琴房门时——\n\n他会听见钢琴在弹他出生那天的童谣。\n\n他会看见琴凳前一双白布鞋。\n\n他不知道这双鞋,曾经穿在你的脚上。\n\n他不知道,1991 年那个 11 岁的女孩,**早就被你放走了**。\n\n他不知道,他听见的钢琴,是**你**在弹。\n\n你成了一个新的叶某。\n\n比叶某活得更久——叶某只困了 33 年,你会困到杭州常数被另一个 G-273 关闭为止。\n\n如果有的话。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s6_inherited_scar": true
+            }
+          },
+          "text": "你接受了 11 厘米长的红印。\n\n这道红印,11 年前,前任 G-272 也接受过。\n\n再之前,G-271 接受过。\n\n再再之前——\n\n12 任 G-273,12 道红印,叠在同一个胸口位置。\n\n你成为这 12 道红印的最新一道。\n\n盾构机刀盘**永远停在**离你胸口 1 厘米处。\n\n你不会被绞碎,你也不会下班。\n\n你成了 B4 盾构井的『活路标』。\n\n下一任 G-273 在 01:52 走到 DK30+477 时,他会看见你站在刀盘前面。\n\n他会以为你是**旧时代的工人**。\n\n他会鞠躬。\n\n他不知道,你才是『今天』的他。"
+        },
+        {
+          "if": {
+            "flags": {
+              "sacrificed_id": true
+            }
+          },
+          "text": "你交出了工牌。\n\n你以为你只是丢了一张塑料卡片。\n\n你不知道,工牌承载的是**你 27 年的存在**——你的指纹、你的脸、你的名字、你的母亲怀你 9 个月在医院产床的那 7 个小时。\n\n工牌进入清洁工的口袋——\n\n清洁工没有脸,但你能感觉到他**笑了**。\n\n你成了一团雪花。\n\n你飘在 B3 天花板。\n\n你能看见每一个『曾经被工牌承载的瞬间』被一帧一帧抽走——\n\n你 5 岁第一次骑自行车摔倒。\n你 17 岁高三模拟考。\n你 23 岁面试夜班保安那天。\n你 27 岁今晚 20:27 站在第三把长椅前。\n\n它们都被抽走了。\n\n你只剩下『嘀。嘀。嘀。』"
+        }
+      ],
+      "narrative": "27 台电视同时亮起,雪花屏合成一束白光。\n\n你被扫描成噪点。\n\n像倒吊的羊。\n\n像裂开的钟。\n\n像被倒带的磁带。\n\n最后一秒,你看见湖滨清晨 6 点的日出——\n\n一个穿米色风衣的人,站在第三把长椅旁。\n\n他弯腰,拾起你掉落的工牌,戴在脖子上。\n\n你飘在 B3 天花板,看着自己被拼成一台 14 寸黑白电视。\n\n对讲机:\n\n「G-273,听到请回答。」\n\n你按下对讲键,发不出声音。\n\n你只能把电流噪点调成节奏——\n\n嘀。嘀。嘀。",
+      "show_hud": true
+    },
+    "n_end_broadcast": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_BROADCAST",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "live_streaming": true
+            }
+          },
+          "text": "你直播了今晚每一个地标。\n\n你直播了 S1 风衣领口里的那张「自己的脸」。\n你直播了 S2 第 308 阶的红木门。\n你直播了 S3 钟里铜锈侧脸的眨眼。\n你直播了 S4 弄堂尽头黑山羊胸腔里的婴儿啼哭。\n你直播了 S5 琴房里 1991 年的钢丝绳。\n你直播了 S6 井底 7 个工人爬上井壁的画面。\n\n6 段直播的总点赞:\n\n**+1987 万。**\n\n夜班论坛把你置顶。\n\n你的人体融化成 6 段视频。\n\n6 段视频在论坛永久播放。\n\n屏幕前的任何观众,在凌晨打开论坛,都能选择一个时间点进入——\n\n他们可以选『S1 长椅』,可以选『S4 黑山羊』,可以选『S6 井底』。\n\n你成了 6 个**永远 21:47 - 02:30** 的循环视频。\n\n你的灵魂被切成 6 块,每一块,都在等下一个观众的点击。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s1_post_forum": true,
+              "s4_posted_blood_face": true
+            }
+          },
+          "text": "你最爆的两条帖子——\n\n『湖滨 G-273 第一夜班·风衣空领口里的自拍』\n『清河坊羊血弄·林某的脸浮在血滩里·1985 vs 2024』\n\n两条帖子加起来,**刷爆夜班论坛 4 天榜首**。\n\n热度从论坛溢出,蔓延到知乎、微博、抖音、Bilibili。\n\n2024-XX-XX 早晨 7:14,搜索热度第一名:『#杭州夜班保安G273#』。\n\n你成了一个**全网讨论的都市传说**。\n\n但你的肉体——\n\n在 06:03 已经变成 27 台电视墙上的一段循环 GIF。\n\nGIF 时长 27 秒。\n\n第 27 秒,你转过头,对镜头说:\n\n「下一班是几点?」"
+        }
+      ],
+      "narrative": "27 台电视墙的 27 个频道,全部切换到「夜班论坛」直播流。\n\n你的所有照片、视频、帖子,在 27 台电视上同步播放。\n\n点赞数从右下角狂飙——\n\n+1987 万。\n\n你的肉体开始变得透明。\n\n不是数据化——是「广播化」。\n\n每一个点赞,都从你身上拿走一克的『真实』。\n\n你彻底变成一段在夜班论坛永久置顶的视频。\n\n屏幕前任何人在凌晨打开论坛,都能看见你站在第三把长椅旁,转过头说:\n\n「下一班是几点?」",
+      "show_hud": true
+    },
+    "n_end_bad_1987": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative_variants": [
+        {
+          "if": {
+            "shifts_skipped_min": 5
+          },
+          "text": "你今晚漏了 5 个打卡点。\n\n你以为只要下班,什么都不算数。\n\n你不知道——\n\n每一个『漏卡』,会**自动**填上一个 1987 年那场踩踏里的死者编号。\n\n5 个空白栏 = 5 个编号被借给你:\n\n1987-12-24-009 / 010 / 011 / 012 / 013\n\n你的工牌反面,**烫出 5 行编号**。\n\n你成了 5 个死者的合体——\n\n但你身体只有一个,所以这 5 个死者**轮流**占据你。\n\n下一任 G-273 在第 1 夜班 21:47 走过湖滨长椅时,他会看见**5 个不同的你**——\n\n第一秒你穿红色连衣裙(13 号),\n第二秒你穿西装(009 号),\n第三秒你穿校服(012 号),\n......\n\n每一秒,你都不是你自己。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_kept_counting": true
+            }
+          },
+          "text": "你在 S2 第 307 阶,选择了**继续往上数**。\n\n你数到 1987 阶时,**又回到了第 1 阶**。\n\n你停不下来。\n\n你的脚自己迈,你的嘴自己数。\n\n你成了**柳浪闻莺 307 阶的永恒导游**——\n\n下一任 G-273 在 21:47 走到 307 阶入口时,他会看见**你在数台阶**。\n\n你会回头,对他笑,**用 1987 年的口音**说:\n\n「上 307,数对了,就有 308。\n  数错了——\n  跟我一起数。」\n\n他可能跟你数。\n\n他可能不跟。\n\n反正你数 1987 年了。\n\n再过 1987 年,你还在数。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s4_overstroke": true
+            }
+          },
+          "text": "你在 S4 弄堂多画了一笔。\n\n「⺶」变成一个不存在的字。\n\n那个『不存在的字』——是 1933 年羊血弄第一桩命案凶手的名字。\n\n他被烧死在这条弄堂里。\n\n现在,你**穿上了他的长衫**。\n\n你的手里握着屠羊刀。\n\n弄堂尽头铁钩上,黑山羊有头——\n\n是 1933 年那个人的头。\n\n你成了**他**。\n\n你将在每个夜班 00:11,**永远**站在羊血弄,等下一个 G-273 进来。\n\n你会跟他说:『进来。我教你怎么割。』\n\n他可能进来。\n\n他可能不。\n\n但你已经等了 91 年。\n\n再等几个夜班,无所谓。"
+        }
+      ],
+      "narrative": "记录表的空白栏太多了。\n\n连续 3 栏空白触发系统机制。\n\n你的制服褪成 1980 年代的卡其色。\n\n工牌上的「赵某 G-273」变成「无名 1987-12-24-013」——\n\n1987 年杭州百货大楼 7 楼踩踏事故,第 13 名死者编号。\n\n那天死了 13 个人。\n\n第 13 名,是一个穿红色连衣裙的小女孩。\n\n你抬头,电视墙里 27 个你都换了脸——\n\n你也是那个红衣小女孩。\n\n你穿着红色连衣裙,胸口插着 Y 字形天线。\n\n你成了 1987 年那张永远循环的录像里,30 多年没有人看的死者。\n\n你成为了下一个夜班的『异常事件 ②』。",
+      "show_hud": true
+    },
+    "n_end_bad_drown": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_kneeled_three_times": true
+            }
+          },
+          "text": "你跪了三个。\n\n弄堂深处 17 个『羊公会』火死灵,记下了你的三拜——\n\n这是『正式入会』的姿势。\n\n他们没让你戴帽子。\n\n他们直接把你**挂上铁钩**。\n\n弄堂尽头铁钩上,**第二具黑山羊**,有头。\n\n头是你的。\n\n婴儿啼哭从你**胸腔**里传出来。\n\n这是羊公会名册的**第 18 号**。\n\n下一任 G-273 在 00:11 走进羊血弄时,他会看见**两具**倒吊的羊——\n\n一具是 1933 年那个开山首刀的男人。\n\n另一具,是你。\n\n你的腿,还在蹬。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s5_self_noosed": true
+            }
+          },
+          "text": "你把 1991 年的钢丝绳套在自己脖子上。\n\n钢丝绳是新的——但**贴**得像它就是为你的脖子做的。\n\n钢丝绳确实是为你做的。\n\n它从 1991 年开始,**等你 33 年**。\n\n你站到琴凳上。\n\n琴凳变成 1991 年那把摇晃的木椅。\n\n你的脚尖,慢慢离地。\n\n203 琴房的钢琴自己弹《小星星》——\n\n你听见的不是 1991 年叶某的节奏。\n\n你听见的是 1959 年第一个在留下小学自缢的女老师的节奏。\n\n再之前,1933 年的版本。\n\n再之前——\n\n你不知道。\n\n你只知道,你成了这条循环里的**最新一个**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s6_grab_seven": true
+            }
+          },
+          "text": "你薅下了 7 顶柳条帽。\n\n7 个工人爬上井壁,他们没有脸,但你能感觉到他们**笑了**。\n\n他们要的不是帽子。\n\n他们要**你的脖子**。\n\n你戴上第 8 顶,跟他们沉进井底。\n\n沉船备份池正在等下一班『轮渡』。\n\n你成了第 8 个工人。\n\n但你不是 1986 年的工人——你是 2024 年的。\n\n井底,8 个工人围成一圈,**面面相觑**。\n\n他们用 1986 年的方言问你:『你是哪个工地的?』\n\n你不知道怎么回答。\n\n你只能说:『湖滨国际名品街,夜班保安。』\n\n他们沉默了。\n\n然后,**齐声笑**——笑得很久。\n\n你不知道他们在笑什么。\n\n你以后会有 38 年时间,**慢慢想**。"
+        },
+        {
+          "if": {
+            "flags": {
+              "helmet_stuck": true,
+              "marked_lamb": true
+            }
+          },
+          "text": "你戴的那顶柳条帽,粘在你头上。\n\n你的额头被『⺶』字烫了一下——\n\n这是 S4 弄堂里黑山羊倒吊时,胸腔里那个婴儿的标记。\n\n你成了一个『**带帽子的羊**』。\n\n你既属于 S6 的 7 个工人,又属于 S4 的羊公会。\n\n两边都要你。\n\n你被**撕成两半**——\n\n上半身,沉进井底,成了第 8 个工人。\n\n下半身,挂在弄堂铁钩,成了第 18 号羊。\n\n你的灵魂，分两个**永远**。\n\n下一任 G-273 在 S4 看见的羊腿,会**蹬出 G-273 的工牌纹理**。\n\n下一任 G-273 在 S6 看见的工人,会**戴着粘羊血的柳条帽**。\n\n你成了**两个传说**,在两个地标里同时存在。"
+        }
+      ],
+      "narrative": "你被『沉船替死鬼』标记触发。\n\n你跪在沉船备份池边。\n\n7 顶柳条安全帽浮在水面,像 7 只黑色月亮。\n\n第 8 顶——刻着「G-273」的那一顶——浮起来。\n\n它停在水面,等你戴上。\n\n池底传来 7 个声音齐声说:\n\n「替死鬼,可以下班了。」\n\n你的手自己伸出去,戴上第 8 顶。\n\n池水拥抱你。\n\n沉下去时,你听见对讲机里下一任 G-273:\n\n「报告,一切正常。」\n\n他答得太快了。",
+      "show_hud": true
+    },
+    "n_end_neutral": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_NEUTRAL",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "s4_grandma_blessing": true
+            }
+          },
+          "text": "你下班了。\n\n你今晚做的最有意义的事——\n\n是在 S4 羊血弄,把毛笔折断,救了 1933 年那个被冤死的人。\n\n弄堂里那个豆腐脑老婆婆,把她外公的 1959-043 号粮票塞给你。\n\n你不知道这张粮票有什么用。\n\n6:03 你回到更衣室,粮票在胸袋里。\n\n你掏出来——\n\n粮票变成了**一张写着「赵某 G-273 工资单」的纸**。\n\n纸上写着:「本月工资 8,427 元。无扣款。绩效 100%。」\n\n你不知道为什么。\n\n你只知道,房东今天没打电话。\n\n你睡了一个 12 小时的觉。\n\n你做的梦里,有一个 11 岁的女孩,在留下小学的操场上跳皮筋。\n\n她对你笑了一下。\n\n你不认识她,但你感觉自己**为她做过什么**。"
+        },
+        {
+          "if": {
+            "shifts_skipped_min": 2
+          },
+          "text": "你今晚跳过了 2 个打卡点。\n\n你回到更衣室,记录表上 5 栏写完,2 栏空白。\n\n队长没说什么。\n\n他递给你工资条,扣了 20% 绩效。\n\n你以为这就是惩罚。\n\n第二天晚上,你来上夜班——\n\n更衣室储物柜里,你的备用工牌上,**多了 2 道竖线**。\n\n2 道竖线,是『2 笔未结』的标记。\n\n你的下一夜班,会**比今天多 2 个打卡点**。\n\n你跳过的那 2 个,会**自动**变成下一夜的『额外』。\n\n夜班没有尽头。\n\n你今晚跳的,明晚补。\n\n明晚跳的,后晚补。\n\n这就是『绩效扣 20%』之外,他们没告诉你的部分。"
+        },
+        {
+          "if": {
+            "flags": {
+              "s2_skipped_door": true
+            }
+          },
+          "text": "你下班了。\n\n你这一夜班,什么都没看见——除了 S2 的红木门。\n\n但你**没推**。\n\n你以为没事。\n\n第二天早上,你刷夜班论坛——\n\n热帖第一条:『#G-274 第一夜班』\n\n你点进去——\n\n是新人 G-274 的发帖。\n\n他在 S2 第 308 阶推开了红木门。\n\n他拍了一张照片:门里,**有一张你的脸**。\n\n你的脸,正对着镜头,嘴在动。\n\n但照片是无声的。\n\n你看不出自己在说什么。\n\n你的胸口突然**冷了一下**——\n\n是 S2 第 308 阶那扇红木门的温度。\n\n你假装没看见,关了论坛。"
+        }
+      ],
+      "narrative": "你下班了。\n\n打卡机响了一声「嘀」。\n\n你回头看那栋楼。\n\n它和昨天一模一样,没有任何异常。\n\n你的相册里没有红衣小女孩的照片。\n\n你的钥匙圈上没有 27F 铜钥匙。\n\n似乎什么都没发生过。\n\n第二天早上,房东打电话来,说你拖欠房租。\n\n你打开工资单——这个月被扣了 30% 绩效。\n\n你打开《异常事件记录表》副本——7 栏全空白。\n\n你的下一班,在 14 小时后。\n\n墙上挂钟,比你手表慢了 1987 秒。\n\n你假装没看见。",
+      "show_hud": true
+    },
+    "n_end_hidden": {
+      "scene": "END",
+      "is_ending": true,
+      "ending_type": "E_HIDDEN",
+      "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "got_judge_seal": true
+                }
+              },
+              {
+                "flags": {
+                  "completed_yang": true
+                }
+              },
+              {
+                "flags": {
+                  "piano_appeased": true
+                }
+              },
+              {
+                "flags": {
+                  "seven_returned": true
+                }
+              }
+            ]
+          },
+          "text": "你成了**最完整版**的候补判官。\n\n你身上集齐了:\n- ⺶ 符文(S4 弄堂)\n- 1991 红头绳(S5 琴房)\n- 7 人归航印记(S6 井底)\n- 候补判官章(评议会)\n\n你坐进 B3 档案室那把空椅子。\n\n11 个前任 G-273 同时**抬头**——\n\n他们在你右肩、左肩、头顶,层层叠叠**站成一柱**——\n\n他们一起鞠躬。\n\n他们对你说:\n\n「赵某,你比我们任何一个都做得多。\n  我们在这把椅子上,只盖『副章』。\n  你可以盖『正章』。\n  你可以**审判我们 11 个**。」\n\n你拿起『正章』,但你没有审判他们。\n\n你给他们每人写一份『结案报告』:\n\n「G-262: 1980 年牺牲于柳浪闻莺。结案。」\n「G-263: 1985 年牺牲于盾构井 (那时还没盾构机,他在打地基)。结案。」\n......\n「G-272: 2024 年仍困于 27 楼。**结案 — 解除困境**。」\n\n11 份结案报告,你都签了字。\n\n你放下章。\n\n你把工牌摘下来,放在椅子上。\n\n你**不接班**。\n\n你**结束**这把椅子。"
+        },
+        {
+          "if": {
+            "flags": {
+              "defied_token": true
+            }
+          },
+          "text": "你刚入职那天,撕了那张 1984 年的小票。\n\n你以为那只是一张废纸。\n\n但 HR 看到你撕——\n\n她的笑容**僵了 0.3 秒**。\n\n0.3 秒,在『候补判官』评议系统里,是一个**永久标记**。\n\n你今晚拿到候补判官章。\n\n你坐进档案室空椅子。\n\n你把『候补判官』章盖在自己工牌上。\n\n章渗进金属——\n\n但盖出来的字,**不是『正章』**。\n\n是『**革命党人 第 1 号**』。\n\n11 个前任 G-273 都没看过这个章。\n\n你也没看过。\n\n你不知道这个章意味着什么。\n\n你只知道,你掏出 1984 年的那张被撕成两半的小票残片——\n\n两半粘在一起,变成一张完整的小票。\n\n背面,你**自己**用铅笔写着:\n\n「夜班可以有尽头。从你这一班开始。」"
+        }
+      ],
+      "narrative": "你坐进档案室那把空椅子。\n\n你把『候补判官』章盖在自己工牌上。\n\n章渗进金属,变成了『正章』。\n\n你成了下一任 G-273 入职那天,HR 桌后的那个人——\n\n你笑得太用力,嘴角的弧度像是练过的。\n\n你会跟他说:\n\n「夜班就是坐岗,每小时巡一次,有空调,有夜宵,没事刷手机。」\n\n他会签合同。\n\n你会把那张 1984 年的小票塞给他。\n\n小票背面用铅笔写着——你写的——\n\n「夜班没有尽头,只有下一班。」\n\n这一次,字迹真的是你的。",
+      "show_hud": true
+    }
+  }
+}
