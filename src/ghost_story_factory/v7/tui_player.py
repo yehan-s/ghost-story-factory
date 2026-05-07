@@ -36,16 +36,99 @@ from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import VerticalScroll
+from textual.screen import ModalScreen
 from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
     State, collect_important_items, resolve_narrative, resolve_next,
 )
+from ghost_story_factory.v7.map_view import format_map_lines
 from ghost_story_factory.v7.save_manager import (
     SaveManager,
     get_character_info,
 )
+
+
+class MapScreen(ModalScreen):
+    """地图屏 — 可由任意节点按 m 键弹出,任意键关闭。"""
+
+    BINDINGS = [
+        Binding("m", "app.pop_screen", "关闭"),
+        Binding("escape", "app.pop_screen", "关闭"),
+        Binding("enter", "app.pop_screen", "关闭"),
+        Binding("q", "app.pop_screen", "关闭"),
+    ]
+
+    DEFAULT_CSS = """
+    MapScreen {
+        align: center middle;
+        background: rgba(0, 0, 0, 0.85);
+    }
+    #map-box {
+        width: 70;
+        max-width: 90%;
+        height: auto;
+        padding: 1 2;
+        background: #0a0505;
+        border: heavy #800000;
+    }
+    #map-content {
+        height: auto;
+    }
+    #map-hint {
+        height: auto;
+        color: #707070;
+        text-align: center;
+        padding-top: 1;
+    }
+    """
+
+    def __init__(self, tree, state, save_manager, current_node_id, story_id):
+        super().__init__()
+        self._tree = tree
+        self._state = state
+        self._sm = save_manager
+        self._current_node_id = current_node_id
+        self._story_id = story_id
+
+    def compose(self) -> ComposeResult:
+        from textual.containers import Vertical
+        with Vertical(id="map-box"):
+            yield Static(self._render_content(), id="map-content")
+            yield Static("[dim]m / Enter / Esc 关闭[/]", id="map-hint")
+
+    def _render_content(self) -> str:
+        entries = format_map_lines(
+            self._tree, self._state, self._sm,
+            current_node_id=self._current_node_id,
+            story_id=self._story_id,
+        )
+        out = ["[bold red]══════ 夜班路线图 ══════[/]", ""]
+        for entry in entries:
+            kind = entry["kind"]
+            text = entry["text"]
+            if kind == "header":
+                out.append(f"[bold yellow]{text}[/]")
+            elif kind == "section":
+                out.append("")
+            elif kind == "landmark":
+                status = entry.get("status", "available")
+                color = {
+                    "visited": "dim",
+                    "current": "bold magenta",
+                    "available": "green",
+                    "locked": "dim red",
+                }.get(status, "white")
+                out.append(f"[{color}]{text}[/]")
+            elif kind == "progress":
+                out.append(f"[bold cyan]{text}[/]")
+            elif kind == "tool":
+                on = entry.get("on", False)
+                out.append(f"[bold green]{text}[/]" if on else f"[dim]{text}[/]")
+            else:
+                out.append(text)
+        return "\n".join(out)
 
 
 class StatusBar(Static):
@@ -119,6 +202,7 @@ class GhostStoryApp(App):
     BINDINGS = [
         Binding("q", "quit", "退出"),
         Binding("s", "show_status", "状态"),
+        Binding("m", "show_map", "地图"),
         Binding("1", "select_choice(0)", "1", show=False),
         Binding("2", "select_choice(1)", "2", show=False),
         Binding("3", "select_choice(2)", "3", show=False),
@@ -210,17 +294,52 @@ class GhostStoryApp(App):
         for slot in node.get("_foreshadow_slot") or []:
             if self.save_manager.mark_foreshadow_seen(story_id, slot):
                 newly_seen_slots.append(slot)
-        narrative = resolve_narrative(node, self.state)
-        if narrative:
-            # 分隔线
-            log.write(f"\n[dim]{'─' * 60}[/]")
-            # 写 narrative
-            for line in narrative.strip().split("\n"):
-                if line.strip():
-                    log.write(line)
-                else:
+        # _is_map_picker 节点:用地图视图替代普通 narrative
+        if node.get("_is_map_picker"):
+            entries = format_map_lines(
+                self._tree, self.state, self.save_manager,
+                current_node_id=self.current_id,
+                story_id=story_id,
+            )
+            log.write(f"\n[bold red]{'═' * 58}[/]")
+            log.write("[bold red]              ══ 夜班路线图 ══[/]")
+            log.write(f"[bold red]{'═' * 58}[/]\n")
+            for entry in entries:
+                kind = entry["kind"]
+                text = entry["text"]
+                if kind == "header":
+                    log.write(f"[bold yellow]{text}[/]")
+                elif kind == "section":
                     log.write("")
-            log.write("")
+                elif kind == "landmark":
+                    status = entry.get("status", "available")
+                    color = {
+                        "visited": "dim",
+                        "current": "bold magenta",
+                        "available": "green",
+                        "locked": "dim red",
+                    }.get(status, "white")
+                    log.write(f"[{color}]{text}[/]")
+                elif kind == "progress":
+                    log.write(f"[bold cyan]{text}[/]")
+                elif kind == "tool":
+                    on = entry.get("on", False)
+                    log.write(f"[bold green]{text}[/]" if on else f"[dim]{text}[/]")
+                else:
+                    log.write(text)
+            log.write(f"\n[dim]{'─' * 58}[/]\n")
+        else:
+            narrative = resolve_narrative(node, self.state)
+            if narrative:
+                # 分隔线
+                log.write(f"\n[dim]{'─' * 60}[/]")
+                # 写 narrative
+                for line in narrative.strip().split("\n"):
+                    if line.strip():
+                        log.write(line)
+                    else:
+                        log.write("")
+                log.write("")
 
         # 首次发现伏笔 — 用青色短条反馈
         if newly_seen_slots:
@@ -410,6 +529,14 @@ class GhostStoryApp(App):
     def action_select_choice(self, idx: int) -> None:
         """1-9 数字键快选。"""
         self._apply_choice(idx)
+
+    def action_show_map(self) -> None:
+        """m 键 — 弹出夜班路线图(只读)。"""
+        story_id = str(self._tree.get("story_id") or self._tree_path.stem)
+        self.push_screen(MapScreen(
+            self._tree, self.state, self.save_manager,
+            self.current_id, story_id,
+        ))
 
     def action_show_status(self) -> None:
         """s 键 — 显示完整状态(含个人共鸣 / 全局共鸣的具体数值 + 解释)。"""

@@ -441,6 +441,11 @@ def render_choices(visible: List[Dict[str, Any]],
     print()
 
 
+# 特殊返回值(prompt_choice 用)
+ACTION_STATUS = -1  # 's' 键
+ACTION_MAP = -2     # 'm' 键
+
+
 def prompt_choice(n: int) -> int:
     while True:
         try:
@@ -452,10 +457,12 @@ def prompt_choice(n: int) -> int:
             print(dim("退出。"))
             sys.exit(0)
         if raw.lower() in ("h", "help", "?"):
-            print(dim("  q 退出  s 状态  其它输入数字选择"))
+            print(dim("  q 退出  s 状态  m 地图  其它输入数字选择"))
             continue
         if raw.lower() in ("s", "status"):
-            return -1
+            return ACTION_STATUS
+        if raw.lower() in ("m", "map", "地图"):
+            return ACTION_MAP
         if raw.isdigit():
             idx = int(raw)
             if 1 <= idx <= n:
@@ -703,9 +710,15 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         for slot in slot_ids:
             if save_manager.mark_foreshadow_seen(story_id, slot):
                 newly_seen_slots.append(slot)
-        narrative = resolve_narrative(node, state)
-        if narrative:
-            render_narrative(narrative)
+        # _is_map_picker 节点:用地图视图替代普通 narrative
+        if node.get("_is_map_picker"):
+            from ghost_story_factory.v7.map_view import render_map_cli
+            render_map_cli(tree, state, save_manager,
+                           current_node_id=current_id, story_id=story_id)
+        else:
+            narrative = resolve_narrative(node, state)
+            if narrative:
+                render_narrative(narrative)
         # 首次发现伏笔 — 用青色 flash_line 反馈
         if newly_seen_slots:
             from ghost_story_factory.v7.animate import flash_line
@@ -789,7 +802,17 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
 
         render_choices(visible, locked)
         idx = prompt_choice(len(visible))
-        if idx == -1:
+        if idx == ACTION_MAP:
+            # m 键 → 显示夜班路线图(只读)
+            from ghost_story_factory.v7.map_view import render_map_cli
+            render_map_cli(tree, state, save_manager,
+                            current_node_id=current_id, story_id=story_id)
+            try:
+                input(dim("  按 Enter 继续..."))
+            except (EOFError, KeyboardInterrupt):
+                pass
+            continue
+        if idx == ACTION_STATUS:
             # s 键 → 显示完整状态(包含个人共鸣 / 全局共鸣 + 伏笔档案)
             print(state.full_status())
             # 伏笔档案
@@ -820,9 +843,18 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         # 选项上若挂了 _foreshadow_slot,选了之后也算 seen
         for slot in chosen.get("_foreshadow_slot") or []:
             save_manager.mark_foreshadow_seen(story_id, slot)
-        state.apply(chosen.get("effects"))
+        effects = chosen.get("effects") or {}
+        state.apply(effects)
         # 卡片化渲染状态变化(根据 events 类型分别用 card / flash_line)
         _render_apply_events(state._last_events, important_items)
+        # 工具节点 stay:不跳 next,留在当前节点(由"返回"选项触发)
+        if effects.get("stay"):
+            print(dim("\n  · 你停留片刻,然后回头。\n"))
+            try:
+                input(dim("  按 Enter 返回..."))
+            except (EOFError, KeyboardInterrupt):
+                pass
+            continue
 
         nxt = resolve_next(chosen, state)
         if not nxt:
