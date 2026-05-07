@@ -4521,7 +4521,7 @@
             "PR": 8,
             "flags": {
               "s6_revisit_well": true,
-              "s6_inverted_seventh": true
+              "oneshot.s6_inverted_seventh": true
             }
           }
         },
@@ -4533,7 +4533,7 @@
             "puzzle_add": "piece_judge_seal",
             "flags": {
               "got_judge_seal": true,
-              "s6_wrote_never": true
+              "oneshot.s6_wrote_never": true
             }
           }
         },
@@ -4544,7 +4544,7 @@
             "PR": 12,
             "GR": 5,
             "flags": {
-              "s6_returned_helmets": true
+              "oneshot.s6_returned_helmets": true
             }
           }
         }
@@ -4607,7 +4607,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "s6_volunteered": true,
+              "oneshot.s6_volunteered": true,
               "seven_returned": true
             }
           }
@@ -4620,7 +4620,7 @@
             "puzzle_add": "piece_seven_returned",
             "flags": {
               "seven_returned": true,
-              "s6_replaced_seven": true,
+              "arc.s6_replaced_seven": true,
               "b3_unlocked": true
             }
           }
@@ -4658,7 +4658,7 @@
             "GR": -10,
             "puzzle_add": "piece_seven_freed",
             "flags": {
-              "s6_seven_freed": true
+              "oneshot.s6_seven_freed": true
             }
           }
         }
@@ -4676,7 +4676,7 @@
             "GR": 8,
             "flags": {
               "got_judge_seal": true,
-              "s6_owes_27": true
+              "oneshot.s6_owes_27": true
             }
           }
         },
@@ -4711,7 +4711,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "s6_no_fingerprint": true
+              "oneshot.s6_no_fingerprint": true
             }
           }
         },
@@ -4721,7 +4721,7 @@
           "effects": {
             "GR": 10,
             "flags": {
-              "s6_no_fingerprint": true
+              "oneshot.s6_no_fingerprint": true
             }
           }
         }
@@ -4737,7 +4737,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "s6_into_operator": true
+              "oneshot.s6_into_operator": true
             }
           }
         },
@@ -4747,7 +4747,7 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "s6_jammed_blade": true
+              "oneshot.s6_jammed_blade": true
             }
           }
         },
@@ -4757,7 +4757,7 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "s6_stood_blade": true,
+              "oneshot.s6_stood_blade": true,
               "marked_lamb": true
             }
           }
@@ -4795,7 +4795,7 @@
           "effects": {
             "PR": -8,
             "flags": {
-              "s6_refused_correction": true
+              "oneshot.s6_refused_correction": true
             }
           }
         },
@@ -4805,7 +4805,7 @@
           "effects": {
             "PR": 20,
             "flags": {
-              "s6_offered_self": true,
+              "oneshot.s6_offered_self": true,
               "linked_to_eight_self": true
             }
           }
@@ -4838,7 +4838,7 @@
             "GR": 8,
             "flags": {
               "s6_revisit_well": true,
-              "s6_unjammed": true
+              "oneshot.s6_unjammed": true
             }
           }
         }
@@ -4856,7 +4856,7 @@
             "GR": 10,
             "puzzle_add": "piece_predecessor_log",
             "flags": {
-              "s6_inherited_scar": true,
+              "arc.s6_inherited_scar": true,
               "promised_relieve_predecessor": true,
               "marked_lamb": true
             }
@@ -5503,7 +5503,7 @@
         {
           "if": {
             "flags": {
-              "s6_volunteered": true
+              "oneshot.s6_volunteered": true
             }
           },
           "text": "你刚在井口对他们说『我替你们,你们走』。\n\n7 个工人**齐齐转身**——\n\n他们的背后,**贴着 7 张照片**。\n\n7 张照片是他们各自的家人——\n\n第一张:1986 年的妻子,抱着一个 6 个月的婴儿。\n第二张:1986 年的母亲,在灶台前。\n......\n\n第 7 张照片,**模糊**——\n\n上面是**你的妈妈**,你出生那天医院的照片。\n\n第 7 个工人,转头对你说:\n\n「我家的老婆,就是你妈妈的姑姑。\n  我们,亲戚。」"
@@ -5993,7 +5993,7 @@
         {
           "if": {
             "flags": {
-              "s6_replaced_seven": true
+              "arc.s6_replaced_seven": true
             }
           },
           "text": "你在 S6 井底说『我替七个工人』。\n\n《异常事件记录表》自己翻页:\n\n「夜班评议会注:\n  本届巡夜员愿意替 7 人共担一夜。\n  这超出『候补判官』的章程范围。\n  授予『候补判官 — 担当』。\n  额外津贴:7 顶柳条帽**自动还到栏杆**。\n  你的右肩,**多了一份重量**——\n  那是 7 个工人 38 年的疲惫。」\n\n你的工牌**变重了**。"
@@ -6166,7 +6166,7 @@
         {
           "if": {
             "flags": {
-              "s6_no_fingerprint": true
+              "oneshot.s6_no_fingerprint": true
             }
           },
           "text": "你在 S6 烧了工牌,失去指纹。\n\n你转身——\n\n不存在的清洁工**就在你身后 1 米**。\n\n这次你能**清楚看见**他。\n\n他有脸。\n\n他的脸**就是你**——\n\n但他比你**多 5 岁**。\n\n他对你说:「2029 年的你,来接 2024 年的你下班。」"
@@ -6240,7 +6240,7 @@
         {
           "if": {
             "flags": {
-              "s6_inherited_scar": true
+              "arc.s6_inherited_scar": true
             }
           },
           "text": "你接过了 11 厘米红印。\n\n现在你站在 27 楼,看到上一任 G-273——\n\n他**胸口也有一道一模一样的红印**。\n\n他指着自己的红印,对你说:\n\n「我 2013 年接的。\n  接的是 G-271,他 2002 年接的。\n  他接的是 G-270,1991 年接的。\n  你**已经查到 G-249**(林某 1985)。\n\n  红印每接一次,长 1 厘米。\n  到 27 厘米时,会**渗到心脏**。\n  你的红印是 11 厘米。\n  你还有 16 任的窗口。」"
@@ -7089,7 +7089,7 @@
             "all_of": [
               {
                 "flags": {
-                  "s6_replaced_seven": true
+                  "arc.s6_replaced_seven": true
                 }
               },
               {
@@ -7170,7 +7170,7 @@
         {
           "if": {
             "flags": {
-              "s6_inherited_scar": true
+              "arc.s6_inherited_scar": true
             }
           },
           "text": "你接受了 11 厘米长的红印。\n\n这道红印,11 年前,前任 G-272 也接受过。\n\n再之前,G-271 接受过。\n\n再再之前——\n\n12 任 G-273,12 道红印,叠在同一个胸口位置。\n\n你成为这 12 道红印的最新一道。\n\n盾构机刀盘**永远停在**离你胸口 1 厘米处。\n\n你不会被绞碎,你也不会下班。\n\n你成了 B4 盾构井的『活路标』。\n\n下一任 G-273 在 01:52 走到 DK30+477 时,他会看见你站在刀盘前面。\n\n他会以为你是**旧时代的工人**。\n\n他会鞠躬。\n\n他不知道,你才是『今天』的他。"
