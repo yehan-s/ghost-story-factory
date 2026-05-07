@@ -21,6 +21,15 @@ from typing import Any, Dict, List, Tuple
 
 
 STORY_META = {
+    # 反应机制契约(ADR-008):每个 deduction/foreshadow/theme 必须声明
+    # resolver_node(在哪个节点解开)+ consumer_nodes(哪些节点消费它)。
+    # audit_reactions.py 据此检测 DEAD_REACTION / UNREACHABLE_REACTION / ORPHAN_RESOLVE。
+    # 初始为空,Phase 4 内容填充时逐条加。
+    "reaction_contracts": {
+        "deductions": {},
+        "foreshadows": {},
+        "themes": {},
+    },
     "story_id": "hangzhou_yebanbaoan",
     "title": "断桥残雪",
     "display_name": "断桥残雪",
