@@ -123,6 +123,7 @@ STORY_META = {
             "start_node": "n_l1985_entry",
             "initial_inv": ["蓝布人造革账册包", "26 联签拨款单复印件", "搪瓷缸"],
             "initial_flags": {},
+            "_unlock_hint": "通关 G-273『揭穿真相』(E_TRUTH)解锁",
             "_description": "杭州二轻物资财务科副科长。1985-10-18 投湖前 6 小时(20:00 → 02:00)。Act 1 ~50 节点 / 4 ending(冤/悔/释/曝光)。通关 G-273 E_TRUTH 解锁。"
         }
         # 后续:

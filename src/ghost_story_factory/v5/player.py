@@ -716,32 +716,79 @@ def ending_color(ending_type: str):
 
 # --- 主循环 ---
 
-def _select_character(characters: Dict[str, Any]) -> Optional[str]:
-    """v7 多角色伏笔接口:列出可玩角色,返回 character_id。
+def _select_character(
+    characters: Dict[str, Any],
+    save_manager: Any = None,
+) -> Optional[str]:
+    """v8 三态主菜单:locked / unlockable / playable。
 
-    若只有 1 个或 0 个角色,直接返回默认值。
-    若 > 1,提示用户选择(v8 扩展点)。
+    - locked:角色未解锁 → 灰剪影 + 锁定提示(无法选)
+    - unlockable:首次解锁后未玩 → "! 新解锁" 标记
+    - playable:已通关 → 显示通关 ending 数 + 徽章
+
+    向后兼容:save_manager=None 时回退到旧行为(全部可选)。
     """
     if not characters:
         return None
     keys = list(characters.keys())
-    if len(keys) == 1:
+
+    # 查解锁状态(若有 save_manager)
+    if save_manager is not None:
+        unlocked = set(save_manager.unlocked_characters)
+        all_endings_seen = set(save_manager.endings_seen)
+    else:
+        unlocked = set(keys)
+        all_endings_seen = set()
+
+    # 单角色 + 已解锁 → 直接返回
+    if len(keys) == 1 and keys[0] in unlocked:
         return keys[0]
+
     print(bold(magenta("\n  可玩角色:")))
+    selectable_indices: List[int] = []
     for i, k in enumerate(keys, start=1):
-        label = characters[k].get("label", k)
-        print(f"  {green(str(i))}. {label}")
+        cdef = characters[k] or {}
+        label = cdef.get("label", k)
+        if k in unlocked:
+            # 统计该角色 ending 数(按 ENDING_UNLOCKS 反查 + 命名前缀)
+            char_endings = sum(
+                1 for e in all_endings_seen
+                if e.upper().startswith(f"E_{k.upper().replace('-', '_')}_")
+            )
+            if char_endings > 0:
+                badge = "★" * min(char_endings, 4)
+                print(f"  {green(str(i))}. {bold(label)}  {green(badge)}")
+            else:
+                # unlockable(已解锁但未通关任一该角色 ending)
+                tag = "  ! 新解锁" if k != "G-273" else ""
+                print(f"  {green(str(i))}. {bold(label)}{cyan(tag)}")
+            selectable_indices.append(i)
+        else:
+            # locked
+            hint = cdef.get("_unlock_hint") or "需通关特定结局解锁"
+            print(f"  {dim(str(i))}. {dim('???' + ' ' * 4)}  {dim('🔒 ' + hint)}")
     print()
+
+    if not selectable_indices:
+        return None
+    if len(selectable_indices) == 1:
+        only = keys[selectable_indices[0] - 1]
+        return only
     while True:
         try:
-            raw = input(bold("> 选择角色 (默认 1): ")).strip()
+            raw = input(bold(f"> 选择角色 (默认 {selectable_indices[0]}): ")).strip()
         except (EOFError, KeyboardInterrupt):
-            return keys[0]
+            return keys[selectable_indices[0] - 1]
         if not raw:
-            return keys[0]
-        if raw.isdigit() and 1 <= int(raw) <= len(keys):
-            return keys[int(raw) - 1]
-        print(red(f"  请输入 1-{len(keys)}。"))
+            return keys[selectable_indices[0] - 1]
+        if raw.isdigit():
+            n = int(raw)
+            if n in selectable_indices:
+                return keys[n - 1]
+            if 1 <= n <= len(keys):
+                print(red(f"  角色 {n} 锁定中,无法选择。"))
+                continue
+        print(red(f"  请输入 {selectable_indices}(已解锁)。"))
 
 
 def play(tree_path: Path, character_id: Optional[str] = None) -> None:
@@ -770,7 +817,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
     if character_id and character_id in characters:
         selected_character = character_id
     else:
-        selected_character = _select_character(characters)
+        selected_character = _select_character(characters, save_manager=save_manager)
 
     if selected_character and selected_character in characters:
         cdef = characters[selected_character]
