@@ -33,7 +33,7 @@
         {
           "if": {
             "flags": {
-              "completed_yang": true
+              "arc.completed_yang": true
             }
           },
           "text": "你已经补全了「⺶」字。\n\n但你回来时——\n\n匾上的字**又少了一笔**。\n\n弄堂里有人在用毛笔涂字。\n\n那个人,穿着 1933 年的长衫。"
@@ -99,7 +99,7 @@
               },
               {
                 "flags": {
-                  "completed_yang": true
+                  "arc.completed_yang": true
                 }
               }
             ]
@@ -133,8 +133,8 @@
               "⺶ 符文"
             ],
             "flags": {
-              "completed_yang": true,
-              "arc.s4_blood_signed": true
+              "arc.s4_blood_signed": true,
+              "arc.completed_yang": true
             }
           }
         },
@@ -144,16 +144,14 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "freed_yang": true,
-              "marked_lamb": true,
-              "oneshot.s4_kneeled_three_times": false
+              "oneshot.s4_kneeled_three_times": false,
+              "arc.marked_lamb": true
             }
           }
         },
         {
           "text": "退后,先去看「⺶」字匾。",
-          "next": "n_s4_examine_sign",
-          "effects": {}
+          "next": "n_s4_examine_sign"
         }
       ]
     },
@@ -179,7 +177,7 @@
             "GR": 20,
             "flags": {
               "oneshot.s4_kneeled_three_times": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -189,8 +187,8 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "posted_photo": true,
-              "oneshot.s4_posted_blood_face": true
+              "oneshot.s4_posted_blood_face": true,
+              "oneshot.posted_photo": true
             }
           }
         }
@@ -251,8 +249,8 @@
               "⺶ 符文"
             ],
             "flags": {
-              "completed_yang": true,
-              "marked_lamb": true
+              "arc.completed_yang": true,
+              "arc.marked_lamb": true
             }
           }
         },
@@ -263,7 +261,7 @@
             "PR": 15,
             "flags": {
               "oneshot.s4_refused_yanggui": true,
-              "got_judge_seal": true
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -437,7 +435,7 @@
             "GR": 25,
             "PR": 20,
             "flags": {
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }

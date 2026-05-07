@@ -55,7 +55,7 @@
         {
           "if": {
             "flags": {
-              "piano_appeased": true
+              "arc.piano_appeased": true
             }
           },
           "text": "你已经把 1987 年 6 月 1 日的报纸放在琴盖上了。\n\n但你回来时——\n\n报纸**消失**了。\n\n钢琴自己又掀开了盖子。\n\n键上,留着一张**新的纸条**:\n\n「叔叔,我妈妈来过。她说我可以下来了。\n  谢谢叔叔。」"
@@ -122,7 +122,7 @@
               },
               {
                 "flags": {
-                  "piano_appeased": true
+                  "arc.piano_appeased": true
                 }
               }
             ]
@@ -159,8 +159,8 @@
             "PR": 12,
             "GR": 5,
             "flags": {
-              "piano_appeased": true,
-              "oneshot.s5_offered_newspaper": true
+              "oneshot.s5_offered_newspaper": true,
+              "arc.piano_appeased": true
             }
           },
           "require": {
@@ -197,7 +197,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "played_for_her": true
+              "oneshot.played_for_her": true
             }
           }
         },
@@ -248,7 +248,7 @@
             "GR": 25,
             "flags": {
               "oneshot.s5_self_noosed": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -259,7 +259,7 @@
             "PR": 12,
             "flags": {
               "oneshot.s5_burned_rope": true,
-              "piano_appeased": true
+              "arc.piano_appeased": true
             }
           }
         },
@@ -377,7 +377,7 @@
             "GR": 18,
             "flags": {
               "oneshot.s5_wore_girl_shoes": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -416,10 +416,7 @@
           "next": "n_scene_red_telephone",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_radio_call",
-            "flags": {
-              "called_1987": true
-            }
+            "puzzle_add": "piece_radio_call"
           }
         },
         {
@@ -472,8 +469,7 @@
         },
         {
           "text": "退回 203 琴房。",
-          "next": "n_s5_open_door",
-          "effects": {}
+          "next": "n_s5_open_door"
         }
       ]
     },

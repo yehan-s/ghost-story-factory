@@ -433,8 +433,8 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "posted_photo": true,
-              "oneshot.s2_posted_shadow": true
+              "oneshot.s2_posted_shadow": true,
+              "oneshot.posted_photo": true
             }
           }
         }
@@ -473,7 +473,7 @@
             "GR": 12,
             "flags": {
               "oneshot.s2_smeared_face": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }
@@ -542,10 +542,7 @@
           "text": "拨打前任电话求助。",
           "next": "n_scene_red_telephone",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "called_1987": true
-            }
+            "PR": 5
           },
           "require": {
             "inv_has": [

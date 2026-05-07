@@ -1416,9 +1416,6 @@
           "text": "拍照存证。把白虫记进《异常事件记录表》。",
           "effects": {
             "PR": 2,
-            "flags": {
-              "recorded_white_worm": true
-            },
             "stay": true
           },
           "next": "n_lore_leifeng_worm"
@@ -1427,10 +1424,7 @@
           "text": "用打火机烧一只虫看看。",
           "effects": {
             "PR": 5,
-            "GR": 3,
-            "flags": {
-              "burned_white_worm": true
-            }
+            "GR": 3
           },
           "next": "n_npc_corrosion_face"
         },
@@ -1483,10 +1477,7 @@
           "text": "进酒店,问 217 房。",
           "effects": {
             "PR": 8,
-            "GR": 5,
-            "flags": {
-              "asked_room_217": true
-            }
+            "GR": 5
           },
           "next": "n_npc_red_dress_girl"
         },
@@ -1494,9 +1485,6 @@
           "text": "拍下 3 楼的窗。发夜班论坛。",
           "effects": {
             "PR": 3,
-            "flags": {
-              "posted_song_inn": true
-            },
             "stay": true
           },
           "next": "n_lore_songmuchang_inn"
@@ -1551,9 +1539,6 @@
           "effects": {
             "PR": 12,
             "GR": 10,
-            "flags": {
-              "counted_99": true
-            },
             "puzzle_add": "piece_99_count"
           },
           "next": "n_npc_eight_self"
@@ -1562,9 +1547,6 @@
           "text": "不数。摀住耳朵走开。",
           "effects": {
             "PR": 3,
-            "flags": {
-              "refused_99": true
-            },
             "stay": true
           },
           "next": "n_lore_zheda_clock_girl"
@@ -1633,9 +1615,6 @@
           "text": "走快点,出通道。",
           "effects": {
             "PR": 2,
-            "flags": {
-              "avoided_wulinmen": true
-            },
             "stay": true
           },
           "next": "n_lore_wulinmen_execution"
@@ -1696,9 +1675,6 @@
           "effects": {
             "PR": 10,
             "GR": 8,
-            "flags": {
-              "climbed_kongque_fence": true
-            },
             "puzzle_add": "piece_kongque_stone"
           },
           "next": "n_scene_lake_underwater"
@@ -1711,9 +1687,6 @@
             "inv_remove": [
               "三柱香"
             ],
-            "flags": {
-              "burned_incense_kongque": true
-            },
             "stay": true
           },
           "next": "n_lore_kongque_collapse"
@@ -1721,10 +1694,7 @@
         {
           "text": "拍照,发夜班论坛。继续巡逻。",
           "effects": {
-            "PR": 2,
-            "flags": {
-              "posted_kongque": true
-            }
+            "PR": 2
           },
           "next": "n_landmark_picker"
         }
@@ -1859,23 +1829,19 @@
       "choices": [
         {
           "text": "伸手摸一下风衣。",
-          "next": "n_s1_close_touch",
-          "effects": {}
+          "next": "n_s1_close_touch"
         },
         {
           "text": "翻一翻风衣口袋。",
-          "next": "n_s1_pocket_book",
-          "effects": {}
+          "next": "n_s1_pocket_book"
         },
         {
           "text": "把手电对准领口照进去。",
-          "next": "n_s1_close_flashlight",
-          "effects": {}
+          "next": "n_s1_close_flashlight"
         },
         {
           "text": "站起来,退回打卡机前再想。",
-          "next": "n_s1_arrive",
-          "effects": {}
+          "next": "n_s1_arrive"
         }
       ]
     },
@@ -1985,8 +1951,7 @@
       "choices": [
         {
           "text": "退到长椅旁,继续观察。",
-          "next": "n_s1_close",
-          "effects": {}
+          "next": "n_s1_close"
         }
       ]
     },
@@ -2058,8 +2023,7 @@
         },
         {
           "text": "退回打卡机前。",
-          "next": "n_s1_arrive",
-          "effects": {}
+          "next": "n_s1_arrive"
         }
       ]
     },
@@ -2098,8 +2062,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "oneshot.s1_wore_shoes": true,
-              "linmou_marked": true
+              "oneshot.s1_wore_shoes": true
             }
           }
         },
@@ -2115,8 +2078,7 @@
         },
         {
           "text": "什么都不做,退回打卡机。",
-          "next": "n_s1_arrive",
-          "effects": {}
+          "next": "n_s1_arrive"
         },
         {
           "text": "蹲下,把鞋翻过来看鞋底。",
@@ -2740,8 +2702,8 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "posted_photo": true,
-              "oneshot.s2_posted_shadow": true
+              "oneshot.s2_posted_shadow": true,
+              "oneshot.posted_photo": true
             }
           }
         }
@@ -2780,7 +2742,7 @@
             "GR": 12,
             "flags": {
               "oneshot.s2_smeared_face": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }
@@ -2849,10 +2811,7 @@
           "text": "拨打前任电话求助。",
           "next": "n_scene_red_telephone",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "called_1987": true
-            }
+            "PR": 5
           },
           "require": {
             "inv_has": [
@@ -2907,7 +2866,7 @@
         {
           "if": {
             "flags": {
-              "rang_seven": true
+              "oneshot.rang_seven": true
             }
           },
           "text": "你已经敲过七下钟。\n\n寺院应该归位。\n\n但你回来时——\n\n**钟没了**。\n\n钟架上空空的,只挂着一行字:\n\n「H = 你」"
@@ -2973,7 +2932,7 @@
               },
               {
                 "flags": {
-                  "rang_seven": true
+                  "oneshot.rang_seven": true
                 }
               }
             ]
@@ -3026,8 +2985,7 @@
         },
         {
           "text": "退后,绕到钟另一面。",
-          "next": "n_s3_other_side",
-          "effects": {}
+          "next": "n_s3_other_side"
         }
       ]
     },
@@ -3087,7 +3045,7 @@
             "GR": 12,
             "flags": {
               "oneshot.s3_accepted_h1987": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }
@@ -3103,7 +3061,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "linked_to_eight_self": true
+              "know.linked_to_eight_self": true
             }
           }
         },
@@ -3141,7 +3099,7 @@
               "铜锈护符"
             ],
             "flags": {
-              "rang_seven": true
+              "oneshot.rang_seven": true
             }
           }
         },
@@ -3187,7 +3145,7 @@
               "工牌 G-273"
             ],
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           }
         },
@@ -3237,8 +3195,7 @@
         },
         {
           "text": "退回正面,继续看男人侧脸。",
-          "next": "n_s3_examine_face",
-          "effects": {}
+          "next": "n_s3_examine_face"
         }
       ]
     },
@@ -3301,7 +3258,7 @@
             "PR": 10,
             "flags": {
               "oneshot.s3_promised_seven": true,
-              "contacted_predecessor": true
+              "oneshot.contacted_predecessor": true
             }
           }
         },
@@ -3311,7 +3268,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "contacted_predecessor": true
+              "oneshot.contacted_predecessor": true
             }
           }
         },
@@ -3319,10 +3276,7 @@
           "text": "挂掉对讲机。",
           "next": "n_s3_arrive",
           "effects": {
-            "GR": 5,
-            "flags": {
-              "hung_up_predecessor": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -3349,7 +3303,7 @@
         {
           "if": {
             "flags": {
-              "completed_yang": true
+              "arc.completed_yang": true
             }
           },
           "text": "你已经补全了「⺶」字。\n\n但你回来时——\n\n匾上的字**又少了一笔**。\n\n弄堂里有人在用毛笔涂字。\n\n那个人,穿着 1933 年的长衫。"
@@ -3415,7 +3369,7 @@
               },
               {
                 "flags": {
-                  "completed_yang": true
+                  "arc.completed_yang": true
                 }
               }
             ]
@@ -3449,8 +3403,8 @@
               "⺶ 符文"
             ],
             "flags": {
-              "completed_yang": true,
-              "arc.s4_blood_signed": true
+              "arc.s4_blood_signed": true,
+              "arc.completed_yang": true
             }
           }
         },
@@ -3460,16 +3414,14 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "freed_yang": true,
-              "marked_lamb": true,
-              "oneshot.s4_kneeled_three_times": false
+              "oneshot.s4_kneeled_three_times": false,
+              "arc.marked_lamb": true
             }
           }
         },
         {
           "text": "退后,先去看「⺶」字匾。",
-          "next": "n_s4_examine_sign",
-          "effects": {}
+          "next": "n_s4_examine_sign"
         }
       ]
     },
@@ -3495,7 +3447,7 @@
             "GR": 20,
             "flags": {
               "oneshot.s4_kneeled_three_times": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -3505,8 +3457,8 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "posted_photo": true,
-              "oneshot.s4_posted_blood_face": true
+              "oneshot.s4_posted_blood_face": true,
+              "oneshot.posted_photo": true
             }
           }
         }
@@ -3567,8 +3519,8 @@
               "⺶ 符文"
             ],
             "flags": {
-              "completed_yang": true,
-              "marked_lamb": true
+              "arc.completed_yang": true,
+              "arc.marked_lamb": true
             }
           }
         },
@@ -3579,7 +3531,7 @@
             "PR": 15,
             "flags": {
               "oneshot.s4_refused_yanggui": true,
-              "got_judge_seal": true
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -3753,7 +3705,7 @@
             "GR": 25,
             "PR": 20,
             "flags": {
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }
@@ -3803,7 +3755,7 @@
         {
           "if": {
             "flags": {
-              "piano_appeased": true
+              "arc.piano_appeased": true
             }
           },
           "text": "你已经把 1987 年 6 月 1 日的报纸放在琴盖上了。\n\n但你回来时——\n\n报纸**消失**了。\n\n钢琴自己又掀开了盖子。\n\n键上,留着一张**新的纸条**:\n\n「叔叔,我妈妈来过。她说我可以下来了。\n  谢谢叔叔。」"
@@ -3870,7 +3822,7 @@
               },
               {
                 "flags": {
-                  "piano_appeased": true
+                  "arc.piano_appeased": true
                 }
               }
             ]
@@ -3907,8 +3859,8 @@
             "PR": 12,
             "GR": 5,
             "flags": {
-              "piano_appeased": true,
-              "oneshot.s5_offered_newspaper": true
+              "oneshot.s5_offered_newspaper": true,
+              "arc.piano_appeased": true
             }
           },
           "require": {
@@ -3945,7 +3897,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "played_for_her": true
+              "oneshot.played_for_her": true
             }
           }
         },
@@ -3996,7 +3948,7 @@
             "GR": 25,
             "flags": {
               "oneshot.s5_self_noosed": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -4007,7 +3959,7 @@
             "PR": 12,
             "flags": {
               "oneshot.s5_burned_rope": true,
-              "piano_appeased": true
+              "arc.piano_appeased": true
             }
           }
         },
@@ -4125,7 +4077,7 @@
             "GR": 18,
             "flags": {
               "oneshot.s5_wore_girl_shoes": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -4164,10 +4116,7 @@
           "next": "n_scene_red_telephone",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_radio_call",
-            "flags": {
-              "called_1987": true
-            }
+            "puzzle_add": "piece_radio_call"
           }
         },
         {
@@ -4220,8 +4169,7 @@
         },
         {
           "text": "退回 203 琴房。",
-          "next": "n_s5_open_door",
-          "effects": {}
+          "next": "n_s5_open_door"
         }
       ]
     },
@@ -4292,7 +4240,7 @@
         {
           "if": {
             "flags": {
-              "seven_returned": true
+              "arc.seven_returned": true
             }
           },
           "text": "你已经把帽子还给了 7 个工人。\n\n但你回来时——\n\n7 顶帽子**全部漂在井口水面**。\n\n7 个工人**一个都不在**。\n\n7 顶帽子在水面拼出一个字:\n\n「**等**」"
@@ -4358,7 +4306,7 @@
               },
               {
                 "flags": {
-                  "seven_returned": true
+                  "arc.seven_returned": true
                 }
               }
             ]
@@ -4387,7 +4335,7 @@
           "effects": {
             "GR": 22,
             "flags": {
-              "drown_marked": true
+              "oneshot.drown_marked": true
             }
           }
         },
@@ -4432,8 +4380,8 @@
           "effects": {
             "GR": 18,
             "flags": {
-              "helmet_stuck": true,
-              "marked_lamb": true
+              "oneshot.helmet_stuck": true,
+              "arc.marked_lamb": true
             }
           }
         },
@@ -4454,8 +4402,8 @@
             "PR": 18,
             "puzzle_add": "piece_judge_seal",
             "flags": {
-              "got_judge_seal": true,
-              "oneshot.s6_wrote_never": true
+              "oneshot.s6_wrote_never": true,
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -4489,14 +4437,13 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "saw_27th_floor": true
+              "know.saw_27th_floor": true
             }
           }
         },
         {
           "text": "不去。退回井边。",
-          "next": "n_s6_arrive",
-          "effects": {}
+          "next": "n_s6_arrive"
         },
         {
           "text": "把工牌塞进电梯按钮里。",
@@ -4521,7 +4468,7 @@
             "PR": 15,
             "flags": {
               "oneshot.s6_volunteered": true,
-              "seven_returned": true
+              "arc.seven_returned": true
             }
           }
         },
@@ -4532,9 +4479,9 @@
             "PR": 25,
             "puzzle_add": "piece_seven_returned",
             "flags": {
-              "seven_returned": true,
               "arc.s6_replaced_seven": true,
-              "b3_unlocked": true
+              "arc.seven_returned": true,
+              "oneshot.b3_unlocked": true
             }
           }
         },
@@ -4542,10 +4489,7 @@
           "text": "挂掉对讲机。",
           "next": "n_s6_arrive",
           "effects": {
-            "GR": 5,
-            "flags": {
-              "hung_up_predecessor": true
-            }
+            "GR": 5
           }
         },
         {
@@ -4587,8 +4531,8 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "got_judge_seal": true,
-              "oneshot.s6_owes_27": true
+              "oneshot.s6_owes_27": true,
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -4604,8 +4548,7 @@
         },
         {
           "text": "回到井边,继续巡逻。",
-          "next": "n_s6_look_down",
-          "effects": {}
+          "next": "n_s6_look_down"
         }
       ]
     },
@@ -4666,14 +4609,13 @@
             "GR": 25,
             "flags": {
               "oneshot.s6_stood_blade": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
         {
           "text": "退回井边,不进操作间。",
-          "next": "n_s6_arrive",
-          "effects": {}
+          "next": "n_s6_arrive"
         }
       ]
     },
@@ -4689,7 +4631,7 @@
             "puzzle_add": "piece_linmou_full",
             "flags": {
               "oneshot.s6_corrected_linmou": true,
-              "claimed_linmou": true
+              "know.claimed_linmou": true
             }
           }
         },
@@ -4710,7 +4652,7 @@
             "PR": 20,
             "flags": {
               "oneshot.s6_offered_self": true,
-              "linked_to_eight_self": true
+              "know.linked_to_eight_self": true
             }
           }
         }
@@ -4757,8 +4699,7 @@
             "puzzle_add": "piece_predecessor_log",
             "flags": {
               "arc.s6_inherited_scar": true,
-              "promised_relieve_predecessor": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
@@ -4796,7 +4737,7 @@
           "effects": {
             "PR": 2,
             "flags": {
-              "defied_token": true
+              "oneshot.defied_token": true
             }
           }
         },
@@ -4809,7 +4750,7 @@
             ],
             "PR": 5,
             "flags": {
-              "contacted_predecessor": true
+              "oneshot.contacted_predecessor": true
             }
           }
         }
@@ -4822,8 +4763,7 @@
       "choices": [
         {
           "text": "继续。",
-          "next": "n_landmark_picker",
-          "effects": {}
+          "next": "n_landmark_picker"
         }
       ]
     },
@@ -4965,10 +4905,7 @@
           "next": "n_npc_drowned_official",
           "effects": {
             "PR": 8,
-            "puzzle_add": "piece_27_accounts",
-            "flags": {
-              "linmou_question_yes": true
-            }
+            "puzzle_add": "piece_27_accounts"
           }
         },
         {
@@ -4976,10 +4913,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": -3,
-            "GR": 5,
-            "flags": {
-              "declined_truth": true
-            }
+            "GR": 5
           }
         },
         {
@@ -4989,10 +4923,7 @@
             "inv_remove": [
               "林副科长账本残页"
             ],
-            "PR": -5,
-            "flags": {
-              "returned_book_in_panic": true
-            }
+            "PR": -5
           }
         },
         {
@@ -5037,7 +4968,7 @@
             "PR": 15,
             "puzzle_add": "piece_linmou_full",
             "flags": {
-              "claimed_linmou": true
+              "know.claimed_linmou": true
             }
           }
         },
@@ -5055,7 +4986,7 @@
           "effects": {
             "PR": 20,
             "flags": {
-              "linked_to_eight_self": true
+              "know.linked_to_eight_self": true
             }
           }
         }
@@ -5118,7 +5049,7 @@
         {
           "if": {
             "flags": {
-              "radio_listened": true
+              "know.radio_listened": true
             },
             "shifts_completed_min": 5
           },
@@ -5127,7 +5058,7 @@
         {
           "if": {
             "flags": {
-              "radio_listened": true
+              "know.radio_listened": true
             },
             "shifts_completed_min": 3
           },
@@ -5136,13 +5067,12 @@
         {
           "if": {
             "flags": {
-              "radio_listened": true
+              "know.radio_listened": true
             }
           },
           "text": "对讲机又「滋——」了一声。\n\n这次背景音不是水声,是雪花声——\n\n那个男声压得很低:\n\n「我看到你了。\n你站在地图前。\n地图上画叉的三个点,我没去成。\n你可以去,但别去。」"
         },
         {
-          "if": {},
           "text": "对讲机「滋——」一声,接通。\n\n背景音是水声。\n\n是水**穿过对讲机**的声音。\n\n一个男声,压得很低,带着回响:\n\n「这里是 G-272。\n我接班 11 年了。\n别下来。」\n\n频段在「自动锁定」。你切不掉。"
         }
       ],
@@ -5152,7 +5082,7 @@
           "text": "嗯,我听着。",
           "effects": {
             "flags": {
-              "radio_listened": true
+              "know.radio_listened": true
             },
             "PR": 1,
             "reveal_landmarks": [
@@ -5209,7 +5139,7 @@
         {
           "if": {
             "flags": {
-              "told_red_girl_truth": true
+              "know.told_red_girl_truth": true
             }
           },
           "text": "你刚才告诉过她:『你不该问我。你该问 1987 年那个穿同款裙子的女孩。』\n\n她记住了。\n\n现在她抱着电视,**站在你面前**,但**电视里**她的影像,**站在 1987 年的红衣女孩旁边**。\n\n两个红衣女孩,**手牵手**。\n\n她对你说:「叔叔,我找到 1987 年的姐姐了。\n  她跟我说,她叫**何小燕**。\n  我也叫**何小燕**。\n  我们是同一个名字。\n\n  叔叔,**为什么**?」"
@@ -5250,7 +5180,7 @@
               "27 楼通道钥匙"
             ],
             "flags": {
-              "led_red_girl": true
+              "oneshot.led_red_girl": true
             }
           }
         },
@@ -5261,7 +5191,7 @@
             "PR": 15,
             "puzzle_add": "piece_red_girl_truth",
             "flags": {
-              "told_red_girl_truth": true
+              "know.told_red_girl_truth": true
             }
           }
         },
@@ -5322,7 +5252,7 @@
               "⺶ 符文"
             ],
             "flags": {
-              "completed_yang": true
+              "arc.completed_yang": true
             }
           }
         },
@@ -5339,8 +5269,7 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "freed_yang": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }
@@ -5355,10 +5284,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_yang_freed",
-            "flags": {
-              "yang_17_freed": true
-            }
+            "puzzle_add": "piece_yang_freed"
           }
         },
         {
@@ -5366,10 +5292,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_yang_origin",
-            "flags": {
-              "asked_yang_1933": true
-            }
+            "puzzle_add": "piece_yang_origin"
           }
         }
       ]
@@ -5420,7 +5343,7 @@
         {
           "if": {
             "flags": {
-              "saw_underwater_coat": true
+              "know.saw_underwater_coat": true
             }
           },
           "text": "你在湖底见过那个穿米色风衣的人——林某。\n\n他在水下背对你站着。\n\n你现在站在 S6 盾构井底,7 个工人面前。\n\n7 个工人齐声说:\n\n「我们认识水下那个人。\n  他不是 1986 年和我们一起翻船的。\n  他是 1985 年从西湖**漂过来**的。\n  他在我们 7 个之间,**找过自己的位置**。\n\n  但他没找到。\n  这次,他想让你**替他**。」"
@@ -5428,7 +5351,7 @@
         {
           "if": {
             "flags": {
-              "helmet_stuck": true
+              "oneshot.helmet_stuck": true
             }
           },
           "text": "你头上那顶柳条帽,粘在你头上。\n\n你来到 7 个工人面前——\n\n他们看见你的帽子,**齐齐鞠躬**。\n\n他们认你是**第 8 个**了。\n\n他们的话很轻,像井水拍井壁:\n\n「兄弟,你戴上了。\n  你还来这里干什么?\n  下班吧。\n  井底,我们给你留了位置。」"
@@ -5443,8 +5366,8 @@
             "PR": 8,
             "GR": 8,
             "flags": {
-              "seven_returned": true,
-              "b3_unlocked": true
+              "arc.seven_returned": true,
+              "oneshot.b3_unlocked": true
             }
           }
         },
@@ -5454,7 +5377,7 @@
           "effects": {
             "GR": 20,
             "flags": {
-              "drown_marked": true
+              "oneshot.drown_marked": true
             }
           }
         },
@@ -5464,7 +5387,7 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "helmet_stuck": true
+              "oneshot.helmet_stuck": true
             }
           }
         }
@@ -5479,10 +5402,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_seven_returned",
-            "flags": {
-              "seven_returned_witnessed": true
-            }
+            "puzzle_add": "piece_seven_returned"
           }
         },
         {
@@ -5502,8 +5422,7 @@
           "effects": {
             "GR": 15,
             "flags": {
-              "defied_warning": true,
-              "saw_underwater_coat": true
+              "know.saw_underwater_coat": true
             }
           }
         }
@@ -5529,7 +5448,7 @@
         {
           "if": {
             "flags": {
-              "played_for_her": true
+              "oneshot.played_for_her": true
             }
           },
           "text": "你弹完了那首她想听的曲子。\n\n《小星星》。\n\n但是慢半拍。\n\n你弹错的那个 mi——\n\n她**没纠正你**。\n\n她转头,对你笑了一下。\n\n11 岁的女孩,有 33 年没笑过。\n\n这一次,她笑得很轻:\n\n「叔叔,1991 年那天,我也弹错了。\n  我妈说我考 87 分是因为练琴不努力。\n  其实——\n  那个 mi,我也是故意弹错的。」"
@@ -5538,7 +5457,7 @@
           "if": {
             "flags": {
               "oneshot.s2_followed_double_shadow": true,
-              "saw_27th_floor": false
+              "know.saw_27th_floor": false
             }
           },
           "text": "你在 S2 见过那个红衣女孩吗?\n\n她和我同岁。\n\n她比我**晚 5 年死**。\n\n但是我们**共用一双布鞋**。\n\n你不知道为什么,对吗?\n\n我也不知道。\n\n但 1996 年她在货梯里死的时候——\n\n我**听见**了。\n\n203 琴房的钢琴,**自己**弹了一首《小星星》。\n\n是我弹的。\n\n但那时我已经死了 5 年。"
@@ -5573,7 +5492,7 @@
             ],
             "puzzle_add": "piece_piano_girl",
             "flags": {
-              "piano_appeased": true
+              "arc.piano_appeased": true
             }
           }
         },
@@ -5583,7 +5502,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "played_for_her": true
+              "oneshot.played_for_her": true
             }
           }
         },
@@ -5595,8 +5514,8 @@
             "GR": -5,
             "puzzle_add": "piece_piano_girl_freed",
             "flags": {
-              "piano_appeased": true,
-              "oneshot.s5_freed_yeh": true
+              "oneshot.s5_freed_yeh": true,
+              "arc.piano_appeased": true
             }
           },
           "require": {
@@ -5610,10 +5529,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 18,
-            "puzzle_add": "piece_eight_zhao",
-            "flags": {
-              "showed_class_photo": true
-            }
+            "puzzle_add": "piece_eight_zhao"
           },
           "require": {
             "inv_has": [
@@ -5625,10 +5541,7 @@
           "text": "把钢琴砸了。",
           "next": "n_scene_lost_archive",
           "effects": {
-            "GR": 15,
-            "flags": {
-              "smashed_piano": true
-            }
+            "GR": 15
           }
         }
       ]
@@ -5639,7 +5552,7 @@
         {
           "if": {
             "flags": {
-              "piano_appeased": true
+              "arc.piano_appeased": true
             }
           },
           "text": "你把 1987 年 6 月 1 日的报纸放在琴盖上。\n\n那张报纸,头版头条是『百货大楼踩踏 13 死』——\n\n但叶某不看头版。\n\n她翻到第 7 版——\n\n第 7 版是『六一儿童节学校演出名单』。\n\n名单第 23 个,是她。\n\n她的指尖,**摸过自己的名字**——\n\n她笑了。\n\n11 岁的女孩,有 33 年没在自己名字上**笑**过。\n\n她抱起报纸,**小心翼翼**——\n\n像抱一只**小猫**。\n\n她对你说:「叔叔,谢谢。\n  我妈妈不来 203 接我。\n  但我现在,有这个**名单**。\n  我可以**自己回去**了。\n\n  这盘磁带,送给你。\n  里面是 1959 年我外婆唱的童谣。\n  外婆从来没给我妈妈唱过——\n  她那时候已经死在这间琴房。\n\n  你**带磁带走**。\n  让外面的人,**听见外婆的声音**。」"
@@ -5647,7 +5560,7 @@
         {
           "if": {
             "flags": {
-              "played_for_her": true
+              "oneshot.played_for_her": true
             }
           },
           "text": "你弹了一首她想听的曲子。\n\n你以为你弹的是《小星星》。\n\n实际你弹的是——\n\n**你 5 岁那年妈妈哄你睡觉时哼过的小调**。\n\n这首歌没有名字。\n\n你妈妈是临时编的。\n\n你妈妈也不知道自己在哼什么。\n\n但叶某听见了——\n\n她**愣住**——\n\n她的眼睛里第一次**有了光**。\n\n她说:「叔叔,这首歌我也会哼。\n  我妈妈 1991 年那年,**也哼过**。\n  那时候我已经死了 3 个月。\n  她哼这首歌,是哼给**记忆里的我**听。\n\n  你怎么会哼这首歌?\n  你妈妈和我妈妈,**认识**吗?」"
@@ -5660,10 +5573,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 8,
-            "puzzle_add": "piece_piano_freed",
-            "flags": {
-              "piano_blessing": true
-            }
+            "puzzle_add": "piece_piano_freed"
           }
         },
         {
@@ -5671,10 +5581,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_eight_zhao",
-            "flags": {
-              "asked_class_photo": true
-            }
+            "puzzle_add": "piece_eight_zhao"
           }
         },
         {
@@ -5684,8 +5591,7 @@
             "PR": 18,
             "GR": -5,
             "flags": {
-              "sat_with_yeh": true,
-              "linked_to_eight_self": true
+              "know.linked_to_eight_self": true
             }
           }
         }
@@ -5703,7 +5609,7 @@
         {
           "if": {
             "flags": {
-              "rang_seven": false
+              "oneshot.rang_seven": false
             },
             "visit_count_min": {
               "n_s3_arrive": 2
@@ -5730,7 +5636,7 @@
         {
           "if": {
             "flags": {
-              "saw_8_zhao": true
+              "know.saw_8_zhao": true
             }
           },
           "text": "你在 S3 水下看过 8 棺。\n\n你回到钟前——\n\n钟里铜锈侧脸,**变了**。\n\n它不是中年男人的侧脸了。\n\n它是**8 个不同年龄的侧脸,慢慢切换**。\n\n它们一起对你说:\n\n「我们 8 个,等的不是一个候选。\n  我们等的是一个**说不**的人。\n\n  你能说『不』吗?」"
@@ -5747,7 +5653,7 @@
               "铜锈护符"
             ],
             "flags": {
-              "rang_seven": true
+              "oneshot.rang_seven": true
             }
           }
         },
@@ -5768,7 +5674,7 @@
             "PR": 10,
             "puzzle_add": "piece_h1987",
             "flags": {
-              "saw_8_zhao": true
+              "know.saw_8_zhao": true
             }
           }
         }
@@ -5780,7 +5686,7 @@
         {
           "if": {
             "flags": {
-              "forum_posted": true
+              "oneshot.forum_posted": true
             },
             "shifts_completed_min": 5
           },
@@ -5789,13 +5695,12 @@
         {
           "if": {
             "flags": {
-              "forum_posted": true
+              "oneshot.forum_posted": true
             }
           },
           "text": "论坛又刷出来一波。\n\n你之前那条帖子下面,有 27 个 IP 在打字。\n\n他们的 ID 都是 G-2XX。\n\n他们都在等你下一句。"
         },
         {
-          "if": {},
           "text": "夜班论坛打开了。\n\n你的发帖,匿名:「断桥残雪 / 第七个 / 我在 27 楼。」\n\n点赞数:+1...+27...+307...\n\n评论第一条:\n\n「楼主,1987-08-12 也有一个你。\n他没回得来。」"
         }
       ],
@@ -5805,7 +5710,7 @@
           "text": "再发一帖。",
           "effects": {
             "flags": {
-              "forum_posted": true
+              "oneshot.forum_posted": true
             },
             "GR": 2,
             "stay": true
@@ -5818,8 +5723,8 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "posted_photo": true,
-              "live_streaming": true
+              "oneshot.posted_photo": true,
+              "oneshot.live_streaming": true
             }
           }
         },
@@ -5827,20 +5732,14 @@
           "text": "立刻删帖。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "post_deleted": true
-            }
+            "PR": -3
           }
         },
         {
           "text": "回 G-272 一句:『我会的。』",
           "next": "n_npc_ghost_guard",
           "effects": {
-            "PR": 10,
-            "flags": {
-              "replied_predecessor": true
-            }
+            "PR": 10
           }
         },
         {
@@ -5850,10 +5749,7 @@
             "GR": 8,
             "inv_remove": [
               "前任电话号码"
-            ],
-            "flags": {
-              "phone_broken": true
-            }
+            ]
           }
         },
         {
@@ -5895,7 +5791,7 @@
         {
           "if": {
             "flags": {
-              "defied_token": true
+              "oneshot.defied_token": true
             }
           },
           "text": "你刚入职那天撕了 1984 年的小票。\n\n夜班评议会**记得**。\n\n《异常事件记录表》浮现:\n\n「G-273 赵某入职日已留下『违逆标记』。\n  本届表现『非正分类』。\n  授予『候补判官 — 革命党 第 1 号』临时章。\n\n  注:这个章用过 0 次。\n  上一次有人撕入职小票,是 G-001。\n  G-001 的故事,已经无人记得。\n  你可能是第一个**让人记得 G-001 的故事**的人。」"
@@ -5910,7 +5806,7 @@
             "PR": 15,
             "puzzle_add": "piece_judge_seal",
             "flags": {
-              "got_judge_seal": true
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -5919,10 +5815,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "GR": 20,
-            "shifts_skipped": 3,
-            "flags": {
-              "discarded_record": true
-            }
+            "shifts_skipped": 3
           }
         },
         {
@@ -5931,7 +5824,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "got_judge_seal": true
+              "arc.got_judge_seal": true
             }
           }
         }
@@ -5976,8 +5869,8 @@
         {
           "if": {
             "flags": {
-              "linked_to_eight_self": true,
-              "claimed_linmou": true
+              "know.linked_to_eight_self": true,
+              "know.claimed_linmou": true
             }
           },
           "text": "8 棺,你不再是看客。\n\n你和林某——那个 1985 年投湖的——**联通了**。\n\n你看见 8 棺里 8 个『你』中的第 2 棺,**胸口贴的不是赵某的打卡表**——\n\n是**林某 1985 年的会计账**。\n\n林某睁眼,对你说:\n\n「赵某。你是 G-273。我是 G-249。\n  我们之间隔了 24 任。\n  我那年没下班。\n  你今晚下班的时候,**带上我**。」"
@@ -5993,8 +5886,8 @@
         {
           "if": {
             "flags": {
-              "saw_underwater_coat": true,
-              "saw_8_zhao": true
+              "know.saw_underwater_coat": true,
+              "know.saw_8_zhao": true
             }
           },
           "text": "你在 S3 水下副本看过 8 棺。\n\n你现在**真正**站在 8 棺前——\n\n你才发现,**水下那次是预演**。\n\n这一次,8 个你同时坐起,**眼神不一样**——\n\n他们看你,不是同情,是**评估**。\n\n他们在选谁是『下一个躺进来』的。\n\n他们 8 个,**其中有 7 个想让你来**。\n\n第 8 个,是**1985 林某**——\n\n他**不想**。"
@@ -6012,10 +5905,7 @@
           "text": "我替你们填。",
           "next": "n_end_truth",
           "effects": {
-            "puzzle_add": "piece_eight_zhao",
-            "flags": {
-              "replaced_eight_self": true
-            }
+            "puzzle_add": "piece_eight_zhao"
           }
         },
         {
@@ -6023,7 +5913,7 @@
           "next": "n_end_data",
           "effects": {
             "flags": {
-              "chose_data": true
+              "oneshot.chose_data": true
             }
           }
         },
@@ -6032,14 +5922,14 @@
           "next": "n_end_true",
           "effects": {
             "flags": {
-              "locked_eight_coffins": true
+              "oneshot.locked_eight_coffins": true
             }
           },
           "require": {
             "all_of": [
               {
                 "flags": {
-                  "seven_returned": true
+                  "arc.seven_returned": true
                 }
               },
               {
@@ -6074,7 +5964,7 @@
         {
           "if": {
             "flags": {
-              "posted_photo": true
+              "oneshot.posted_photo": true
             }
           },
           "text": "你今晚发了帖子。\n\n清洁工出现在你**手机屏幕里**——\n\n他没有脸,但他**就在你刚发的帖子背景里**。\n\n你刚才没看见他。\n\n他的雪花声,通过手机扬声器,直接播进你耳朵:\n\n「兄弟,你发的每张照片背景里,**都有我**。\n  你以前没注意。\n  我一直**在**。\n  你想让我**消失**吗?」"
@@ -6087,10 +5977,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 5,
-            "GR": -2,
-            "flags": {
-              "banished_cleaner": true
-            }
+            "GR": -2
           }
         },
         {
@@ -6098,10 +5985,7 @@
           "next": "n_npc_ghost_guard",
           "effects": {
             "PR": 10,
-            "GR": 8,
-            "flags": {
-              "followed_cleaner": true
-            }
+            "GR": 8
           }
         },
         {
@@ -6111,10 +5995,7 @@
             "GR": 5,
             "inv_remove": [
               "前任电话号码"
-            ],
-            "flags": {
-              "sacrificed_to_cleaner": true
-            }
+            ]
           }
         }
       ]
@@ -6131,8 +6012,8 @@
         {
           "if": {
             "flags": {
-              "contacted_predecessor": true,
-              "asked_predecessor_name": true
+              "asked_predecessor_name": true,
+              "oneshot.contacted_predecessor": true
             }
           },
           "text": "你早就给前任发过照片。\n\n你早就问过他名字——他没回。\n\n现在他在 27 楼电梯口,**摘下了电视雪花脸**。\n\n他的脸,是**你 5 年前的脸**。\n\n你 5 年前,**面试过这个夜班保安岗位**。\n\n你那次没录取。\n\n你被 HR 婉拒,理由是『性格不适合夜班』。\n\n但 5 年前那个版本的你,**录取了**。\n\n他在 27 楼,记了 11 年——\n\n不,记了 5 年。\n\n外加他**自己折叠成 11 年**的孤独。"
@@ -6148,7 +6029,7 @@
         {
           "if": {
             "flags": {
-              "took_g272_id": true
+              "oneshot.took_g272_id": true
             }
           },
           "text": "你已经摘走了第 11 任工牌(G-272)。\n\n你来到 27 楼电梯口——\n\n那里**已经没有上一任了**。\n\n他被你『提前下班』了。\n\n但你看到电梯按钮上,**慢慢浮现一行字**:\n\n「赵某,你接班了。\n  你是新的 G-272。\n  你的下一任,会在 11 年后,某个夜班来摘你的工牌。\n\n  在那之前,**你住 27 楼**。」"
@@ -6170,10 +6051,7 @@
           "text": "不接。让他自己解决。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -8,
-            "flags": {
-              "refused_predecessor": true
-            }
+            "PR": -8
           }
         },
         {
@@ -6184,7 +6062,7 @@
               "工牌 G-273"
             ],
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           }
         }
@@ -6227,7 +6105,7 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "saw_underwater_coat": true
+              "know.saw_underwater_coat": true
             }
           }
         },
@@ -6235,10 +6113,7 @@
           "text": "把头探出水面,呼吸一下。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "surfaced": true
-            }
+            "PR": -3
           }
         }
       ]
@@ -6249,7 +6124,7 @@
         {
           "if": {
             "flags": {
-              "led_red_girl": true
+              "oneshot.led_red_girl": true
             }
           },
           "text": "你带着红衣电视女孩来到 27 楼。\n\n走廊和你一个人来时**完全不同**——\n\n墙上的工牌**全部背面朝外**。\n\n她举起 14 寸电视,屏幕里出现 11 张脸——\n\n她说:「叔叔,他们都问我『27 楼怎么走』。\n  我也问你。\n  你**真的知道吗**?」"
@@ -6260,7 +6135,7 @@
               "27 楼通道钥匙"
             ],
             "flags": {
-              "took_g272_id": true
+              "oneshot.took_g272_id": true
             }
           },
           "text": "你拿着两件事——\n\n红衣女孩给的『27 楼通道钥匙』,\n你刚摘下的『G-272 工牌』。\n\n走廊尽头那扇黑门——\n\n**钥匙孔变了形状**——\n\n变成 G-272 工牌的形状。\n\n你把工牌塞进锁孔。\n\n锁,**咔哒**。\n\n门开了一条缝。\n\n缝里是**1987 年那场踩踏的现场**——慢镜头。"
@@ -6268,7 +6143,7 @@
         {
           "if": {
             "flags": {
-              "hung_id_27f": true
+              "oneshot.hung_id_27f": true
             }
           },
           "text": "你已经把工牌挂在第 12 任的位置上。\n\n你回到 27 楼走廊——\n\n你**不能动**。\n\n你成了墙上的工牌之一。\n\n你能看见走廊里的一切——\n\n下一任 G-274 在 04:00 走进这条走廊。\n\n他对着你**鞠躬**,然后伸手——\n\n他要摘走你的工牌。\n\n他的指尖,离你 1 厘米。"
@@ -6276,8 +6151,8 @@
         {
           "if": {
             "flags": {
-              "saw_27th_floor": true,
-              "shifts_completed_min": 4
+              "shifts_completed_min": 4,
+              "know.saw_27th_floor": true
             }
           },
           "text": "你又来到 27 楼。\n\n你已经走过 4 个地标。\n\n墙上 11 张工牌,**多了一张**——\n\n第 12 张,**贴着你的工号**。\n\n但工牌**没有照片**。\n\n照片位置是**雪花屏**。\n\n你伸手摸——\n\n雪花屏**渗出一点湿气**。\n\n是西湖的潮味。"
@@ -6293,7 +6168,7 @@
               "工牌 G-273"
             ],
             "flags": {
-              "hung_id_27f": true
+              "oneshot.hung_id_27f": true
             }
           }
         },
@@ -6306,7 +6181,7 @@
             ],
             "PR": 10,
             "flags": {
-              "took_g272_id": true
+              "oneshot.took_g272_id": true
             }
           }
         },
@@ -6318,10 +6193,7 @@
               "G-272 工牌"
             ],
             "PR": 25,
-            "puzzle_add": "piece_freed_g272",
-            "flags": {
-              "freed_g272": true
-            }
+            "puzzle_add": "piece_freed_g272"
           },
           "require": {
             "inv_has": [
@@ -6346,10 +6218,7 @@
             ],
             "PR": 25,
             "GR": 10,
-            "puzzle_add": "piece_linmou_returned",
-            "flags": {
-              "linmou_via_coat": true
-            }
+            "puzzle_add": "piece_linmou_returned"
           },
           "require": {
             "inv_has": [
@@ -6362,7 +6231,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "flags": {
-              "saw_27th_floor": true
+              "know.saw_27th_floor": true
             }
           }
         }
@@ -6374,7 +6243,7 @@
         {
           "if": {
             "flags": {
-              "b3_unlocked": true
+              "oneshot.b3_unlocked": true
             }
           },
           "text": "你 7 人归航完成,B3 钢门**为你开了**。\n\n你走进 B3 走廊——\n\n27 台电视**没有雪花**。\n\n每台电视屏幕,**都是日出**。\n\n是 6 点的湖滨日出。\n\n但每台电视的湖滨,**视角不一样**——\n\n第 1 台是 1980 年的湖滨。\n第 2 台是 1985 年。\n......\n第 27 台是 2024 年——**今天的湖滨**。\n\n你走进去,每一台电视屏幕,你都能闻到**湖水的味道**。"
@@ -6382,7 +6251,7 @@
         {
           "if": {
             "flags": {
-              "got_judge_seal": true
+              "arc.got_judge_seal": true
             }
           },
           "text": "你身上揣着候补判官章。\n\n你走进 B3——\n\n27 台电视**齐齐切到 1 号台**——\n\n屏幕上,**11 张前任 G-273 的脸**叠在一起,慢慢转动。\n\n他们一起看着你。\n\n他们一起鞠躬。\n\n他们说:「判官大人,**审判我们**。」\n\n你的胸袋里,候补判官章**发烫**。"
@@ -6396,7 +6265,7 @@
         {
           "if": {
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           },
           "text": "你已经把工牌交出去了。\n\n你走进 B3——\n\n27 台电视屏幕,**集体闪烁**。\n\n它们在**辨认你**。\n\n它们认不出。\n\n它们不再播你的名字。\n\n它们播:\n\n「未识别访客。\n  未识别访客。\n  未识别访客。」\n\n你的脚下,**走廊地面消失**。\n\n你飘起来。"
@@ -6406,21 +6275,13 @@
       "choices": [
         {
           "text": "走到走廊尽头,推开钢门。",
-          "next": "n_s7_arrive",
-          "effects": {
-            "flags": {
-              "entered_b3": true
-            }
-          }
+          "next": "n_s7_arrive"
         },
         {
           "text": "敲第 14 台电视的屏幕。",
           "next": "n_npc_red_dress_girl",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "knocked_tv_14": true
-            }
+            "PR": 5
           }
         },
         {
@@ -6431,7 +6292,7 @@
               "工牌 G-273"
             ],
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           }
         }
@@ -6449,10 +6310,10 @@
         {
           "if": {
             "flags": {
-              "got_judge_seal": true,
-              "completed_yang": true,
-              "seven_returned": true,
-              "piano_appeased": true
+              "arc.got_judge_seal": true,
+              "arc.completed_yang": true,
+              "arc.seven_returned": true,
+              "arc.piano_appeased": true
             }
           },
           "text": "你集齐了 4 件套——\n\n候补判官章、⺶ 符文、7 人归航印记、安抚叶某。\n\n你走进档案室——\n\n那把空椅子**自己升高 5 厘米**。\n\n这是『正章』级别的椅子。\n\n11 任前任 G-273,**齐齐站起身**——\n\n他们站在 11 根蜡烛后面,鞠躬。\n\n你坐下。\n\n你拿起『正章』。\n\n章在你手里**自己变烫**——\n\n烫到能在金属上烫出字。\n\n你不需要盖。\n\n你只需要**写**。"
@@ -6460,7 +6321,7 @@
         {
           "if": {
             "flags": {
-              "defied_token": true
+              "oneshot.defied_token": true
             }
           },
           "text": "你刚入职那天撕了 1984 小票。\n\n这个标记,11 任前任 G-273 都没有。\n\n你走进档案室——\n\n11 本记录表**齐齐翻到第一页**。\n\n第一页是 G-001 的入职记录。\n\nG-001 在 1959 年的入职那天,**也撕了一张小票**。\n\nG-001 的章不是『候补判官』,是『**革命党人 第 1 号**』。\n\n你和 G-001 隔了 65 年。\n\n但你们,**做过同一个动作**。\n\nG-001 的椅子,**为你保留**。"
@@ -6473,14 +6334,14 @@
           "next": "n_end_hidden",
           "effects": {
             "flags": {
-              "became_judge": true
+              "arc.became_judge": true
             }
           },
           "require": {
             "all_of": [
               {
                 "flags": {
-                  "got_judge_seal": true
+                  "arc.got_judge_seal": true
                 }
               },
               {
@@ -6492,11 +6353,6 @@
         {
           "text": "把第 12 本空白记录表写完,放上去。",
           "next": "n_end_truth",
-          "effects": {
-            "flags": {
-              "completed_archive": true
-            }
-          },
           "require": {
             "puzzle_pieces_min": 5
           }
@@ -6511,12 +6367,7 @@
         },
         {
           "text": "退出。",
-          "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "saw_evaluator_room": true
-            }
-          }
+          "next": "n_landmark_picker"
         }
       ]
     },
@@ -6565,7 +6416,7 @@
         {
           "if": {
             "flags": {
-              "archive_visited": true
+              "know.archive_visited": true
             },
             "puzzle_pieces_min": 5
           },
@@ -6574,13 +6425,12 @@
         {
           "if": {
             "flags": {
-              "archive_visited": true
+              "know.archive_visited": true
             }
           },
           "text": "这间档案室你已经来过。\n\n你拉开第三个抽屉,里面的纸又多了几张——\n\n是你今晚之后的事。\n\n时间戳全部还没到。"
         },
         {
-          "if": {},
           "text": "遗失档案室。\n\n这里应该不存在。\n\n但你站在这里。\n\n抽屉用编号顺序排列:\n\n1959 / 1985 / 1986 / 1987 / 1991 / 1996 / 1998 / 2009 / 2024 / ...\n\n你抽出 2024,翻开。\n\n第一页就是你今晚的进度。\n\n精确到分钟。"
         }
       ],
@@ -6590,7 +6440,7 @@
           "text": "再翻几页。",
           "effects": {
             "flags": {
-              "archive_visited": true
+              "know.archive_visited": true
             },
             "PR": 2,
             "stay": true
@@ -6604,7 +6454,7 @@
             "PR": 15,
             "puzzle_add": "piece_all_archives",
             "flags": {
-              "all_archives_photoed": true
+              "arc.all_archives_photoed": true
             }
           }
         },
@@ -6612,10 +6462,7 @@
           "text": "撕掉自己那份『未结』档案。",
           "next": "n_end_neutral",
           "effects": {
-            "PR": -10,
-            "flags": {
-              "erased_self": true
-            }
+            "PR": -10
           }
         },
         {
@@ -6631,10 +6478,7 @@
           "next": "n_npc_drowned_official",
           "effects": {
             "PR": 20,
-            "puzzle_add": "piece_linmou_full",
-            "flags": {
-              "linmou_real_culprit_marked": true
-            }
+            "puzzle_add": "piece_linmou_full"
           },
           "require": {
             "inv_has": [
@@ -6648,10 +6492,7 @@
           "effects": {
             "PR": 15,
             "GR": -3,
-            "puzzle_add": "piece_grandma_link",
-            "flags": {
-              "played_grandma_tape": true
-            }
+            "puzzle_add": "piece_grandma_link"
           },
           "require": {
             "inv_has": [
@@ -6664,10 +6505,7 @@
           "next": "n_npc_helmet_workers",
           "effects": {
             "PR": 18,
-            "puzzle_add": "piece_seven_named",
-            "flags": {
-              "named_seven": true
-            }
+            "puzzle_add": "piece_seven_named"
           },
           "require": {
             "inv_has": [
@@ -6677,12 +6515,7 @@
         },
         {
           "text": "退出档案室。",
-          "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "saw_lost_archive": true
-            }
-          }
+          "next": "n_landmark_picker"
         },
         {
           "text": "合上档案,离开。",
@@ -6696,7 +6529,7 @@
         {
           "if": {
             "flags": {
-              "phone_called_1987": true
+              "know.phone_called_1987": true
             },
             "shifts_completed_min": 4
           },
@@ -6705,13 +6538,12 @@
         {
           "if": {
             "flags": {
-              "phone_called_1987": true
+              "know.phone_called_1987": true
             }
           },
           "text": "电话亭还在。\n\n你刚才拨过 1987,听筒里那个男人没说话,只是呼吸。\n\n现在他还在那头。\n\n等你再拨。"
         },
         {
-          "if": {},
           "text": "湖滨某条小巷里,有一个红色公用电话亭。\n\n1989 年款式。\n\n应该早就拆了。\n\n但今晚它在。\n\n投币口贴着一张泛黄的纸:\n「拨 1987,听一段录音。」\n\n你身上有 1 元硬币。"
         }
       ],
@@ -6721,10 +6553,7 @@
           "text": "拨 1987。",
           "next": "n_npc_predecessor_voice",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "called_1987": true
-            }
+            "PR": 5
           }
         },
         {
@@ -6732,17 +6561,14 @@
           "next": "n_npc_eight_self",
           "effects": {
             "PR": 10,
-            "GR": 5,
-            "flags": {
-              "called_self": true
-            }
+            "GR": 5
           }
         },
         {
           "text": "等电话亭自己响。",
           "effects": {
             "flags": {
-              "phone_called_1987": true
+              "know.phone_called_1987": true
             },
             "PR": 1,
             "stay": true
@@ -6751,12 +6577,7 @@
         },
         {
           "text": "挂掉,离开电话亭。",
-          "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "saw_red_phone": true
-            }
-          }
+          "next": "n_landmark_picker"
         }
       ],
       "_is_tool": true,
@@ -6771,9 +6592,9 @@
         {
           "if": {
             "flags": {
-              "completed_yang": true,
-              "seven_returned": true,
-              "claimed_linmou": true
+              "arc.completed_yang": true,
+              "arc.seven_returned": true,
+              "know.claimed_linmou": true
             }
           },
           "text": "06:03,湖滨。\n\n东方的天,变成**纯橙色**——\n\n这是杭州常数被关闭后的颜色。\n\n第三把长椅上,有**一只麻雀**——\n\n但麻雀**抬头看你**。\n\n它认得你。\n\n它叽叽喳喳叫了一声,飞起来——\n\n它飞过西湖,**翅膀划过湖面**。\n\n湖面没有涟漪。\n\n因为今天的湖,**没有 1985 年的湖水**了。"
@@ -6787,8 +6608,8 @@
         {
           "if": {
             "flags": {
-              "got_judge_seal": true,
-              "puzzle_pieces_min": 3
+              "puzzle_pieces_min": 3,
+              "arc.got_judge_seal": true
             }
           },
           "text": "06:03,湖滨。\n\n你揣着候补判官章,有 3+ 张拼图碎片。\n\n东方的天,**慢慢亮**——\n\n不是普通的日出。\n\n天空像**有人在拉幕布**——\n\n幕布拉开,你看见**11 个前任 G-273**站成一排,在湖面上方。\n\n他们一起对你**鞠躬**。\n\n他们一起说:「判官大人,**审判我们**。」\n\n你的胸袋里候补判官章,**烫成纯红色**。"
@@ -6796,8 +6617,8 @@
         {
           "if": {
             "flags": {
-              "posted_photo": true,
-              "all_archives_photoed": true
+              "oneshot.posted_photo": true,
+              "arc.all_archives_photoed": true
             }
           },
           "text": "06:03,湖滨。\n\n你今晚拍了无数照片。\n\n东方的天,变成**手机屏幕的颜色**——\n\n蓝白色的扫光。\n\n第三把长椅上,**没人**。\n\n但长椅上空,飘着 27 万条弹幕。\n\n弹幕里有人喊:「兄弟,你**红了**!」\n\n弹幕里有人喊:「兄弟,你**死了**?」\n\n弹幕里有人喊:「兄弟,**继续直播**!」"
@@ -6817,7 +6638,7 @@
               },
               {
                 "flags": {
-                  "seven_returned": true
+                  "arc.seven_returned": true
                 }
               },
               {
@@ -6840,7 +6661,7 @@
             "all_of": [
               {
                 "flags": {
-                  "posted_photo": true
+                  "oneshot.posted_photo": true
                 }
               },
               {
@@ -6861,7 +6682,7 @@
           "next": "n_end_bad_drown",
           "require": {
             "flags": {
-              "drown_marked": true
+              "oneshot.drown_marked": true
             }
           }
         },
@@ -6870,7 +6691,7 @@
           "next": "n_end_hidden",
           "require": {
             "flags": {
-              "became_judge": true
+              "arc.became_judge": true
             }
           }
         },
@@ -6879,7 +6700,7 @@
           "next": "n_end_data",
           "require": {
             "flags": {
-              "chose_data": true
+              "oneshot.chose_data": true
             }
           }
         },
@@ -6937,7 +6758,7 @@
               "工牌 G-273"
             ],
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           }
         },
@@ -6951,12 +6772,7 @@
         },
         {
           "text": "退回电梯,先回去再说。",
-          "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "saw_b3_door": true
-            }
-          }
+          "next": "n_landmark_picker"
         }
       ]
     },
@@ -6970,17 +6786,17 @@
             "all_of": [
               {
                 "flags": {
-                  "completed_yang": true
+                  "arc.completed_yang": true
                 }
               },
               {
                 "flags": {
-                  "seven_returned": true
+                  "arc.seven_returned": true
                 }
               },
               {
                 "flags": {
-                  "claimed_linmou": true
+                  "know.claimed_linmou": true
                 }
               }
             ]
@@ -7007,7 +6823,7 @@
         {
           "if": {
             "flags": {
-              "locked_eight_coffins": true
+              "oneshot.locked_eight_coffins": true
             }
           },
           "text": "8 棺,你**亲手锁死**。\n\n你拿着 ⺶ 符文,贴在第一棺盖。\n你戴着 7 顶柳条帽内化的『归航印记』,贴在第二棺盖。\n你拿着林副科长账本完整版,贴在第三棺盖。\n你把 27F 铜钥匙塞进第四棺缝。\n你把 1991 红头绳系在第五棺把手。\n你把铜锈护符焊在第六棺铆钉。\n你把候补判官章按在第七棺。\n第八棺——是你**自己原本应该躺进去**的位置。\n\n你不躺。\n\n你在第八棺盖上,签下你**真正的名字**——不是赵某,不是 G-273。\n\n是你父母给你起的那个名字。\n\n8 棺一起合拢,锁死。\n\n杭州常数,从此失去『候补』。\n\n6:03 湖滨。你听见东方第一声鸟叫,声音清脆得像玻璃没碎之前的音色。"
@@ -7040,7 +6856,7 @@
         {
           "if": {
             "flags": {
-              "all_archives_photoed": true
+              "arc.all_archives_photoed": true
             }
           },
           "text": "你按下了『公开所有档案』。\n\n夜班论坛的服务器,2024-XX-XX 凌晨 5:47 突然崩溃。\n\n但崩溃前,27 篇匿名帖已经被自动同步到 1.7 万个海外服务器。\n\n包括:\n- 林某 1985 年 27 笔贪污明细。\n- 1987 年百货大楼 13 死真名。\n- 1991 年叶某请假条。\n- 1996 年红衣女孩本名:**何小燕,1996-08-23 货梯事故**。\n- 1986 钱塘江沉船 7 工人工号。\n\n你没有改变历史。\n\n但你让这 5 个『被档案室角落丢弃』的事件,重新出现在 2024 年的搜索结果里。\n\nHUD:「玩家 Guard_Zhao 触发『公共记忆复活』。」\n\n你回到更衣室。胸袋里 5 张拼图碎片,**消失了**——它们已经不需要你保管。"
@@ -7057,7 +6873,7 @@
         {
           "if": {
             "flags": {
-              "hung_id_27f": true
+              "oneshot.hung_id_27f": true
             }
           },
           "text": "你把工牌挂在 27 楼走廊那面墙上。\n\n第 12 任的位置——本来是空白的——现在是你。\n\n墙上 12 张工牌,从第 1 任到第 12 任,**都在静静观察你**。\n\n你想退后一步。\n\n你的脚不动。\n\n你已经『进墙』了。\n\n你成了一张 14 寸黑白电视——挂在 27 楼走廊,等下一任 G-273。\n\n你的雪花屏会播出每一个进入这条走廊的『下一任』。\n\n他们会在第 13 张工牌前面停下,问:『叔叔,你是谁?』\n\n你会回答——但你的回答只是雪花。\n\n他们会以为你**没有回答**。"
@@ -7081,7 +6897,7 @@
         {
           "if": {
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           },
           "text": "你交出了工牌。\n\n你以为你只是丢了一张塑料卡片。\n\n你不知道,工牌承载的是**你 27 年的存在**——你的指纹、你的脸、你的名字、你的母亲怀你 9 个月在医院产床的那 7 个小时。\n\n工牌进入清洁工的口袋——\n\n清洁工没有脸,但你能感觉到他**笑了**。\n\n你成了一团雪花。\n\n你飘在 B3 天花板。\n\n你能看见每一个『曾经被工牌承载的瞬间』被一帧一帧抽走——\n\n你 5 岁第一次骑自行车摔倒。\n你 17 岁高三模拟考。\n你 23 岁面试夜班保安那天。\n你 27 岁今晚 20:27 站在第三把长椅前。\n\n它们都被抽走了。\n\n你只剩下『嘀。嘀。嘀。』"
@@ -7098,7 +6914,7 @@
         {
           "if": {
             "flags": {
-              "live_streaming": true
+              "oneshot.live_streaming": true
             }
           },
           "text": "你直播了今晚每一个地标。\n\n你直播了 S1 风衣领口里的那张「自己的脸」。\n你直播了 S2 第 308 阶的红木门。\n你直播了 S3 钟里铜锈侧脸的眨眼。\n你直播了 S4 弄堂尽头黑山羊胸腔里的婴儿啼哭。\n你直播了 S5 琴房里 1991 年的钢丝绳。\n你直播了 S6 井底 7 个工人爬上井壁的画面。\n\n6 段直播的总点赞:\n\n**+1987 万。**\n\n夜班论坛把你置顶。\n\n你的人体融化成 6 段视频。\n\n6 段视频在论坛永久播放。\n\n屏幕前的任何观众,在凌晨打开论坛,都能选择一个时间点进入——\n\n他们可以选『S1 长椅』,可以选『S4 黑山羊』,可以选『S6 井底』。\n\n你成了 6 个**永远 21:47 - 02:30** 的循环视频。\n\n你的灵魂被切成 6 块,每一块,都在等下一个观众的点击。"
@@ -7179,8 +6995,8 @@
         {
           "if": {
             "flags": {
-              "helmet_stuck": true,
-              "marked_lamb": true
+              "oneshot.helmet_stuck": true,
+              "arc.marked_lamb": true
             }
           },
           "text": "你戴的那顶柳条帽,粘在你头上。\n\n你的额头被『⺶』字烫了一下——\n\n这是 S4 弄堂里黑山羊倒吊时,胸腔里那个婴儿的标记。\n\n你成了一个『**带帽子的羊**』。\n\n你既属于 S6 的 7 个工人,又属于 S4 的羊公会。\n\n两边都要你。\n\n你被**撕成两半**——\n\n上半身,沉进井底,成了第 8 个工人。\n\n下半身,挂在弄堂铁钩,成了第 18 号羊。\n\n你的灵魂，分两个**永远**。\n\n下一任 G-273 在 S4 看见的羊腿,会**蹬出 G-273 的工牌纹理**。\n\n下一任 G-273 在 S6 看见的工人,会**戴着粘羊血的柳条帽**。\n\n你成了**两个传说**,在两个地标里同时存在。"
@@ -7230,22 +7046,22 @@
             "all_of": [
               {
                 "flags": {
-                  "got_judge_seal": true
+                  "arc.got_judge_seal": true
                 }
               },
               {
                 "flags": {
-                  "completed_yang": true
+                  "arc.completed_yang": true
                 }
               },
               {
                 "flags": {
-                  "piano_appeased": true
+                  "arc.piano_appeased": true
                 }
               },
               {
                 "flags": {
-                  "seven_returned": true
+                  "arc.seven_returned": true
                 }
               }
             ]
@@ -7255,7 +7071,7 @@
         {
           "if": {
             "flags": {
-              "defied_token": true
+              "oneshot.defied_token": true
             }
           },
           "text": "你刚入职那天,撕了那张 1984 年的小票。\n\n你以为那只是一张废纸。\n\n但 HR 看到你撕——\n\n她的笑容**僵了 0.3 秒**。\n\n0.3 秒,在『候补判官』评议系统里,是一个**永久标记**。\n\n你今晚拿到候补判官章。\n\n你坐进档案室空椅子。\n\n你把『候补判官』章盖在自己工牌上。\n\n章渗进金属——\n\n但盖出来的字,**不是『正章』**。\n\n是『**革命党人 第 1 号**』。\n\n11 个前任 G-273 都没看过这个章。\n\n你也没看过。\n\n你不知道这个章意味着什么。\n\n你只知道,你掏出 1984 年的那张被撕成两半的小票残片——\n\n两半粘在一起,变成一张完整的小票。\n\n背面,你**自己**用铅笔写着:\n\n「夜班可以有尽头。从你这一班开始。」"

@@ -33,7 +33,6 @@
           "text": "拍照存证。把白虫记进《异常事件记录表》。",
           "effects": {
             "PR": 2,
-            "flags": {"recorded_white_worm": true},
             "stay": true
           },
           "next": "n_lore_leifeng_worm"
@@ -42,8 +41,7 @@
           "text": "用打火机烧一只虫看看。",
           "effects": {
             "PR": 5,
-            "GR": 3,
-            "flags": {"burned_white_worm": true}
+            "GR": 3
           },
           "next": "n_npc_corrosion_face"
         },
@@ -83,8 +81,7 @@
           "text": "进酒店,问 217 房。",
           "effects": {
             "PR": 8,
-            "GR": 5,
-            "flags": {"asked_room_217": true}
+            "GR": 5
           },
           "next": "n_npc_red_dress_girl"
         },
@@ -92,7 +89,6 @@
           "text": "拍下 3 楼的窗。发夜班论坛。",
           "effects": {
             "PR": 3,
-            "flags": {"posted_song_inn": true},
             "stay": true
           },
           "next": "n_lore_songmuchang_inn"
@@ -134,7 +130,6 @@
           "effects": {
             "PR": 12,
             "GR": 10,
-            "flags": {"counted_99": true},
             "puzzle_add": "piece_99_count"
           },
           "next": "n_npc_eight_self"
@@ -143,7 +138,6 @@
           "text": "不数。摀住耳朵走开。",
           "effects": {
             "PR": 3,
-            "flags": {"refused_99": true},
             "stay": true
           },
           "next": "n_lore_zheda_clock_girl"
@@ -197,7 +191,6 @@
           "text": "走快点,出通道。",
           "effects": {
             "PR": 2,
-            "flags": {"avoided_wulinmen": true},
             "stay": true
           },
           "next": "n_lore_wulinmen_execution"
@@ -243,7 +236,6 @@
           "effects": {
             "PR": 10,
             "GR": 8,
-            "flags": {"climbed_kongque_fence": true},
             "puzzle_add": "piece_kongque_stone"
           },
           "next": "n_scene_lake_underwater"
@@ -254,7 +246,6 @@
             "PR": 5,
             "GR": -3,
             "inv_remove": ["三柱香"],
-            "flags": {"burned_incense_kongque": true},
             "stay": true
           },
           "next": "n_lore_kongque_collapse"
@@ -262,8 +253,7 @@
         {
           "text": "拍照,发夜班论坛。继续巡逻。",
           "effects": {
-            "PR": 2,
-            "flags": {"posted_kongque": true}
+            "PR": 2
           },
           "next": "n_landmark_picker"
         }

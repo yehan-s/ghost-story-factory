@@ -52,7 +52,7 @@
         {
           "if": {
             "flags": {
-              "seven_returned": true
+              "arc.seven_returned": true
             }
           },
           "text": "你已经把帽子还给了 7 个工人。\n\n但你回来时——\n\n7 顶帽子**全部漂在井口水面**。\n\n7 个工人**一个都不在**。\n\n7 顶帽子在水面拼出一个字:\n\n「**等**」"
@@ -118,7 +118,7 @@
               },
               {
                 "flags": {
-                  "seven_returned": true
+                  "arc.seven_returned": true
                 }
               }
             ]
@@ -147,7 +147,7 @@
           "effects": {
             "GR": 22,
             "flags": {
-              "drown_marked": true
+              "oneshot.drown_marked": true
             }
           }
         },
@@ -192,8 +192,8 @@
           "effects": {
             "GR": 18,
             "flags": {
-              "helmet_stuck": true,
-              "marked_lamb": true
+              "oneshot.helmet_stuck": true,
+              "arc.marked_lamb": true
             }
           }
         },
@@ -214,8 +214,8 @@
             "PR": 18,
             "puzzle_add": "piece_judge_seal",
             "flags": {
-              "got_judge_seal": true,
-              "oneshot.s6_wrote_never": true
+              "oneshot.s6_wrote_never": true,
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -249,14 +249,13 @@
           "effects": {
             "PR": 12,
             "flags": {
-              "saw_27th_floor": true
+              "know.saw_27th_floor": true
             }
           }
         },
         {
           "text": "不去。退回井边。",
-          "next": "n_s6_arrive",
-          "effects": {}
+          "next": "n_s6_arrive"
         },
         {
           "text": "把工牌塞进电梯按钮里。",
@@ -281,7 +280,7 @@
             "PR": 15,
             "flags": {
               "oneshot.s6_volunteered": true,
-              "seven_returned": true
+              "arc.seven_returned": true
             }
           }
         },
@@ -292,9 +291,9 @@
             "PR": 25,
             "puzzle_add": "piece_seven_returned",
             "flags": {
-              "seven_returned": true,
               "arc.s6_replaced_seven": true,
-              "b3_unlocked": true
+              "arc.seven_returned": true,
+              "oneshot.b3_unlocked": true
             }
           }
         },
@@ -302,10 +301,7 @@
           "text": "挂掉对讲机。",
           "next": "n_s6_arrive",
           "effects": {
-            "GR": 5,
-            "flags": {
-              "hung_up_predecessor": true
-            }
+            "GR": 5
           }
         },
         {
@@ -347,8 +343,8 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "got_judge_seal": true,
-              "oneshot.s6_owes_27": true
+              "oneshot.s6_owes_27": true,
+              "arc.got_judge_seal": true
             }
           }
         },
@@ -364,8 +360,7 @@
         },
         {
           "text": "回到井边,继续巡逻。",
-          "next": "n_s6_look_down",
-          "effects": {}
+          "next": "n_s6_look_down"
         }
       ]
     },
@@ -426,14 +421,13 @@
             "GR": 25,
             "flags": {
               "oneshot.s6_stood_blade": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },
         {
           "text": "退回井边,不进操作间。",
-          "next": "n_s6_arrive",
-          "effects": {}
+          "next": "n_s6_arrive"
         }
       ]
     },
@@ -449,7 +443,7 @@
             "puzzle_add": "piece_linmou_full",
             "flags": {
               "oneshot.s6_corrected_linmou": true,
-              "claimed_linmou": true
+              "know.claimed_linmou": true
             }
           }
         },
@@ -470,7 +464,7 @@
             "PR": 20,
             "flags": {
               "oneshot.s6_offered_self": true,
-              "linked_to_eight_self": true
+              "know.linked_to_eight_self": true
             }
           }
         }
@@ -517,8 +511,7 @@
             "puzzle_add": "piece_predecessor_log",
             "flags": {
               "arc.s6_inherited_scar": true,
-              "promised_relieve_predecessor": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         },

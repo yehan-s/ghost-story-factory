@@ -33,7 +33,7 @@
         {
           "if": {
             "flags": {
-              "rang_seven": true
+              "oneshot.rang_seven": true
             }
           },
           "text": "你已经敲过七下钟。\n\n寺院应该归位。\n\n但你回来时——\n\n**钟没了**。\n\n钟架上空空的,只挂着一行字:\n\n「H = 你」"
@@ -99,7 +99,7 @@
               },
               {
                 "flags": {
-                  "rang_seven": true
+                  "oneshot.rang_seven": true
                 }
               }
             ]
@@ -152,8 +152,7 @@
         },
         {
           "text": "退后,绕到钟另一面。",
-          "next": "n_s3_other_side",
-          "effects": {}
+          "next": "n_s3_other_side"
         }
       ]
     },
@@ -213,7 +212,7 @@
             "GR": 12,
             "flags": {
               "oneshot.s3_accepted_h1987": true,
-              "marked_lamb": true
+              "arc.marked_lamb": true
             }
           }
         }
@@ -229,7 +228,7 @@
           "effects": {
             "PR": 15,
             "flags": {
-              "linked_to_eight_self": true
+              "know.linked_to_eight_self": true
             }
           }
         },
@@ -267,7 +266,7 @@
               "铜锈护符"
             ],
             "flags": {
-              "rang_seven": true
+              "oneshot.rang_seven": true
             }
           }
         },
@@ -313,7 +312,7 @@
               "工牌 G-273"
             ],
             "flags": {
-              "sacrificed_id": true
+              "oneshot.sacrificed_id": true
             }
           }
         },
@@ -363,8 +362,7 @@
         },
         {
           "text": "退回正面,继续看男人侧脸。",
-          "next": "n_s3_examine_face",
-          "effects": {}
+          "next": "n_s3_examine_face"
         }
       ]
     },
@@ -427,7 +425,7 @@
             "PR": 10,
             "flags": {
               "oneshot.s3_promised_seven": true,
-              "contacted_predecessor": true
+              "oneshot.contacted_predecessor": true
             }
           }
         },
@@ -437,7 +435,7 @@
           "effects": {
             "PR": 5,
             "flags": {
-              "contacted_predecessor": true
+              "oneshot.contacted_predecessor": true
             }
           }
         },
@@ -445,10 +443,7 @@
           "text": "挂掉对讲机。",
           "next": "n_s3_arrive",
           "effects": {
-            "GR": 5,
-            "flags": {
-              "hung_up_predecessor": true
-            }
+            "GR": 5
           }
         }
       ]

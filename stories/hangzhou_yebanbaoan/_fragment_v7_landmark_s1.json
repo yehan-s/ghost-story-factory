@@ -140,23 +140,19 @@
       "choices": [
         {
           "text": "伸手摸一下风衣。",
-          "next": "n_s1_close_touch",
-          "effects": {}
+          "next": "n_s1_close_touch"
         },
         {
           "text": "翻一翻风衣口袋。",
-          "next": "n_s1_pocket_book",
-          "effects": {}
+          "next": "n_s1_pocket_book"
         },
         {
           "text": "把手电对准领口照进去。",
-          "next": "n_s1_close_flashlight",
-          "effects": {}
+          "next": "n_s1_close_flashlight"
         },
         {
           "text": "站起来,退回打卡机前再想。",
-          "next": "n_s1_arrive",
-          "effects": {}
+          "next": "n_s1_arrive"
         }
       ]
     },
@@ -266,8 +262,7 @@
       "choices": [
         {
           "text": "退到长椅旁,继续观察。",
-          "next": "n_s1_close",
-          "effects": {}
+          "next": "n_s1_close"
         }
       ]
     },
@@ -339,8 +334,7 @@
         },
         {
           "text": "退回打卡机前。",
-          "next": "n_s1_arrive",
-          "effects": {}
+          "next": "n_s1_arrive"
         }
       ]
     },
@@ -379,8 +373,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "oneshot.s1_wore_shoes": true,
-              "linmou_marked": true
+              "oneshot.s1_wore_shoes": true
             }
           }
         },
@@ -396,8 +389,7 @@
         },
         {
           "text": "什么都不做,退回打卡机。",
-          "next": "n_s1_arrive",
-          "effects": {}
+          "next": "n_s1_arrive"
         },
         {
           "text": "蹲下,把鞋翻过来看鞋底。",
