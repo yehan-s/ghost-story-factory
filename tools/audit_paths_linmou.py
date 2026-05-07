@@ -1,4 +1,4 @@
-"""tools/audit_paths_linmou.py — linmou_1985 周目必死不变量(INV-1~4)。
+"""tools/audit_paths_linmou.py — linmou_1985 周目必死不变量(INV-1~5)。
 
 ADR-009 守门工具。Linmou Act 1 是悲剧 lore canon 红线,任何路径都必须收束到
 4 个执念 ending(冤/悔/释/曝光),不允许"逃出生天"。
@@ -7,6 +7,8 @@ INV-1: 所有 linmou 周目终态(choices=[])∈ 4 ending 白名单
 INV-2: 无边从 linmou 子图通向 Act 2/3 节点(本期 Act 2/3 不存在,trivial)
 INV-3: 投湖节点 n_l1985_lake_jump 后置必为 ending,无中间 narrative
 INV-4: 4 ending 节点必须有 _lore_canon.must_die: true(canon 标记)
+INV-5(Pass 2): reachable 范围内 must_die 节点的 intent 必须 ⊆ {释/悔/冤/曝光},
+        且 4 个 intent 必须全部由 reachable ending 承载(防止某 intent 路径塌陷)
 
 用法:
     python tools/audit_paths_linmou.py path/to/tree.json
@@ -30,6 +32,11 @@ LINMOU_ENDINGS: Set[str] = {
 }
 
 LAKE_JUMP_NODE = "n_l1985_lake_jump"
+
+# INV-5 (Pass 2 评审 R-Q1):林必死的 4 canon intent。
+# 任何 must_die 节点的 _lore_canon.intent 必须 ⊆ 此集合;
+# reachable 范围内 4 个 intent 必须各自至少有一个 ending 承载。
+CANON_INTENTS: Set[str] = {"释", "悔", "冤", "曝光"}
 
 
 def _bfs_reachable(nodes: Dict[str, Any], start: str) -> Set[str]:
@@ -109,6 +116,51 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                     "node": eid,
                     "msg": f"{eid} 缺 _lore_canon.must_die: true(ADR-009 必填)",
                 })
+
+    # INV-5 (Pass 2 评审 R-Q1): 林必死零退让 — 4 canon intent 必须全部覆盖。
+    # 语义: reachable 范围内,所有 must_die 节点的 intent 必须 ⊆ 4 canon 集合;
+    # 且这 4 个 intent 必须各自至少有一个 reachable ending 承载
+    # (防止某 intent 路径塌陷,导致 林必死 弱化为 "只有 3 种死法")。
+    covered_intents: Set[str] = set()
+    for nid in reachable:
+        node = nodes[nid] or {}
+        canon = node.get("_lore_canon") or {}
+        if not canon.get("must_die"):
+            continue
+        intent = canon.get("intent")
+        if not intent:
+            problems.append({
+                "code": "INV5_MISSING_INTENT",
+                "node": nid,
+                "msg": (
+                    f"{nid} must_die=True 但缺 _lore_canon.intent "
+                    f"(必须 ∈ {sorted(CANON_INTENTS)})"
+                ),
+            })
+            continue
+        if intent not in CANON_INTENTS:
+            problems.append({
+                "code": "INV5_INTENT_NOT_IN_CANON",
+                "node": nid,
+                "msg": (
+                    f"{nid} intent={intent!r} 不在 canon 集 "
+                    f"{sorted(CANON_INTENTS)}"
+                ),
+            })
+            continue
+        covered_intents.add(intent)
+
+    missing_intents = CANON_INTENTS - covered_intents
+    if missing_intents:
+        problems.append({
+            "code": "INV5_INTENT_NOT_REACHABLE",
+            "node": "<global>",
+            "msg": (
+                f"以下 canon intent 无 reachable ending 承载: "
+                f"{sorted(missing_intents)}"
+                f"(林必死零退让,4 intent 必须全部覆盖)"
+            ),
+        })
 
     return {
         "tree": str(tree_path),

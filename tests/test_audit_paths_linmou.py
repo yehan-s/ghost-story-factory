@@ -81,12 +81,25 @@ def test_inv4_ending_missing_must_die_canon():
 
 
 def test_clean_act1_passes():
-    """正常 Act 1:entry → ending,must_die 标记齐全 → 0 INV 问题。"""
+    """正常 Act 1:entry → 4 ending,must_die + 4 canon intent 齐全 → 0 INV 问题。
+
+    Pass 2 INV-5 后 minimal tree 必须含 4 intent 全集。
+    """
     tree = {
         "start_node": "n_intro",
         "nodes": {
-            "n_l1985_entry": {"choices": [{"text": "x", "next": "E_LINMOU_RELEASE"}]},
-            "E_LINMOU_RELEASE": {"choices": [], "_lore_canon": {"must_die": True}},
+            "n_l1985_entry": {
+                "choices": [
+                    {"text": "A", "next": "E_LINMOU_GRIEVANCE"},
+                    {"text": "B", "next": "E_LINMOU_REGRET"},
+                    {"text": "C", "next": "E_LINMOU_RELEASE"},
+                    {"text": "D", "next": "E_LINMOU_EXPOSED"},
+                ],
+            },
+            "E_LINMOU_GRIEVANCE": {"choices": [], "_lore_canon": {"must_die": True, "intent": "冤"}},
+            "E_LINMOU_REGRET": {"choices": [], "_lore_canon": {"must_die": True, "intent": "悔"}},
+            "E_LINMOU_RELEASE": {"choices": [], "_lore_canon": {"must_die": True, "intent": "释"}},
+            "E_LINMOU_EXPOSED": {"choices": [], "_lore_canon": {"must_die": True, "intent": "曝光"}},
         },
         "characters": {"linmou_1985": {"start_node": "n_l1985_entry"}},
     }
@@ -107,3 +120,104 @@ def test_main_tree_currently_clean():
     """主 tree.json:linmou_1985 character 还没注册 → trivial pass。"""
     report = audit(Path("stories/hangzhou_yebanbaoan/tree.json"))
     assert report["problems"] == []
+
+
+# ---------- Pass 2 Task 4.1: INV-5 (4 canon intent 全覆盖) ----------
+
+def _minimal_linmou_tree(intents):
+    """构造最小 linmou 树,4 ending 各带 must_die + 指定 intent。
+
+    intents: dict[ending_id, intent_or_None]
+    """
+    return {
+        "characters": {"linmou_1985": {"start_node": "n_l1985_entry"}},
+        "nodes": {
+            "n_l1985_entry": {
+                "scene": "SCENE",
+                "narrative": "...",
+                "choices": [
+                    {"text": "A", "next": "E_LINMOU_GRIEVANCE"},
+                    {"text": "B", "next": "E_LINMOU_REGRET"},
+                    {"text": "C", "next": "E_LINMOU_RELEASE"},
+                    {"text": "D", "next": "E_LINMOU_EXPOSED"},
+                ],
+            },
+            "E_LINMOU_GRIEVANCE": {
+                "scene": "ENDING", "narrative": "...", "choices": [],
+                "_lore_canon": {"must_die": True, "intent": intents.get("E_LINMOU_GRIEVANCE")},
+            },
+            "E_LINMOU_REGRET": {
+                "scene": "ENDING", "narrative": "...", "choices": [],
+                "_lore_canon": {"must_die": True, "intent": intents.get("E_LINMOU_REGRET")},
+            },
+            "E_LINMOU_RELEASE": {
+                "scene": "ENDING", "narrative": "...", "choices": [],
+                "_lore_canon": {"must_die": True, "intent": intents.get("E_LINMOU_RELEASE")},
+            },
+            "E_LINMOU_EXPOSED": {
+                "scene": "ENDING", "narrative": "...", "choices": [],
+                "_lore_canon": {"must_die": True, "intent": intents.get("E_LINMOU_EXPOSED")},
+            },
+        },
+    }
+
+
+def test_inv5_green_when_all_4_intents_covered():
+    """INV-5 绿: 4 ending 各带 4 个不同 intent。"""
+    tree = _minimal_linmou_tree({
+        "E_LINMOU_GRIEVANCE": "冤",
+        "E_LINMOU_REGRET": "悔",
+        "E_LINMOU_RELEASE": "释",
+        "E_LINMOU_EXPOSED": "曝光",
+    })
+    report = audit(_write(tree))
+    inv5 = [p for p in report["problems"] if p["code"].startswith("INV5")]
+    assert inv5 == []
+
+
+def test_inv5_red_when_intent_missing():
+    """INV-5 红: 1 ending 缺 intent。"""
+    tree = _minimal_linmou_tree({
+        "E_LINMOU_GRIEVANCE": "冤",
+        "E_LINMOU_REGRET": "悔",
+        "E_LINMOU_RELEASE": "释",
+        "E_LINMOU_EXPOSED": None,  # 缺 intent
+    })
+    report = audit(_write(tree))
+    inv5 = [p for p in report["problems"] if p["code"].startswith("INV5")]
+    assert len(inv5) >= 1
+    # 至少有一个 problem 提到 EXPOSED
+    assert any("E_LINMOU_EXPOSED" in p.get("msg", "") for p in inv5)
+
+
+def test_inv5_red_when_intent_not_in_canon_set():
+    """INV-5 红: intent 不在 4 canon 集合内(野字段)。"""
+    tree = _minimal_linmou_tree({
+        "E_LINMOU_GRIEVANCE": "冤",
+        "E_LINMOU_REGRET": "悔",
+        "E_LINMOU_RELEASE": "释",
+        "E_LINMOU_EXPOSED": "逃出生天",  # 野 intent
+    })
+    report = audit(_write(tree))
+    inv5 = [p for p in report["problems"] if p["code"].startswith("INV5")]
+    assert len(inv5) >= 1
+
+
+def test_inv5_red_when_one_intent_unreachable():
+    """INV-5 红: 4 intent 必须全部覆盖,某 intent 路径不可达 = FAIL。"""
+    tree = _minimal_linmou_tree({
+        "E_LINMOU_GRIEVANCE": "冤",
+        "E_LINMOU_REGRET": "悔",
+        "E_LINMOU_RELEASE": "释",
+        "E_LINMOU_EXPOSED": "曝光",
+    })
+    # 移除 RELEASE 的可达边
+    tree["nodes"]["n_l1985_entry"]["choices"] = [
+        c for c in tree["nodes"]["n_l1985_entry"]["choices"]
+        if c["next"] != "E_LINMOU_RELEASE"
+    ]
+    report = audit(_write(tree))
+    inv5 = [p for p in report["problems"] if p["code"].startswith("INV5")]
+    # RELEASE 不可达 = "释" intent 缺失
+    assert len(inv5) >= 1
+    assert any("释" in p.get("msg", "") for p in inv5)
