@@ -28,9 +28,27 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+
+def _highlight_narrative_rich(line: str) -> str:
+    """给一行 narrative 加 Rich markup 标记。规则同 CLI 版,但用 Rich 语法。
+      - **xxx**          → [bold yellow]xxx[/]
+      - 「xxx」/『xxx』  → [cyan]...[/]
+      - SID(S1-S7)      → [bold magenta]...[/]
+      - HH:MM            → [yellow]...[/]
+      - 19xx/20xx        → [dim red]...[/]
+    """
+    out = re.sub(r"\*\*([^*]+?)\*\*", r"[bold yellow]\1[/]", line)
+    out = re.sub(r"(「[^」]+」|『[^』]+』)", r"[cyan]\1[/]", out)
+    out = re.sub(r"(?<![A-Za-z0-9])(S[1-7])(?![A-Za-z0-9])",
+                 r"[bold magenta]\1[/]", out)
+    out = re.sub(r"\b(\d{1,2}:\d{2})\b", r"[yellow]\1[/]", out)
+    out = re.sub(r"(?<!\d)((?:19|20)\d{2})(?!\d)", r"[dim red]\1[/]", out)
+    return out
 
 from textual import on
 from textual.app import App, ComposeResult
@@ -357,10 +375,10 @@ class GhostStoryApp(App):
             if narrative:
                 # 分隔线
                 log.write(f"\n[dim]{'─' * 60}[/]")
-                # 写 narrative
+                # 写 narrative(加色彩层次:**bold** /「对话」/ SID / 时间 / 年份)
                 for line in narrative.strip().split("\n"):
                     if line.strip():
-                        log.write(line)
+                        log.write(_highlight_narrative_rich(line))
                     else:
                         log.write("")
                 log.write("")
@@ -464,6 +482,17 @@ class GhostStoryApp(App):
                 elif status == "locked":
                     locked.append((c, hint))
                 # hidden 跳过
+            # _scene_details:场景细节"看一眼"选项(stay-effect)
+            for det in (node.get("_scene_details") or []):
+                require = det.get("require")
+                if require and not self.state.meets(require):
+                    continue
+                self.visible_choices.append({
+                    "text": f"  · 看一眼 {det.get('label', '场景细节')}",
+                    "effects": {"stay": True, **(det.get("effects") or {})},
+                    "_detail_text": det.get("text", ""),
+                    "_picker_kind": "detail",
+                })
 
         opts = self.query_one("#choices", OptionList)
         opts.clear_options()
@@ -524,6 +553,22 @@ class GhostStoryApp(App):
                 log.write(f"  [bold yellow]▌ 地图 +1  ·  {sid} {short} {place} ▐[/]")
         # 卡片化渲染状态变化
         self._render_apply_events_tui(self.state._last_events, log)
+        # stay-effect:不跳 next,留在当前节点;场景细节渲染 _detail_text
+        if effects.get("stay"):
+            detail_text = chosen.get("_detail_text")
+            if detail_text:
+                log.write(f"\n[dim]  ─── 看了一眼 ───[/]")
+                for ln in detail_text.strip().split("\n"):
+                    if ln.strip():
+                        log.write(_highlight_narrative_rich(ln))
+                    else:
+                        log.write("")
+                log.write(f"[dim]  ─── 你收回视线 ───[/]\n")
+            else:
+                log.write(f"\n[dim]  · 你停留片刻,然后回头。[/]\n")
+            # 重渲染当前节点的选项(让玩家继续选)
+            self._render_node()
+            return
         nxt = resolve_next(chosen, self.state)
         if not nxt:
             log.write("[red][错误] 选项缺少 next/next_variants 字段。[/]")
@@ -575,6 +620,17 @@ class GhostStoryApp(App):
 
     def action_show_map(self) -> None:
         """m 键 — 弹出夜班路线图(只读)。_one_way 节点照样允许查看。"""
+        # 首次打开:在 narrative 区追加一段"掏出手机"叙事过门
+        if not self.state.flags.get("phone_map_first_opened"):
+            self.state.flags["phone_map_first_opened"] = True
+            log = self.query_one("#narrative", RichLog)
+            log.write("")
+            log.write("[dim]  你停下来,从胸袋里摸出手机。[/]")
+            log.write("[dim]  屏幕亮了 — 屏保是你和你媳妇 2023 年的合照。[/]")
+            log.write("[dim]  你点开『杭州地铁夜班巡逻图』 — 队长发的内部 app。[/]")
+            log.write("[dim]  地图加载,信号是『 4G · 弱』。[/]")
+            log.write("[dim]  地图只画了你[bold]已经知道[/dim] [dim]的几个点。其他位置,只有问号。[/]")
+            log.write("")
         story_id = str(self._tree.get("story_id") or self._tree_path.stem)
         self.push_screen(MapScreen(
             self._tree, self.state, self.save_manager,

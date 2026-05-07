@@ -426,26 +426,65 @@ class State:
 # --- 渲染 ---
 
 def slow_print(text: str, delay: float = 0.012) -> None:
-    """逐字打印,营造紧张感。环境变量 GHOST_FAST=1 关闭。"""
+    """逐字打印,营造紧张感。环境变量 GHOST_FAST=1 关闭。
+
+    ANSI 转义序列整段一次输出,不计时,避免色彩切换打断节奏。
+    """
     if os.environ.get("GHOST_FAST"):
         print(text)
         return
-    for ch in text:
-        sys.stdout.write(ch)
-        sys.stdout.flush()
-        if ch in "。！？\n":
-            time.sleep(delay * 8)
-        elif ch in ",，、；:：":
-            time.sleep(delay * 3)
-        else:
-            time.sleep(delay)
+    parts = re.split(r"(\x1b\[[0-9;]*m)", text)
+    for part in parts:
+        if not part:
+            continue
+        if part.startswith("\x1b["):
+            sys.stdout.write(part)
+            sys.stdout.flush()
+            continue
+        for ch in part:
+            sys.stdout.write(ch)
+            sys.stdout.flush()
+            if ch in "。！？\n":
+                time.sleep(delay * 8)
+            elif ch in ",，、；:：":
+                time.sleep(delay * 3)
+            else:
+                time.sleep(delay)
     sys.stdout.write("\n")
+
+
+def _highlight_narrative(line: str) -> str:
+    """给一行 narrative 加色彩层次。规则:
+      - **xxx**           → 醒目黄(原文 markdown bold)
+      - 「xxx」/『xxx』   → NPC 对话/物件名,cyan
+      - 4 位数年份(1985)→ 暗红
+      - 时间(20:27)     → 黄
+      - SID(S1-S7)       → magenta
+    """
+    import re
+
+    def _yellow_bold(m): return bold(yellow(m.group(1)))
+    def _cyan(m): return cyan(m.group(0))
+    def _dim_red(m): return dim(red(m.group(0)))
+    def _yellow(m): return yellow(m.group(0))
+    def _magenta(m): return bold(magenta(m.group(0)))
+
+    # 顺序:先做 **bold**(避免和 「」 冲突),再做 「」,再 SID,再时间/年份
+    out = re.sub(r"\*\*([^*]+?)\*\*", _yellow_bold, line)
+    out = re.sub(r"「[^」]+」|『[^』]+』", _cyan, out)
+    # SID:S 后接单数字,前后是非字母数字
+    out = re.sub(r"(?<![A-Za-z0-9])S[1-7](?![A-Za-z0-9])", _magenta, out)
+    # 时间 HH:MM
+    out = re.sub(r"\b\d{1,2}:\d{2}\b", _yellow, out)
+    # 年份 4 位 19xx/20xx(不在更长数字里)
+    out = re.sub(r"(?<!\d)(?:19|20)\d{2}(?!\d)", _dim_red, out)
+    return out
 
 
 def render_narrative(text: str) -> None:
     print()
     for line in text.strip().split("\n"):
-        slow_print(line)
+        slow_print(_highlight_narrative(line))
     print()
 
 
@@ -862,6 +901,17 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                 elif status == "locked":
                     locked.append((c, hint))
                 # hidden: 完全跳过
+            # _scene_details: 场景细节"看一眼"选项 — stay-effect,不消耗回合
+            for det in (node.get("_scene_details") or []):
+                require = det.get("require")
+                if require and not state.meets(require):
+                    continue
+                visible.append({
+                    "text": f"  · 看一眼 {det.get('label', '场景细节')}",
+                    "effects": {"stay": True, **(det.get("effects") or {})},
+                    "_detail_text": det.get("text", ""),
+                    "_picker_kind": "detail",
+                })
 
         if not visible:
             print(red("[警告] 此节点没有可点击选项,故事中断。检查 tree.json。"))
@@ -883,6 +933,21 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         if idx == ACTION_MAP:
             # m 键 → 显示手机地图(phone 模式 — 只看路 + 地名,不剧透 NPC)
             from ghost_story_factory.v7.map_view import render_map_cli
+            from ghost_story_factory.v7.animate import (
+                fade_lines as _fade_lines, pause as _pause2,
+            )
+            # 首次开:加一段"掏出手机/打开 XX 地图"的叙事过门
+            if not state.flags.get("phone_map_first_opened"):
+                state.flags["phone_map_first_opened"] = True
+                print()
+                _fade_lines([
+                    dim("  你停下来,从胸袋里摸出手机。"),
+                    dim("  屏幕亮了 — 屏保是你和你媳妇 2023 年的合照。"),
+                    dim("  你点开『杭州地铁夜班巡逻图』 — 队长发的内部 app。"),
+                    dim("  地图加载,信号是『 4G · 弱』。"),
+                    dim("  地图只画了你**已经知道**的几个点。其他位置,只有问号。"),
+                ], line_delay=0.18)
+                _pause2(0.3)
             if node.get("_one_way"):
                 hint = node.get("_one_way_hint",
                                 "你已经走进来了 — 这里没有回头路,只是看一眼地图。")
@@ -943,7 +1008,17 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         _render_apply_events(state._last_events, important_items)
         # 工具节点 stay:不跳 next,留在当前节点(由"返回"选项触发)
         if effects.get("stay"):
-            print(dim("\n  · 你停留片刻,然后回头。\n"))
+            # 场景细节:渲染 _detail_text(用色彩层次)
+            detail_text = chosen.get("_detail_text")
+            if detail_text:
+                print()
+                print(dim("  ─── 看了一眼 ───"))
+                for ln in detail_text.strip().split("\n"):
+                    print(_highlight_narrative(ln) if ln.strip() else "")
+                print(dim("  ─── 你收回视线 ───"))
+                print()
+            else:
+                print(dim("\n  · 你停留片刻,然后回头。\n"))
             try:
                 input(dim("  按 Enter 返回..."))
             except (EOFError, KeyboardInterrupt):

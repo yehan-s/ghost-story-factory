@@ -70,50 +70,18 @@ def _fog_line(width: int = 60) -> str:
 
 
 def screen_intro(sm: SaveManager) -> bool:
-    """屏 0:启动屏(像素字标题 + 渐进入场)。返回 True 进入,False 退出。
-
-    入场序列(GHOST_FAST=1 跳过 sleep):
-      T=0.0s    清屏 + 黑屏 0.3s
-      T=0.3s    顶部一行雾纹 0.4s 后被换行盖掉
-      T=0.7s    像素字 GHOST 6 行渐进出现(每行 0.10s)
-      T=1.5s    副标题 "G H O S T   S T O R I E S" 打字机
-      T=2.5s    "按 Enter 开始" 呼吸闪烁 2 次后定亮
-    """
+    """屏 0:启动屏 — 直接静态显示标题,不做入场动画(避免开屏墨迹)。"""
     pieces = banner_pieces(60)
-
-    # T=0:清屏 + 黑场
     clear_screen()
-    pause(0.3)
-
-    # T=0.3:雾纹一闪
-    print(dim(_fog_line(60)))
-    pause(0.4)
-
-    # T=0.7:像素字渐进
-    print()  # 上空行
-    fade_lines(pieces["ascii_lines"], line_delay=0.10,
-               color_fn=lambda l: bold(red(l)))
     print()
-    pause(0.25)
-
-    # T=1.5:副标题打字机
-    type_text(pieces["subtitle"], delay=0.05,
-              color_fn=lambda c: bold(yellow(c)))
-    pause(0.4)
+    for line in pieces["ascii_lines"]:
+        print(bold(red(line)))
+    print()
+    print(bold(yellow(pieces["subtitle"])))
+    print()
+    print(green("  按 Enter 开始    q 退出"))
     print()
 
-    # T=2.5:呼吸闪烁按钮
-    prompt = "  按 Enter 开始    q 退出  "
-    pulse_text(
-        prompt,
-        cycles=2,
-        period=0.9,
-        bright_fn=lambda t: bold(green(t)),
-        dim_fn=lambda t: dim(t),
-    )
-    print()
-
-    # 阻塞等待
     while True:
         try:
             raw = input(bold("  > ")).strip()
