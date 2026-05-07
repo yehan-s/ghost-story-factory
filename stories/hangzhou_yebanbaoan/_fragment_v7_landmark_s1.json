@@ -107,10 +107,7 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S1",
-            "flags": {
-              "oneshot.s1_aborted": true
-            }
+            "landmark_skipped": "S1"
           },
           "require": {
             "visit_count_min": {
@@ -166,7 +163,6 @@
           "effects": {
             "GR": 8,
             "flags": {
-              "oneshot.s1_threw_coat": true,
               "oneshot.s1_touched_coat": true
             }
           }
@@ -186,8 +182,7 @@
           "effects": {
             "PR": 3,
             "flags": {
-              "oneshot.s1_touched_coat": true,
-              "oneshot.s1_hand_shaking": true
+              "oneshot.s1_touched_coat": true
             }
           }
         }
@@ -249,8 +244,7 @@
           "next": "n_s1_close",
           "effects": {
             "flags": {
-              "oneshot.s1_book_seen": true,
-              "oneshot.s1_book_returned": true
+              "oneshot.s1_book_seen": true
             }
           }
         }
@@ -276,8 +270,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "arc.s1_post_forum": true,
-              "oneshot.s1_auto_posted": true
+              "arc.s1_post_forum": true
             }
           }
         },
@@ -285,10 +278,7 @@
           "text": "关手电,转身就跑。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "oneshot.s1_panic": true
-            }
+            "PR": -3
           }
         },
         {
@@ -296,10 +286,7 @@
           "next": "n_npc_predecessor_voice",
           "effects": {
             "PR": 5,
-            "GR": 3,
-            "flags": {
-              "oneshot.s1_yelled": true
-            }
+            "GR": 3
           }
         }
       ]
@@ -310,12 +297,7 @@
       "choices": [
         {
           "text": "接对讲机。",
-          "next": "n_npc_predecessor_voice",
-          "effects": {
-            "flags": {
-              "oneshot.s1_radio_answered": true
-            }
-          }
+          "next": "n_npc_predecessor_voice"
         },
         {
           "text": "冲过去,直接摸风衣。",
@@ -354,10 +336,7 @@
           "next": "n_s1_eyes_attack",
           "effects": {
             "PR": -5,
-            "GR": 8,
-            "flags": {
-              "oneshot.s1_eyes_attacked": true
-            }
+            "GR": 8
           }
         }
       ]
@@ -381,10 +360,7 @@
           "text": "把湿鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 10,
-            "flags": {
-              "oneshot.s1_threw_shoes": true
-            }
+            "GR": 10
           }
         },
         {
@@ -408,10 +384,7 @@
           "text": "捡起工牌,退回打卡机。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "oneshot.s1_marked_wait": true
-            }
+            "PR": -3
           }
         }
       ]
@@ -432,12 +405,7 @@
         },
         {
           "text": "把硬币扔回湿鞋,退回打卡机。",
-          "next": "n_s1_arrive",
-          "effects": {
-            "flags": {
-              "oneshot.s1_saw_coin": true
-            }
-          }
+          "next": "n_s1_arrive"
         }
       ]
     },
@@ -459,20 +427,14 @@
           "text": "立刻删帖。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "oneshot.s1_post_deleted": true
-            }
+            "PR": 3
           }
         },
         {
           "text": "把照片单独发到一个加密的小群。",
           "next": "n_npc_evaluator_chair",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s1_sent_private": true
-            }
+            "PR": 5
           }
         },
         {
@@ -482,10 +444,7 @@
             "GR": 12,
             "inv_remove": [
               "前任电话号码"
-            ],
-            "flags": {
-              "oneshot.s1_phone_lost": true
-            }
+            ]
           }
         }
       ]
@@ -498,20 +457,14 @@
           "text": "回头,看长椅。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "oneshot.s1_observed_back": true
-            }
+            "PR": -3
           }
         },
         {
           "text": "加快脚步,跑出湖滨。",
           "next": "n_s1_lake_chase",
           "effects": {
-            "PR": -5,
-            "flags": {
-              "oneshot.s1_running": true
-            }
+            "PR": -5
           }
         },
         {
@@ -525,10 +478,7 @@
           "text": "直接跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S1",
-            "flags": {
-              "oneshot.s1_aborted": true
-            }
+            "landmark_skipped": "S1"
           }
         }
       ]
@@ -553,20 +503,14 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": -8,
-            "landmark_skipped": "S1",
-            "flags": {
-              "oneshot.s1_fled": true
-            }
+            "landmark_skipped": "S1"
           }
         },
         {
           "text": "回头,面对它。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s1_faced_it": true
-            }
+            "PR": 5
           }
         }
       ]

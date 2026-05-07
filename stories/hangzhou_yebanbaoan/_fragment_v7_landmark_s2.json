@@ -95,10 +95,7 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S2",
-            "flags": {
-              "oneshot.s2_aborted": true
-            }
+            "landmark_skipped": "S2"
           },
           "require": {
             "not": {
@@ -111,11 +108,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s2_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -172,10 +164,7 @@
           "text": "踏上第 308 阶。",
           "next": "n_s2_step_308",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s2_stepped_308": true
-            }
+            "PR": 5
           }
         },
         {
@@ -189,10 +178,7 @@
           "text": "倒着下山,数着倒数。",
           "next": "n_s2_descend_count",
           "effects": {
-            "GR": 3,
-            "flags": {
-              "oneshot.s2_descending": true
-            }
+            "GR": 3
           }
         },
         {
@@ -299,10 +285,7 @@
           "next": "n_npc_predecessor_voice",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_27th_clue",
-            "flags": {
-              "oneshot.s2_answered_riddle": true
-            }
+            "puzzle_add": "piece_27th_clue"
           }
         },
         {
@@ -310,10 +293,7 @@
           "next": "n_s2_descend_count",
           "effects": {
             "PR": -3,
-            "GR": 5,
-            "flags": {
-              "oneshot.s2_fled_door": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -327,10 +307,7 @@
           "next": "n_s2_turn_back",
           "effects": {
             "PR": 8,
-            "GR": 5,
-            "flags": {
-              "oneshot.s2_saw_double_shadow": true
-            }
+            "GR": 5
           }
         },
         {
@@ -355,11 +332,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "landmark_skipped": "S2",
-            "PR": -8,
-            "flags": {
-              "oneshot.s2_dropped_record": true,
-              "oneshot.s2_aborted": true
-            }
+            "PR": -8
           }
         }
       ]
@@ -373,30 +346,21 @@
           "next": "n_s2_step_308",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_red_girl_truth",
-            "flags": {
-              "oneshot.s2_redirected_shoe": true
-            }
+            "puzzle_add": "piece_red_girl_truth"
           }
         },
         {
           "text": "踩烂布鞋。",
           "next": "n_s2_endless_loop",
           "effects": {
-            "GR": 12,
-            "flags": {
-              "oneshot.s2_crushed_shoe": true
-            }
+            "GR": 12
           }
         },
         {
           "text": "把布鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 10,
-            "flags": {
-              "oneshot.s2_threw_shoe_lake": true
-            }
+            "GR": 10
           }
         }
       ]
@@ -422,7 +386,6 @@
             "PR": 12,
             "GR": 8,
             "flags": {
-              "oneshot.s2_barefoot_match": true,
               "arc.s2_heard_tv": true
             }
           }
@@ -433,7 +396,6 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "oneshot.s2_posted_shadow": true,
               "oneshot.posted_photo": true
             }
           }
@@ -459,10 +421,7 @@
           "text": "把湿巾扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 8,
-            "flags": {
-              "oneshot.s2_dumped_wipe": true
-            }
+            "GR": 8
           }
         },
         {
@@ -472,7 +431,6 @@
             "PR": 10,
             "GR": 12,
             "flags": {
-              "oneshot.s2_smeared_face": true,
               "arc.marked_lamb": true
             }
           }
@@ -490,8 +448,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "arc.s2_heard_tv": true,
-              "oneshot.s2_faced_her": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -500,10 +457,7 @@
           "next": "n_s2_endless_loop",
           "effects": {
             "PR": -5,
-            "GR": 15,
-            "flags": {
-              "oneshot.s2_avoided_her": true
-            }
+            "GR": 15
           }
         },
         {

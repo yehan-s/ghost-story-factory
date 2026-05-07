@@ -88,10 +88,7 @@
           "text": "上去打卡,跳下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S6",
-            "flags": {
-              "oneshot.s6_aborted": true
-            }
+            "landmark_skipped": "S6"
           },
           "require": {
             "not": {
@@ -104,11 +101,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s6_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -162,10 +154,7 @@
           "text": "把 1986 年硬币(如果有)扔进井里。",
           "next": "n_s6_drop_coin",
           "effects": {
-            "PR": 12,
-            "flags": {
-              "oneshot.s6_dropped_coin": true
-            }
+            "PR": 12
           },
           "require": {
             "inv_has": [
@@ -201,10 +190,7 @@
           "text": "把第七顶倒扣在地上。",
           "next": "n_s6_revisit_well_alt",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s6_inverted_seventh": true
-            }
+            "PR": 8
           }
         },
         {
@@ -214,7 +200,6 @@
             "PR": 18,
             "puzzle_add": "piece_judge_seal",
             "flags": {
-              "oneshot.s6_wrote_never": true,
               "arc.got_judge_seal": true
             }
           }
@@ -224,10 +209,7 @@
           "next": "n_npc_helmet_workers",
           "effects": {
             "PR": 12,
-            "GR": 5,
-            "flags": {
-              "oneshot.s6_returned_helmets": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -324,10 +306,7 @@
           "effects": {
             "PR": 30,
             "GR": -10,
-            "puzzle_add": "piece_seven_freed",
-            "flags": {
-              "oneshot.s6_seven_freed": true
-            }
+            "puzzle_add": "piece_seven_freed"
           }
         }
       ]
@@ -343,7 +322,6 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "oneshot.s6_owes_27": true,
               "arc.got_judge_seal": true
             }
           }
@@ -352,10 +330,7 @@
           "text": "把工牌烧了。",
           "next": "n_s6_burn_id",
           "effects": {
-            "GR": 25,
-            "flags": {
-              "oneshot.s6_burned_id": true
-            }
+            "GR": 25
           }
         },
         {
@@ -398,20 +373,14 @@
           "text": "走进操作间,看那个人。",
           "next": "n_s6_operator_room",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s6_into_operator": true
-            }
+            "PR": 8
           }
         },
         {
           "text": "用扳手卡住刀盘。",
           "next": "n_s6_jam_blade",
           "effects": {
-            "GR": 15,
-            "flags": {
-              "oneshot.s6_jammed_blade": true
-            }
+            "GR": 15
           }
         },
         {
@@ -420,7 +389,6 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "oneshot.s6_stood_blade": true,
               "arc.marked_lamb": true
             }
           }
@@ -451,10 +419,7 @@
           "text": "拒绝。这不是我能改的。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -8,
-            "flags": {
-              "oneshot.s6_refused_correction": true
-            }
+            "PR": -8
           }
         },
         {
@@ -463,7 +428,6 @@
           "effects": {
             "PR": 20,
             "flags": {
-              "oneshot.s6_offered_self": true,
               "know.linked_to_eight_self": true
             }
           }
@@ -490,10 +454,7 @@
           "next": "n_s6_arrive",
           "effects": {
             "PR": -10,
-            "GR": 8,
-            "flags": {
-              "oneshot.s6_unjammed": true
-            }
+            "GR": 8
           }
         }
       ]
@@ -520,10 +481,7 @@
           "next": "n_s6_arrive",
           "effects": {
             "PR": -15,
-            "GR": 5,
-            "flags": {
-              "oneshot.s6_chickened": true
-            }
+            "GR": 5
           }
         }
       ]

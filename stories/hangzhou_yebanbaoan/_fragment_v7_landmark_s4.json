@@ -69,10 +69,7 @@
           "text": "不进去,绕路走。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S4",
-            "flags": {
-              "oneshot.s4_aborted": true
-            }
+            "landmark_skipped": "S4"
           },
           "require": {
             "not": {
@@ -85,11 +82,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s4_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -164,10 +156,7 @@
           "next": "n_npc_drowned_official",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_linmou_full",
-            "flags": {
-              "oneshot.s4_heard_warning": true
-            }
+            "puzzle_add": "piece_linmou_full"
           }
         },
         {
@@ -209,10 +198,7 @@
           "text": "拿起毛笔,补「⺶」字最下面那一笔。",
           "next": "n_s4_paint_stroke",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s4_lifted_brush": true
-            }
+            "PR": 5
           }
         },
         {
@@ -220,10 +206,7 @@
           "next": "n_s4_break_brush",
           "effects": {
             "PR": 8,
-            "GR": 10,
-            "flags": {
-              "oneshot.s4_broke_brush": true
-            }
+            "GR": 10
           }
         },
         {
@@ -292,10 +275,7 @@
           "text": "走过去,跟老婆婆说话。",
           "next": "n_s4_old_woman",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s4_broke_yang_curse": true
-            }
+            "PR": 8
           }
         },
         {
@@ -303,10 +283,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_yang_freed",
-            "flags": {
-              "oneshot.s4_clean_exit": true
-            }
+            "puzzle_add": "piece_yang_freed"
           }
         }
       ]
@@ -331,10 +308,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_grandma_blessing",
-            "flags": {
-              "oneshot.s4_drank_tofu": true
-            }
+            "puzzle_add": "piece_grandma_blessing"
           }
         }
       ]
@@ -347,10 +321,7 @@
           "text": "对着监视器挥手。",
           "next": "n_npc_cleaner_null",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s4_waved_camera": true
-            }
+            "PR": 8
           }
         },
         {
@@ -367,10 +338,7 @@
           "text": "退出房间,转身就跑。",
           "next": "n_s4_arrive",
           "effects": {
-            "PR": -5,
-            "flags": {
-              "oneshot.s4_fled_room": true
-            }
+            "PR": -5
           }
         },
         {
@@ -378,10 +346,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_camera_self",
-            "flags": {
-              "oneshot.s4_self_archived": true
-            }
+            "puzzle_add": "piece_camera_self"
           }
         }
       ]
@@ -395,10 +360,7 @@
           "next": "n_npc_cleaner_null",
           "effects": {
             "PR": 8,
-            "GR": 10,
-            "flags": {
-              "oneshot.s4_static_in_skin": true
-            }
+            "GR": 10
           }
         }
       ]
@@ -412,20 +374,14 @@
           "next": "n_npc_evaluator_chair",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_yang_debt",
-            "flags": {
-              "oneshot.s4_debt_to_evaluator": true
-            }
+            "puzzle_add": "piece_yang_debt"
           }
         },
         {
           "text": "还给上一任 G-273。",
           "next": "n_npc_predecessor_voice",
           "effects": {
-            "PR": 10,
-            "flags": {
-              "oneshot.s4_debt_to_predecessor": true
-            }
+            "PR": 10
           }
         },
         {

@@ -92,10 +92,7 @@
           "text": "退出旧楼,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S5",
-            "flags": {
-              "oneshot.s5_aborted": true
-            }
+            "landmark_skipped": "S5"
           },
           "require": {
             "not": {
@@ -108,11 +105,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s5_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -159,7 +151,6 @@
             "PR": 12,
             "GR": 5,
             "flags": {
-              "oneshot.s5_offered_newspaper": true,
               "arc.piano_appeased": true
             }
           },
@@ -171,12 +162,7 @@
         },
         {
           "text": "退出琴房,关门。",
-          "next": "n_s5_arrive",
-          "effects": {
-            "flags": {
-              "oneshot.s5_left_room": true
-            }
-          }
+          "next": "n_s5_arrive"
         }
       ]
     },
@@ -217,10 +203,7 @@
           "next": "n_s5_grant_leave",
           "effects": {
             "PR": 18,
-            "GR": 5,
-            "flags": {
-              "oneshot.s5_granted_leave": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -302,10 +285,7 @@
           "next": "n_npc_piano_ghost",
           "effects": {
             "PR": -10,
-            "GR": 8,
-            "flags": {
-              "oneshot.s5_burned_photo": true
-            }
+            "GR": 8
           }
         }
       ]
@@ -364,10 +344,7 @@
           "effects": {
             "PR": 12,
             "GR": 5,
-            "puzzle_add": "piece_red_girl_truth",
-            "flags": {
-              "oneshot.s5_returned_shoes": true
-            }
+            "puzzle_add": "piece_red_girl_truth"
           }
         },
         {
@@ -376,7 +353,6 @@
           "effects": {
             "GR": 18,
             "flags": {
-              "oneshot.s5_wore_girl_shoes": true,
               "arc.marked_lamb": true
             }
           }
@@ -385,10 +361,7 @@
           "text": "把鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 10,
-            "flags": {
-              "oneshot.s5_threw_shoes_lake": true
-            }
+            "GR": 10
           }
         }
       ]
@@ -451,20 +424,14 @@
           "next": "n_npc_piano_ghost",
           "effects": {
             "PR": 5,
-            "GR": 5,
-            "flags": {
-              "oneshot.s5_broke_chalk": true
-            }
+            "GR": 5
           }
         },
         {
           "text": "用黑板擦,擦掉所有「叶某」。",
           "next": "n_s5_grant_leave",
           "effects": {
-            "PR": 15,
-            "flags": {
-              "oneshot.s5_erased_blackboard": true
-            }
+            "PR": 15
           }
         },
         {

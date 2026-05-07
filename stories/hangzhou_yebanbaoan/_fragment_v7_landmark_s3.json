@@ -69,10 +69,7 @@
           "text": "退回门口,打卡走人。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S3",
-            "flags": {
-              "oneshot.s3_aborted": true
-            }
+            "landmark_skipped": "S3"
           },
           "require": {
             "not": {
@@ -85,11 +82,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s3_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -144,10 +136,7 @@
           "text": "把工牌摘下来,挂在钟上。",
           "next": "n_s3_offer_id",
           "effects": {
-            "GR": 12,
-            "flags": {
-              "oneshot.s3_offered_id": true
-            }
+            "GR": 12
           }
         },
         {
@@ -164,10 +153,7 @@
           "text": "把头探进钟内,听水声。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s3_into_bell": true
-            }
+            "PR": 8
           }
         },
         {
@@ -175,10 +161,7 @@
           "next": "n_s3_match_print",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_h1987",
-            "flags": {
-              "oneshot.s3_marked_self": true
-            }
+            "puzzle_add": "piece_h1987"
           }
         },
         {
@@ -211,7 +194,6 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "oneshot.s3_accepted_h1987": true,
               "arc.marked_lamb": true
             }
           }
@@ -237,10 +219,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 8,
-            "puzzle_add": "piece_refused_h",
-            "flags": {
-              "oneshot.s3_clean_exit": true
-            }
+            "puzzle_add": "piece_refused_h"
           }
         }
       ]
@@ -275,20 +254,14 @@
           "next": "n_s3_eighth_strike",
           "effects": {
             "PR": -10,
-            "GR": 20,
-            "flags": {
-              "oneshot.s3_struck_eighth": true
-            }
+            "GR": 20
           }
         },
         {
           "text": "把撞钟木丢进钟里,跑。",
           "next": "n_s3_temple_back",
           "effects": {
-            "GR": 5,
-            "flags": {
-              "oneshot.s3_dumped_mallet": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -320,10 +293,7 @@
           "text": "反悔。把工牌摘回来。",
           "next": "n_s3_arrive",
           "effects": {
-            "PR": -5,
-            "flags": {
-              "oneshot.s3_reclaimed_id": true
-            }
+            "PR": -5
           }
         },
         {
@@ -344,10 +314,7 @@
           "text": "对她说:『27 楼怎么走?』",
           "next": "n_npc_red_dress_girl",
           "effects": {
-            "PR": 10,
-            "flags": {
-              "oneshot.s3_met_red_girl_here": true
-            }
+            "PR": 10
           }
         },
         {
@@ -375,10 +342,7 @@
           "next": "n_scene_lake_underwater",
           "effects": {
             "PR": 10,
-            "GR": 8,
-            "flags": {
-              "oneshot.s3_jumped_well": true
-            }
+            "GR": 8
           }
         },
         {
@@ -386,10 +350,7 @@
           "next": "n_npc_eight_self",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_h1987",
-            "flags": {
-              "oneshot.s3_filled_2024": true
-            }
+            "puzzle_add": "piece_h1987"
           }
         },
         {
@@ -397,20 +358,12 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 8,
-            "GR": -5,
-            "flags": {
-              "oneshot.s3_erased_years": true
-            }
+            "GR": -5
           }
         },
         {
           "text": "退出小院,回大殿。",
-          "next": "n_s3_arrive",
-          "effects": {
-            "flags": {
-              "oneshot.s3_saw_well": true
-            }
-          }
+          "next": "n_s3_arrive"
         }
       ]
     },
@@ -424,7 +377,6 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "oneshot.s3_promised_seven": true,
               "oneshot.contacted_predecessor": true
             }
           }

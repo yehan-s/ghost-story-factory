@@ -1796,10 +1796,7 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S1",
-            "flags": {
-              "oneshot.s1_aborted": true
-            }
+            "landmark_skipped": "S1"
           },
           "require": {
             "visit_count_min": {
@@ -1855,7 +1852,6 @@
           "effects": {
             "GR": 8,
             "flags": {
-              "oneshot.s1_threw_coat": true,
               "oneshot.s1_touched_coat": true
             }
           }
@@ -1875,8 +1871,7 @@
           "effects": {
             "PR": 3,
             "flags": {
-              "oneshot.s1_touched_coat": true,
-              "oneshot.s1_hand_shaking": true
+              "oneshot.s1_touched_coat": true
             }
           }
         }
@@ -1938,8 +1933,7 @@
           "next": "n_s1_close",
           "effects": {
             "flags": {
-              "oneshot.s1_book_seen": true,
-              "oneshot.s1_book_returned": true
+              "oneshot.s1_book_seen": true
             }
           }
         }
@@ -1965,8 +1959,7 @@
           "effects": {
             "PR": 8,
             "flags": {
-              "arc.s1_post_forum": true,
-              "oneshot.s1_auto_posted": true
+              "arc.s1_post_forum": true
             }
           }
         },
@@ -1974,10 +1967,7 @@
           "text": "关手电,转身就跑。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "oneshot.s1_panic": true
-            }
+            "PR": -3
           }
         },
         {
@@ -1985,10 +1975,7 @@
           "next": "n_npc_predecessor_voice",
           "effects": {
             "PR": 5,
-            "GR": 3,
-            "flags": {
-              "oneshot.s1_yelled": true
-            }
+            "GR": 3
           }
         }
       ]
@@ -1999,12 +1986,7 @@
       "choices": [
         {
           "text": "接对讲机。",
-          "next": "n_npc_predecessor_voice",
-          "effects": {
-            "flags": {
-              "oneshot.s1_radio_answered": true
-            }
-          }
+          "next": "n_npc_predecessor_voice"
         },
         {
           "text": "冲过去,直接摸风衣。",
@@ -2043,10 +2025,7 @@
           "next": "n_s1_eyes_attack",
           "effects": {
             "PR": -5,
-            "GR": 8,
-            "flags": {
-              "oneshot.s1_eyes_attacked": true
-            }
+            "GR": 8
           }
         }
       ]
@@ -2070,10 +2049,7 @@
           "text": "把湿鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 10,
-            "flags": {
-              "oneshot.s1_threw_shoes": true
-            }
+            "GR": 10
           }
         },
         {
@@ -2097,10 +2073,7 @@
           "text": "捡起工牌,退回打卡机。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "oneshot.s1_marked_wait": true
-            }
+            "PR": -3
           }
         }
       ]
@@ -2121,12 +2094,7 @@
         },
         {
           "text": "把硬币扔回湿鞋,退回打卡机。",
-          "next": "n_s1_arrive",
-          "effects": {
-            "flags": {
-              "oneshot.s1_saw_coin": true
-            }
-          }
+          "next": "n_s1_arrive"
         }
       ]
     },
@@ -2148,20 +2116,14 @@
           "text": "立刻删帖。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": 3,
-            "flags": {
-              "oneshot.s1_post_deleted": true
-            }
+            "PR": 3
           }
         },
         {
           "text": "把照片单独发到一个加密的小群。",
           "next": "n_npc_evaluator_chair",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s1_sent_private": true
-            }
+            "PR": 5
           }
         },
         {
@@ -2171,10 +2133,7 @@
             "GR": 12,
             "inv_remove": [
               "前任电话号码"
-            ],
-            "flags": {
-              "oneshot.s1_phone_lost": true
-            }
+            ]
           }
         }
       ]
@@ -2187,20 +2146,14 @@
           "text": "回头,看长椅。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": -3,
-            "flags": {
-              "oneshot.s1_observed_back": true
-            }
+            "PR": -3
           }
         },
         {
           "text": "加快脚步,跑出湖滨。",
           "next": "n_s1_lake_chase",
           "effects": {
-            "PR": -5,
-            "flags": {
-              "oneshot.s1_running": true
-            }
+            "PR": -5
           }
         },
         {
@@ -2214,10 +2167,7 @@
           "text": "直接跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S1",
-            "flags": {
-              "oneshot.s1_aborted": true
-            }
+            "landmark_skipped": "S1"
           }
         }
       ]
@@ -2242,20 +2192,14 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": -8,
-            "landmark_skipped": "S1",
-            "flags": {
-              "oneshot.s1_fled": true
-            }
+            "landmark_skipped": "S1"
           }
         },
         {
           "text": "回头,面对它。",
           "next": "n_s1_arrive",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s1_faced_it": true
-            }
+            "PR": 5
           }
         }
       ]
@@ -2364,10 +2308,7 @@
           "text": "退回打卡机,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S2",
-            "flags": {
-              "oneshot.s2_aborted": true
-            }
+            "landmark_skipped": "S2"
           },
           "require": {
             "not": {
@@ -2380,11 +2321,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s2_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -2441,10 +2377,7 @@
           "text": "踏上第 308 阶。",
           "next": "n_s2_step_308",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s2_stepped_308": true
-            }
+            "PR": 5
           }
         },
         {
@@ -2458,10 +2391,7 @@
           "text": "倒着下山,数着倒数。",
           "next": "n_s2_descend_count",
           "effects": {
-            "GR": 3,
-            "flags": {
-              "oneshot.s2_descending": true
-            }
+            "GR": 3
           }
         },
         {
@@ -2568,10 +2498,7 @@
           "next": "n_npc_predecessor_voice",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_27th_clue",
-            "flags": {
-              "oneshot.s2_answered_riddle": true
-            }
+            "puzzle_add": "piece_27th_clue"
           }
         },
         {
@@ -2579,10 +2506,7 @@
           "next": "n_s2_descend_count",
           "effects": {
             "PR": -3,
-            "GR": 5,
-            "flags": {
-              "oneshot.s2_fled_door": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -2596,10 +2520,7 @@
           "next": "n_s2_turn_back",
           "effects": {
             "PR": 8,
-            "GR": 5,
-            "flags": {
-              "oneshot.s2_saw_double_shadow": true
-            }
+            "GR": 5
           }
         },
         {
@@ -2624,11 +2545,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "landmark_skipped": "S2",
-            "PR": -8,
-            "flags": {
-              "oneshot.s2_dropped_record": true,
-              "oneshot.s2_aborted": true
-            }
+            "PR": -8
           }
         }
       ]
@@ -2642,30 +2559,21 @@
           "next": "n_s2_step_308",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_red_girl_truth",
-            "flags": {
-              "oneshot.s2_redirected_shoe": true
-            }
+            "puzzle_add": "piece_red_girl_truth"
           }
         },
         {
           "text": "踩烂布鞋。",
           "next": "n_s2_endless_loop",
           "effects": {
-            "GR": 12,
-            "flags": {
-              "oneshot.s2_crushed_shoe": true
-            }
+            "GR": 12
           }
         },
         {
           "text": "把布鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 10,
-            "flags": {
-              "oneshot.s2_threw_shoe_lake": true
-            }
+            "GR": 10
           }
         }
       ]
@@ -2691,7 +2599,6 @@
             "PR": 12,
             "GR": 8,
             "flags": {
-              "oneshot.s2_barefoot_match": true,
               "arc.s2_heard_tv": true
             }
           }
@@ -2702,7 +2609,6 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "oneshot.s2_posted_shadow": true,
               "oneshot.posted_photo": true
             }
           }
@@ -2728,10 +2634,7 @@
           "text": "把湿巾扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 8,
-            "flags": {
-              "oneshot.s2_dumped_wipe": true
-            }
+            "GR": 8
           }
         },
         {
@@ -2741,7 +2644,6 @@
             "PR": 10,
             "GR": 12,
             "flags": {
-              "oneshot.s2_smeared_face": true,
               "arc.marked_lamb": true
             }
           }
@@ -2759,8 +2661,7 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "arc.s2_heard_tv": true,
-              "oneshot.s2_faced_her": true
+              "arc.s2_heard_tv": true
             }
           }
         },
@@ -2769,10 +2670,7 @@
           "next": "n_s2_endless_loop",
           "effects": {
             "PR": -5,
-            "GR": 15,
-            "flags": {
-              "oneshot.s2_avoided_her": true
-            }
+            "GR": 15
           }
         },
         {
@@ -2902,10 +2800,7 @@
           "text": "退回门口,打卡走人。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S3",
-            "flags": {
-              "oneshot.s3_aborted": true
-            }
+            "landmark_skipped": "S3"
           },
           "require": {
             "not": {
@@ -2918,11 +2813,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s3_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -2977,10 +2867,7 @@
           "text": "把工牌摘下来,挂在钟上。",
           "next": "n_s3_offer_id",
           "effects": {
-            "GR": 12,
-            "flags": {
-              "oneshot.s3_offered_id": true
-            }
+            "GR": 12
           }
         },
         {
@@ -2997,10 +2884,7 @@
           "text": "把头探进钟内,听水声。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s3_into_bell": true
-            }
+            "PR": 8
           }
         },
         {
@@ -3008,10 +2892,7 @@
           "next": "n_s3_match_print",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_h1987",
-            "flags": {
-              "oneshot.s3_marked_self": true
-            }
+            "puzzle_add": "piece_h1987"
           }
         },
         {
@@ -3044,7 +2925,6 @@
           "effects": {
             "GR": 12,
             "flags": {
-              "oneshot.s3_accepted_h1987": true,
               "arc.marked_lamb": true
             }
           }
@@ -3070,10 +2950,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 8,
-            "puzzle_add": "piece_refused_h",
-            "flags": {
-              "oneshot.s3_clean_exit": true
-            }
+            "puzzle_add": "piece_refused_h"
           }
         }
       ]
@@ -3108,20 +2985,14 @@
           "next": "n_s3_eighth_strike",
           "effects": {
             "PR": -10,
-            "GR": 20,
-            "flags": {
-              "oneshot.s3_struck_eighth": true
-            }
+            "GR": 20
           }
         },
         {
           "text": "把撞钟木丢进钟里,跑。",
           "next": "n_s3_temple_back",
           "effects": {
-            "GR": 5,
-            "flags": {
-              "oneshot.s3_dumped_mallet": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -3153,10 +3024,7 @@
           "text": "反悔。把工牌摘回来。",
           "next": "n_s3_arrive",
           "effects": {
-            "PR": -5,
-            "flags": {
-              "oneshot.s3_reclaimed_id": true
-            }
+            "PR": -5
           }
         },
         {
@@ -3177,10 +3045,7 @@
           "text": "对她说:『27 楼怎么走?』",
           "next": "n_npc_red_dress_girl",
           "effects": {
-            "PR": 10,
-            "flags": {
-              "oneshot.s3_met_red_girl_here": true
-            }
+            "PR": 10
           }
         },
         {
@@ -3208,10 +3073,7 @@
           "next": "n_scene_lake_underwater",
           "effects": {
             "PR": 10,
-            "GR": 8,
-            "flags": {
-              "oneshot.s3_jumped_well": true
-            }
+            "GR": 8
           }
         },
         {
@@ -3219,10 +3081,7 @@
           "next": "n_npc_eight_self",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_h1987",
-            "flags": {
-              "oneshot.s3_filled_2024": true
-            }
+            "puzzle_add": "piece_h1987"
           }
         },
         {
@@ -3230,20 +3089,12 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 8,
-            "GR": -5,
-            "flags": {
-              "oneshot.s3_erased_years": true
-            }
+            "GR": -5
           }
         },
         {
           "text": "退出小院,回大殿。",
-          "next": "n_s3_arrive",
-          "effects": {
-            "flags": {
-              "oneshot.s3_saw_well": true
-            }
-          }
+          "next": "n_s3_arrive"
         }
       ]
     },
@@ -3257,7 +3108,6 @@
           "effects": {
             "PR": 10,
             "flags": {
-              "oneshot.s3_promised_seven": true,
               "oneshot.contacted_predecessor": true
             }
           }
@@ -3339,10 +3189,7 @@
           "text": "不进去,绕路走。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S4",
-            "flags": {
-              "oneshot.s4_aborted": true
-            }
+            "landmark_skipped": "S4"
           },
           "require": {
             "not": {
@@ -3355,11 +3202,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s4_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -3434,10 +3276,7 @@
           "next": "n_npc_drowned_official",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_linmou_full",
-            "flags": {
-              "oneshot.s4_heard_warning": true
-            }
+            "puzzle_add": "piece_linmou_full"
           }
         },
         {
@@ -3479,10 +3318,7 @@
           "text": "拿起毛笔,补「⺶」字最下面那一笔。",
           "next": "n_s4_paint_stroke",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "oneshot.s4_lifted_brush": true
-            }
+            "PR": 5
           }
         },
         {
@@ -3490,10 +3326,7 @@
           "next": "n_s4_break_brush",
           "effects": {
             "PR": 8,
-            "GR": 10,
-            "flags": {
-              "oneshot.s4_broke_brush": true
-            }
+            "GR": 10
           }
         },
         {
@@ -3562,10 +3395,7 @@
           "text": "走过去,跟老婆婆说话。",
           "next": "n_s4_old_woman",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s4_broke_yang_curse": true
-            }
+            "PR": 8
           }
         },
         {
@@ -3573,10 +3403,7 @@
           "next": "n_landmark_picker",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_yang_freed",
-            "flags": {
-              "oneshot.s4_clean_exit": true
-            }
+            "puzzle_add": "piece_yang_freed"
           }
         }
       ]
@@ -3601,10 +3428,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 10,
-            "puzzle_add": "piece_grandma_blessing",
-            "flags": {
-              "oneshot.s4_drank_tofu": true
-            }
+            "puzzle_add": "piece_grandma_blessing"
           }
         }
       ]
@@ -3617,10 +3441,7 @@
           "text": "对着监视器挥手。",
           "next": "n_npc_cleaner_null",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s4_waved_camera": true
-            }
+            "PR": 8
           }
         },
         {
@@ -3637,10 +3458,7 @@
           "text": "退出房间,转身就跑。",
           "next": "n_s4_arrive",
           "effects": {
-            "PR": -5,
-            "flags": {
-              "oneshot.s4_fled_room": true
-            }
+            "PR": -5
           }
         },
         {
@@ -3648,10 +3466,7 @@
           "next": "n_scene_lost_archive",
           "effects": {
             "PR": 12,
-            "puzzle_add": "piece_camera_self",
-            "flags": {
-              "oneshot.s4_self_archived": true
-            }
+            "puzzle_add": "piece_camera_self"
           }
         }
       ]
@@ -3665,10 +3480,7 @@
           "next": "n_npc_cleaner_null",
           "effects": {
             "PR": 8,
-            "GR": 10,
-            "flags": {
-              "oneshot.s4_static_in_skin": true
-            }
+            "GR": 10
           }
         }
       ]
@@ -3682,20 +3494,14 @@
           "next": "n_npc_evaluator_chair",
           "effects": {
             "PR": 15,
-            "puzzle_add": "piece_yang_debt",
-            "flags": {
-              "oneshot.s4_debt_to_evaluator": true
-            }
+            "puzzle_add": "piece_yang_debt"
           }
         },
         {
           "text": "还给上一任 G-273。",
           "next": "n_npc_predecessor_voice",
           "effects": {
-            "PR": 10,
-            "flags": {
-              "oneshot.s4_debt_to_predecessor": true
-            }
+            "PR": 10
           }
         },
         {
@@ -3792,10 +3598,7 @@
           "text": "退出旧楼,跳到下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S5",
-            "flags": {
-              "oneshot.s5_aborted": true
-            }
+            "landmark_skipped": "S5"
           },
           "require": {
             "not": {
@@ -3808,11 +3611,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s5_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -3859,7 +3657,6 @@
             "PR": 12,
             "GR": 5,
             "flags": {
-              "oneshot.s5_offered_newspaper": true,
               "arc.piano_appeased": true
             }
           },
@@ -3871,12 +3668,7 @@
         },
         {
           "text": "退出琴房,关门。",
-          "next": "n_s5_arrive",
-          "effects": {
-            "flags": {
-              "oneshot.s5_left_room": true
-            }
-          }
+          "next": "n_s5_arrive"
         }
       ]
     },
@@ -3917,10 +3709,7 @@
           "next": "n_s5_grant_leave",
           "effects": {
             "PR": 18,
-            "GR": 5,
-            "flags": {
-              "oneshot.s5_granted_leave": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -4002,10 +3791,7 @@
           "next": "n_npc_piano_ghost",
           "effects": {
             "PR": -10,
-            "GR": 8,
-            "flags": {
-              "oneshot.s5_burned_photo": true
-            }
+            "GR": 8
           }
         }
       ]
@@ -4064,10 +3850,7 @@
           "effects": {
             "PR": 12,
             "GR": 5,
-            "puzzle_add": "piece_red_girl_truth",
-            "flags": {
-              "oneshot.s5_returned_shoes": true
-            }
+            "puzzle_add": "piece_red_girl_truth"
           }
         },
         {
@@ -4076,7 +3859,6 @@
           "effects": {
             "GR": 18,
             "flags": {
-              "oneshot.s5_wore_girl_shoes": true,
               "arc.marked_lamb": true
             }
           }
@@ -4085,10 +3867,7 @@
           "text": "把鞋扔进湖里。",
           "next": "n_scene_lake_underwater",
           "effects": {
-            "GR": 10,
-            "flags": {
-              "oneshot.s5_threw_shoes_lake": true
-            }
+            "GR": 10
           }
         }
       ]
@@ -4151,20 +3930,14 @@
           "next": "n_npc_piano_ghost",
           "effects": {
             "PR": 5,
-            "GR": 5,
-            "flags": {
-              "oneshot.s5_broke_chalk": true
-            }
+            "GR": 5
           }
         },
         {
           "text": "用黑板擦,擦掉所有「叶某」。",
           "next": "n_s5_grant_leave",
           "effects": {
-            "PR": 15,
-            "flags": {
-              "oneshot.s5_erased_blackboard": true
-            }
+            "PR": 15
           }
         },
         {
@@ -4276,10 +4049,7 @@
           "text": "上去打卡,跳下一个地标。",
           "next": "n_landmark_picker",
           "effects": {
-            "landmark_skipped": "S6",
-            "flags": {
-              "oneshot.s6_aborted": true
-            }
+            "landmark_skipped": "S6"
           },
           "require": {
             "not": {
@@ -4292,11 +4062,6 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
-          "effects": {
-            "flags": {
-              "oneshot.s6_clean_leave": true
-            }
-          },
           "require": {
             "any_of": [
               {
@@ -4350,10 +4115,7 @@
           "text": "把 1986 年硬币(如果有)扔进井里。",
           "next": "n_s6_drop_coin",
           "effects": {
-            "PR": 12,
-            "flags": {
-              "oneshot.s6_dropped_coin": true
-            }
+            "PR": 12
           },
           "require": {
             "inv_has": [
@@ -4389,10 +4151,7 @@
           "text": "把第七顶倒扣在地上。",
           "next": "n_s6_revisit_well_alt",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s6_inverted_seventh": true
-            }
+            "PR": 8
           }
         },
         {
@@ -4402,7 +4161,6 @@
             "PR": 18,
             "puzzle_add": "piece_judge_seal",
             "flags": {
-              "oneshot.s6_wrote_never": true,
               "arc.got_judge_seal": true
             }
           }
@@ -4412,10 +4170,7 @@
           "next": "n_npc_helmet_workers",
           "effects": {
             "PR": 12,
-            "GR": 5,
-            "flags": {
-              "oneshot.s6_returned_helmets": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -4512,10 +4267,7 @@
           "effects": {
             "PR": 30,
             "GR": -10,
-            "puzzle_add": "piece_seven_freed",
-            "flags": {
-              "oneshot.s6_seven_freed": true
-            }
+            "puzzle_add": "piece_seven_freed"
           }
         }
       ]
@@ -4531,7 +4283,6 @@
             "PR": 10,
             "GR": 8,
             "flags": {
-              "oneshot.s6_owes_27": true,
               "arc.got_judge_seal": true
             }
           }
@@ -4540,10 +4291,7 @@
           "text": "把工牌烧了。",
           "next": "n_s6_burn_id",
           "effects": {
-            "GR": 25,
-            "flags": {
-              "oneshot.s6_burned_id": true
-            }
+            "GR": 25
           }
         },
         {
@@ -4586,20 +4334,14 @@
           "text": "走进操作间,看那个人。",
           "next": "n_s6_operator_room",
           "effects": {
-            "PR": 8,
-            "flags": {
-              "oneshot.s6_into_operator": true
-            }
+            "PR": 8
           }
         },
         {
           "text": "用扳手卡住刀盘。",
           "next": "n_s6_jam_blade",
           "effects": {
-            "GR": 15,
-            "flags": {
-              "oneshot.s6_jammed_blade": true
-            }
+            "GR": 15
           }
         },
         {
@@ -4608,7 +4350,6 @@
           "effects": {
             "GR": 25,
             "flags": {
-              "oneshot.s6_stood_blade": true,
               "arc.marked_lamb": true
             }
           }
@@ -4639,10 +4380,7 @@
           "text": "拒绝。这不是我能改的。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -8,
-            "flags": {
-              "oneshot.s6_refused_correction": true
-            }
+            "PR": -8
           }
         },
         {
@@ -4651,7 +4389,6 @@
           "effects": {
             "PR": 20,
             "flags": {
-              "oneshot.s6_offered_self": true,
               "know.linked_to_eight_self": true
             }
           }
@@ -4678,10 +4415,7 @@
           "next": "n_s6_arrive",
           "effects": {
             "PR": -10,
-            "GR": 8,
-            "flags": {
-              "oneshot.s6_unjammed": true
-            }
+            "GR": 8
           }
         }
       ]
@@ -4708,10 +4442,7 @@
           "next": "n_s6_arrive",
           "effects": {
             "PR": -15,
-            "GR": 5,
-            "flags": {
-              "oneshot.s6_chickened": true
-            }
+            "GR": 5
           }
         }
       ]
@@ -6150,8 +5881,8 @@
         },
         {
           "if": {
+            "shifts_completed_min": 4,
             "flags": {
-              "shifts_completed_min": 4,
               "know.saw_27th_floor": true
             }
           },
@@ -6607,8 +6338,8 @@
         },
         {
           "if": {
+            "puzzle_pieces_min": 3,
             "flags": {
-              "puzzle_pieces_min": 3,
               "arc.got_judge_seal": true
             }
           },

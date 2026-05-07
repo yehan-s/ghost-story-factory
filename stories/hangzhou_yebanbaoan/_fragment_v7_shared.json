@@ -1441,8 +1441,8 @@
         },
         {
           "if": {
+            "shifts_completed_min": 4,
             "flags": {
-              "shifts_completed_min": 4,
               "know.saw_27th_floor": true
             }
           },
@@ -1898,8 +1898,8 @@
         },
         {
           "if": {
+            "puzzle_pieces_min": 3,
             "flags": {
-              "puzzle_pieces_min": 3,
               "arc.got_judge_seal": true
             }
           },
