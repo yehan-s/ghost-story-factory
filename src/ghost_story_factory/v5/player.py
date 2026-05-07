@@ -159,7 +159,18 @@ class State:
                 notes.append(f"失去「{item}」")
                 events.append({"type": "inv_remove", "key": item})
         for k, v in (effects.get("flags") or {}).items():
-            self.flags[k] = bool(v)
+            new_v = bool(v)
+            old_v = bool(self.flags.get(k, False))
+            self.flags[k] = new_v
+            # ADR-007 + Pass2 spec: know.* false→true 跳变 emit knowledge_learned 事件。
+            # 复读触发也 emit(is_first_time=False),供 UI 渲染"已知"复读条。
+            # know.X = False 不算 learn(知识不可遗忘),非 know.* flag 静默。
+            if k.startswith("know.") and new_v:
+                events.append({
+                    "type": "knowledge_learned",
+                    "key": k,
+                    "is_first_time": (not old_v),
+                })
 
         # v6 新增 effects
         if "landmark_visited" in effects:
