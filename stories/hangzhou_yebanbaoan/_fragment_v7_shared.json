@@ -171,6 +171,12 @@
     },
     "n_npc_faceless_coat": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "1985_linmou_other26"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "1985_linmou_other26", "shard": "account_book"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -292,6 +298,24 @@
       "_is_tool": true,
       "_tool_id": "radio",
       "_tool_label": "对讲机",
+      "_foreshadow_slot": [
+        "G272_predecessor_identity"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "G272_predecessor_identity", "shard": "first_call"},
+        {"slot": "1985_linmou_other26", "shard": "predecessor_hint"},
+        {"slot": "1986_lin_coin", "shard": "radio_explanation"}
+      ],
+      "_scene_details": [
+        {
+          "label": "听清楚『另一头是谁』(听够 5 次后)",
+          "require": {"visit_count_min": {"n_npc_predecessor_voice": 5}},
+          "text": "你按下对讲机第 5 次。\n\n这次没有「滋——」。\n\n是**你自己的声音**。\n\n一字不差,从对讲机另一头传回来。\n\n但这段话**你昨天下午**才说过 —— 没人录过。\n\n你抬头看湖,湖面突然全是话筒。",
+          "_foreshadow_clue": [
+            {"slot": "G272_predecessor_identity", "shard": "self_voice"}
+          ]
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -368,7 +392,12 @@
     "n_npc_red_dress_girl": {
       "scene": "NPC",
       "_foreshadow_slot": [
-        "1996_red_girl_truth"
+        "1996_red_girl_truth",
+        "1987_red_dress_truth"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "1996_red_girl_truth", "shard": "tv_screen"},
+        {"slot": "1996_red_girl_truth", "shard": "freight_lift_key"}
       ],
       "_foreshadow_solved_by": [
         "redgirl_1996_route"
@@ -557,6 +586,15 @@
     },
     "n_npc_helmet_workers": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "1986_no_eighth",
+        "1986_lin_coin"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "1986_no_eighth", "shard": "seven_helmets"},
+        {"slot": "1986_no_eighth", "shard": "worker_testimony"},
+        {"slot": "1986_lin_coin", "shard": "coin_obtained"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -677,6 +715,14 @@
     },
     "n_npc_piano_ghost": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "1991_yeh_classmate",
+        "1991_grandma_link"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "1991_yeh_classmate", "shard": "yeh_diary"},
+        {"slot": "1991_grandma_link", "shard": "song_reprise"}
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -1089,6 +1135,14 @@
     },
     "n_npc_eight_self": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "8_self_roster"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "8_self_roster", "shard": "coffin_count"},
+        {"slot": "8_self_roster", "shard": "coffin_face"},
+        {"slot": "8_self_roster", "shard": "constant_hum"}
+      ],
       "_foreshadow_slot": [
         "8_self_roster",
         "1985_linmou_other26",
@@ -1659,7 +1713,14 @@
       "_tool_id": "archive",
       "_tool_label": "遗失档案",
       "_foreshadow_slot": [
-        "all_archive_truths"
+        "all_archive_truths",
+        "1991_grandma_link"
+      ],
+      "_foreshadow_clue": [
+        {"slot": "1985_linmou_other26", "shard": "archive_signature"},
+        {"slot": "1991_yeh_classmate", "shard": "school_record"},
+        {"slot": "1991_grandma_link", "shard": "archive_1959"},
+        {"slot": "1996_red_girl_truth", "shard": "missing_report"}
       ],
       "narrative_variants": [
         {
@@ -2003,6 +2064,15 @@
       "_one_way": true,
       "_one_way_hint": "B3 走廊 — 钢门开了就是终局。没有楼梯回到 B1。",
       "_landmark_header": {"time": "04:17", "place": "平海街 1 号 · B3 走廊"},
+      "_scene_details": [
+        {
+          "label": "墙上挂的 G-272 工牌",
+          "text": "走廊尽头钢门旁的墙上,**钉着一张工牌**。\n\n工牌编号:**G-272**。\n\n工牌照片**和你长得一模一样**。\n\n工牌底下写着:「2013-04-30 · **闭档**」。\n\n你刚刚摘下来对着手电筒看 —— 工牌**还是温的**。",
+          "_foreshadow_clue": [
+            {"slot": "G272_predecessor_identity", "shard": "g272_badge"}
+          ]
+        }
+      ],
       "narrative": "04:17。平海街 1 号,商场地下。\n\n你刷工卡进员工通道,按下「B3」。\n\n电梯应该没有 B3。\n\n楼层显示是 B1 / B2 / 停车场。\n\n但你按 B3,按钮自己**亮了**。\n\n电梯下降。\n\n30 秒。\n\n超过了 B2 应该到达的时间。\n\n你看楼层指示灯——\n\n它从 B2 跳到一个**没有数字**的位置。\n\n你的胃悬空一下,像电梯**短暂失重**。\n\n然后,门开。\n\n冷气从外面涌进来,带着 1980 年代潮湿水泥的腥味。\n\n你站在 B3 走廊。\n\n墙是粗糙的灰色混凝土,每隔 5 米嵌着一根荧光灯——\n\n荧光灯一根接一根**为你**亮起,你走到哪一根,前一根就**灭一根**。\n\n走廊只有你的脚下是亮的。\n\n走廊尽头,大约 30 米外,是一扇**钢门**。\n\n钢门是 1986 年款式的防火门,漆色掉光,只剩铁锈红。\n\n门上没有任何标识。\n\n只有**一个钥匙孔**。\n\n钥匙孔的形状,你不认得。\n\n但你身上带着的钥匙,**自己**在你口袋里发烫。",
       "choices": [
         {

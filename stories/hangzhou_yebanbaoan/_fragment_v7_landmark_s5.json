@@ -13,6 +13,22 @@
   "nodes": {
     "n_s5_arrive": {
       "scene": "S5",
+      "_scene_details": [
+        {
+          "label": "琴凳里翻出 1991 班级合照",
+          "text": "你掀开琴凳。\n\n里面塞着一张已经发黄的黑白班级合照。\n\n标注:**留下小学 五(2)班 · 1991-04**。\n\n第三排第二个孩子,**和你长得一模一样**。\n\n但你 11 岁那年在另一个城市上小学,**从未来过留下**。",
+          "_foreshadow_clue": [
+            {"slot": "1991_yeh_classmate", "shard": "class_photo"}
+          ]
+        },
+        {
+          "label": "琴盖里的 1959-043 磁带",
+          "text": "你撬开钢琴琴盖。\n\n里面卡着一盘老式磁带,标签泛黄:\n\n「**1959-043** · 留下小学 · 童谣 · 录音 · 第三轨」\n\n但 1991 年还能用这种磁带?\n\n标签底下还有一行小字:**外婆**。",
+          "_foreshadow_clue": [
+            {"slot": "1991_grandma_link", "shard": "tape_label"}
+          ]
+        }
+      ],
       "narrative_variants": [
         {
           "if": {

@@ -105,6 +105,17 @@ def audit(tree: Dict[str, Any]) -> Tuple[List[Issue], Dict[str, int]]:
                     shard_triggers.setdefault((slot, shard), []).append(
                         f"{node_id}.choice"
                     )
+        # 场景细节级(_scene_details[*]._foreshadow_clue / _foreshadow_slot)
+        for det in (node.get("_scene_details") or []):
+            for slot in (det.get("_foreshadow_slot") or []):
+                slot_triggers.setdefault(slot, []).append(f"{node_id}.detail")
+            for clue in (det.get("_foreshadow_clue") or []):
+                slot = clue.get("slot")
+                shard = clue.get("shard")
+                if slot and shard:
+                    shard_triggers.setdefault((slot, shard), []).append(
+                        f"{node_id}.detail"
+                    )
 
     # === 2. 伏笔覆盖检查 ===
     fs_unreachable = 0

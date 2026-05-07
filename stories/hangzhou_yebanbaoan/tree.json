@@ -74,6 +74,9 @@
     "铁锈湖泥湿巾": "S1 沾血泥的湿巾。能交给档案室。",
     "血毛笔": "S4 弄堂的笔杆是人骨做的。",
     "红衣女孩铜锈": "S3 钟另一面的红衣女孩侧脸铜锈。",
+    "三柱香": "孔雀大厦楼下点的香 — 用来祭乌龙王。",
+    "武林门 7 人录音": "通道里 7 个冤魂的工号 — S7 终局区可比对。",
+    "浙大钟楼跳绳照片": "钟楼跳绳女生照片。带回 S5 琴房可发现关联。",
     "未注明物品": "(待说明)"
   },
   "landmark_map": [
@@ -1146,7 +1149,16 @@
         },
         {
           "label": "第三把长椅旁的报亭",
-          "text": "报亭关着,玻璃窗上贴着 1985 年 10 月 19 日的《杭州日报》头版——\n\n「**林副科长投湖自尽 · 27 笔贪污案告破**」\n\n但报纸的纸**是新的**,墨水还有点发亮。\n\n报亭老板的座位空着。\n\n座位上摆着一杯**温的**普洱茶。"
+          "text": "报亭关着,玻璃窗上贴着 1985 年 10 月 19 日的《杭州日报》头版——\n\n「**林副科长投湖自尽 · 27 笔贪污案告破**」\n\n但报纸的纸**是新的**,墨水还有点发亮。\n\n报亭老板的座位空着。\n\n座位上摆着一杯**温的**普洱茶。\n\n你翻到报纸内页 —— 同一天的第三版,有一行不起眼的标注:**1987 · 红衣 13 号**,死于柳浪闻莺。",
+          "_foreshadow_clue": [
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "newspaper_1987"
+            }
+          ],
+          "_foreshadow_slot": [
+            "1987_red_dress_truth"
+          ]
         }
       ],
       "narrative_variants": [
@@ -1766,7 +1778,23 @@
         },
         {
           "label": "台阶旁的『请勿打扰』告示",
-          "text": "第 3 阶旁边的水泥栏杆上,贴着一张白纸:\n\n「**请勿打扰** · 1987」\n\n纸边卷曲,墨迹在灯下还泛着青——\n\n你想起《异常事件记录表》上,**第 7 任 G-273** 的最后一栏写着:\n\n「**1987 还在**。它不在过去,在这里。」"
+          "text": "第 3 阶旁边的水泥栏杆上,贴着一张白纸:\n\n「**请勿打扰** · 1987」\n\n纸边卷曲,墨迹在灯下还泛着青——\n\n你想起《异常事件记录表》上,**第 7 任 G-273** 的最后一栏写着:\n\n「**1987 还在**。它不在过去,在这里。」",
+          "_foreshadow_clue": [
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "do_not_disturb"
+            }
+          ]
+        },
+        {
+          "label": "数到第 308 阶",
+          "text": "你试着一阶一阶往上走。\n\n308。\n\n你听见**身后**有声音说:「**1987**」 —— 不是你的声音。\n\n你回头,什么都没有。\n\n但《异常事件记录表》自动浮现新栏,光标在 [02] 后面闪 —— 它在等你**写下年份**。",
+          "_foreshadow_clue": [
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "stair_count"
+            }
+          ]
         }
       ],
       "narrative_variants": [
@@ -3246,6 +3274,28 @@
     },
     "n_s5_arrive": {
       "scene": "S5",
+      "_scene_details": [
+        {
+          "label": "琴凳里翻出 1991 班级合照",
+          "text": "你掀开琴凳。\n\n里面塞着一张已经发黄的黑白班级合照。\n\n标注:**留下小学 五(2)班 · 1991-04**。\n\n第三排第二个孩子,**和你长得一模一样**。\n\n但你 11 岁那年在另一个城市上小学,**从未来过留下**。",
+          "_foreshadow_clue": [
+            {
+              "slot": "1991_yeh_classmate",
+              "shard": "class_photo"
+            }
+          ]
+        },
+        {
+          "label": "琴盖里的 1959-043 磁带",
+          "text": "你撬开钢琴琴盖。\n\n里面卡着一盘老式磁带,标签泛黄:\n\n「**1959-043** · 留下小学 · 童谣 · 录音 · 第三轨」\n\n但 1991 年还能用这种磁带?\n\n标签底下还有一行小字:**外婆**。",
+          "_foreshadow_clue": [
+            {
+              "slot": "1991_grandma_link",
+              "shard": "tape_label"
+            }
+          ]
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -3743,6 +3793,33 @@
     },
     "n_s6_arrive": {
       "scene": "S6",
+      "_scene_details": [
+        {
+          "label": "井底散落的 8 张归航船票存根",
+          "text": "你蹲在井底,捡起一叠**已被水泡烂**的船票存根。\n\n8 张,但只有 7 张签了名。\n\n第 8 张的存根**没有签名**,只剩一个**指纹**。\n\n你用手机灯照那个指纹 —— 比对方式只有一种:**死人的**。指纹纹路完全平整,**没有皮肤张力**。\n\n你想起对讲机里前任那句:「**第 8 个,没上船。**」",
+          "_foreshadow_clue": [
+            {
+              "slot": "1986_no_eighth",
+              "shard": "ticket_stub"
+            }
+          ]
+        },
+        {
+          "label": "硬币背面的『1986·林』刻字",
+          "text": "你把工人塞给你的那枚硬币翻过来。\n\n背面刻着:「**1986·林**」\n\n这种『年份+姓』的刻法,1986 年还**没有流通**。\n\n硬币的成色像是被人**用手心捏了几十年** —— 但手心的温度是**死人的**。",
+          "require": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          },
+          "_foreshadow_clue": [
+            {
+              "slot": "1986_lin_coin",
+              "shard": "coin_inscription"
+            }
+          ]
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -4440,6 +4517,15 @@
     },
     "n_npc_faceless_coat": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "1985_linmou_other26"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1985_linmou_other26",
+          "shard": "account_book"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -4561,6 +4647,40 @@
       "_is_tool": true,
       "_tool_id": "radio",
       "_tool_label": "对讲机",
+      "_foreshadow_slot": [
+        "G272_predecessor_identity"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "G272_predecessor_identity",
+          "shard": "first_call"
+        },
+        {
+          "slot": "1985_linmou_other26",
+          "shard": "predecessor_hint"
+        },
+        {
+          "slot": "1986_lin_coin",
+          "shard": "radio_explanation"
+        }
+      ],
+      "_scene_details": [
+        {
+          "label": "听清楚『另一头是谁』(听够 5 次后)",
+          "require": {
+            "visit_count_min": {
+              "n_npc_predecessor_voice": 5
+            }
+          },
+          "text": "你按下对讲机第 5 次。\n\n这次没有「滋——」。\n\n是**你自己的声音**。\n\n一字不差,从对讲机另一头传回来。\n\n但这段话**你昨天下午**才说过 —— 没人录过。\n\n你抬头看湖,湖面突然全是话筒。",
+          "_foreshadow_clue": [
+            {
+              "slot": "G272_predecessor_identity",
+              "shard": "self_voice"
+            }
+          ]
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -4638,7 +4758,18 @@
     "n_npc_red_dress_girl": {
       "scene": "NPC",
       "_foreshadow_slot": [
-        "1996_red_girl_truth"
+        "1996_red_girl_truth",
+        "1987_red_dress_truth"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1996_red_girl_truth",
+          "shard": "tv_screen"
+        },
+        {
+          "slot": "1996_red_girl_truth",
+          "shard": "freight_lift_key"
+        }
       ],
       "_foreshadow_solved_by": [
         "redgirl_1996_route"
@@ -4827,6 +4958,24 @@
     },
     "n_npc_helmet_workers": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "1986_no_eighth",
+        "1986_lin_coin"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1986_no_eighth",
+          "shard": "seven_helmets"
+        },
+        {
+          "slot": "1986_no_eighth",
+          "shard": "worker_testimony"
+        },
+        {
+          "slot": "1986_lin_coin",
+          "shard": "coin_obtained"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -4947,6 +5096,20 @@
     },
     "n_npc_piano_ghost": {
       "scene": "NPC",
+      "_foreshadow_slot": [
+        "1991_yeh_classmate",
+        "1991_grandma_link"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1991_yeh_classmate",
+          "shard": "yeh_diary"
+        },
+        {
+          "slot": "1991_grandma_link",
+          "shard": "song_reprise"
+        }
+      ],
       "narrative_variants": [
         {
           "if": {
@@ -5365,6 +5528,20 @@
         "1986_lin_coin",
         "1991_yeh_classmate",
         "1996_red_girl_truth"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "8_self_roster",
+          "shard": "coffin_count"
+        },
+        {
+          "slot": "8_self_roster",
+          "shard": "coffin_face"
+        },
+        {
+          "slot": "8_self_roster",
+          "shard": "constant_hum"
+        }
       ],
       "_foreshadow_solved_by": [
         "linmou_1985_route",
@@ -5929,7 +6106,26 @@
       "_tool_id": "archive",
       "_tool_label": "遗失档案",
       "_foreshadow_slot": [
-        "all_archive_truths"
+        "all_archive_truths",
+        "1991_grandma_link"
+      ],
+      "_foreshadow_clue": [
+        {
+          "slot": "1985_linmou_other26",
+          "shard": "archive_signature"
+        },
+        {
+          "slot": "1991_yeh_classmate",
+          "shard": "school_record"
+        },
+        {
+          "slot": "1991_grandma_link",
+          "shard": "archive_1959"
+        },
+        {
+          "slot": "1996_red_girl_truth",
+          "shard": "missing_report"
+        }
       ],
       "narrative_variants": [
         {
@@ -6275,6 +6471,18 @@
         "time": "04:17",
         "place": "平海街 1 号 · B3 货梯井"
       },
+      "_scene_details": [
+        {
+          "label": "墙上挂的 G-272 工牌",
+          "text": "走廊尽头钢门旁的墙上,**钉着一张工牌**。\n\n工牌编号:**G-272**。\n\n工牌照片**和你长得一模一样**。\n\n工牌底下写着:「2013-04-30 · **闭档**」。\n\n你刚刚摘下来对着手电筒看 —— 工牌**还是温的**。",
+          "_foreshadow_clue": [
+            {
+              "slot": "G272_predecessor_identity",
+              "shard": "g272_badge"
+            }
+          ]
+        }
+      ],
       "narrative": "04:17。平海街 1 号,商场地下。\n\n你刷工卡进员工通道,按下「B3」。\n\n电梯应该没有 B3。\n\n楼层显示是 B1 / B2 / 停车场。\n\n但你按 B3,按钮自己**亮了**。\n\n电梯下降。\n\n30 秒。\n\n超过了 B2 应该到达的时间。\n\n你看楼层指示灯——\n\n它从 B2 跳到一个**没有数字**的位置。\n\n你的胃悬空一下,像电梯**短暂失重**。\n\n然后,门开。\n\n冷气从外面涌进来,带着 1980 年代潮湿水泥的腥味。\n\n你站在 B3 走廊。\n\n墙是粗糙的灰色混凝土,每隔 5 米嵌着一根荧光灯——\n\n荧光灯一根接一根**为你**亮起,你走到哪一根,前一根就**灭一根**。\n\n走廊只有你的脚下是亮的。\n\n走廊尽头,大约 30 米外,是一扇**钢门**。\n\n钢门是 1986 年款式的防火门,漆色掉光,只剩铁锈红。\n\n门上没有任何标识。\n\n只有**一个钥匙孔**。\n\n钥匙孔的形状,你不认得。\n\n但你身上带着的钥匙,**自己**在你口袋里发烫。",
       "choices": [
         {

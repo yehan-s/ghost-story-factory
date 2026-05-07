@@ -492,6 +492,8 @@ class GhostStoryApp(App):
                     "effects": {"stay": True, **(det.get("effects") or {})},
                     "_detail_text": det.get("text", ""),
                     "_picker_kind": "detail",
+                    "_foreshadow_clue": det.get("_foreshadow_clue") or [],
+                    "_foreshadow_slot": det.get("_foreshadow_slot") or [],
                 })
 
         opts = self.query_one("#choices", OptionList)

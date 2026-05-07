@@ -985,6 +985,9 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                     "effects": {"stay": True, **(det.get("effects") or {})},
                     "_detail_text": det.get("text", ""),
                     "_picker_kind": "detail",
+                    # 场景细节也可以挂碎片(看清楚才算拾到)
+                    "_foreshadow_clue": det.get("_foreshadow_clue") or [],
+                    "_foreshadow_slot": det.get("_foreshadow_slot") or [],
                 })
 
         if not visible:
