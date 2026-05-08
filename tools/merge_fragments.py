@@ -28,43 +28,76 @@ STORY_META = {
     "reaction_contracts": {
         "deductions": {
             "predecessor_loop": {
-                "_label": "前任就是你 — 跨周目反应",
+                "_label": "前任就是你 — 跨周目反应(Pass 3.2 扩展)",
                 "resolver_node": "n_end_data",
-                "consumer_nodes": ["n_npc_predecessor_voice", "n_npc_eight_self"],
+                "consumer_nodes": [
+                    "n_npc_predecessor_voice",
+                    "n_npc_eight_self",
+                    "n_intro",
+                    "n_briefing",
+                    "n_landmark_picker",
+                ],
                 "trigger_type": "cross_run",
             },
             "1986_eighth_passenger": {
-                "_label": "第 8 张归航船票",
+                "_label": "第 8 张归航船票(Pass 3.2 扩展)",
                 "resolver_node": "n_end_truth",
-                "consumer_nodes": ["n_npc_helmet_workers"],
+                "consumer_nodes": [
+                    "n_npc_helmet_workers",
+                    "n_scene_lake_underwater",
+                    "n_npc_eight_self",
+                    "n_npc_drowned_official",
+                ],
                 "trigger_type": "cross_run",
             },
             "13_curse_chain": {
-                "_label": "13 号替死鬼的循环",
+                "_label": "13 号替死鬼的循环(Pass 3.2 扩展)",
                 "resolver_node": "n_end_bad_1987",
-                "consumer_nodes": ["n_npc_corrosion_face"],
+                "consumer_nodes": [
+                    "n_npc_corrosion_face",
+                    "n_npc_red_dress_girl",
+                    "n_scene_lost_archive",
+                ],
                 "trigger_type": "cross_run",
             },
         },
         "foreshadows": {
             "1987_red_dress_truth": {
-                "_label": "1987 红衣 13 号的真相",
+                "_label": "1987 红衣 13 号的真相(Pass 3.2 扩展)",
                 "resolver_node": "n_end_bad_1987",
-                "consumer_nodes": ["n_npc_red_dress_girl"],
+                "consumer_nodes": [
+                    "n_npc_red_dress_girl",
+                    "n_scene_lost_archive",
+                    "n_npc_corrosion_face",
+                ],
                 "trigger_type": "cross_run",
             },
         },
         "themes": {
             "hangzhou_constant": {
-                "_label": "杭州常数 — 母题通透后 picker 切档",
+                "_label": "杭州常数 — 母题通透后跨节点回响(Pass 3.2 扩展)",
                 "resolver_node": "n_end_true",
-                "consumer_nodes": ["n_landmark_picker"],
+                "consumer_nodes": [
+                    "n_landmark_picker",
+                    "n_intro",
+                    "n_briefing",
+                    "n_scene_lake_underwater",
+                    "n_npc_eight_self",
+                    "n_npc_predecessor_voice",
+                ],
                 "trigger_type": "cross_run",
             },
             "scapegoat": {
-                "_label": "替死 — 母题通透后档案室揭示",
+                "_label": "替死 — 母题通透后跨节点回响(Pass 3.2 扩展)",
                 "resolver_node": "n_end_truth",
-                "consumer_nodes": ["n_scene_lost_archive"],
+                "consumer_nodes": [
+                    "n_scene_lost_archive",
+                    "n_npc_eight_self",
+                    "n_scene_lake_underwater",
+                    "n_npc_predecessor_voice",
+                    "n_npc_drowned_official",
+                    "n_npc_yang_butcher",
+                ],
                 "trigger_type": "cross_run",
             },
         },

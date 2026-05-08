@@ -2,55 +2,75 @@
   "reaction_contracts": {
     "deductions": {
       "predecessor_loop": {
-        "_label": "前任就是你 — 跨周目反应",
+        "_label": "前任就是你 — 跨周目反应(Pass 3.2 扩展)",
         "resolver_node": "n_end_data",
         "consumer_nodes": [
           "n_npc_predecessor_voice",
-          "n_npc_eight_self"
+          "n_npc_eight_self",
+          "n_intro",
+          "n_briefing",
+          "n_landmark_picker"
         ],
         "trigger_type": "cross_run"
       },
       "1986_eighth_passenger": {
-        "_label": "第 8 张归航船票",
+        "_label": "第 8 张归航船票(Pass 3.2 扩展)",
         "resolver_node": "n_end_truth",
         "consumer_nodes": [
-          "n_npc_helmet_workers"
+          "n_npc_helmet_workers",
+          "n_scene_lake_underwater",
+          "n_npc_eight_self",
+          "n_npc_drowned_official"
         ],
         "trigger_type": "cross_run"
       },
       "13_curse_chain": {
-        "_label": "13 号替死鬼的循环",
+        "_label": "13 号替死鬼的循环(Pass 3.2 扩展)",
         "resolver_node": "n_end_bad_1987",
         "consumer_nodes": [
-          "n_npc_corrosion_face"
+          "n_npc_corrosion_face",
+          "n_npc_red_dress_girl",
+          "n_scene_lost_archive"
         ],
         "trigger_type": "cross_run"
       }
     },
     "foreshadows": {
       "1987_red_dress_truth": {
-        "_label": "1987 红衣 13 号的真相",
+        "_label": "1987 红衣 13 号的真相(Pass 3.2 扩展)",
         "resolver_node": "n_end_bad_1987",
         "consumer_nodes": [
-          "n_npc_red_dress_girl"
+          "n_npc_red_dress_girl",
+          "n_scene_lost_archive",
+          "n_npc_corrosion_face"
         ],
         "trigger_type": "cross_run"
       }
     },
     "themes": {
       "hangzhou_constant": {
-        "_label": "杭州常数 — 母题通透后 picker 切档",
+        "_label": "杭州常数 — 母题通透后跨节点回响(Pass 3.2 扩展)",
         "resolver_node": "n_end_true",
         "consumer_nodes": [
-          "n_landmark_picker"
+          "n_landmark_picker",
+          "n_intro",
+          "n_briefing",
+          "n_scene_lake_underwater",
+          "n_npc_eight_self",
+          "n_npc_predecessor_voice"
         ],
         "trigger_type": "cross_run"
       },
       "scapegoat": {
-        "_label": "替死 — 母题通透后档案室揭示",
+        "_label": "替死 — 母题通透后跨节点回响(Pass 3.2 扩展)",
         "resolver_node": "n_end_truth",
         "consumer_nodes": [
-          "n_scene_lost_archive"
+          "n_scene_lost_archive",
+          "n_npc_eight_self",
+          "n_scene_lake_underwater",
+          "n_npc_predecessor_voice",
+          "n_npc_drowned_official",
+          "n_npc_yang_butcher"
         ],
         "trigger_type": "cross_run"
       }
@@ -5136,6 +5156,20 @@
             }
           }
         }
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "theme_resolved": "hangzhou_constant"
+          },
+          "text": "你叫赵某,工牌编号 G-273。\n\n面试那天,HR 反复跟你强调那一套话——但**这次**,你接过钥匙圈那张 1984 小票时,手没有抖。\n\n你已经知道:**这一夜从来不是新的**。\n\n你今晚要走的 7 个打卡点,你**全部走过**。\n\n这次,你来检验一件事——\n\n**杭州常数**到底是 7,还是 8。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "predecessor_loop"
+          },
+          "text": "你叫赵某,工牌编号 G-273。\n\nHR 在跟你强调那一套话。\n\n但**这次**,你看着她的脸——\n\n你忽然认出来:\n\n她不是 HR。\n\n她是上一任 G-272 的妻子。\n\n你 1996 那一年就该投湖,是他替你 11 年。\n\n现在她在帮你接班。\n\n她笑得太用力,因为她**知道**接下来的事。"
+        }
       ]
     },
     "n_briefing": {
@@ -5146,6 +5180,20 @@
         {
           "text": "继续。",
           "next": "n_landmark_picker"
+        }
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "theme_resolved": "hangzhou_constant"
+          },
+          "text": "队长把《异常事件记录表》摔在你面前:「7 个打卡点,见到不对劲就填表。」\n\n但**这次**,你看着这 7 个点的清单——\n\n你已经知道:**这 7 个点从来不是 7 个**。\n\n它们是同一件事的 **7 次复读**——\n\n是杭州 1985 年 10 月 18 日那一夜投湖的那个人,**在 7 个不同年份的 7 张面孔**。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "predecessor_loop"
+          },
+          "text": "队长把《异常事件记录表》摔在你面前。\n\n但**这次**,你接过表的时候,看清了第一栏的笔迹——\n\n那是你自己的字迹。\n\n你已经填过这张表。\n\n上一次填,签的名字是 **G-272**。\n\n这一夜,你既是接班人,**也是前任**。"
         }
       ]
     },
@@ -5167,6 +5215,12 @@
             "theme_resolved": "hangzhou_constant"
           },
           "text": "你又站在地图前。\n\n远处轮渡汽笛拉得很长——是那一声你听过无数次的、从断桥北岸传来的杭州常数。\n\n7 个红圈,这次你看清了:它们不是 7 个**地点**,是同一件事的 7 次**复读**。\n\n西湖水汽涌进来,带着桂花潮味——不是这个季节,但你能闻到。\n\n墙上的红笔字,是你**自己**的字迹。\n\n你早就来过。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "predecessor_loop"
+          },
+          "text": "你站在地图前。\n\n7 个红圈、3 个红叉。\n\n但**这次**,你知道:\n\n红圈是你**作为 G-272 时画下的**。\n\n红叉是你**作为 G-273 时**还没画的。\n\n你今夜的任务,不是巡逻 7 个点——\n\n是把剩下 3 个叉,**填成圈**。\n\n你和前任,都是你自己。"
         },
         {
           "if": {
@@ -5365,6 +5419,18 @@
           "text": "湖水自己漫上岸。\n\n中山装的男人从湖里走出来,脚下青石板是干的。\n\n他抬头看你,眼睛非常黑。\n\n他认出你了。\n\n「……小赵。\n  这次轮到你了。」"
         },
         {
+          "if": {
+            "theme_resolved": "scapegoat"
+          },
+          "text": "溺死的官员浮在水面上看你。\n\n但**这次**,你不再害怕。\n\n你已经知道了——\n\n他不是来害你的。\n\n他是 1985 年那个**没能替死成的人**。\n\n林副科长替了他。\n\n他在湖里漂了 40 年,**就是来给林某一个交代的**。\n\n他的眼睛慢慢合上。\n\n他**这次**沉下去了。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "1986_eighth_passenger"
+          },
+          "text": "溺死的官员看你。\n\n但**这次**,你已经知道:\n\n他是 1986 年钱塘江那班船的**第 7 个乘客**。\n\n船票售出 7 张。\n\n第 8 张没卖出去。\n\n林副科长没上船。\n\n他独自一人,1985 年提前一年,**用西湖代替了钱塘江**。\n\n7 工人 + 林某 = 1986 沉船的真实人数。"
+        },
+        {
           "_variant_id": "V3_defense",
           "if": {
             "all_of": [
@@ -5506,6 +5572,18 @@
         },
         {
           "if": {
+            "theme_resolved": "hangzhou_constant"
+          },
+          "text": "对讲机「滋——」一声,接通。\n\n但**这次**,你没等他说话——\n\n你按下按钮,对前任说:\n\n「G-272,你不是前任。\n你是 1985-10-18 那一夜,**从来没下班**的那个人。」\n\n对讲机那头,水声**消失了**。\n\n安静持续 3 秒。\n\n然后是一声很轻的——\n\n「**你这次,自己看出来了。**」"
+        },
+        {
+          "if": {
+            "theme_resolved": "scapegoat"
+          },
+          "text": "对讲机里前任的声音说:「G-273,我是上一任。我没下班。」\n\n但**这次**,你听懂了:\n\n他没下班,**因为他是替你下班的**。\n\n你这一代 G-273,本该 1996 那年就投湖。\n\n是 G-272 替了你 11 年。\n\n你拿起对讲机,**第一次**,你想说:\n\n「对不起,辛苦了。」\n\n你按下按钮,什么都没发出。\n\n对讲机的水声停了。"
+        },
+        {
+          "if": {
             "visit_count_min": {
               "n_npc_predecessor_voice": 5
             }
@@ -5628,6 +5706,12 @@
         },
         {
           "if": {
+            "deduction_resolved": "13_curse_chain"
+          },
+          "text": "你又看见她。\n\n但**这次**,你数了她的脚——\n\n两只脚。\n\n但她身后的影子,有 **13** 个。\n\n13 双脚印,在湿地上印出来,围成一圈。\n\n你已经知道:\n\n1987 年百货大楼踩踏 13 死,每一个都成了她身后的影子。\n\n她不是一个鬼。\n\n她是 13 个鬼用同一个红裙子,**轮流出现**。"
+        },
+        {
+          "if": {
             "flags": {
               "know.told_red_girl_truth": true
             }
@@ -5721,6 +5805,12 @@
     "n_npc_yang_butcher": {
       "scene": "NPC",
       "narrative_variants": [
+        {
+          "if": {
+            "theme_resolved": "scapegoat"
+          },
+          "text": "羊血弄 2 号的屠夫站在你面前。\n\n但**这次**,你认出他了——\n\n他不是屠夫。\n\n他是 1985 年那一夜,**会签 26 联**的最后一个签字人。\n\n林副科长替他死了。\n\n他抬起的刀,这次没落下来。\n\n他低头看自己的手——\n\n40 年了,血还没干。"
+        },
         {
           "if": {
             "flags": {
@@ -6131,6 +6221,12 @@
         },
         {
           "if": {
+            "foreshadow_resolved": "1987_red_dress_truth"
+          },
+          "text": "铜锈侧脸贴着你。\n\n但**这次**,你看清了——\n\n那不是铜锈。\n\n是 1987 年百货大楼踩踏当晚,人群把她的脸踩进瓷砖里留下的**血锈**。\n\n她身上穿的是 1996 款红裙——\n\n但她死在 1987。\n\n9 年时间被踩进了同一片瓷砖。\n\n她侧过脸,你认出来:\n\n是红衣女孩长大后的脸。"
+        },
+        {
+          "if": {
             "flags": {
               "oneshot.rang_seven": false
             },
@@ -6391,6 +6487,24 @@
         },
         {
           "if": {
+            "theme_resolved": "hangzhou_constant"
+          },
+          "text": "8 棺残片 Hall。\n\n8 个'你'同时坐起,同时说:\n\n「填完第 7 栏,你就能不用躺。」\n\n但**这次**,你回话了:\n\n「填完第 7 栏,**第 8 个就上来**。」\n\n8 个'你'同时安静下来。\n\n他们已经知道你解开了。\n\n第 8 台空舱缓缓阖上——\n\n**没等你躺**。"
+        },
+        {
+          "if": {
+            "theme_resolved": "scapegoat"
+          },
+          "text": "8 棺残片 Hall。\n\n8 个'你'同时坐起,同时说:「填完第 7 栏...」\n\n但**这次**,你已经知道了——\n\n8 个'你'不是在等你躺。\n\n他们是 1985 年到现在,**8 个被代死的人**。\n\n林副科长是第一个。\n\n你是 G-273。\n\n中间 6 个,每一个都欠林某一个'对不起'。\n\n你看清第八台空舱里——\n\n那不是给你的。\n\n是给**还会被代死的下一个**留的。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "1986_eighth_passenger"
+          },
+          "text": "8 棺残片 Hall。\n\n8 个'你'同时坐起。\n\n但**这次**,你看清了胸口打卡表——\n\n第 8 个不是 2024,是空白。\n\n空白上面用极小的字写着:\n\n**'1986-08-17 钱塘江沉船 第 8 张归航船票 (未售)'**\n\n第 8 张船票从来没卖出去。\n\n8 棺里那个空着的位置,**是 1986 年没能上船的林副科长留的**。"
+        },
+        {
+          "if": {
             "flags": {
               "know.linked_to_eight_self": true,
               "know.claimed_linmou": true
@@ -6620,6 +6734,24 @@
       "_one_way": true,
       "_one_way_hint": "西湖水下 — 你已经沉下来,湖面在头顶。回不去了。",
       "narrative_variants": [
+        {
+          "if": {
+            "theme_resolved": "hangzhou_constant"
+          },
+          "text": "西湖水下。\n\n你不知道你怎么下来的——但**这次**,你知道。\n\n8 口 1987 年的冷冻舱里,8 个'你'其实是 **8 个不同年份的同一个人**:\n\n1980 / 1985 / 1986 / 1987 / 1991 / 1996 / 1998 / 2009。\n\n这些年份加在一起,**正好是杭州夜班保安从第一代 G-001 到现任 G-273 之间,所有'未下班'的年份**。\n\n这就是杭州常数。\n\n不是 7,是无穷。"
+        },
+        {
+          "if": {
+            "theme_resolved": "scapegoat"
+          },
+          "text": "西湖水下。\n\n8 口冷冻舱。\n\n但**这次**,你看清了:\n\n舱壁那行「H = 1987」是横写的「工」字——1987 年代工业系统的封条印。\n\n林副科长 1985 投湖,**他不是为自己投的**。\n\n他用自己的命,**把 26 联签的责任,全部代死**。\n\n8 棺里的 8 个'你',**都欠他这一夜的债**。\n\n你今夜来,是来还的。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "1986_eighth_passenger"
+          },
+          "text": "西湖水下。\n\n8 口 1987 年冷冻舱。\n\n但**这次**,你数对了——\n\n不是 8 个'你'。\n\n是 1986 年钱塘江沉船 7 工人,加 1 个**没买到第 8 张归航船票**的林副科长。\n\n他想登船,但船票卖光了。\n\n所以他 1985-10-18 投了西湖。\n\n8 棺合一,等的就是你今夜认出他。"
+        },
         {
           "if": {
             "flags": {
@@ -6984,6 +7116,18 @@
             "theme_resolved": "scapegoat"
           },
           "text": "档案室这次空气是凝的。\n\n樟脑丸味浓得呛人——是旧棉袄叠了几十年的那种气味。\n\n煤炉灰落在地上,踩上去会留下脚印——\n\n你低头,看见**地上已经有一串脚印**——比你早,从门口走到档案柜,**没出来**。\n\n档案柜最底层,抽屉自己滑开。\n\n里面只有一张纸。一张**未填的死亡登记表**,日期栏空着,姓名栏空着。\n\n但**编号栏**已经写好了:**G-273**。\n\n你伸手要拿,纸上的字慢慢浮现:\n\n「林副科长 1985 / 工人 1986 / 红衣 1987 / 叶某 1991 /\n 何小燕 1996 / G-272 1998 / G-273 2024 / 待定 2029」\n\n8 个名字,8 个年份。\n\n他们都替过别人。\n现在轮到你。"
+        },
+        {
+          "if": {
+            "deduction_resolved": "13_curse_chain"
+          },
+          "text": "遗失档案室。\n\n墙上 1987 年百货大楼踩踏事故 13 死真实名单。\n\n但**这次**,你看清了——\n\n13 个名字的最后一个,是空的。\n\n空着的位置上,有一行小字铅笔:\n\n**'第 14 名 待补 — 此栏自动补位'**\n\n你抬头,墙上没有镜子,但你能看见自己的脸——\n\n你的名字浮在 14 号位置。\n\n13 死循环,**永远空一个位置等下一个**。"
+        },
+        {
+          "if": {
+            "foreshadow_resolved": "1987_red_dress_truth"
+          },
+          "text": "遗失档案室。\n\n1996 货梯红衣女孩真实姓名档案,你这次抽出来翻开了——\n\n第一页:**林晓燕**。\n\n出生日期:1985 年 10 月 19 日。\n\n那是林副科长投湖**的次日**。\n\n父亲一栏:**林志诚**。\n\n红衣女孩是林副科长的遗腹女。\n\n她 11 岁那年,1996,在货梯里**等到了她爸**。\n\n这一等,等了 39 年。"
         },
         {
           "if": {
