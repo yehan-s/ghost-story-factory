@@ -72,6 +72,39 @@ STORY_META = {
                 ],
                 "trigger_type": "cross_run",
             },
+            # Pass 6 闭环: 5 个 lore 节点的 _foreshadow_slot 声明 +
+            # consumer 节点(每个 lore 节点 stay 拣 3 shard 后,触发对应 NPC/scene
+            # 的 reaction variant)
+            "1987_songmuchang_inn": {
+                "_label": "松木场 1987 温州女自缢传闻(Pass 6 lore)",
+                "resolver_node": "n_lore_songmuchang_inn",
+                "consumer_nodes": ["n_npc_red_dress_girl"],
+                "trigger_type": "per_run",
+            },
+            "2009_zheda_clock_99": {
+                "_label": "浙大钟楼 2009 跳绳数 99 传闻(Pass 6 lore)",
+                "resolver_node": "n_lore_zheda_clock_girl",
+                "consumer_nodes": ["n_npc_eight_self"],
+                "trigger_type": "per_run",
+            },
+            "1947_wulinmen_seven": {
+                "_label": "武林门 1947 刑场 7 人地脉传闻(Pass 6 lore)",
+                "resolver_node": "n_lore_wulinmen_execution",
+                "consumer_nodes": ["n_npc_helmet_workers"],
+                "trigger_type": "per_run",
+            },
+            "2007_kongque_collapse": {
+                "_label": "孔雀大厦 2007 乌龙王石像被砸传闻(Pass 6 lore)",
+                "resolver_node": "n_lore_kongque_collapse",
+                "consumer_nodes": ["n_scene_lake_underwater"],
+                "trigger_type": "per_run",
+            },
+            "1924_leifeng_worm": {
+                "_label": "雷峰塔 1924 白虫塔砖辟邪传闻(Pass 6 lore)",
+                "resolver_node": "n_lore_leifeng_worm",
+                "consumer_nodes": ["n_npc_corrosion_face"],
+                "trigger_type": "per_run",
+            },
         },
         "themes": {
             "hangzhou_constant": {
