@@ -70,6 +70,30 @@ Accepted(本 ADR P0 部分已实现)
 ### Cross-character Contract(QA)
 `audit_reactions.py` 加 **DEAD_ENDING_SEEN** 检测:任何 variant 引用 `ending_seen.ending_id`,该 ending 必须存在为节点表中的 ending(通配 `*` 不检查)。
 
+#### 跨角色引用规范(Chief Editor,2026-05-08 追加)
+
+**`ending_seen.ending_id` 必须是节点表中真实存在的 ending 节点 id 字面量**(snake_case 形式,如 `n_end_truth`、`E_LINMOU_RELEASE`),**不是 `ending_type` 枚举值**(如 `E_TRUTH`、`E_TRUE`)。两者外形相似但语义不同:
+
+| 形式 | 用途 | 示例 |
+|---|---|---|
+| `node_id` | tree.json `nodes` 字典的 key | `n_end_truth`, `E_LINMOU_RELEASE` |
+| `ending_type` | ending 节点上 `ending_type` 字段值,**runtime 分类用** | `E_TRUTH`, `E_TRUE`, `E_BAD` |
+
+`audit_reactions.py` 检查的是 **node_id 引用一致性**,把 `ending_type` 枚举值写在 `ending_id` 字段上会触发 `DEAD_ENDING_SEEN`(commit aa71047 历史 bug 即此类)。
+
+通配 `*` 是唯一例外,语义为"该 story 的任意 ending"。
+
+#### Lore 锚点(Lore Keeper,2026-05-08 追加)
+
+林副科长作为 G-273 单位"夜班交接记录员"的鬼差化身,其跨周目记忆并非超自然全知,而是**单位档案制度的延续**:每位夜班保安离岗(ending)时,交接簿留痕;林副科长以鬼差视角调阅前任记录。
+
+因此 `narrative_variants[].if.ending_seen` 在 lore 上对应"林副科长翻看了你前一班的交接簿",台词应以**制度化口吻**呈现:
+
+- ✅ "上回那位小同志,选了把符烧了,档案里记着。"
+- ❌ "我看见你做了 X 选择。"(超验全知,破第四面墙)
+
+引用的 `ending_id` 必须在对应 `story_id` 的 endings 闭包内真实存在 — 这既是 `audit_reactions.py` DEAD_ENDING_SEEN 红线,也是"档案里不会凭空出现条目"的 lore 自洽。工具校验失败 = 单位档案有伪造嫌疑 = lore 破裂。
+
 ### Lore Canon(Lore Keeper)
 - **单位**:杭州市第二轻工业局物资供应公司财务科("二轻物资")
 - **投湖地点**:西湖北山街锦带桥东侧水域,1985-10-18 23:40 前后
@@ -140,6 +164,12 @@ P0 落地后实测发现:**linmou Act 1 是沙盒"拓扑骨架",但没有沙盒�
 | 总节点数 | 50+ | 27(目标 50) | Act 2 补 23 节点 |
 
 **核心问题**:Act 1 节点 = 单点决策机,picker → 地标 → 选择 → ending。**没有"反复回访 / 物件互动 / 横向移动"**,这是死剧本结构,只是用了 picker 包装。
+
+### 已知跨角色引用 bug(2026-05-08 追加)
+
+| 节点 | bug 描述 | 状态 | 修复 commit |
+|---|---|---|---|
+| `n_l1985_landmark_picker` | variant 引用 `ending_id: "E_TRUTH"`(ending_type 枚举值,非 node_id),实际应是 `n_end_truth` | **已修** | C2(本评审周期) |
 
 **Act 2/3 强制偿还规则**(ADR-010 沙盒契约):
 1. Act 2 鬼身补票必须满足"沙盒最小骨架" 5 项,否则评审一票否决

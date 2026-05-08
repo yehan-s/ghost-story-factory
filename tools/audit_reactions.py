@@ -37,6 +37,20 @@ def _walk_requires(node: Dict[str, Any]):
             yield ("choice", ch["require"])
 
 
+def _walk_ending_seen(req: Dict[str, Any]):
+    """递归 yield require 中所有 ending_seen spec(含 any_of/all_of/not)。"""
+    if not isinstance(req, dict):
+        return
+    if "ending_seen" in req:
+        yield req["ending_seen"] or {}
+    for sub in req.get("any_of") or []:
+        yield from _walk_ending_seen(sub)
+    for sub in req.get("all_of") or []:
+        yield from _walk_ending_seen(sub)
+    if "not" in req:
+        yield from _walk_ending_seen(req["not"])
+
+
 def _walk_reaction_keys(req: Dict[str, Any]):
     """递归遍历 require(含 any_of/all_of/not),yield (key, value)。"""
     if not isinstance(req, dict):
@@ -153,6 +167,27 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                     "node": resolver,
                     "msg": f"{ctype}.{ref_id} 声明了 resolver 但无 variant 消费",
                 })
+
+    # DEAD_ENDING_SEEN(ADR-009 cross-character contract):
+    # variant require ending_seen 引用的 ending_id 必须存在为节点(ending 是节点)。
+    # 通配 "*" 不检查(语义是"任意")。
+    for nid, node in nodes.items():
+        for ctx, req in _walk_requires(node):
+            for spec in _walk_ending_seen(req):
+                eid = (spec or {}).get("ending_id")
+                if not eid or eid == "*":
+                    continue
+                if eid not in nodes:
+                    problems.append({
+                        "code": "DEAD_ENDING_SEEN",
+                        "node": nid,
+                        "ctx": ctx,
+                        "msg": (
+                            f"ending_seen ending_id={eid!r} 不在节点表(跨角色契约缺失)。"
+                            f" 修复方向:补 ending 节点 / 把引用改成正确的 node_id(snake_case n_end_*),"
+                            f"不要删 variant — variant 删除会丢跨周目反应,违背 ADR-010 沙盒契约。"
+                        ),
+                    })
 
     return {
         "tree": str(tree_path),
