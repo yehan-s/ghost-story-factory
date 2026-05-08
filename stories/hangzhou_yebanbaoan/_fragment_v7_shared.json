@@ -1942,14 +1942,33 @@
             }
           },
           "require": {
-            "all_of": [
+            "any_of": [
               {
-                "flags": {
-                  "arc.got_judge_seal": true
-                }
+                "all_of": [
+                  {
+                    "flags": {
+                      "arc.got_judge_seal": true
+                    }
+                  },
+                  {
+                    "puzzle_pieces_min": 3
+                  }
+                ]
               },
               {
-                "puzzle_pieces_min": 3
+                "all_of": [
+                  {
+                    "flags": {
+                      "arc.got_judge_seal": true
+                    }
+                  },
+                  {
+                    "ending_seen": {
+                      "story_id": "杭州_v7",
+                      "ending_id": "n_end_truth"
+                    }
+                  }
+                ]
               }
             ]
           }
@@ -2085,6 +2104,30 @@
       ],
       "narrative": "遗失档案室。\n\n这里应该不存在。\n\n但你站在这里。\n\n墙上贴着:\n\n- 1985 林副科长 27 笔贪污明细(只有 13 笔被立案)\n- 1987 杭州百货大楼踩踏事故 13 死真实名单\n- 1991 留下小学女生最后一篇日记\n- 1996 货梯红衣女孩真实姓名\n- 1986 沉船 7 工人工号册\n- 2024 G-273 赵某 入职档案 (盖印『**未结**』)\n\n最后一份是你自己。\n\n你的入职档案上,『未结』两个字,是用你**自己的**血盖的。",
       "choices": [
+        {
+          "text": "翻找『候补判官章』(只在通过 E_TRUTH 后浮现的暗格)",
+          "next": "n_scene_evaluator_room",
+          "require": {
+            "all_of": [
+              {
+                "ending_seen": {
+                  "story_id": "杭州_v7",
+                  "ending_id": "n_end_truth"
+                }
+              },
+              {
+                "flags": {
+                  "know.linmou_corruption": true
+                }
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "arc.got_judge_seal": true
+            }
+          }
+        },
         {
           "text": "再翻几页。",
           "effects": {
