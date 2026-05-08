@@ -224,6 +224,7 @@
           "text": "[06] 联庄站盾构井。",
           "next": "n_s6_arrive",
           "require": {
+            "shifts_completed_min": 3,
             "not": {
               "landmark_visited": [
                 "S6"
@@ -235,7 +236,7 @@
           "text": "[07] 平海街 1 号货梯 — 直接下到 B3。",
           "next": "n_s7_arrive",
           "require": {
-            "shifts_completed_min": 3
+            "shifts_completed_min": 5
           }
         },
         {
@@ -2069,7 +2070,7 @@
                   {
                     "ending_seen": {
                       "story_id": "杭州_v7",
-                      "ending_id": "n_end_truth"
+                      "ending_id": "E_TRUTH"
                     }
                   }
                 ]
@@ -2217,7 +2218,7 @@
               {
                 "ending_seen": {
                   "story_id": "杭州_v7",
-                  "ending_id": "n_end_truth"
+                  "ending_id": "E_TRUTH"
                 }
               },
               {
@@ -2540,7 +2541,7 @@
               {
                 "ending_seen": {
                   "story_id": "杭州_v7",
-                  "ending_id": "n_end_truth"
+                  "ending_id": "E_TRUTH"
                 }
               },
               {
@@ -2564,7 +2565,7 @@
               {
                 "ending_seen": {
                   "story_id": "杭州_v7",
-                  "ending_id": "n_end_data"
+                  "ending_id": "E_DATA"
                 }
               },
               {

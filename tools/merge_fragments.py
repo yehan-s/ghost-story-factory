@@ -153,6 +153,37 @@ STORY_META = {
     "protagonist": "赵某 (G-273) · 湖滨国际名品街夜班保安",
     "version": "7.0",
     "author": "Claude Opus 4.7 + team ghost-v7-maze (handcrafted maze)",
+    # VN 演出资产契约。当前正式版本先使用 text_fallback,
+    # 后续替换成真实图片/音频时只改 manifest,不改节点逻辑。
+    "assets": {
+        "backgrounds": {
+            "bg_hangzhou_night": {"kind": "text_fallback", "label": "杭州夜班黑底"},
+            "bg_locker_room": {"kind": "text_fallback", "label": "更衣室 / 值班室"},
+            "bg_map": {"kind": "text_fallback", "label": "夜班巡逻地图"},
+            "bg_lakeside": {"kind": "text_fallback", "label": "西湖水汽"},
+            "bg_old_office": {"kind": "text_fallback", "label": "1985 二轻物资大院"},
+            "bg_archive": {"kind": "text_fallback", "label": "遗失档案室"},
+            "bg_ending": {"kind": "text_fallback", "label": "结局黑场"},
+        },
+        "bgm": {
+            "bgm_low_hum": {"kind": "text_fallback", "label": "低频电流声"},
+            "bgm_map_static": {"kind": "text_fallback", "label": "地图纸面摩擦声"},
+            "bgm_lake": {"kind": "text_fallback", "label": "湖面远汽笛"},
+            "bgm_ending": {"kind": "text_fallback", "label": "结局静默"},
+        },
+        "sfx": {
+            "sfx_page": {"kind": "text_fallback", "label": "翻记录表"},
+            "sfx_radio": {"kind": "text_fallback", "label": "对讲机雪花"},
+            "sfx_heartbeat": {"kind": "text_fallback", "label": "心跳"},
+            "sfx_water": {"kind": "text_fallback", "label": "湖水"},
+        },
+        "sprites": {
+            "sp_g273": {"kind": "text_fallback", "label": "赵某 G-273"},
+            "sp_linmou": {"kind": "text_fallback", "label": "林副科长"},
+            "sp_redgirl": {"kind": "text_fallback", "label": "红衣女孩"},
+            "sp_predecessor": {"kind": "text_fallback", "label": "前任 G-272"},
+        },
+    },
     "start_node": "n_intro",
     "initial_state": {
         "PR": 0,
@@ -978,6 +1009,115 @@ def load_fragment(path: Path) -> Tuple[Dict[str, Any], List[str]]:
     return nodes, warnings
 
 
+PRESENTATION_BY_SCENE: Dict[str, Dict[str, Any]] = {
+    "S0": {
+        "background": "bg_locker_room",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_g273",
+        "expression": "neutral",
+        "cg_unlock": None,
+        "transition": "fade",
+    },
+    "INTRO": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_g273",
+        "expression": "neutral",
+        "cg_unlock": None,
+        "transition": "fade",
+    },
+    "MAP": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": ["sfx_page"],
+        "sprite": None,
+        "expression": None,
+        "cg_unlock": None,
+        "transition": "cut",
+    },
+    "NPC": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_radio"],
+        "sprite": None,
+        "expression": "shadow",
+        "cg_unlock": None,
+        "transition": "fade",
+    },
+    "SCENE": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": None,
+        "expression": None,
+        "cg_unlock": None,
+        "transition": "fade",
+    },
+    "S1": {"background": "bg_lakeside", "bgm": "bgm_lake", "sfx": ["sfx_water"], "sprite": None, "expression": None, "cg_unlock": None, "transition": "fade"},
+    "S2": {"background": "bg_lakeside", "bgm": "bgm_low_hum", "sfx": [], "sprite": "sp_redgirl", "expression": "distant", "cg_unlock": None, "transition": "fade"},
+    "S3": {"background": "bg_hangzhou_night", "bgm": "bgm_low_hum", "sfx": ["sfx_heartbeat"], "sprite": None, "expression": None, "cg_unlock": None, "transition": "fade"},
+    "S4": {"background": "bg_hangzhou_night", "bgm": "bgm_low_hum", "sfx": [], "sprite": None, "expression": None, "cg_unlock": None, "transition": "fade"},
+    "S5": {"background": "bg_hangzhou_night", "bgm": "bgm_low_hum", "sfx": [], "sprite": None, "expression": None, "cg_unlock": None, "transition": "fade"},
+    "S6": {"background": "bg_hangzhou_night", "bgm": "bgm_low_hum", "sfx": ["sfx_water"], "sprite": None, "expression": None, "cg_unlock": None, "transition": "fade"},
+    "S7": {"background": "bg_archive", "bgm": "bgm_low_hum", "sfx": ["sfx_heartbeat"], "sprite": "sp_predecessor", "expression": "glitch", "cg_unlock": None, "transition": "glitch"},
+    "PICKER": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": ["sfx_page"],
+        "sprite": None,
+        "expression": None,
+        "cg_unlock": None,
+        "transition": "cut",
+    },
+    "END": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": None,
+        "expression": None,
+        "cg_unlock": None,
+        "transition": "fade_to_black",
+    },
+    "ENDING": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": None,
+        "expression": None,
+        "cg_unlock": None,
+        "transition": "fade_to_black",
+    },
+    "ENDING_TRANSITION": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": ["sfx_water"],
+        "sprite": None,
+        "expression": None,
+        "cg_unlock": None,
+        "transition": "fade",
+    },
+}
+
+
+def apply_default_presentation(nodes: Dict[str, Dict[str, Any]]) -> None:
+    """给正式树补默认 VN 演出字段。
+
+    fragment 可以覆盖 `presentation`;缺失时按 scene 套默认值。
+    """
+    fallback = PRESENTATION_BY_SCENE["SCENE"]
+    for node in nodes.values():
+        if node.get("presentation"):
+            continue
+        scene = str(node.get("scene") or "SCENE")
+        if node.get("_is_map_picker"):
+            scene = "MAP"
+        if node.get("is_ending"):
+            scene = "ENDING"
+        node["presentation"] = dict(PRESENTATION_BY_SCENE.get(scene, fallback))
+
+
 def merge(story_dir: Path, output_path: Path, check_only: bool = False) -> int:
     fragments = find_fragments(story_dir)
     if not fragments:
@@ -1070,6 +1210,7 @@ def merge(story_dir: Path, output_path: Path, check_only: bool = False) -> int:
         loc = info.get("initial_location")
         if loc:
             STORY_META["initial_state"]["npc_locations"][npc_id] = loc
+    apply_default_presentation(merged_nodes)
     tree = {**STORY_META, "nodes": merged_nodes}
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f:

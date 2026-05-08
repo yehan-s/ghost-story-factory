@@ -505,7 +505,7 @@ class SaveManager:
         deductions_count = len(
             self.data.get("deductions_resolved", {}).get(story_id, [])
         )
-        endings_seen_count = len(self.data.get("endings_seen") or [])
+        endings_seen_count = len(self.endings_seen)
         seen_set = set(self.data.get("foreshadows_seen", {}).get(story_id, []))
         resolved_set = set(
             self.data.get("foreshadows_resolved", {}).get(story_id, [])

@@ -133,15 +133,21 @@
 
 ### M4: GameTree v1 schema 与生成链路
 
-- [ ] 新增 `src/ghost_story_factory/runtime/contracts.py`
-- [ ] 定义统一 `RequirementEvaluator / EffectApplier / EndingResolver`
+- [x] 新增 `src/ghost_story_factory/runtime/contracts.py`
+- [x] 定义统一 `RequirementEvaluator / EffectApplier / EndingResolver`
+- [x] 正式播放器 `v5/player.py` 改为调用契约层,不再把 require/effects/ending 规则全部写死在 `State`
+- [x] 修正正式地图 picker 调用,传入当前 node,让 `_picker_endshift_choice` 生效
+- [x] 修正 `SaveManager.check_achievements()` 对 `endings_seen` dict 的计数错误
+- [x] 修正正式树的 `ending_seen.ending_id`:统一使用 `E_TRUTH` / `E_DATA` 等 ending_type,不再使用 `n_end_*` 节点 ID
+- [x] 修正正式树 `n_landmark_picker` 静态 choices 与 `landmark_map` 的 S6/S7 解锁阈值错位
+- [x] 为 `n_l1985_landmark_picker` 补显式 L1-L4 + 湖边结束 choices,动态 picker 继续作为正式运行路径
 - [ ] 让 v4 生成输出逐步靠近 `GameTree v1`
 - [ ] `PlotSkeleton` 增加 `location_id / npc_ids / event_slots / asset_cues` 等内容大纲字段
 
 ### M5: VN 演出契约
 
-- [ ] 顶层增加可空 `assets` manifest
-- [ ] 节点支持可空 `presentation` 字段:
+- [x] 顶层增加可空 `assets` manifest
+- [x] 节点支持可空 `presentation` 字段:
   - `background`
   - `bgm`
   - `sfx`
@@ -149,7 +155,8 @@
   - `expression`
   - `cg_unlock`
   - `transition`
-- [ ] 新增资产引用审计,缺资源时允许文本 fallback,但不允许悬空引用
+- [x] `tools/merge_fragments.py` 合并正式树时按 scene 自动补默认 presentation
+- [x] `tools/audit_playability.py` 新增 presentation/assets 引用审计,缺资源时允许文本 fallback,但不允许悬空引用
 
 ---
 
@@ -158,6 +165,7 @@
 本任务完成时,至少满足:
 
 - `tools/audit_playability.py stories/hangzhou_yebanbaoan/tree.json` 不出现 error;
+- `tools/audit_playability.py stories/hangzhou_yebanbaoan/tree.json` 显示 `演出节点: 145/145`;
 - `tools/view_tree_progress.py --checkpoint stories/hangzhou_yebanbaoan/tree.json` 统计节点来自 `nodes`,不是顶层 metadata;
 - runtime 不再生成 `missing_branch` 占位结局;
 - `tools/run_all_tests.py` 包含可玩性审计测试;
@@ -171,6 +179,6 @@
 
 1. `GameTree v1` 审计阻断坏树;
 2. 现有《断桥残雪》数据债修复;
-3. v5/v7 播放器拆模块;
+3. v5/v7 播放器继续拆 `PlayerSession / EndingService / ChoiceVisibility / MapChoiceBuilder`;
 4. v4 生成器输出沙盒拓扑;
-5. VN 演出字段与回看/收集本。
+5. 用真实素材替换 `assets.*.text_fallback`,并实现回看/收集本。

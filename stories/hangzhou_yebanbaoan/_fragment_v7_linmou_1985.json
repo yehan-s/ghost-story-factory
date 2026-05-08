@@ -24,7 +24,7 @@
           "if": {
             "ending_seen": {
               "story_id": "杭州_v7",
-              "ending_id": "n_end_truth"
+              "ending_id": "E_TRUTH"
             }
           },
           "text": "你站在二轻物资大院的过道。\n\n这条过道你走过几千次,但今晚——\n\n你忽然觉得,过道尽头那盏煤油应急灯,**不像是 1985 年的灯**。\n\n灯下那个值班保安胸前的工牌,你没看清,但**字母 G 和数字**,你一看就觉得熟。\n\n你今晚,还有 4 个地方要去。\n\n你忽然知道,这一夜你已经走过很多次了。"
@@ -60,7 +60,47 @@
       ],
       "narrative": "(占位)",
       "show_hud": true,
-      "choices": [],
+      "choices": [
+        {
+          "text": "L1 算盘房 — 先核 26 联签拨款单。",
+          "next": "n_l1985_abacus_01"
+        },
+        {
+          "text": "L2 锅炉房后院 — 找老李留下的火钳和灰。",
+          "next": "n_l1985_boiler_01"
+        },
+        {
+          "text": "L3 档案室 — 把原始审计单翻出来。",
+          "next": "n_l1985_archive_01"
+        },
+        {
+          "text": "L4 锦带桥凉亭 — 去湖边前最后确认一次。",
+          "next": "n_l1985_pavilion_01"
+        },
+        {
+          "text": "[05] 直接去湖边。",
+          "next": "n_l1985_lake_jump",
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "l_intent_release": true
+                }
+              },
+              {
+                "flags": {
+                  "l_intent_regret": true
+                }
+              },
+              {
+                "flags": {
+                  "l_intent_grievance": true
+                }
+              }
+            ]
+          }
+        }
+      ],
       "_picker_endshift_choice": {
         "text": "[05] 直接去湖边。",
         "next": "n_l1985_lake_jump",

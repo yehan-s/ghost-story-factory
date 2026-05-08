@@ -21,6 +21,12 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from ghost_story_factory.runtime.contracts import (
+    EffectApplier,
+    EndingResolver,
+    RequirementEvaluator,
+)
+
 
 # --- 终端样式(标准库 only,不依赖 rich) ---
 
@@ -122,210 +128,13 @@ class State:
 
         副作用:同时把结构化事件写入 self._last_events,供 UI 卡片化渲染。
         """
-        notes: List[str] = []
-        events: List[Dict[str, Any]] = []
-        if not effects:
-            self._last_events = events
-            return notes
-
-        # 个人共鸣 / 全局共鸣 是隐藏效果,不向用户反馈数值
-        if "PR" in effects:
-            delta = int(effects["PR"])
-            if delta:
-                self.PR = max(0, min(100, self.PR + delta))
-                if self.PR > self.PR_peak:
-                    self.PR_peak = self.PR
-        if "GR" in effects:
-            delta = int(effects["GR"])
-            if delta:
-                self.GR = max(0, min(100, self.GR + delta))
-        if "shifts_skipped" in effects:
-            d = int(effects["shifts_skipped"])
-            self.shifts_skipped += d
-            notes.append(f"漏打卡 +{d}")
-            events.append({"type": "shifts_skipped", "delta": d,
-                           "current": self.shifts_skipped})
-        for item in effects.get("inv_add", []) or []:
-            if item not in self.inv:
-                self.inv.append(item)
-                desc = self.inv_descriptions.get(item) if self.inv_descriptions else None
-                if desc:
-                    notes.append(f"获得「{item}」 — {desc}")
-                else:
-                    notes.append(f"获得「{item}」")
-                events.append({"type": "inv_add", "key": item, "desc": desc or ""})
-        for item in effects.get("inv_remove", []) or []:
-            if item in self.inv:
-                self.inv.remove(item)
-                notes.append(f"失去「{item}」")
-                events.append({"type": "inv_remove", "key": item})
-        for k, v in (effects.get("flags") or {}).items():
-            new_v = bool(v)
-            old_v = bool(self.flags.get(k, False))
-            self.flags[k] = new_v
-            # ADR-007 + Pass2 spec: know.* false→true 跳变 emit knowledge_learned 事件。
-            # 复读触发也 emit(is_first_time=False),供 UI 渲染"已知"复读条。
-            # know.X = False 不算 learn(知识不可遗忘),非 know.* flag 静默。
-            if k.startswith("know.") and new_v:
-                events.append({
-                    "type": "knowledge_learned",
-                    "key": k,
-                    "is_first_time": (not old_v),
-                })
-
-        # v6 新增 effects
-        if "landmark_visited" in effects:
-            lm = str(effects["landmark_visited"])
-            # 记录"刚刚去过哪"用于自由移动 — 即便重复访问也更新
-            self.last_landmark_id = lm
-            if lm not in self.visited_landmarks:
-                self.visited_landmarks.append(lm)
-                if lm in ("S1", "S2", "S3", "S4", "S5", "S6"):
-                    events.append({"type": "shifts_completed", "delta": 1,
-                                   "current": self.shifts_completed,
-                                   "implicit": True})  # 由 landmark_visited 隐含触发
-                notes.append(f"踏入 {lm}")
-                events.append({"type": "landmark_visited", "key": lm})
-        # NPC 移动:effects.npc_move = {"npc_id": "S2", ...}
-        for npc_id, target in (effects.get("npc_move") or {}).items():
-            self.npc_locations[npc_id] = str(target)
-            events.append({"type": "npc_move", "key": npc_id, "to": str(target)})
-        if "landmark_skipped" in effects:
-            lm = str(effects["landmark_skipped"])
-            if lm not in self.skipped_landmarks:
-                self.skipped_landmarks.append(lm)
-                # 同步漏卡计数(取代 tree.json 中冗余的 effects.shifts_skipped: 1)
-                self.shifts_skipped += 1
-                notes.append(f"绕开 {lm}(漏卡 +1)")
-                events.append({"type": "landmark_skipped", "key": lm,
-                               "current": self.shifts_skipped})
-        if "puzzle_add" in effects:
-            piece = str(effects["puzzle_add"])
-            if piece not in self.puzzle_pieces:
-                self.puzzle_pieces.append(piece)
-                notes.append(f"拼图碎片 +1 ({len(self.puzzle_pieces)}/5)")
-                events.append({"type": "puzzle_add", "key": piece,
-                               "current": len(self.puzzle_pieces), "total": 5})
-
-        self._last_events = events
-        return notes
+        return EffectApplier.apply(self, effects)
 
     def _meets_clause(self, require: Optional[Dict[str, Any]]) -> bool:
         """检查单一 require 子句的所有原子条件(AND 关系)。
         不递归处理 any_of/all_of/not。
         """
-        if not require:
-            return True
-        if "PR_min" in require and self.PR < int(require["PR_min"]):
-            return False
-        if "PR_max" in require and self.PR > int(require["PR_max"]):
-            return False
-        if "GR_min" in require and self.GR < int(require["GR_min"]):
-            return False
-        if "GR_max" in require and self.GR > int(require["GR_max"]):
-            return False
-        for item in require.get("inv_has", []) or []:
-            if item not in self.inv:
-                return False
-        for item in require.get("inv_lacks", []) or []:
-            if item in self.inv:
-                return False
-        for k, v in (require.get("flags") or {}).items():
-            if bool(self.flags.get(k, False)) != bool(v):
-                return False
-        if "shifts_skipped_min" in require and self.shifts_skipped < int(require["shifts_skipped_min"]):
-            return False
-        if "shifts_completed_min" in require and self.shifts_completed < int(require["shifts_completed_min"]):
-            return False
-        # v6 新增检查
-        for lm in require.get("landmark_visited", []) or []:
-            if lm not in self.visited_landmarks:
-                return False
-        if "puzzle_pieces_min" in require and len(self.puzzle_pieces) < int(require["puzzle_pieces_min"]):
-            return False
-        # v7+ NPC 访问计数 / 当前位置(给重访 narrative_variants 用)
-        for node_id, n in (require.get("visit_count_min") or {}).items():
-            if self.visit_counts.get(node_id, 0) < int(n):
-                return False
-        if "last_landmark" in require:
-            expected = require["last_landmark"]
-            if isinstance(expected, str):
-                if self.last_landmark_id != expected:
-                    return False
-            elif isinstance(expected, list):
-                if self.last_landmark_id not in expected:
-                    return False
-        # v7 多角色 / 跨周目检查
-        if "character" in require:
-            expected = require["character"]
-            if isinstance(expected, str):
-                if self.character != expected:
-                    return False
-            elif isinstance(expected, list):
-                if self.character not in expected:
-                    return False
-        # 反应机制(ADR-008):跨周目持久化层条件 — 单一真相源 = save_manager。
-        # list 是 ANY 语义(任一满足即 True);ALL 用 all_of 显式。
-        # save_manager / story_id / tree 任一缺失 → 安全降级返回 False。
-        if "deduction_resolved" in require:
-            sm = self.save_manager
-            if sm is None or self.story_id is None:
-                return False
-            ids = require["deduction_resolved"]
-            ids = [ids] if isinstance(ids, str) else list(ids or [])
-            if not any(sm.is_deduction_resolved(self.story_id, x) for x in ids):
-                return False
-        if "foreshadow_resolved" in require:
-            sm = self.save_manager
-            if sm is None or self.story_id is None:
-                return False
-            ids = require["foreshadow_resolved"]
-            ids = [ids] if isinstance(ids, str) else list(ids or [])
-            if not any(sm.is_foreshadow_resolved(self.story_id, x) for x in ids):
-                return False
-        if "theme_resolved" in require:
-            sm = self.save_manager
-            if sm is None or self.story_id is None or self.tree is None:
-                return False
-            ids = require["theme_resolved"]
-            ids = [ids] if isinstance(ids, str) else list(ids or [])
-            themes = (self.tree.get("themes") or {})
-            resolved = sm.get_resolved_foreshadows(self.story_id)
-
-            def _theme_done(tid: str) -> bool:
-                meta = themes.get(tid) or {}
-                manif = set(meta.get("manifestations") or [])
-                # 空 manifestations 视作未通透(避免 set().issubset 永真陷阱)
-                return bool(manif) and manif.issubset(resolved)
-
-            if not any(_theme_done(x) for x in ids):
-                return False
-        # ending_seen(ADR-009):跨周目 ending 查询,支持 ending_id="*" 通配。
-        # 形式: {"ending_seen": {"story_id": "杭州_v7", "ending_id": "E_LINMOU_RELEASE"}}
-        # 兼容 SaveManager 旧版(endings_seen=list)与新版(dict[story_id, list])。
-        if "ending_seen" in require:
-            sm = self.save_manager
-            if sm is None:
-                return False
-            spec = require["ending_seen"] or {}
-            sid = spec.get("story_id")
-            eid = spec.get("ending_id")
-            if not sid or not eid:
-                return False
-            seen = (sm.data or {}).get("endings_seen")
-            if isinstance(seen, dict):
-                story_eds = seen.get(sid) or []
-            elif isinstance(seen, list):
-                # 旧版 list 视作所有归属当前 story_id(杭州_v7),仅当请求 story_id 匹配时返回
-                story_eds = list(seen) if sid == "杭州_v7" else []
-            else:
-                story_eds = []
-            if eid == "*":
-                if not story_eds:
-                    return False
-            elif eid not in story_eds:
-                return False
-        return True
+        return RequirementEvaluator.meets_clause(self, require)
 
     def meets(self, require: Optional[Dict[str, Any]]) -> bool:
         """检查 require 条件是否满足(支持嵌套 any_of/all_of/not 组合)。
@@ -338,26 +147,7 @@ class State:
 
         子句本身递归遵循同样规则(支持嵌套)。
         """
-        if not require:
-            return True
-        # 1. 原子条件(AND-only)
-        if not self._meets_clause(require):
-            return False
-        # 2. any_of: OR
-        if "any_of" in require:
-            sub = require["any_of"] or []
-            if sub and not any(self.meets(c) for c in sub):
-                return False
-        # 3. all_of: 显式 AND
-        if "all_of" in require:
-            sub = require["all_of"] or []
-            if not all(self.meets(c) for c in sub):
-                return False
-        # 4. not: NOT
-        if "not" in require:
-            if self.meets(require["not"]):
-                return False
-        return True
+        return RequirementEvaluator.meets(self, require)
 
     # --- 选项可见性分类(visible / locked / hidden) ---
 
@@ -781,6 +571,24 @@ def collect_important_items(tree: Dict[str, Any]) -> set:
     return important
 
 
+def mark_tool_visit(tree: Dict[str, Any], state: State, node: Dict[str, Any]) -> None:
+    """进入工具节点时,把对应 toolbar 状态标记为已访问。
+
+    工具栏的状态不应该靠每个 choice 手写一套 flag。节点已经声明 `_tool_id`,
+    顶层 `tools` 已经声明 `state_flag`,这两个字段才是单一真相源。
+    """
+    tool_id = node.get("_tool_id")
+    if not tool_id:
+        return
+    for tool in tree.get("tools") or []:
+        if tool.get("id") != tool_id:
+            continue
+        flag = tool.get("state_flag")
+        if flag:
+            state.flags[str(flag)] = True
+        return
+
+
 # --- 结局色调映射 ---
 
 # 8 主结局 + 9 mini-ending 各按"基调"染色,玩家通关瞬间能"读出"是哪种结局
@@ -955,6 +763,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         visited.append(current_id)
         # 累计节点访问次数(给 NPC 重访 narrative_variants 用)
         state.visit_counts[current_id] = state.visit_counts.get(current_id, 0) + 1
+        mark_tool_visit(tree, state, node)
         # 地标入场 banner — 节点带 _landmark_header 时显示翻页过场
         header = node.get("_landmark_header")
         if header and isinstance(header, dict):
@@ -1013,7 +822,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             from ghost_story_factory.v7.map_view import (
                 render_map_cli, picker_choices
             )
-            _picker_pre = picker_choices(tree, state)
+            _picker_pre = picker_choices(tree, state, node=node)
             _visible_pre = [c for c in _picker_pre if c.get("_picker_kind") != "locked"]
             travel_idx = {}
             for i, c in enumerate(_visible_pre):
@@ -1105,9 +914,9 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             print()
 
         # 结局节点
-        if node.get("is_ending"):
-            ending_type = node.get("ending_type", "E_UNKNOWN")
-            ending_name = tree.get("endings", {}).get(ending_type, ending_type)
+        if EndingResolver.is_ending(node):
+            ending_type = EndingResolver.ending_type(node)
+            ending_name = EndingResolver.ending_name(tree, ending_type)
             ec = ending_color(ending_type)
             from ghost_story_factory.v7.animate import (
                 draw_line_progressive, glitch_text,
@@ -1185,7 +994,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         if node.get("_is_map_picker"):
             # 自由移动 picker:动态生成 travel + tool + endshift + locked 选项
             from ghost_story_factory.v7.map_view import picker_choices
-            generated = picker_choices(tree, state)
+            generated = picker_choices(tree, state, node=node)
             visible = [c for c in generated if c.get("_picker_kind") != "locked"]
             locked = [(c, c.get("text", "").split("(")[-1].rstrip(")"))
                       for c in generated if c.get("_picker_kind") == "locked"]

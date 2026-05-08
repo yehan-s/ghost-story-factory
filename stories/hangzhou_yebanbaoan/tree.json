@@ -170,6 +170,92 @@
   "protagonist": "赵某 (G-273) · 湖滨国际名品街夜班保安",
   "version": "7.0",
   "author": "Claude Opus 4.7 + team ghost-v7-maze (handcrafted maze)",
+  "assets": {
+    "backgrounds": {
+      "bg_hangzhou_night": {
+        "kind": "text_fallback",
+        "label": "杭州夜班黑底"
+      },
+      "bg_locker_room": {
+        "kind": "text_fallback",
+        "label": "更衣室 / 值班室"
+      },
+      "bg_map": {
+        "kind": "text_fallback",
+        "label": "夜班巡逻地图"
+      },
+      "bg_lakeside": {
+        "kind": "text_fallback",
+        "label": "西湖水汽"
+      },
+      "bg_old_office": {
+        "kind": "text_fallback",
+        "label": "1985 二轻物资大院"
+      },
+      "bg_archive": {
+        "kind": "text_fallback",
+        "label": "遗失档案室"
+      },
+      "bg_ending": {
+        "kind": "text_fallback",
+        "label": "结局黑场"
+      }
+    },
+    "bgm": {
+      "bgm_low_hum": {
+        "kind": "text_fallback",
+        "label": "低频电流声"
+      },
+      "bgm_map_static": {
+        "kind": "text_fallback",
+        "label": "地图纸面摩擦声"
+      },
+      "bgm_lake": {
+        "kind": "text_fallback",
+        "label": "湖面远汽笛"
+      },
+      "bgm_ending": {
+        "kind": "text_fallback",
+        "label": "结局静默"
+      }
+    },
+    "sfx": {
+      "sfx_page": {
+        "kind": "text_fallback",
+        "label": "翻记录表"
+      },
+      "sfx_radio": {
+        "kind": "text_fallback",
+        "label": "对讲机雪花"
+      },
+      "sfx_heartbeat": {
+        "kind": "text_fallback",
+        "label": "心跳"
+      },
+      "sfx_water": {
+        "kind": "text_fallback",
+        "label": "湖水"
+      }
+    },
+    "sprites": {
+      "sp_g273": {
+        "kind": "text_fallback",
+        "label": "赵某 G-273"
+      },
+      "sp_linmou": {
+        "kind": "text_fallback",
+        "label": "林副科长"
+      },
+      "sp_redgirl": {
+        "kind": "text_fallback",
+        "label": "红衣女孩"
+      },
+      "sp_predecessor": {
+        "kind": "text_fallback",
+        "label": "前任 G-272"
+      }
+    }
+  },
   "start_node": "n_intro",
   "initial_state": {
     "PR": 0,
@@ -1592,7 +1678,18 @@
           "text": "[返回] 关掉手机,回到地标地图。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "cut"
+      }
     },
     "n_lore_leifeng_worm": {
       "scene": "NPC",
@@ -1698,7 +1795,18 @@
           "text": "走开。这不是你今晚要管的。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_lore_songmuchang_inn": {
       "scene": "SCENE",
@@ -1803,7 +1911,16 @@
           "text": "走开,这不是你的打卡点。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_lore_zheda_clock_girl": {
       "scene": "NPC",
@@ -1915,7 +2032,18 @@
           },
           "next": "n_s5_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_lore_wulinmen_execution": {
       "scene": "SCENE",
@@ -2028,7 +2156,16 @@
           },
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_lore_kongque_collapse": {
       "scene": "SCENE",
@@ -2142,7 +2279,16 @@
           },
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_arrive": {
       "scene": "S1",
@@ -2281,6 +2427,17 @@
       "_landmark_header": {
         "time": "20:27",
         "place": "湖滨第三把绿色长椅"
+      },
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
       }
     },
     "n_s1_close": {
@@ -2313,7 +2470,18 @@
           "text": "站起来,退回打卡机前再想。",
           "next": "n_s1_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_close_touch": {
       "scene": "S1",
@@ -2348,7 +2516,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_pocket_book": {
       "scene": "S1",
@@ -2411,7 +2590,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_book_copy": {
       "scene": "S1",
@@ -2421,7 +2611,18 @@
           "text": "退到长椅旁,继续观察。",
           "next": "n_s1_close"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_close_flashlight": {
       "scene": "S1",
@@ -2452,7 +2653,18 @@
             "GR": 3
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_standoff": {
       "scene": "S1",
@@ -2481,7 +2693,18 @@
           "text": "退回打卡机前。",
           "next": "n_s1_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_eyes_closed": {
       "scene": "S1",
@@ -2502,7 +2725,18 @@
             "GR": 8
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_wet_shoes": {
       "scene": "S1",
@@ -2537,7 +2771,18 @@
             "PR": 3
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_eyes_attack": {
       "scene": "S1",
@@ -2550,7 +2795,18 @@
             "PR": -3
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_shoe_sole": {
       "scene": "S1",
@@ -2570,7 +2826,18 @@
           "text": "把硬币扔回湿鞋,退回打卡机。",
           "next": "n_s1_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_photo": {
       "scene": "S1",
@@ -2610,7 +2877,18 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_walk_past": {
       "scene": "S1",
@@ -2644,7 +2922,18 @@
             "landmark_skipped": "S1"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_lake_chase": {
       "scene": "S1",
@@ -2676,7 +2965,18 @@
             "PR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s1_dry_shoe": {
       "scene": "S1",
@@ -2696,7 +2996,18 @@
             "puzzle_add": "piece_blood_mud"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_arrive": {
       "scene": "S2",
@@ -2814,6 +3125,15 @@
       "_landmark_header": {
         "time": "21:47",
         "place": "柳浪闻莺 307 阶"
+      },
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
       }
     },
     "n_s2_count_stairs": {
@@ -2879,7 +3199,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_step_308": {
       "scene": "S2",
@@ -2951,7 +3280,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_knock_door": {
       "scene": "S2",
@@ -2983,7 +3321,16 @@
             "GR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_run_up": {
       "scene": "S2",
@@ -3022,7 +3369,16 @@
             "PR": -8
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_turn_back": {
       "scene": "S2",
@@ -3050,7 +3406,16 @@
             "GR": 10
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_step_on_shadow": {
       "scene": "S2",
@@ -3087,7 +3452,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_clean_shoes": {
       "scene": "S2",
@@ -3122,7 +3496,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_wait_307": {
       "scene": "S2",
@@ -3159,7 +3542,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_descend_count": {
       "scene": "S2",
@@ -3191,14 +3583,32 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s2_endless_loop": {
       "scene": "S2",
       "is_ending": true,
       "ending_type": "E_BAD_1987",
       "narrative": "你继续往上数。\n\n308、309、310、500、1000、1987...\n\n你停不下来。\n\n你的脚自己迈,你的嘴自己数。\n\n第 1987 阶,你抬头——\n\n你**还在第 1 阶**。\n\n你回头——\n\n柳浪闻莺的雾里,站着一排小学生,穿着 1987 年的红白校服,排成两列,**等你领他们上山**。\n\n你想停下。\n\n你的腿不听。\n\n你的口水变成砂砾。\n\n你的喉咙喊不出。\n\n《异常事件记录表》[02]栏自己写完了:\n\n「赵某 G-273  21:47-永远  自愿替补 1987-12-24-013」\n\n你成了 1987 年踩踏事故里,**那个原本不应该死**的第 14 个人。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s2_red_door_skip": {
       "scene": "S2",
@@ -3214,7 +3624,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_arrive": {
       "scene": "S3",
@@ -3314,6 +3733,17 @@
       "_landmark_header": {
         "time": "22:48",
         "place": "九溪理安寺裂钟"
+      },
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
       }
     },
     "n_s3_examine_face": {
@@ -3348,7 +3778,18 @@
           "text": "退后,绕到钟另一面。",
           "next": "n_s3_other_side"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_scrape_corrosion": {
       "scene": "S3",
@@ -3376,7 +3817,18 @@
             "PR": 3
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_match_print": {
       "scene": "S3",
@@ -3403,7 +3855,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_refuse_h1987": {
       "scene": "S3",
@@ -3427,14 +3890,34 @@
             "puzzle_add": "piece_refused_h"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_temple_descend_h": {
       "scene": "S3",
       "is_ending": true,
       "ending_type": "E_BAD_DROWN",
       "narrative": "你不写。\n\n你接受了 H = 1987。\n\n你的左手腕烫出新的字:\n\n「H = 1987 — 编号 014」\n\n14。\n\n你成了 1987 年踩踏事故里,本来不该死的**第 14 个**。\n\n但 H 不止 1987。\n\nH 还有 1985、1991、1996、1986...\n\n每一个 H,都需要一个候补。\n\n钟的「侧脸」张开嘴——\n\n吐出一池**水**。\n\n大殿瞬间淹到天花板。\n\n你浮起来,然后**沉下去**。\n\n你最后看见的是 8 口冷冻舱,加你**第 9 口**,正在合拢。\n\n第 9 口刻着「2024 G-273 赵某」。\n\n钟,合拢。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s3_wait_to_ring": {
       "scene": "S3",
@@ -3469,14 +3952,34 @@
             "GR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_eighth_strike": {
       "scene": "S3",
       "is_ending": true,
       "ending_type": "E_BAD_1987",
       "narrative": "你撞第 8 下。\n\n咚。\n\n钟,**自己崩裂**。\n\n两半铜钟没有掉下来——\n\n它们**朝你飞过来**。\n\n你来不及躲。\n\n两半铜钟在你身体处合拢——\n\n你成了**钟的内里**。\n\n你听见外面一片寂静。\n\n你听见自己的呼吸,在铜壳里回响。\n\n你听见 8 个声音齐声说:\n\n「第 9 任。\n  欢迎。」\n\n外面,大殿恢复正常。\n\n钟挂回钟架,「侧脸」少了第 9 颗铜锈。\n\n那颗铜锈,是**你的脸**。\n\n23:45 的钟声响了。\n\n7 下。\n\n第 7 下里,有你的尖叫。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s3_offer_id": {
       "scene": "S3",
@@ -3509,7 +4012,18 @@
             "puzzle_add": "piece_eight_zhao"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_other_side": {
       "scene": "S3",
@@ -3536,7 +4050,18 @@
           "text": "退回正面,继续看男人侧脸。",
           "next": "n_s3_examine_face"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_temple_back": {
       "scene": "S3",
@@ -3570,7 +4095,18 @@
           "text": "退出小院,回大殿。",
           "next": "n_s3_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s3_temple_radio": {
       "scene": "S3",
@@ -3603,7 +4139,18 @@
             "GR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_arrive": {
       "scene": "S4",
@@ -3695,6 +4242,15 @@
       "_landmark_header": {
         "time": "00:11",
         "place": "中山中路羊血弄 2 号"
+      },
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
       }
     },
     "n_s4_approach_goat": {
@@ -3739,7 +4295,16 @@
           "text": "退后,先去看「⺶」字匾。",
           "next": "n_s4_examine_sign"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_blood_face": {
       "scene": "S4",
@@ -3775,14 +4340,32 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_kneel_three": {
       "scene": "S4",
       "is_ending": true,
       "ending_type": "E_BAD_DROWN",
       "narrative": "你跪下。\n\n青砖很硬,冷气从膝盖钻进去。\n\n第一拜。\n\n弄堂深处,17 个**「羊公会」火死灵**,从墙缝里**挤出半张脸**,看你。\n\n第二拜。\n\n墙缝里,17 张脸,**齐齐张嘴**——\n\n但他们没有声音。他们用空气念你的工号。\n\n第三拜。\n\n你的额头**贴上**青砖——\n\n青砖**张开**,像一张嘴。\n\n你被吞下去。\n\n弄堂尽头铁钩上,黑山羊**多了一具**。\n\n第二具有头。\n\n头戴着工牌:「赵某 G-273」。\n\n婴儿的啼哭,从你**胸腔**里传出来。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s4_examine_sign": {
       "scene": "S4",
@@ -3810,7 +4393,16 @@
             "puzzle_add": "piece_yang_brush"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_paint_stroke": {
       "scene": "S4",
@@ -3852,14 +4444,32 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_extra_stroke": {
       "scene": "S4",
       "is_ending": true,
       "ending_type": "E_BAD_1987",
       "narrative": "你多画一笔。\n\n「⺶」变成一个不存在的字。\n\n墙缝里 17 张脸,**齐齐爆开**——\n\n青砖墙在你眼前**烧起来**。\n\n但火不烫,是冷的。\n\n这是 1933 年的火——\n\n那一年,羊血弄第一次发生命案。\n\n开山首刀的男人,被仇家烧死在这条弄堂里。\n\n你的衣服自己变成 1933 年的长衫。\n\n你的手里,自己握着一把**屠羊刀**。\n\n你回头——\n\n弄堂尽头铁钩上,黑山羊**有头**。\n\n头是 1933 年那个男人的。\n\n你成了**他**。\n\n你将在每个夜班 00:11,**永远**站在羊血弄,等下一个 G-273 进来。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s4_break_brush": {
       "scene": "S4",
@@ -3880,7 +4490,16 @@
             "puzzle_add": "piece_yang_freed"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_old_woman": {
       "scene": "S4",
@@ -3905,7 +4524,16 @@
             "puzzle_add": "piece_grandma_blessing"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_open_door": {
       "scene": "S4",
@@ -3943,7 +4571,16 @@
             "puzzle_add": "piece_camera_self"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_smash_monitor": {
       "scene": "S4",
@@ -3957,7 +4594,16 @@
             "GR": 10
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s4_cut_rope": {
       "scene": "S4",
@@ -3989,7 +4635,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_arrive": {
       "scene": "S5",
@@ -4104,6 +4759,15 @@
       "_landmark_header": {
         "time": "01:08",
         "place": "留下小学 203 琴房"
+      },
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
       }
     },
     "n_s5_open_door": {
@@ -4144,7 +4808,16 @@
           "text": "退出琴房,关门。",
           "next": "n_s5_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_sit_piano": {
       "scene": "S5",
@@ -4186,7 +4859,16 @@
             "GR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_open_bench": {
       "scene": "S5",
@@ -4233,14 +4915,32 @@
             "PR": -3
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_self_hang": {
       "scene": "S5",
       "is_ending": true,
       "ending_type": "E_BAD_DROWN",
       "narrative": "你把钢丝绳套在自己脖子上。\n\n绳子是新的,但**很贴**。\n\n好像它就是为你的脖子尺寸做的。\n\n你站到琴凳上——\n\n琴凳**自己升高**。\n\n琴凳变成 1991 年那把摇晃的木椅。\n\n你的脚尖,慢慢离地。\n\n你听见钢琴自己弹《小星星》。\n\n弹得**慢半拍**——\n\n那是 1991 年叶某弹错的节奏。\n\n你最后看见的画面是——\n\n203 琴房窗外,天**亮了**。\n\n但你下班的时间,**永远不会到**。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s5_take_rope": {
       "scene": "S5",
@@ -4268,7 +4968,16 @@
             "GR": 8
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_grant_leave": {
       "scene": "S5",
@@ -4312,7 +5021,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_inspect_shoes": {
       "scene": "S5",
@@ -4344,14 +5062,32 @@
             "GR": 10
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_wear_shoes": {
       "scene": "S5",
       "is_ending": true,
       "ending_type": "E_DATA",
       "narrative": "你脱下自己的警用皮鞋。\n\n你套上那双白布鞋。\n\n布鞋是 11 岁女孩尺码——\n\n但你穿上去**严丝合缝**。\n\n你的脚,**变小了**。\n\n你的腿,**变细了**。\n\n你的制服,变成红色连衣裙。\n\n你的工牌,变成 14 寸黑白电视。\n\n你成了红衣电视女孩——\n\n你也成了 1991 年自缢的叶某。\n\n你也成了 1996 年货梯里的那个孩子。\n\n你成了**所有「11 岁女孩死在杭州」的合体**。\n\n下一个 G-273 第一夜班,在 S2 看见的红木门里——\n\n会是**你**问他:\n\n「叔叔,27 楼怎么走?」",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s5_listen_outside": {
       "scene": "S5",
@@ -4385,7 +5121,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_corridor": {
       "scene": "S5",
@@ -4418,7 +5163,16 @@
           "text": "退回 203 琴房。",
           "next": "n_s5_open_door"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s5_chalk_name": {
       "scene": "S5",
@@ -4444,7 +5198,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_arrive": {
       "scene": "S6",
@@ -4555,6 +5318,17 @@
       "_landmark_header": {
         "time": "01:52",
         "place": "联庄站 B4 盾构井"
+      },
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
       }
     },
     "n_s6_look_down": {
@@ -4597,14 +5371,34 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_grab_seven": {
       "scene": "S6",
       "is_ending": true,
       "ending_type": "E_BAD_DROWN",
       "narrative": "你薅下 7 顶柳条帽,塞进背包。\n\n你以为你赢了。\n\n你回头——\n\n井壁上**7 个工人,贴着井壁,慢慢走上来**。\n\n他们的脚不发出声音。\n\n他们爬到井口。\n\n他们没有脸。\n\n他们伸出手——\n\n他们要的不是帽子。\n\n他们要**戴帽子的脑袋**。\n\n你的脖子,**自己往前伸**。\n\n第一个工人摸到你的喉结。\n\n他说:「这一顶,你戴。」\n\n你的脑袋上,**多了一顶第 8 帽子**。\n\n柳条紧紧箍住你的颅骨。\n\n你跟着 7 个工人,走回井底。\n\n沉船备份池,正在等下一班「轮渡」。\n\n你成了**第 8 个工人**。\n\n下一任 G-273 来到 B4 时,他会数到**8 顶帽子**。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s6_inspect_helmet": {
       "scene": "S6",
@@ -4647,14 +5441,34 @@
             "GR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_wear_seventh": {
       "scene": "S6",
       "is_ending": true,
       "ending_type": "E_DATA",
       "narrative": "你戴上第七顶柳条帽。\n\n柳条**收紧**——\n\n紧到你的太阳穴出血。\n\n你想摘下来——\n\n摘不动。\n\n柳条已经**长进**你的颅骨。\n\n你的视野,变成 1986-08-17 那一天的钱塘江——\n\n上午 9:14,轮渡。\n\n你和 6 个工人坐在船尾,**笑**——\n\n工人之一回头,他的脸是空的。\n\n他指着船头:「那里,有人 wave。」\n\n船头无人。\n\n但你看到一个**穿警服**的男人——是你自己,2024 年的你——\n\n站在船头,手里举着工牌。\n\n2024 的你,对 1986 的你说:「上船。」\n\n船,翻了。\n\n你成了 1986 沉船第 8 名。\n\nB4 盾构井,8 顶帽子等下一个 G-273。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_s6_revisit_well_alt": {
       "scene": "S6",
@@ -4684,7 +5498,18 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_listen_engine": {
       "scene": "S6",
@@ -4729,7 +5554,18 @@
             "puzzle_add": "piece_truancy"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_replace_seven": {
       "scene": "S6",
@@ -4744,7 +5580,18 @@
             "puzzle_add": "piece_seven_freed"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_drop_coin": {
       "scene": "S6",
@@ -4772,7 +5619,18 @@
           "text": "回到井边,继续巡逻。",
           "next": "n_s6_look_down"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_burn_id": {
       "scene": "S6",
@@ -4798,7 +5656,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_go_to_machine": {
       "scene": "S6",
@@ -4832,7 +5701,18 @@
           "text": "退回井边,不进操作间。",
           "next": "n_s6_arrive"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_operator_room": {
       "scene": "S6",
@@ -4867,7 +5747,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_jam_blade": {
       "scene": "S6",
@@ -4892,7 +5783,18 @@
             "GR": 8
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s6_stand_blade": {
       "scene": "S6",
@@ -4919,7 +5821,18 @@
             "GR": 5
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_entry": {
       "scene": "INTRO",
@@ -4930,7 +5843,16 @@
           "text": "走出办公室,去过道。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": "sp_g273",
+        "expression": "neutral",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_landmark_picker": {
       "scene": "MAP",
@@ -4940,7 +5862,7 @@
           "if": {
             "ending_seen": {
               "story_id": "杭州_v7",
-              "ending_id": "n_end_truth"
+              "ending_id": "E_TRUTH"
             }
           },
           "text": "你站在二轻物资大院的过道。\n\n这条过道你走过几千次,但今晚——\n\n你忽然觉得,过道尽头那盏煤油应急灯,**不像是 1985 年的灯**。\n\n灯下那个值班保安胸前的工牌,你没看清,但**字母 G 和数字**,你一看就觉得熟。\n\n你今晚,还有 4 个地方要去。\n\n你忽然知道,这一夜你已经走过很多次了。"
@@ -4976,7 +5898,47 @@
       ],
       "narrative": "(占位)",
       "show_hud": true,
-      "choices": [],
+      "choices": [
+        {
+          "text": "L1 算盘房 — 先核 26 联签拨款单。",
+          "next": "n_l1985_abacus_01"
+        },
+        {
+          "text": "L2 锅炉房后院 — 找老李留下的火钳和灰。",
+          "next": "n_l1985_boiler_01"
+        },
+        {
+          "text": "L3 档案室 — 把原始审计单翻出来。",
+          "next": "n_l1985_archive_01"
+        },
+        {
+          "text": "L4 锦带桥凉亭 — 去湖边前最后确认一次。",
+          "next": "n_l1985_pavilion_01"
+        },
+        {
+          "text": "[05] 直接去湖边。",
+          "next": "n_l1985_lake_jump",
+          "require": {
+            "any_of": [
+              {
+                "flags": {
+                  "l_intent_release": true
+                }
+              },
+              {
+                "flags": {
+                  "l_intent_regret": true
+                }
+              },
+              {
+                "flags": {
+                  "l_intent_grievance": true
+                }
+              }
+            ]
+          }
+        }
+      ],
       "_picker_endshift_choice": {
         "text": "[05] 直接去湖边。",
         "next": "n_l1985_lake_jump",
@@ -4999,6 +5961,17 @@
             }
           ]
         }
+      },
+      "presentation": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "cut"
       }
     },
     "n_l1985_abacus_01": {
@@ -5048,7 +6021,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_abacus_grievance": {
       "scene": "SCENE",
@@ -5059,7 +6041,16 @@
           "text": "拿着复印件,继续走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_abacus_release": {
       "scene": "SCENE",
@@ -5070,7 +6061,16 @@
           "text": "向老李道别,继续走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_abacus_regret": {
       "scene": "SCENE",
@@ -5081,7 +6081,16 @@
           "text": "抽完那支烟,离开。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_abacus_exposed": {
       "scene": "SCENE",
@@ -5092,7 +6101,16 @@
           "text": "继续走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_boiler_01": {
       "scene": "SCENE",
@@ -5141,7 +6159,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_boiler_grievance": {
       "scene": "SCENE",
@@ -5152,7 +6179,16 @@
           "text": "走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_boiler_release": {
       "scene": "SCENE",
@@ -5163,7 +6199,16 @@
           "text": "走出锅炉房。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_boiler_regret": {
       "scene": "SCENE",
@@ -5174,7 +6219,16 @@
           "text": "走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_boiler_exposed": {
       "scene": "SCENE",
@@ -5185,7 +6239,16 @@
           "text": "走过去。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_archive_01": {
       "scene": "SCENE",
@@ -5234,7 +6297,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_archive_grievance": {
       "scene": "SCENE",
@@ -5245,7 +6317,16 @@
           "text": "走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_archive_release": {
       "scene": "SCENE",
@@ -5256,7 +6337,16 @@
           "text": "走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_archive_regret": {
       "scene": "SCENE",
@@ -5267,7 +6357,16 @@
           "text": "走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_archive_exposed": {
       "scene": "SCENE",
@@ -5278,7 +6377,16 @@
           "text": "走。",
           "next": "n_l1985_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_pavilion_01": {
       "scene": "SCENE",
@@ -5328,7 +6436,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_pavilion_grievance": {
       "scene": "SCENE",
@@ -5339,7 +6456,16 @@
           "text": "走向湖边。",
           "next": "n_l1985_lake_jump"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_pavilion_release": {
       "scene": "SCENE",
@@ -5350,7 +6476,16 @@
           "text": "走向湖边。",
           "next": "n_l1985_lake_jump"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_pavilion_regret": {
       "scene": "SCENE",
@@ -5361,7 +6496,16 @@
           "text": "走向湖边。",
           "next": "n_l1985_lake_jump"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_pavilion_exposed": {
       "scene": "SCENE",
@@ -5372,7 +6516,16 @@
           "text": "(被押向湖边)",
           "next": "n_l1985_lake_jump"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_l1985_lake_jump": {
       "scene": "ENDING_TRANSITION",
@@ -5416,7 +6569,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "E_LINMOU_RELEASE": {
       "scene": "ENDING",
@@ -5428,7 +6592,16 @@
       "ending_type": "E_LINMOU_RELEASE",
       "narrative": "1985 年 10 月 18 日 23:40。\n\n西湖北山街锦带桥东侧。\n\n你站在岸边。\n\n夜雾从孤山方向漫过来。\n\n你脱下蓝色中山装,叠好,放在岸边石头上。\n\n你把蓝布人造革账册包,**带进水里**。\n\n包里只有一份你自己的复印件。\n\n你慢慢走进湖。\n\n水冷,但你不冷。\n\n你想起 1972 年第一次来二轻物资报到那一天——\n\n那一天你 34 岁,你妻子在医院生孩子。\n\n你那时候相信集体,相信组织,相信签字。\n\n你现在 47 岁。\n\n你**不再相信**了——\n\n但你不恨。\n\n你只是不想再签了。\n\n这一份带着我走。\n\n那 25 份留给你们。\n\n湖水到了脖子。\n\n你深吸一口气——\n\n空气里是桂花潮味,是杭州深秋的最后一点温度。\n\n你低头。\n\n水面合拢的瞬间,你听见末班船最后一声汽笛,从远远的湖心传来。\n\n— 释 —",
       "show_hud": false,
-      "choices": []
+      "choices": [],
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "E_LINMOU_REGRET": {
       "scene": "ENDING",
@@ -5440,7 +6613,16 @@
       "ending_type": "E_LINMOU_REGRET",
       "narrative": "1985 年 10 月 18 日 23:40。\n\n西湖北山街锦带桥东侧。\n\n你站在岸边。\n\n你脑子里只有一句话:\n\n**「对不起小李。」**\n\n老李——你 1972 年第一次进二轻物资,他教你打算盘。\n他算盘上的搪瓷缸白底红字「劳动光荣」,和你那个**一模一样**。\n\n他明天 8 点开抽屉,他会先**害怕**——然后他会**烧**——然后党委会**先找他**——\n\n你害了他。\n\n你**没有**给他选择。\n\n你脱下中山装,叠好。\n\n你把账册包放在岸边——**没有带进水里**——你希望天亮的时候,有人能找到它,**不要怪老李**。\n\n你走进湖。\n\n水冷,你的牙打颤。\n\n你不想死,你想回头去算盘房,把那份复印件从老李抽屉里**拿出来**——\n\n但你**走不回去了**。\n\n你站在水里,水到胸口。\n\n你低头。\n\n你看见水面上自己的脸——\n\n眼睛里**全是泪**。\n\n— 悔 —",
       "show_hud": false,
-      "choices": []
+      "choices": [],
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "E_LINMOU_GRIEVANCE": {
       "scene": "ENDING",
@@ -5452,7 +6634,16 @@
       "ending_type": "E_LINMOU_GRIEVANCE",
       "narrative": "1985 年 10 月 18 日 23:40。\n\n西湖北山街锦带桥东侧。\n\n你站在岸边。\n\n蓝布人造革账册包**鼓鼓的**——里面有 27 份。\n\n你自己的 1 份。从锅炉房抢的 6 笔调拨。从档案室偷的 26 联签原件。\n\n你**全部**带进湖。\n\n你恨。\n\n你不恨那 25 个签字的人——他们和你一样,只是签字。\n\n你恨**让你们签字的那个人**。\n\n你恨**让 26 个老国营人觉得『不签会死』的那个时代**。\n\n你脱下中山装,**没有叠**——你把它**扔**在岸边。\n\n你走进湖。\n\n水冷,你不冷。\n\n你怀里抱着账册包。\n\n包很重。\n\n你想——\n\n如果鬼魂可以**带账走**,如果**水底有审判**,如果 1985 年之后还有 1986、1987……\n\n如果**有一天**有人会下到湖底,把这份账翻出来——\n\n你今晚不白死。\n\n你低头。\n\n水面合拢的瞬间,你怀里的账册包**沉得很快**。\n\n你听见自己心里说一句:\n\n**「我等。」**\n\n— 冤 —",
       "show_hud": false,
-      "choices": []
+      "choices": [],
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "E_LINMOU_EXPOSED": {
       "scene": "ENDING",
@@ -5464,7 +6655,16 @@
       "ending_type": "E_LINMOU_EXPOSED",
       "narrative": "1985 年 10 月 18 日 23:35。\n\n西湖北山街锦带桥东侧。\n\n你被押到岸边。\n\n3 个人——你不认识他们,但他们的口哨,你听过。\n\n他们没说一句话。\n\n他们让你**跪**。\n\n你跪下。\n\n膝盖在湿草地上,凉。\n\n远处大院的广播喇叭还在响——\n\n「请财务科林志诚同志立即到党委办公室。\n  请财务科林志诚同志……」\n\n声音是党委王书记的,带着杭州本地腔。\n\n你抬头看湖。\n\n夜雾很浓。\n\n你看不见对岸。\n\n其中一个人,从背后**推**了你一下。\n\n你向前栽倒。\n\n水冷。\n\n你想挣扎,但脖子上有麻绳。\n\n你没力气。\n\n岸上有人在抽烟——\n\n烟头红光,在你视线最后一瞬,像 1985 年最后一颗**没有月亮的星**。\n\n你没留下遗书。\n\n你没留下账册。\n\n你的蓝布账册包,被他们拿走了。\n\n— 曝光 —\n\n(明天大院广播会说:林志诚同志昨夜不慎落水,经抢救无效,因公殉职。)",
       "show_hud": false,
-      "choices": []
+      "choices": [],
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_intro": {
       "scene": "S0",
@@ -5518,7 +6718,18 @@
           },
           "text": "你叫赵某,工牌编号 G-273。\n\nHR 在跟你强调那一套话。\n\n但**这次**,你看着她的脸——\n\n你忽然认出来:\n\n她不是 HR。\n\n她是上一任 G-272 的妻子。\n\n你 1996 那一年就该投湖,是他替你 11 年。\n\n现在她在帮你接班。\n\n她笑得太用力,因为她**知道**接下来的事。"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_locker_room",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": "sp_g273",
+        "expression": "neutral",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_briefing": {
       "scene": "S0",
@@ -5543,7 +6754,18 @@
           },
           "text": "队长把《异常事件记录表》摔在你面前。\n\n但**这次**,你接过表的时候,看清了第一栏的笔迹——\n\n那是你自己的字迹。\n\n你已经填过这张表。\n\n上一次填,签的名字是 **G-272**。\n\n这一夜,你既是接班人,**也是前任**。"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_locker_room",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": "sp_g273",
+        "expression": "neutral",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_landmark_picker": {
       "scene": "MAP",
@@ -5683,6 +6905,7 @@
           "text": "[06] 联庄站盾构井。",
           "next": "n_s6_arrive",
           "require": {
+            "shifts_completed_min": 3,
             "not": {
               "landmark_visited": [
                 "S6"
@@ -5694,7 +6917,7 @@
           "text": "[07] 平海街 1 号货梯 — 直接下到 B3。",
           "next": "n_s7_arrive",
           "require": {
-            "shifts_completed_min": 3
+            "shifts_completed_min": 5
           }
         },
         {
@@ -5708,7 +6931,18 @@
           "text": "[传闻] 翻夜班论坛的杭州都市传说索引。",
           "next": "n_lore_index"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "cut"
+      }
     },
     "n_npc_faceless_coat": {
       "scene": "NPC",
@@ -5770,7 +7004,18 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_drowned_official": {
       "scene": "NPC",
@@ -5886,7 +7131,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_predecessor_voice": {
       "scene": "NPC",
@@ -6070,7 +7326,18 @@
           "text": "挂断,回去。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_red_dress_girl": {
       "scene": "NPC",
@@ -6200,7 +7467,18 @@
             "GR": 12
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_yang_butcher": {
       "scene": "NPC",
@@ -6277,7 +7555,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_yang_butcher_payoff": {
       "scene": "NPC",
@@ -6299,7 +7588,18 @@
             "puzzle_add": "piece_yang_origin"
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_helmet_workers": {
       "scene": "NPC",
@@ -6401,7 +7701,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_helmet_workers_payoff": {
       "scene": "NPC",
@@ -6436,7 +7747,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_piano_ghost": {
       "scene": "NPC",
@@ -6554,7 +7876,18 @@
             "GR": 15
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_piano_ghost_payoff": {
       "scene": "NPC",
@@ -6605,7 +7938,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_corrosion_face": {
       "scene": "NPC",
@@ -6709,7 +8053,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_forum_lurkers": {
       "scene": "NPC",
@@ -6790,7 +8145,18 @@
       ],
       "_is_tool": true,
       "_tool_id": "forum",
-      "_tool_label": "夜班论坛"
+      "_tool_label": "夜班论坛",
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_evaluator_chair": {
       "scene": "NPC",
@@ -6859,7 +8225,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_eight_self": {
       "scene": "NPC",
@@ -7019,7 +8396,18 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_cleaner_null": {
       "scene": "NPC",
@@ -7077,7 +8465,18 @@
             ]
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_npc_ghost_guard": {
       "scene": "NPC",
@@ -7145,7 +8544,18 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": "shadow",
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_lake_underwater": {
       "scene": "SCENE",
@@ -7289,7 +8699,16 @@
           }
         }
       ],
-      "_is_tool": true
+      "_is_tool": true,
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_27th_floor_corridor": {
       "scene": "SCENE",
@@ -7408,7 +8827,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_b3_corridor": {
       "scene": "SCENE",
@@ -7469,7 +8897,16 @@
             }
           }
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_evaluator_room": {
       "scene": "SCENE",
@@ -7534,7 +8971,7 @@
                   {
                     "ending_seen": {
                       "story_id": "杭州_v7",
-                      "ending_id": "n_end_truth"
+                      "ending_id": "E_TRUTH"
                     }
                   }
                 ]
@@ -7561,7 +8998,16 @@
           "text": "退出。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_lost_archive": {
       "scene": "SCENE",
@@ -7682,7 +9128,7 @@
               {
                 "ending_seen": {
                   "story_id": "杭州_v7",
-                  "ending_id": "n_end_truth"
+                  "ending_id": "E_TRUTH"
                 }
               },
               {
@@ -7787,7 +9233,16 @@
           "text": "合上档案,离开。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_red_telephone": {
       "scene": "SCENE",
@@ -7875,7 +9330,16 @@
       ],
       "_is_tool": true,
       "_tool_id": "phone",
-      "_tool_label": "红色电话亭"
+      "_tool_label": "红色电话亭",
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_scene_morning_lakeside": {
       "scene": "SCENE",
@@ -8005,7 +9469,7 @@
               {
                 "ending_seen": {
                   "story_id": "杭州_v7",
-                  "ending_id": "n_end_truth"
+                  "ending_id": "E_TRUTH"
                 }
               },
               {
@@ -8029,7 +9493,7 @@
               {
                 "ending_seen": {
                   "story_id": "杭州_v7",
-                  "ending_id": "n_end_data"
+                  "ending_id": "E_DATA"
                 }
               },
               {
@@ -8049,7 +9513,16 @@
           "text": "平安下班",
           "next": "n_end_neutral"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade"
+      }
     },
     "n_s7_arrive": {
       "scene": "S7",
@@ -8115,7 +9588,18 @@
           "text": "退回电梯,先回去再说。",
           "next": "n_landmark_picker"
         }
-      ]
+      ],
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_predecessor",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "glitch"
+      }
     },
     "n_end_true": {
       "scene": "END",
@@ -8171,7 +9655,16 @@
         }
       ],
       "narrative": "记录表第 7 栏自己写完了。\n\n字迹是你的,也是 8 棺里那 8 个『你』共同的——\n\n他们写完自己那部分,从舱里安静坐起,像终于能睡个好觉。\n\n8 棺合拢。\n\nHUD 弹出系统公告:\n\n「玩家 Guard_Zhao 已完成《异常事件记录表》全部 7 栏。\n  杭州常数 H 已清零。\n  所有 4 年周期裂缝同步关闭。\n  夜班评议会案号 G-273 结案归档。」\n\n你走出货梯。\n\n外面是 6:03 的湖滨,日出把湖面染成铜色——这是你这辈子第一次看见湖面是单纯的橙,而不是带着 1987 年湖水的青灰。\n\n第三把长椅上,只有一只麻雀。\n\n你掏出钥匙圈——那张 1984 年的小票变成了今天的日期。\n\n背面那行字也变了:\n\n「夜班有了尽头。这一班,你下了。」",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_truth": {
       "scene": "END",
@@ -8204,7 +9697,16 @@
         }
       ],
       "narrative": "你站在遗失档案室。\n\n你拿着 5 张拼图碎片——\n\n林某账本完整版 / 1987 踩踏死者真名 / 留下小学女生日记 / 沉船工人工号册 / 红衣女孩真名牌。\n\n你把它们贴在墙上。\n\n27 台电视一齐亮起来。\n\n它们不再播恐怖片。\n\n它们播的是这座城市过去 40 年「被丢弃在档案室角落」的真相。\n\n你站着看了整整一夜——27 个故事,27 个本来该有名字的人。\n\nHUD 提示:\n\n「玩家 Guard_Zhao 拒绝献祭,但记忆库新增 27 条认证档案。\n  下一任 G-273 在交班时会读到你的笔记。」\n\n你回到更衣室,在记录表第 7 栏写:\n\n「我没填完。但我读完了。这就够了。」",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_data": {
       "scene": "END",
@@ -8245,7 +9747,16 @@
         }
       ],
       "narrative": "27 台电视同时亮起,雪花屏合成一束白光。\n\n你被扫描成噪点。\n\n像倒吊的羊。\n\n像裂开的钟。\n\n像被倒带的磁带。\n\n最后一秒,你看见湖滨清晨 6 点的日出——\n\n一个穿米色风衣的人,站在第三把长椅旁。\n\n他弯腰,拾起你掉落的工牌,戴在脖子上。\n\n你飘在 B3 天花板,看着自己被拼成一台 14 寸黑白电视。\n\n对讲机:\n\n「G-273,听到请回答。」\n\n你按下对讲键,发不出声音。\n\n你只能把电流噪点调成节奏——\n\n嘀。嘀。嘀。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_broadcast": {
       "scene": "END",
@@ -8271,7 +9782,16 @@
         }
       ],
       "narrative": "27 台电视墙的 27 个频道,全部切换到「夜班论坛」直播流。\n\n你的所有照片、视频、帖子,在 27 台电视上同步播放。\n\n点赞数从右下角狂飙——\n\n+1987 万。\n\n你的肉体开始变得透明。\n\n不是数据化——是「广播化」。\n\n每一个点赞,都从你身上拿走一克的『真实』。\n\n你彻底变成一段在夜班论坛永久置顶的视频。\n\n屏幕前任何人在凌晨打开论坛,都能看见你站在第三把长椅旁,转过头说:\n\n「下一班是几点?」",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_bad_1987": {
       "scene": "END",
@@ -8302,7 +9822,16 @@
         }
       ],
       "narrative": "记录表的空白栏太多了。\n\n连续 3 栏空白触发系统机制。\n\n你的制服褪成 1980 年代的卡其色。\n\n工牌上的「赵某 G-273」变成「无名 1987-12-24-013」——\n\n1987 年杭州百货大楼 7 楼踩踏事故,第 13 名死者编号。\n\n那天死了 13 个人。\n\n第 13 名,是一个穿红色连衣裙的小女孩。\n\n你抬头,电视墙里 27 个你都换了脸——\n\n你也是那个红衣小女孩。\n\n你穿着红色连衣裙,胸口插着 Y 字形天线。\n\n你成了 1987 年那张永远循环的录像里,30 多年没有人看的死者。\n\n你成为了下一个夜班的『异常事件 ②』。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_bad_drown": {
       "scene": "END",
@@ -8344,7 +9873,16 @@
         }
       ],
       "narrative": "你被『沉船替死鬼』标记触发。\n\n你跪在沉船备份池边。\n\n7 顶柳条安全帽浮在水面,像 7 只黑色月亮。\n\n第 8 顶——刻着「G-273」的那一顶——浮起来。\n\n它停在水面,等你戴上。\n\n池底传来 7 个声音齐声说:\n\n「替死鬼,可以下班了。」\n\n你的手自己伸出去,戴上第 8 顶。\n\n池水拥抱你。\n\n沉下去时,你听见对讲机里下一任 G-273:\n\n「报告,一切正常。」\n\n他答得太快了。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_neutral": {
       "scene": "END",
@@ -8375,7 +9913,16 @@
         }
       ],
       "narrative": "你下班了。\n\n打卡机响了一声「嘀」。\n\n你回头看那栋楼。\n\n它和昨天一模一样,没有任何异常。\n\n你的相册里没有红衣小女孩的照片。\n\n你的钥匙圈上没有 27F 铜钥匙。\n\n似乎什么都没发生过。\n\n第二天早上,房东打电话来,说你拖欠房租。\n\n你打开工资单——这个月被扣了 30% 绩效。\n\n你打开《异常事件记录表》副本——7 栏全空白。\n\n你的下一班,在 14 小时后。\n\n墙上挂钟,比你手表慢了 1987 秒。\n\n你假装没看见。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     },
     "n_end_hidden": {
       "scene": "END",
@@ -8419,7 +9966,16 @@
         }
       ],
       "narrative": "你坐进档案室那把空椅子。\n\n你把『候补判官』章盖在自己工牌上。\n\n章渗进金属,变成了『正章』。\n\n你成了下一任 G-273 入职那天,HR 桌后的那个人——\n\n你笑得太用力,嘴角的弧度像是练过的。\n\n你会跟他说:\n\n「夜班就是坐岗,每小时巡一次,有空调,有夜宵,没事刷手机。」\n\n他会签合同。\n\n你会把那张 1984 年的小票塞给他。\n\n小票背面用铅笔写着——你写的——\n\n「夜班没有尽头,只有下一班。」\n\n这一次,字迹真的是你的。",
-      "show_hud": true
+      "show_hud": true,
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black"
+      }
     }
   }
 }

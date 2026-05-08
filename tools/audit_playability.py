@@ -31,6 +31,7 @@ class PlayabilityReport:
     reachable_nodes: int = 0
     ending_nodes: int = 0
     dynamic_picker_nodes: int = 0
+    presentation_nodes: int = 0
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
@@ -47,6 +48,7 @@ class PlayabilityReport:
             "reachable_nodes": self.reachable_nodes,
             "ending_nodes": self.ending_nodes,
             "dynamic_picker_nodes": self.dynamic_picker_nodes,
+            "presentation_nodes": self.presentation_nodes,
             "errors": self.errors,
             "warnings": self.warnings,
         }
@@ -240,6 +242,53 @@ def build_edges(
     return edges
 
 
+def validate_presentation(
+    payload: Dict[str, Any],
+    nodes: Dict[str, Dict[str, Any]],
+    report: PlayabilityReport,
+) -> None:
+    """检查 VN 演出字段是否引用有效资产。"""
+    assets = payload.get("assets") or {}
+    if not isinstance(assets, dict):
+        assets = {}
+    backgrounds = set((assets.get("backgrounds") or {}).keys())
+    bgm = set((assets.get("bgm") or {}).keys())
+    sfx = set((assets.get("sfx") or {}).keys())
+    sprites = set((assets.get("sprites") or {}).keys())
+
+    has_v7_shape = isinstance(payload.get("nodes"), dict)
+    if has_v7_shape and not assets:
+        report.warnings.append("缺少顶层 assets manifest; VN 演出只能退回纯文本")
+
+    for nid, node in nodes.items():
+        presentation = node.get("presentation")
+        if not presentation:
+            if has_v7_shape:
+                report.warnings.append(f"{nid}: 缺少 presentation; VN 演出无法定位场景素材")
+            continue
+        if not isinstance(presentation, dict):
+            report.errors.append(f"{nid}: presentation 必须是对象")
+            continue
+
+        report.presentation_nodes += 1
+
+        background = presentation.get("background")
+        if background and backgrounds and background not in backgrounds:
+            report.errors.append(f"{nid}: presentation.background 引用不存在资产: {background}")
+
+        music = presentation.get("bgm")
+        if music and bgm and music not in bgm:
+            report.errors.append(f"{nid}: presentation.bgm 引用不存在资产: {music}")
+
+        sprite = presentation.get("sprite")
+        if sprite and sprites and sprite not in sprites:
+            report.errors.append(f"{nid}: presentation.sprite 引用不存在资产: {sprite}")
+
+        for item in presentation.get("sfx") or []:
+            if item and sfx and item not in sfx:
+                report.errors.append(f"{nid}: presentation.sfx 引用不存在资产: {item}")
+
+
 def reachable_from(start: str, edges: Dict[str, Set[str]]) -> Set[str]:
     """从起点按边遍历可达节点。"""
     if not start or start not in edges:
@@ -284,6 +333,7 @@ def analyze_playability(payload: Dict[str, Any]) -> PlayabilityReport:
             report.errors.append(f"characters.start_node 不存在: {extra_start}")
 
     edges = build_edges(payload, nodes, report)
+    validate_presentation(payload, nodes, report)
     reachable = reachable_from_many([start, *extra_starts], edges)
     report.reachable_nodes = len(reachable)
 
@@ -304,6 +354,7 @@ def render_report(report: PlayabilityReport) -> str:
         f"可达: {report.reachable_nodes}/{report.total_nodes}",
         f"结局节点: {report.ending_nodes}",
         f"动态 picker: {report.dynamic_picker_nodes}",
+        f"演出节点: {report.presentation_nodes}/{report.total_nodes}",
         "",
     ]
     if report.errors:

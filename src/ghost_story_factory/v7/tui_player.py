@@ -59,7 +59,8 @@ from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
-    State, collect_important_items, resolve_narrative, resolve_next,
+    State, collect_important_items, mark_tool_visit, resolve_narrative,
+    resolve_next,
 )
 from ghost_story_factory.v7.map_view import format_map_lines
 from ghost_story_factory.v7.save_manager import (
@@ -295,6 +296,7 @@ class GhostStoryApp(App):
         self.state.visit_counts[self.current_id] = (
             self.state.visit_counts.get(self.current_id, 0) + 1
         )
+        mark_tool_visit(self._tree, self.state, node)
         # 地标入场 banner — 节点带 _landmark_header 时显示
         header = node.get("_landmark_header")
         if header and isinstance(header, dict):
@@ -467,7 +469,7 @@ class GhostStoryApp(App):
         # 选项分类:visible / locked / hidden
         if node.get("_is_map_picker"):
             from ghost_story_factory.v7.map_view import picker_choices
-            generated = picker_choices(self._tree, self.state)
+            generated = picker_choices(self._tree, self.state, node=node)
             self.visible_choices = [c for c in generated if c.get("_picker_kind") != "locked"]
             locked: List[tuple] = [
                 (c, c.get("text", "").split("(")[-1].rstrip(")"))

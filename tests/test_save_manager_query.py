@@ -90,3 +90,23 @@ def test_record_ending_writes_to_dict():
     es = sm.data["endings_seen"]
     assert isinstance(es, dict)
     assert "E_LINMOU_RELEASE" in es.get("杭州_v7", [])
+
+
+def test_check_achievements_counts_flattened_endings_seen():
+    """endings_seen_min 应统计 ending 数,不是 story 数。"""
+    sm = _save_with({
+        "version": 5,
+        "endings_seen": {"杭州_v7": ["E_TRUTH", "E_DATA"]},
+        "achievements_unlocked": [],
+    })
+    tree = {
+        "achievements": {
+            "A_TWO_ENDINGS": {
+                "trigger": {"endings_seen_min": 2}
+            }
+        }
+    }
+
+    newly = sm.check_achievements(tree, state=None, story_id="杭州_v7")
+
+    assert newly == ["A_TWO_ENDINGS"]

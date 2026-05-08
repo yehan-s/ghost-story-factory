@@ -58,7 +58,7 @@ Accepted
 - `tools/audit_reactions.py`:`reaction_contracts` 全注册 + DEAD/UNREACHABLE 0
 - `tools/audit_variants.py`:重复访问无分化检测
 - `tools/audit_state.py`:flag 命名规范 + 不许镜像兑现状态
-- `tools/audit_playability.py`:验证 GameTree 可玩闭环(坏 next / 非结局死路 / 动态 picker 目标 / 结局识别)
+- `tools/audit_playability.py`:验证 GameTree 可玩闭环(坏 next / 非结局死路 / 动态 picker 目标 / 结局识别 / VN presentation 资产引用)
 - (P1) `tools/audit_sandbox.py`:验证骨架 5 项(picker / connections / tool / stay / 反应 clause)
 
 `tools/audit_all.sh` 链入,CI 阻断不合规 PR。
@@ -85,6 +85,7 @@ Accepted
 - **现有 ADR-001 / ADR-009 / spec 文档语境过时** → 在各 ADR 加 superseded by/related to ADR-010 引用
 - **新作者上手成本高** → 用 G-273 周目作为参考实现,新手抄 hub + 工具节点结构
 - **"沙盒最小骨架"门槛阻塞短期任务**(如 linmou Act 1 已合入)→ 列入 sandbox debt 清单(ADR-009 补充)逐项还
+- **VN 素材暂时没有真实图片/音频** → `assets` 先用 `text_fallback`;正式节点必须有 `presentation`,资产引用必须可审计,后续替换素材不改剧情拓扑
 
 ## 开放点
 

@@ -152,3 +152,49 @@ def test_character_start_nodes_count_as_reachable():
     assert report.reachable_nodes == 3
     assert report.extra_start_nodes == ["n_side_intro"]
     assert not any("不可达" in item for item in report.warnings)
+
+
+def test_presentation_asset_reference_error():
+    """presentation 不能引用不存在的 VN 资产。"""
+    tree = {
+        "start_node": "n_intro",
+        "assets": {
+            "backgrounds": {"bg_ok": {"kind": "text_fallback"}},
+            "bgm": {},
+            "sfx": {},
+            "sprites": {},
+        },
+        "nodes": {
+            "n_intro": {
+                "choices": [],
+                "is_ending": True,
+                "ending_type": "E_OK",
+                "presentation": {
+                    "background": "bg_missing",
+                    "bgm": None,
+                    "sfx": [],
+                    "sprite": None,
+                },
+            },
+        },
+    }
+
+    report = analyze_playability(tree)
+
+    assert report.ok is False
+    assert any("background 引用不存在资产" in item for item in report.errors)
+
+
+def test_official_hangzhou_tree_has_vn_presentation_contract():
+    """正式杭州树必须有 assets manifest,且所有节点都有 presentation。"""
+    import json
+
+    tree = json.loads(
+        Path("stories/hangzhou_yebanbaoan/tree.json").read_text(encoding="utf-8")
+    )
+
+    report = analyze_playability(tree)
+
+    assert report.ok is True
+    assert report.presentation_nodes == report.total_nodes == 145
+    assert not any("presentation" in item for item in report.warnings)
