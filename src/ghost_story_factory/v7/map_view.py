@@ -204,6 +204,62 @@ def _render_legend() -> str:
             f"{_MARK_LOCKED} 锁定")
 
 
+def _slot_to_landmark_hint(tree: Dict[str, Any], slot: str) -> Optional[str]:
+    """根据 foreshadows[slot].hint_landmark / npcs.related_foreshadows 反推 slot 关联地标。
+
+    优先级:
+      1. foreshadows[slot].hint_landmark — 显式声明,作者保证准确
+      2. 第一个 npcs[*].related_foreshadows 含 slot 且 initial_location 非 None
+      3. 都没有 — 返回 None,该 slot 不出现在地图❗提示
+    """
+    foreshadows = (tree or {}).get("foreshadows") or {}
+    meta = foreshadows.get(slot) or {}
+    explicit = meta.get("hint_landmark")
+    if explicit:
+        return explicit
+
+    npcs = (tree or {}).get("npcs") or {}
+    for npc_id, npc_meta in npcs.items():
+        if slot in (npc_meta.get("related_foreshadows") or []):
+            loc = npc_meta.get("initial_location")
+            if loc:
+                return loc
+    return None
+
+
+def _landmarks_with_clue_hint(
+    tree: Dict[str, Any],
+    state,
+    save_manager,
+    story_id: Optional[str],
+) -> Dict[str, List[str]]:
+    """返回 {landmark_id: [slot, ...]} — 玩家拣过 shard 但未集齐 / 未走 consumer 的 slot。
+
+    用作地图❗线索浮现:玩家行动后,地图主动告诉他"还有什么没看完"。
+    """
+    if save_manager is None or not story_id:
+        return {}
+    foreshadows = (tree or {}).get("foreshadows") or {}
+    out: Dict[str, List[str]] = {}
+    for slot, meta in foreshadows.items():
+        try:
+            shards_got = save_manager.get_shards_collected(story_id, slot) or []
+        except Exception:
+            continue
+        if not shards_got:
+            continue
+        # 已 fully resolved — 玩家走过 consumer reaction 后这里不再显示
+        try:
+            if save_manager.is_foreshadow_resolved(story_id, slot):
+                continue
+        except Exception:
+            pass
+        loc = _slot_to_landmark_hint(tree, slot)
+        if loc:
+            out.setdefault(loc, []).append(slot)
+    return out
+
+
 def _npcs_at_landmark(state, tree: Dict[str, Any], landmark_id: str) -> List[str]:
     """返回当前在指定地标的 NPC 短描述。state.npc_locations 可能不存在(向后兼容)。"""
     npc_loc = getattr(state, "npc_locations", None) or {}
@@ -260,6 +316,29 @@ def format_map_lines(
     if mode == "site" and travel_indices:
         lines.append({"kind": "footer",
                       "text": "  · 按括号里的数字 / SID(如 S1)直接走过去"})
+
+    # 段:线索浮现 ❗(phone + site 都显示) — 玩家拣过 shard 但未集齐 / 未走 consumer
+    clue_hints = _landmarks_with_clue_hint(tree, state, save_manager, story_id)
+    by_id = {lm.get("id", ""): lm for lm in landmark_map}
+    if clue_hints:
+        lines.append({"kind": "section", "text": ""})
+        lines.append({"kind": "header", "text": "❗ 线索方向"})
+        foreshadows_meta = (tree or {}).get("foreshadows") or {}
+        for sid in sorted(clue_hints.keys()):
+            short = by_id.get(sid, {}).get("short", "")
+            slots = clue_hints[sid]
+            slot_titles = []
+            for s in slots[:2]:  # 最多 2 个 title
+                t = (foreshadows_meta.get(s) or {}).get("title", s)
+                slot_titles.append(t)
+            more = "" if len(slots) <= 2 else f" 等 {len(slots)} 处"
+            lines.append({
+                "kind": "clue_hint",
+                "id": sid,
+                "text": f"  ❗ {sid} {short:<6} → {' / '.join(slot_titles)}{more}",
+            })
+        lines.append({"kind": "footer",
+                      "text": "  · ❗ = 你已经知道线索,但**没在那里看完**。再去一趟。"})
 
     # phone 模式:不显示 NPC / 工具(只看路+地名)
     if mode == "phone":
@@ -553,6 +632,8 @@ def render_map_cli(tree, state, save_manager, current_node_id=None, story_id=Non
             print(dim(text))
         elif kind == "npc_at":
             print(magenta(text))
+        elif kind == "clue_hint":
+            print(bold(yellow(text)))
         elif kind == "landmark":
             status = entry.get("status", "available")
             colorized = {
