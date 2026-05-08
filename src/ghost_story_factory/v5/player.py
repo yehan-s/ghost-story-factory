@@ -539,9 +539,29 @@ def _highlight_narrative(line: str) -> str:
 
 
 def render_narrative(text: str) -> None:
+    """渲染 narrative。当文本含 `\n---\n` 段落分隔符且 ≥ 2 段时,分屏渲染:
+    每段独立一屏,玩家按 Enter 继续。GHOST_FAST=1 跳过分屏直出。
+    """
     print()
-    for line in text.strip().split("\n"):
-        slow_print(_highlight_narrative(line))
+    segments = [s.strip() for s in text.strip().split("\n---\n") if s.strip()]
+
+    if os.environ.get("GHOST_FAST") or len(segments) <= 1:
+        for line in text.strip().split("\n"):
+            slow_print(_highlight_narrative(line))
+        print()
+        return
+
+    total = len(segments)
+    for idx, seg in enumerate(segments):
+        for line in seg.split("\n"):
+            slow_print(_highlight_narrative(line))
+        if idx < total - 1:
+            try:
+                input(dim(f"  ── 按 Enter 继续 ({idx + 2}/{total}) ──"))
+            except (EOFError, KeyboardInterrupt):
+                print("\n" + red("中断。"))
+                sys.exit(0)
+            print()
     print()
 
 
@@ -550,11 +570,40 @@ def render_choices(visible: List[Dict[str, Any]],
     """渲染选项。
     - visible: 可点击,有编号 1..N
     - locked: 显示但禁用,带 🔒 + 缺失道具提示,无编号
+
+    普通节点 ≥ 5 选项时按 stay-互动 vs 推进 分组;picker 节点保持平铺。
     """
     print()
-    for i, ch in enumerate(visible, start=1):
-        label = ch.get("text", "(无文本)")
-        print(f"  {green(str(i))}. {label}")
+    # picker 节点(travel/tool/endshift)保持原列表;普通节点尝试分组
+    is_picker = any(
+        c.get("_landmark_id")
+        or c.get("_picker_kind") in ("travel", "tool", "endshift")
+        for c in visible
+    )
+
+    def _is_stay(c: Dict[str, Any]) -> bool:
+        eff = c.get("effects") or {}
+        return bool(eff.get("stay")) or c.get("_picker_kind") == "detail"
+
+    stay_idx = [i for i, c in enumerate(visible) if _is_stay(c)]
+    fwd_idx = [i for i, c in enumerate(visible) if not _is_stay(c)]
+
+    if (not is_picker) and len(visible) >= 5 and stay_idx and fwd_idx:
+        # 分组渲染:stay 互动在上,推进选项在底(显眼"出口")
+        print(dim("  ── 在这里看一眼 ──"))
+        for i in stay_idx:
+            label = visible[i].get("text", "(无文本)")
+            print(f"  {green(str(i + 1))}. {label}")
+        print()
+        print(dim("  ── 走出去 ──"))
+        for i in fwd_idx:
+            label = visible[i].get("text", "(无文本)")
+            print(f"  {green(str(i + 1))}. {label}")
+    else:
+        for i, ch in enumerate(visible, start=1):
+            label = ch.get("text", "(无文本)")
+            print(f"  {green(str(i))}. {label}")
+
     if locked:
         for ch, hint in locked:
             label = ch.get("text", "(无文本)")
