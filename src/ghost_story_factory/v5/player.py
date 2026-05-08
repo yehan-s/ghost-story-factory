@@ -922,6 +922,13 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
     # 让 _meets_clause 的 deduction/foreshadow/theme_resolved 条件能查询单一真相源。
     state = State(initial_state, save_manager=save_manager, story_id=story_id)
     state.tree = tree
+    # NPC 初始位置:从 tree.npcs[*].initial_location 注入到 state.npc_locations
+    # 玩家从未见过 NPC 时,地图也能显示 NPC 在哪 — 而不是空白
+    if not state.npc_locations:
+        for npc_id, meta in (tree.get("npcs") or {}).items():
+            loc = (meta or {}).get("initial_location")
+            if loc:
+                state.npc_locations[npc_id] = str(loc)
     # 注入道具说明字典(获得物品时显示用途)
     State.inv_descriptions = tree.get("inv_descriptions", {}) or {}
     # 关键道具集合(被 inv_has 引用的视为剧情关键 → 卡片化反馈)
