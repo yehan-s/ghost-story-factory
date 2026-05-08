@@ -8,7 +8,13 @@ LangGraph 图定义 (ADR-005)
 import os
 from typing import Dict, Any, Optional
 
-from langgraph.graph import StateGraph, END
+try:
+    from langgraph.graph import StateGraph, END
+    _LANGGRAPH_AVAILABLE = True
+except ImportError:
+    StateGraph = None  # type: ignore
+    END = "__end__"  # type: ignore
+    _LANGGRAPH_AVAILABLE = False
 
 from .state import StoryPipelineState, create_initial_state
 from .nodes import stage_docs, stage_skeleton, stage_tree, stage_report
@@ -26,6 +32,9 @@ def create_story_graph() -> StateGraph:
     Returns:
         编译后的 StateGraph
     """
+    if not _LANGGRAPH_AVAILABLE:
+        raise RuntimeError("LangGraph 不可用，请安装 langgraph 或关闭 USE_LANGGRAPH_PIPELINE")
+
     # 创建 StateGraph
     workflow = StateGraph(StoryPipelineState)
 
@@ -79,6 +88,9 @@ def run_story_pipeline(
     Returns:
         最终状态（包含 story_id、metadata、telemetry 等）
     """
+    if not _LANGGRAPH_AVAILABLE:
+        raise RuntimeError("LangGraph 不可用，请安装 langgraph 或关闭 USE_LANGGRAPH_PIPELINE")
+
     logger.info(f"[LangGraph] 启动流水线: city={city}, title={synopsis_title}")
 
     # 创建初始状态
@@ -205,4 +217,4 @@ def should_use_langgraph() -> bool:
         是否使用 LangGraph
     """
     value = os.getenv("USE_LANGGRAPH_PIPELINE", "0").lower()
-    return value in ("1", "true", "yes")
+    return _LANGGRAPH_AVAILABLE and value in ("1", "true", "yes")

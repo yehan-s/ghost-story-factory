@@ -58,6 +58,7 @@ Accepted
 - `tools/audit_reactions.py`:`reaction_contracts` 全注册 + DEAD/UNREACHABLE 0
 - `tools/audit_variants.py`:重复访问无分化检测
 - `tools/audit_state.py`:flag 命名规范 + 不许镜像兑现状态
+- `tools/audit_playability.py`:验证 GameTree 可玩闭环(坏 next / 非结局死路 / 动态 picker 目标 / 结局识别)
 - (P1) `tools/audit_sandbox.py`:验证骨架 5 项(picker / connections / tool / stay / 反应 clause)
 
 `tools/audit_all.sh` 链入,CI 阻断不合规 PR。
@@ -93,6 +94,7 @@ Accepted
 ## Related
 
 - **ADR-001 PlotSkeleton 流水线**:技术上仍生成 skeleton,但 v7 周目骨架 = 沙盒,skeleton 退化为"骨架内容大纲",非节点拓扑
+- **TASK_GAMETREE_V1**:`docs/tasks/TASK_GAMETREE_V1.md` 将 ADR-010 落成机器可检查的 GameTree v1 可玩契约
 - **ADR-007 状态空间契约**:flag 命名规范是沙盒契约的子集
 - **ADR-008 反应机制**:`reaction_contracts` 是沙盒原语之一
 - **ADR-009 linmou 周目**:本 ADR 让其 sandbox debt 显式化

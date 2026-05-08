@@ -140,74 +140,13 @@ class DialogueTreeLoader:
                     self.current_node_id = children[0]
                     print(f"ℹ️  回退修复：按唯一子节点前进 → {self.current_node_id}")
                     return self.current_node_id
-                # 3) 仍不可用：为预生成缺失的分支创建占位节点，避免玩家死链
-                try:
-                    stub_id = self._create_stub_node_for_choice(choice)
-                    if stub_id:
-                        print(f"ℹ️  回退修复：创建占位分支 → {stub_id}")
-                        return stub_id
-                except Exception:
-                    pass
+                # 3) 仍不可用：直接失败。
+                # 坏树必须在生成/导入审计阶段修掉，运行时不能伪造剧情。
                 print(f"⚠️  下一个节点不存在：{next_node_id}")
                 return None
 
         print(f"⚠️  选择不存在：{choice_id}")
         return None
-
-    def _create_stub_node_for_choice(self, choice: Dict[str, Any]) -> Optional[str]:
-        """当 choice 缺少 next_node_id 且无法推断时，创建一个占位子节点并挂接。
-
-        返回新节点 ID；失败返回 None。
-        """
-        if not self.tree or self.current_node_id not in self.tree:
-            return None
-        current_node = self.tree[self.current_node_id]
-
-        # 生成新的节点 ID（沿用 node_XXXX 递增规则）
-        max_num = 0
-        for nid in self.tree.keys():
-            if isinstance(nid, str) and nid.startswith("node_"):
-                try:
-                    num = int(nid.split("_")[1])
-                    if num > max_num:
-                        max_num = num
-                except Exception:
-                    continue
-        new_id = f"node_{max_num + 1:04d}"
-
-        # 取 choice 文本以提升可读性
-        choice_text = choice.get("choice_text") or "(未知选项)"
-
-        # 构造占位节点（标记为结局，防止无限下潜）
-        stub_node = {
-            "node_id": new_id,
-            "scene": current_node.get("scene", "S1"),
-            "depth": int(current_node.get("depth", 0)) + 1,
-            "game_state": current_node.get("game_state", {}).copy(),
-            "state_hash": None,
-            "narrative": (
-                f"你选择了：{choice_text}\n\n"
-                "该分支未预生成，已临时创建占位节点以避免死链。\n"
-                "你在昏暗中原地停顿片刻，决定折返到可行路径。"
-            ),
-            "choices": [],
-            "parent_id": self.current_node_id,
-            "parent_choice_id": choice.get("choice_id"),
-            "children": [],
-            "is_ending": True,
-            "ending_type": "missing_branch",
-            "generated_at": ""
-        }
-
-        # 写回树与父节点关系、回填 next_node_id
-        self.tree[new_id] = stub_node
-        parent_children = current_node.get("children") or []
-        parent_children.append(new_id)
-        current_node["children"] = parent_children
-        choice["next_node_id"] = new_id
-
-        self.current_node_id = new_id
-        return new_id
 
     def is_ending(self, node_id: str = None) -> bool:
         """判断是否为结局节点"""
@@ -249,4 +188,3 @@ class DialogueTreeLoader:
             "ending_count": len(ending_nodes),
             "max_depth": max_depth
         }
-

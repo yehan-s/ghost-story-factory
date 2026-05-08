@@ -54,7 +54,10 @@ def _load_tree_from_checkpoint(path: Path) -> Dict[str, Any]:
     data = json.loads(path.read_text(encoding="utf-8"))
     # 如果是 full checkpoint，则包含 tree 字段；否则直接视为树
     if isinstance(data, dict) and "tree" in data and isinstance(data["tree"], dict):
-        return data["tree"]
+        data = data["tree"]
+    # v7 / GameTree 结构保留顶层 metadata,交给 summarize_tree 识别 start_node/nodes。
+    if isinstance(data, dict) and "nodes" in data and isinstance(data["nodes"], dict):
+        return data
     if isinstance(data, dict):
         return data
     raise ValueError(f"不支持的 checkpoint 格式: {type(data)}")
@@ -81,6 +84,8 @@ def _load_incremental_events(path: Path) -> List[Dict[str, Any]]:
 
 def _build_node_index(tree: Dict[str, Any]) -> Dict[str, NodeInfo]:
     """从对话树构建节点索引"""
+    if isinstance(tree.get("nodes"), dict):
+        tree = tree["nodes"]
     index: Dict[str, NodeInfo] = {}
     for nid, node in tree.items():
         if not isinstance(node, dict):
@@ -88,8 +93,8 @@ def _build_node_index(tree: Dict[str, Any]) -> Dict[str, NodeInfo]:
         node_id = str(node.get("node_id", nid))
         depth = int(node.get("depth", 0) or 0)
         scene = str(node.get("scene", "") or "")
-        is_ending = bool(node.get("is_ending", False))
-        narrative = str(node.get("narrative", "") or "")
+        is_ending = bool(node.get("is_ending", False) or (node.get("ending_type") and not node.get("choices")))
+        narrative = str(node.get("narrative", "") or node.get("text", "") or "")
         parent_id = node.get("parent_id")
         if parent_id is not None:
             parent_id = str(parent_id)
@@ -131,6 +136,10 @@ def summarize_tree(
     tree: Dict[str, Any], events: Optional[List[Dict[str, Any]]] = None, recent_limit: int = 15
 ) -> Dict[str, Any]:
     """从对话树与可选事件中生成结构摘要"""
+    start_node = "root"
+    if isinstance(tree.get("nodes"), dict):
+        start_node = str(tree.get("start_node") or "n_intro")
+        tree = tree["nodes"]
     index = _build_node_index(tree)
     if events:
         _attach_timestamps_from_events(index, events)
@@ -180,6 +189,43 @@ def summarize_tree(
             repeated = sum(1 for t in texts if global_choice_counts.get(t, 0) > 1)
             info.repeated_choice_count = repeated
 
+    def _outgoing_ids(nid: str) -> List[str]:
+        """抽取一个节点的静态出边,兼容旧 children 与 v7 next。"""
+        node = tree.get(nid) or {}
+        out: List[str] = []
+        out.extend([x for x in (node.get("children") or []) if isinstance(x, str)])
+        for choice in (node.get("choices") or []):
+            if not isinstance(choice, dict):
+                continue
+            nxt = choice.get("next_node_id") or choice.get("next")
+            if isinstance(nxt, str) and nxt:
+                out.append(nxt)
+            for variant in (choice.get("next_variants") or []):
+                if isinstance(variant, dict) and isinstance(variant.get("next"), str):
+                    out.append(variant["next"])
+        return out
+
+    # v7 节点通常没有显式 depth,这里按 start_node 计算最短可达深度。
+    if start_node in index:
+        from collections import deque
+
+        depth_by_id: Dict[str, int] = {start_node: 0}
+        parent_by_id: Dict[str, Optional[str]] = {start_node: None}
+        queue = deque([start_node])
+        while queue:
+            nid = queue.popleft()
+            for child_id in _outgoing_ids(nid):
+                if child_id not in index or child_id in depth_by_id:
+                    continue
+                depth_by_id[child_id] = depth_by_id[nid] + 1
+                parent_by_id[child_id] = nid
+                queue.append(child_id)
+
+        for nid, depth in depth_by_id.items():
+            # 旧 TreeBuilder 已有 depth;v7/手写节点没有 depth 时用计算值补齐。
+            if index[nid].depth == 0 and nid != start_node:
+                index[nid].depth = depth
+
     # 总体统计
     depths: Dict[int, List[NodeInfo]] = {}
     endings: List[NodeInfo] = []
@@ -190,24 +236,32 @@ def summarize_tree(
 
     max_depth = max(depths.keys()) if depths else 0
 
-    # 选取一条“主线路径”：沿 children 自 root 出发找到最长路径
+    # 选取一条“主线路径”：取从 start_node 出发最远的静态可达节点。
+    # v7 沙盒有回环,不能用无保护 DFS。
     def _find_longest_path_ids(tree_dict: Dict[str, Any]) -> List[str]:
-        if not tree_dict or "root" not in tree_dict:
+        if not tree_dict or start_node not in tree_dict:
             return []
-        longest: List[str] = []
+        from collections import deque
 
-        def dfs(nid: str, cur: List[str]) -> None:
-            nonlocal longest
-            cur = cur + [nid]
-            if len(cur) > len(longest):
-                longest = cur.copy()
-            node = tree_dict.get(nid) or {}
-            for child_id in (node.get("children") or []):
-                if child_id in tree_dict:
-                    dfs(child_id, cur)
+        parent: Dict[str, Optional[str]] = {start_node: None}
+        depth: Dict[str, int] = {start_node: 0}
+        queue = deque([start_node])
+        while queue:
+            nid = queue.popleft()
+            for child_id in _outgoing_ids(nid):
+                if child_id not in tree_dict or child_id in depth:
+                    continue
+                parent[child_id] = nid
+                depth[child_id] = depth[nid] + 1
+                queue.append(child_id)
 
-        dfs("root", [])
-        return longest
+        farthest = max(depth.keys(), key=lambda x: depth[x])
+        path: List[str] = []
+        cur: Optional[str] = farthest
+        while cur is not None:
+            path.append(cur)
+            cur = parent.get(cur)
+        return list(reversed(path))
 
     main_ids = _find_longest_path_ids(tree)
     main_path: List[NodeInfo] = [index[nid] for nid in main_ids if nid in index]

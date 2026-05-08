@@ -293,8 +293,8 @@ class TestDialogueTreeLoader:
         assert next_node_id == "node_001"
         assert loader.current_node_id == "node_001"
 
-    def test_select_choice_creates_stub_node(self, simple_tree):
-        """测试选择跳转（回退路径3：创建占位节点）"""
+    def test_select_choice_does_not_create_stub_node(self, simple_tree):
+        """测试坏分支不会在运行时创建占位节点"""
         mock_db = MockDatabaseManager(simple_tree)
         loader = DialogueTreeLoader(mock_db, 1, 1)
 
@@ -304,12 +304,14 @@ class TestDialogueTreeLoader:
 
         next_node_id = loader.select_choice("C1")
 
-        # 应该创建一个新的占位节点
-        assert next_node_id is not None
-        assert next_node_id.startswith("node_")
-        assert loader.tree[next_node_id]["is_ending"] is True
-        assert loader.tree[next_node_id]["ending_type"] == "missing_branch"
-        assert "该分支未预生成" in loader.tree[next_node_id]["narrative"]
+        # 坏树必须在审计阶段失败，运行时不能伪造剧情。
+        assert next_node_id is None
+        assert loader.current_node_id == "root"
+        assert all(
+            node.get("ending_type") != "missing_branch"
+            for node in loader.tree.values()
+            if isinstance(node, dict)
+        )
 
     def test_select_choice_invalid(self, simple_tree):
         """测试选择不存在的选项"""

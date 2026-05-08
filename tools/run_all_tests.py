@@ -33,8 +33,9 @@ def run_test(test_name: str, test_file: str) -> tuple:
             return (test_name, True, "")
         else:
             console.print(f"❌ {test_name}: 失败\n")
-            console.print(f"错误输出:\n{result.stderr[:500]}\n")
-            return (test_name, False, result.stderr[:200])
+            output = result.stderr or result.stdout
+            console.print(f"错误输出:\n{output[:1000]}\n")
+            return (test_name, False, output[:200])
 
     except subprocess.TimeoutExpired:
         console.print(f"⏰ {test_name}: 超时\n")
@@ -65,8 +66,9 @@ def run_pytest_suite(test_name: str, pytest_args) -> tuple:
             return (test_name, True, "")
         else:
             console.print(f"❌ {test_name}: 失败\n")
-            console.print(f"错误输出:\n{result.stderr[:500]}\n")
-            return (test_name, False, result.stderr[:200])
+            output = result.stderr or result.stdout
+            console.print(f"错误输出:\n{output[:1000]}\n")
+            return (test_name, False, output[:200])
 
     except subprocess.TimeoutExpired:
         console.print(f"⏰ {test_name}: 超时\n")
@@ -111,9 +113,10 @@ def main():
             ],
         ),
         (
-            "工具类单元测试 / 生成进度可视化",
+            "工具类单元测试 / 生成进度可视化 / GameTree 可玩性审计",
             [
                 "tests/test_view_tree_progress.py",
+                "tests/test_audit_playability.py",
             ],
         ),
         (

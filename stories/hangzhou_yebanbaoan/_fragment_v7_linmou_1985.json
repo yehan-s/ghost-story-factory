@@ -504,6 +504,7 @@
     },
     "E_LINMOU_RELEASE": {
       "scene": "ENDING",
+      "is_ending": true,
       "_lore_canon": {
         "must_die": true,
         "intent": "释"
@@ -515,6 +516,7 @@
     },
     "E_LINMOU_REGRET": {
       "scene": "ENDING",
+      "is_ending": true,
       "_lore_canon": {
         "must_die": true,
         "intent": "悔"
@@ -526,6 +528,7 @@
     },
     "E_LINMOU_GRIEVANCE": {
       "scene": "ENDING",
+      "is_ending": true,
       "_lore_canon": {
         "must_die": true,
         "intent": "冤"
@@ -537,6 +540,7 @@
     },
     "E_LINMOU_EXPOSED": {
       "scene": "ENDING",
+      "is_ending": true,
       "_lore_canon": {
         "must_die": true,
         "intent": "曝光"

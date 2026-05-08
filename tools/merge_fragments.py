@@ -483,6 +483,10 @@ STORY_META = {
         "E_BAD_DROWN": "沉船替死鬼 (拾满 7 帽)",
         "E_NEUTRAL": "平安下班 (但什么都没改变)",
         "E_HIDDEN": "幽灵保安重投胎 (三路并行隐藏)",
+        "E_LINMOU_RELEASE": "林某前传:释 (带着自己的复印件投湖)",
+        "E_LINMOU_REGRET": "林某前传:悔 (把账册留给后来人)",
+        "E_LINMOU_GRIEVANCE": "林某前传:冤 (带着 27 份账等水底审判)",
+        "E_LINMOU_EXPOSED": "林某前传:曝光 (被押到湖边灭口)",
     },
     # 伏笔档案 — 玩家在游戏内会遇到的"未解之谜"。
     # 每条伏笔有两种解开方式:某个角色视角通关(explained_by_character)
