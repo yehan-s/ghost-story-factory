@@ -1,8 +1,60 @@
 {
   "_comment": "杭州民间传闻 NPC / 场景包(v7+)。每个节点都是 stay-effect 工具节点,可重访。所有节点都从 picker / 现有地标 narrative_variants 通过新选项进入。",
   "fragment_owner": "folklore-pack-v1",
-  "_dispatch_notes": "已挂的入口:n_landmark_picker 选『松木场老酒店』、n_s2_close_kid 选『浙大钟楼传闻』、n_s4_alley_inside 选『孔雀大厦塌楼』、n_s7_arrive 选『武林门刑场地脉』、n_npc_corrosion_face 选『雷峰塔白虫』。所有这些『新选项』在原 fragment 里以 require flag 隐藏,需要解锁才显示。当前不挂入口,等内容稳定后再挂。",
+  "_dispatch_notes": "Pass 6 入口方案: n_landmark_picker 加一个『[传闻] 翻夜班论坛索引』选项 → n_lore_index → 5 lore 节点。原计划的分散挂(n_s2_close_kid / n_s4_alley_inside / n_s7_arrive / n_npc_corrosion_face)推迟到 Pass 7 视玩家反馈再做。",
   "nodes": {
+    "n_lore_index": {
+      "scene": "PICKER",
+      "_is_map_picker": true,
+      "show_hud": false,
+      "narrative_variants": [
+        {
+          "if": {"visit_count_min": {"n_lore_index": 1}},
+          "text": "你又翻到夜班论坛那个『杭州都市传闻索引』页。\n\n5 条传闻还在那。\n\n但这一次,索引页右上角多了一行红字:\n\n**「你访问过的传闻,会留下指纹。」**\n\n你低头看自己的食指——\n\n指尖**有 5 道淡淡的红印**。\n\n但你只去过其中的几条。\n\n剩下几条,印**已经先在你身上了**。"
+        },
+        {
+          "if": {},
+          "text": "你停下脚步,从胸袋掏出手机。\n\n手机屏锁是 2023 年初你媳妇拍的桂花树——那年她从下岗厂子重新签了个临时工。\n\n你点开夜班论坛 app。\n\n论坛 LOGO 是一张 1985 年款的钢笔工牌——你做了 14 年夜班,这个 LOGO 看了 14 年。\n\n你今晚没刷新闻,直接翻到**「杭州都市传闻索引」**那一页——\n\n一个置顶帖,2007 年发的,SLH 论坛网友整理的「**杭州夜班保安遇见过的 27 件诡事**」节选 5 条。\n\n但今晚这 5 条**全是黑色加粗字**——\n\n以前其他帖都是普通字。\n\n只有今晚,这 5 条**自己变了**。\n\n好像它们**知道你今晚要看**。\n\n你滚动屏幕——5 条传闻的入口,一条一条**把自己排好**等你点。"
+        }
+      ],
+      "narrative": "(占位 — 此节点应该总是命中某个 narrative_variant)",
+      "choices": [
+        {
+          "text": "[01] 松木场老酒店 — 1987 温州女 217 房自缢",
+          "next": "n_lore_songmuchang_inn",
+          "_picker_kind": "tool",
+          "effects": {"PR": 1}
+        },
+        {
+          "text": "[02] 浙大老校区钟楼 — 2009 跳绳女生数到 99",
+          "next": "n_lore_zheda_clock_girl",
+          "_picker_kind": "tool",
+          "effects": {"PR": 1}
+        },
+        {
+          "text": "[03] 武林广场地下通道 — 1947 刑场 7 人地脉",
+          "next": "n_lore_wulinmen_execution",
+          "_picker_kind": "tool",
+          "effects": {"PR": 1}
+        },
+        {
+          "text": "[04] 孔雀大厦塌楼 — 2007 乌龙王石像被砸",
+          "next": "n_lore_kongque_collapse",
+          "_picker_kind": "tool",
+          "effects": {"PR": 1}
+        },
+        {
+          "text": "[05] 雷峰塔白虫 — 1924 塔砖里钻出的塔砖辟邪",
+          "next": "n_lore_leifeng_worm",
+          "_picker_kind": "tool",
+          "effects": {"PR": 1}
+        },
+        {
+          "text": "[返回] 关掉手机,回到地标地图。",
+          "next": "n_landmark_picker"
+        }
+      ]
+    },
     "n_lore_leifeng_worm": {
       "scene": "NPC",
       "_is_tool": true,

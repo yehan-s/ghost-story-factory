@@ -244,6 +244,10 @@
           "require": {
             "shifts_completed_min": 4
           }
+        },
+        {
+          "text": "[传闻] 翻夜班论坛的杭州都市传说索引。",
+          "next": "n_lore_index"
         }
       ]
     },
