@@ -2401,6 +2401,54 @@
           }
         },
         {
+          "text": "[路径·跨周目] E_TRUE 让红衣女孩见到她爸,关闭杭州常数",
+          "next": "n_end_true",
+          "require": {
+            "all_of": [
+              {
+                "ending_seen": {
+                  "story_id": "杭州_v7",
+                  "ending_id": "n_end_truth"
+                }
+              },
+              {
+                "flags": {
+                  "know.told_red_girl_truth": true
+                }
+              },
+              {
+                "flags": {
+                  "know.linmou_corruption": true
+                }
+              }
+            ]
+          }
+        },
+        {
+          "text": "[路径·跨周目] E_HIDDEN 主动跳湖,替下一代 G-274 11 年",
+          "next": "n_end_hidden",
+          "require": {
+            "all_of": [
+              {
+                "ending_seen": {
+                  "story_id": "杭州_v7",
+                  "ending_id": "n_end_data"
+                }
+              },
+              {
+                "flags": {
+                  "know.saw_8_zhao": true
+                }
+              }
+            ]
+          },
+          "effects": {
+            "flags": {
+              "arc.became_judge": true
+            }
+          }
+        },
+        {
           "text": "[默认] E_NEUTRAL 平安下班",
           "next": "n_end_neutral"
         }
