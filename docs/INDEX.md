@@ -90,6 +90,7 @@
 | [CLI_GAME_ROADMAP.md](specs/CLI_GAME_ROADMAP.md) | 命令行游戏开发路线图 |
 | [TASK_STORY_STRUCTURE.md](tasks/TASK_STORY_STRUCTURE.md) | 新故事结构化流水线（骨架模式）的实施任务拆解 |
 | [TASK_GAMETREE_V1.md](tasks/TASK_GAMETREE_V1.md) | GameTree v1 可玩闭环与 VN/沙盒契约收敛 |
+| [TASK_SCRIPT_SANDBOX_PASS1.md](tasks/TASK_SCRIPT_SANDBOX_PASS1.md) | 正式剧本沙盒化深层迭代 Pass 1 |
 
 ---
 
