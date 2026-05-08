@@ -22,13 +22,27 @@ from typing import Any, Dict, List, Set, Tuple
 
 
 # Lore 红线默认值(可被 tree.lore_canon 覆盖)
+# years: 杭州夜班保安世界观允许的年份锚点。2024 = 主周目当代;1985 = linmou Act 1;
+# 1924 雷峰塔倒 / 1947 武林门刑场 / 1957 拆庙 / 1959 留下小学 / 1987 松木场 /
+# 1991 留下小学叶某 / 1996 红衣女孩 / 2007 孔雀塌楼 / 2019 媳妇阳台 等。
 DEFAULT_LORE_CANON = {
-    "years": [1924, 1933, 1959, 1985, 1986, 1987, 1991, 1996, 2009],
+    "years": [
+        1924, 1933, 1947, 1957, 1958, 1959, 1965, 1970, 1972, 1976,
+        1979, 1980, 1983, 1984, 1985, 1986, 1987, 1988, 1989, 1990,
+        1991, 1992, 1993, 1995, 1996, 1997, 1998, 2002, 2007, 2009,
+        2013, 2019, 2020, 2023, 2024, 2029,
+    ],
     "forbidden_terms": ["管理委员会", "员工编号", "林先生", "林总", "委员会"],
 }
 
 NAMESPACE_PREFIXES = ("know.", "oneshot.", "arc.", "route.", "state.", "meta.")
 YEAR_RE = re.compile(r"\b(19[0-9]{2}|20[0-2][0-9])\b")
+
+# Pass 6 评审报告 § 3 量化红线
+# FLAG_COUNT_CEILING: 当前 baseline 92 + 8 席预算 = 100,Pass 7 单独立项把 92 降到 75。
+# Pass 6 期间不允许增长(超过 100 即 blocking)。
+FLAG_COUNT_CEILING = 100
+VARIANT_COUNT_PER_NODE_WARN = 8
 
 
 def _walk_requires(node: Dict[str, Any]):
@@ -114,9 +128,12 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
     flag_require_by: Dict[str, List[str]] = defaultdict(list)
     inv_add_by: Dict[str, List[str]] = defaultdict(list)
     inv_require_by: Dict[str, List[str]] = defaultdict(list)
-    namespace_violations: List[Tuple[str, str]] = []  # (node_id, flag_key)
+    namespace_violations: List[Tuple[str, str]] = []  # effects.flags key 缺命名空间
+    require_namespace_violations: List[Tuple[str, str]] = []  # require/if.flags key 缺命名空间
     year_violations: List[Tuple[str, int]] = []
     term_violations: List[Tuple[str, str]] = []
+    variant_overflow: List[Tuple[str, int]] = []  # 单节点 variants > VARIANT_COUNT_PER_NODE_WARN
+    variant_if_dupes: List[Tuple[str, int, int]] = []  # (node_id, idx_a, idx_b) if 完全相同
 
     for node_id, node in nodes.items():
         # effects.flags / effects.inv_add(从所有 effects 出现处遍历)
@@ -135,8 +152,22 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
             _flatten_inv_in_require(req, inv_req)
         for k in flags_req:
             flag_require_by[k].append(node_id)
+            if not k.startswith(NAMESPACE_PREFIXES):
+                require_namespace_violations.append((node_id, k))
         for item in inv_req:
             inv_require_by[item].append(node_id)
+        # variant 数量 + variant if 重复检查
+        variants = node.get("narrative_variants") or []
+        if len(variants) > VARIANT_COUNT_PER_NODE_WARN:
+            variant_overflow.append((node_id, len(variants)))
+        if len(variants) >= 2:
+            seen_keys: Dict[str, int] = {}
+            for idx, v in enumerate(variants):
+                key = json.dumps(v.get("if") or {}, sort_keys=True, ensure_ascii=False)
+                if key in seen_keys:
+                    variant_if_dupes.append((node_id, seen_keys[key], idx))
+                else:
+                    seen_keys[key] = idx
         # Lore 红线:narrative + 所有 variant 文本扫描
         text_parts: List[str] = [node.get("narrative") or ""]
         for v in node.get("narrative_variants") or []:
@@ -167,9 +198,14 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
             for k in sorted(all_flags)
         },
         "flag_total": len(all_flags),
+        "flag_count_ceiling": FLAG_COUNT_CEILING,
+        "flag_count_over_ceiling": len(all_flags) > FLAG_COUNT_CEILING,
         "dead_set_flags": dead_set_flags,
         "dead_require_flags": dead_require_flags,
         "namespace_violations": namespace_violations,
+        "require_namespace_violations": require_namespace_violations,
+        "variant_count_overflow": variant_overflow,
+        "variant_if_dupes": variant_if_dupes,
         "inv": {
             k: {
                 "add_by": inv_add_by.get(k, []),
@@ -184,12 +220,21 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
 
 
 def _exit_code(report: Dict[str, Any], strict: bool) -> int:
-    blocking = report["year_violations"] or report["term_violations"]
+    # Blocking: 严守的红线 — 禁用术语 + flag 上限(Pass 6 不许增长)
+    blocking = (
+        report["term_violations"]
+        or report["flag_count_over_ceiling"]
+    )
+    # Warnings: 创作弹性区(年份 / 命名空间 / 死字段) — strict 下报警
     warnings = (
-        report["dead_set_flags"]
+        report["year_violations"]
+        or report["dead_set_flags"]
         or report["dead_require_flags"]
         or report["namespace_violations"]
+        or report["require_namespace_violations"]
         or report["dead_set_inv"]
+        or report["variant_count_overflow"]
+        or report["variant_if_dupes"]
     )
     if blocking:
         return 2
