@@ -144,12 +144,14 @@ variants **数量不稀疏**(平均 2-6 / 节点),问题在**触发条件交叉�
 
 ### 写作模板(每节点 4 个 vibe variants 结构)
 
-| vibe 桶 | 字数 | 必备元素 | 禁忌 |
+| vibe 桶 | 参考字数(±20% 浮动) | 必备元素 | 禁忌 |
 |---|---|---|---|
-| **A. 心理新鲜**(visit 0 / default)| ~80 | 第一人称感官 + 场景陌生 + 1 个微细节 | 不剧透、不引用未发生事 |
-| **B. 物理被记住**(visit ≥ 1)| ~100 | 与 A 比"留痕"(灯/门/物件位置变化)+ "咦,刚才不是这样" | 不破第四面墙(不写"这是第二次了")|
-| **C. 灵异密度**(visit ≥ 2)| ~120 | 诡异升级(声响/影子/不对劲)+ 维持"素净眼"风格 | 不直接撞鬼(留 D 桶);不重复 B 的细节 |
-| **D. 都市传说底牌**(visit ≥ 3)| ~150 | lore 内幕(羊符/铜锈/二轻物资/G-273/1985-10-18)+ "忽然懂了"的悟性句 | 不直接交代谜底(留 ending 揭开)|
+| **A. 心理新鲜**(visit 0 / default)| ~80 (64-96) | 第一人称感官 + 场景陌生 + 1 个微细节 | 不剧透、不引用未发生事 |
+| **B. 物理被记住**(visit ≥ 1)| ~100 (80-120) | 与 A 比"留痕"(灯/门/物件位置变化)+ "咦,刚才不是这样" | 不破第四面墙(不写"这是第二次了")|
+| **C. 灵异密度**(visit ≥ 2)| ~120 (96-144) | 诡异升级(声响/影子/不对劲)+ 维持"素净眼"风格 | 不直接撞鬼(留 D 桶);不重复 B 的细节 |
+| **D. 都市传说底牌**(visit ≥ 3)| ~150 (120-180) | lore 内幕(羊符/铜锈/二轻物资/G-273/1985-10-18)+ "忽然懂了"的悟性句 | 不直接交代谜底(留 ending 揭开)|
+
+字数仅作参考,Lore Keeper 评审时**不按字数否决**,优先看必备元素 + 禁忌满足 + 文本质量。
 
 ### 一致性原则
 
@@ -183,7 +185,8 @@ variants **数量不稀疏**(平均 2-6 / 节点),问题在**触发条件交叉�
 
 | 项 | 方法 |
 |---|---|
-| visit_count 切档 smoke test | 启 game,在 `n_landmark_picker` 反复回访 4 次,确认 4 vibe 文本依次出现 |
+| visit_count 切档 smoke test(高入度) | 启 game,在 `n_landmark_picker` 反复回访 4 次,确认 4 vibe 文本依次出现 |
+| visit_count 切档 smoke test(低入度) | 在 `n_s1_arrive` 反复回访 2 次,确认 visit=0(default A)/ visit=1(B)切档正确(避免高入度节点 visit_count 过早 ≥4 掩盖低桶 bug)|
 | 一致性人审 | 通玩 1 条 E_TRUE 路径,记录每节点 4 vibe 是否单调累积 |
 | linmou 联动 | 通 G-273 hidden truth → 进 linmou Act 1,确认 picker 触发跨周目 variant |
 
@@ -266,7 +269,7 @@ Pass 3 是**纯数据改动**(JSON variants 写作),引擎逻辑不变。已有 
 2. ✅ `audit_reactions.py` 0 红线(DEAD_REACTION / UNREACHABLE_REACTION / DEAD_ENDING_SEEN 全 0)
 3. ✅ `audit_paths_linmou.py` INV-1~5 全 0 problems
 4. ✅ `pytest -q` 259 passed(无新增/删除测试)
-5. ✅ `path_explorer.py` 8 主结局可达,孤儿数 ≤ 5(linmou picker 入边动态生成,工具盲点),死路数 ≤ 5(同盲点)
+5. ✅ `path_explorer.py` 8 主结局可达,孤儿数 / 死路数**不超过基线快照**(写作前跑 `path_explorer.py` 记录当前基线,验收时对比"不上升")
 6. ✅ flag 总量 ≤ 75(零新增)
 7. ✅ 节点数 144(零新增)
 8. ✅ Lore Keeper 通过 vibe D variants(lore 锚点白名单内)
