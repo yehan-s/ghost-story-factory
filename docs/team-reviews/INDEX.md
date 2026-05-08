@@ -17,6 +17,7 @@
 | 2026-05-07 | linmou_1985 角色周目(第二可玩角色) | 修改后放行 | [报告](2026-05-07-linmou-arc.md) |
 | 2026-05-07 | Pass 1 状态空间审计 + Flag 降级清扫(完成报告) | 已完成 | [报告](2026-05-07-pass1-completion.md) |
 | 2026-05-08 | Pass 2 首任务完成报告(know.* 反馈条 + 4 variant 试点) | 已完成 | [报告](2026-05-08-pass2-completion.md) |
+| 2026-05-08 | audit_reactions DEAD_ENDING_SEEN 红线加固 + Pass 2 docs commit | 修改后放行 | [报告](2026-05-08-audit-dead-ending-seen.md) |
 
 ---
 
