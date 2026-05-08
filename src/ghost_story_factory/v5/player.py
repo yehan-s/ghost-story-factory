@@ -540,8 +540,11 @@ def _highlight_narrative(line: str) -> str:
 
 def render_narrative(text: str) -> None:
     """渲染 narrative。当文本含 `\n---\n` 段落分隔符且 ≥ 2 段时,分屏渲染:
-    每段独立一屏,玩家按 Enter 继续。GHOST_FAST=1 跳过分屏直出。
+    每段读完 → 短暂呼吸 → 渐入 Enter 提示 → 玩家继续 → 再呼吸再下段。
+    GHOST_FAST=1 跳过分屏直出。
     """
+    from ghost_story_factory.v7.animate import pause as _pause, fade_lines as _fade
+
     print()
     segments = [s.strip() for s in text.strip().split("\n---\n") if s.strip()]
 
@@ -556,11 +559,15 @@ def render_narrative(text: str) -> None:
         for line in seg.split("\n"):
             slow_print(_highlight_narrative(line))
         if idx < total - 1:
+            _pause(0.6)  # 段读完,先静默一拍(让玩家"消化")
+            print()
+            _fade([dim(f"  ── 按 Enter 继续 · {idx + 2}/{total} ──")], line_delay=0.12)
             try:
-                input(dim(f"  ── 按 Enter 继续 ({idx + 2}/{total}) ──"))
+                input("")  # 不要再多打一行字,纯等待 Enter
             except (EOFError, KeyboardInterrupt):
                 print("\n" + red("中断。"))
                 sys.exit(0)
+            _pause(0.4)  # Enter 之后,下段渐入前再停一拍
             print()
     print()
 
@@ -573,6 +580,8 @@ def render_choices(visible: List[Dict[str, Any]],
 
     普通节点 ≥ 5 选项时按 stay-互动 vs 推进 分组;picker 节点保持平铺。
     """
+    from ghost_story_factory.v7.animate import pause as _pause
+    _pause(0.35)  # narrative 读完到选项之间留呼吸,避免节奏断
     print()
     # picker 节点(travel/tool/endshift)保持原列表;普通节点尝试分组
     is_picker = any(
