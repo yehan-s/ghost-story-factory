@@ -1,5 +1,7 @@
 """GameTreePlan 草案单元测试。"""
 
+import json
+
 from ghost_story_factory.pregenerator.gametree_plan import GameTreePlan
 from ghost_story_factory.pregenerator.skeleton_model import (
     ActConfig,
@@ -9,6 +11,7 @@ from ghost_story_factory.pregenerator.skeleton_model import (
     SkeletonConfig,
 )
 from tools.audit_playability import analyze_playability
+from tools.audit_reactions import audit as audit_reactions
 
 
 def _sandbox_skeleton() -> PlotSkeleton:
@@ -99,9 +102,11 @@ def test_gametree_plan_minimal_tree_passes_playability_redlines():
 
     assert report.ok
     assert report.dynamic_picker_nodes == 1
+    assert report.ending_nodes == 1
     assert report.reachable_nodes == report.total_nodes
     assert len(tree["landmark_map"]) == 4
     assert len(tree["tools"]) == 2
+    assert "E_SANDBOX_PROBE" in tree["endings"]
     assert any(
         choice.get("effects", {}).get("stay")
         for node in tree["nodes"].values()
@@ -112,3 +117,34 @@ def test_gametree_plan_minimal_tree_passes_playability_redlines():
         for node in tree["nodes"].values()
         for variant in node.get("narrative_variants", [])
     )
+
+
+def test_gametree_plan_minimal_tree_has_real_navigation_edges():
+    """地标连接应既存在于 landmark_map,也能转成实际可走 choice。"""
+    plan = GameTreePlan.from_skeleton(_sandbox_skeleton())
+    tree = plan.to_minimal_tree()
+    location_nodes = {
+        landmark["id"]: tree["nodes"][landmark["node_id"]]
+        for landmark in tree["landmark_map"]
+    }
+
+    assert any(
+        choice["next"] == "n_loc_s2_lobby"
+        for choice in location_nodes["S1_security_room"]["choices"]
+    )
+
+
+def test_gametree_plan_minimal_tree_reactions_are_declared(tmp_path):
+    """导出的反应 variant 必须有 resolver_node,不能只是孤立消费。"""
+    plan = GameTreePlan.from_skeleton(_sandbox_skeleton())
+    path = tmp_path / "tree.json"
+    path.write_text(json.dumps(plan.to_minimal_tree(), ensure_ascii=False), encoding="utf-8")
+
+    report = audit_reactions(path)
+    blockers = [
+        problem
+        for problem in report["problems"]
+        if problem["code"] in ("DEAD_REACTION", "UNREACHABLE_REACTION")
+    ]
+
+    assert blockers == []

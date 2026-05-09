@@ -1,7 +1,7 @@
 # TASK: v4 生成器对齐 GameTree v1 沙盒拓扑
 
-版本: v0.2
-状态: Active
+版本: v1.0
+状态: Done
 关联:
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - `docs/tasks/TASK_STORY_STRUCTURE.md`
@@ -35,8 +35,8 @@
 - [x] 扩展 `PlotSkeleton` 数据模型,让 beat 能表达沙盒所需的最小定位信息;
 - [x] 更新 `plot-skeleton.prompt.md`,要求 LLM 输出地标、NPC、工具节点和演出提示;
 - [x] 增加一个 `GameTreePlan` 或等价中间层,把骨架大纲转成 `GameTree v1` 形状前的结构计划;
-- [ ] 让生成链路产物能被 `audit_playability.py` 和后续 `audit_sandbox.py` 检查;
-- [ ] 保持 v3 legacy / 当前手写 v7 正式树兼容。
+- [x] 让生成链路产物能被 `audit_playability.py` 和后续 `audit_sandbox.py` 检查;
+- [x] 保持 v3 legacy / 当前手写 v7 正式树兼容。
 
 ### 非目标
 
@@ -100,9 +100,9 @@
 
 ### M4: 审计接入
 
-- [ ] 让 `GameTreePlan` 或其导出树能被 `audit_playability.py` 检查;
-- [ ] 新增 `audit_sandbox.py` 或扩展现有审计,验证 ADR-010 最小沙盒骨架;
-- [ ] 将相关测试挂入 `tools/run_all_tests.py`。
+- [x] 让 `GameTreePlan` 或其导出树能被 `audit_playability.py` 检查;
+- [x] 新增 `audit_sandbox.py` 或扩展现有审计,验证 ADR-010 最小沙盒骨架;
+- [x] 将相关测试挂入 `tools/run_all_tests.py`。
 
 ---
 
@@ -126,3 +126,31 @@
 - 新增 `pregenerator/gametree_plan.py`,把内容骨架转换成计划层的 `locations / tools / npc_routes / beats / presentation_defaults / acceptance`;
 - `GameTreePlan.to_minimal_tree()` 只用于内存测试和后续生成器对齐,不写正式树、不改 DB schema、不接入正式审计链;
 - M4 仍保留为后续工作:新增或接入 `audit_sandbox.py`,并决定何时挂入 `tools/run_all_tests.py`。
+
+### 2026-05-09: M4 审计接入收口
+
+- 新增 `tools/audit_sandbox.py`,按 ADR-010 检查 picker hub / landmark connections / tool / stay 自循环 / 反应式 variant;
+- `tools/audit_all.sh` 已接入 `audit_sandbox`,正式杭州树报告:
+  - picker hub: `3`;
+  - 地标: `11`;
+  - 工具节点: `10`;
+  - stay 自循环工具: `9`;
+  - 反应 variant 节点: `14`;
+- `GameTreePlan.to_minimal_tree()` 补齐最小结局、静态 picker 选项、地标实际跳转、工具退出、反应契约 resolver;
+- 新增 `tests/test_audit_sandbox.py`;
+- 更新 `tests/test_gametree_plan.py`,要求最小导出树同时通过基本可玩性、沙盒骨架和反应契约红线;
+- `tools/run_all_tests.py` 已挂入新测试。
+
+已验证:
+
+- `.venv/bin/python -m pytest tests/test_audit_sandbox.py tests/test_gametree_plan.py -q`;
+- `python3 tools/audit_sandbox.py stories/hangzhou_yebanbaoan/tree.json`;
+- `bash tools/audit_all.sh`;
+- `.venv/bin/python tools/run_all_tests.py`。
+
+结果:
+
+- 正式树仍为 `145` 节点、`21` 结局;
+- `audit_all` 全套 `7/7` 审计通过;
+- 统一测试 `7/7` 通过;
+- 未改 DB schema,未改正式杭州剧本拓扑。
