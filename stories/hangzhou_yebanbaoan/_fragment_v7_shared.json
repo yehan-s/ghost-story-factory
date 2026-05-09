@@ -1520,7 +1520,47 @@
     },
     "n_npc_forum_lurkers": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "phone_screen_closeup",
+        "cg_intent": "forum_comments_consume_truth",
+        "transition_intent": "exposure_feedback"
+      },
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "arc.all_archives_photoed": true
+            }
+          },
+          "text": "夜班论坛刷新。\n\n你上传的不是一张照片。\n\n是整座杭州夜班档案室的断面。\n\n第 1 条评论问:「有没有更刺激的图?」\n\n第 2 条评论问:「楼主能不能把林晓燕哭的那段单独剪出来?」\n\n第 3 条评论没有字,只有 27 个蜡烛表情。\n\n你盯着屏幕,终于明白论坛不是在帮你记住真相。\n\n它在把真相拆成可转发的片段。\n\nG-272 的私信慢慢弹出:\n\n「别让他们替你命名。标题一旦被他们起好,人就会第二次死。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "oneshot.live_streaming": true
+            }
+          },
+          "text": "直播间还开着。\n\n你明明把手机放进口袋,弹幕却继续从对讲机里滚出来。\n\n「别停。」\n\n「去 B3。」\n\n「让红衣女孩再出现一次。」\n\n「清洁工刚才是不是在你背后?」\n\n你回头。\n\n没有清洁工。\n\n但直播画面右下角,有一块拖把擦过的湿痕。\n\n湿痕里倒映出的不是你。\n\n是所有正在看你的人。"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.s1_post_forum": true,
+              "oneshot.s4_posted_blood_face": true
+            }
+          },
+          "text": "论坛给你自动生成了合集标题:\n\n『湖滨风衣空领口 + 羊血弄林某脸,杭州夜班保安实拍』\n\n标题很会吸引人。\n\n也很会杀人。\n\n它删掉了林志诚。\n\n删掉了 26 笔账。\n\n删掉了你在湖边发抖的那 7 秒。\n\n只留下两个可怕画面。\n\n你忽然觉得,论坛不是围观者。\n\n论坛是一台会自动剪辑的绞肉机。"
+        },
         {
           "if": {
             "flags": {
@@ -1545,15 +1585,15 @@
       "narrative": "夜班论坛打开了。\n\n你的发帖,匿名。\n\n点赞数:+1...+27...+307...\n\n+1987!\n\n屏幕里实体瘪下去。\n\n弹幕在你脑袋里刷:\n\n「现场!」「我也见过!」「G-273 别签合同!」「快跑!」「继续发!」\n\n弹幕里有一条最长的——\n\n「我是 G-272。\n  我在 27 楼。\n  你拍的所有照片,我都看见。\n  你把它们发出来,我就能多记住自己一天。」",
       "choices": [
         {
-          "text": "再发一帖。",
+          "text": "只发一条更正:这些不是素材,是名字。",
           "effects": {
             "flags": {
               "oneshot.forum_posted": true
             },
-            "GR": 2,
-            "stay": true
+            "PR": 6,
+            "GR": -2
           },
-          "next": "n_npc_forum_lurkers"
+          "next": "n_landmark_picker"
         },
         {
           "text": "继续发,把今晚每个地标都直播。",
@@ -1570,7 +1610,8 @@
           "text": "立刻删帖。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": -3
+            "PR": -3,
+            "GR": 3
           }
         },
         {
@@ -1601,6 +1642,21 @@
     },
     "n_npc_evaluator_chair": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_predecessor",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "document_table_topdown",
+        "cg_intent": "evaluator_case_file_opens",
+        "transition_intent": "judgement_summons"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -1608,7 +1664,7 @@
               "oneshot.s4_refused_yanggui": true
             }
           },
-          "text": "你拒绝加入羊公会。\n\n《异常事件记录表》自己翻到最末页:\n\n「夜班评议会案号 G-273-X 第 14 卷:\n  本届巡夜员**拒绝**羊公会名册第 18 号编入。\n  这是 G 字头案件第一次有人拒绝。\n  根据章程第 17 条,授予『候补判官 — 革命党人 第 1 号』。\n  请到 B3 档案室,**审判**前 17 名加入羊公会的死灵。」\n\n你的工牌反面,**烫出『正章』**——\n\n不是『候补』,是直接『正』。"
+          "text": "你拒绝加入羊公会。\n\n《异常事件记录表》自己翻到最末页。\n\n这次不是授章通知。\n\n是案由。\n\n「案由一:赵某拒绝把自己写成第 18 号羊。\n  证据:断裂毛笔、未完成的羊血字、未签名的名册。\n  评议意见:本届巡夜员第一次把『不替别人死』写成有效记录。」\n\n纸页停在这里,不再往下翻。\n\n它在等你承认一件事:\n\n你不是因为勇敢才拒绝。\n\n你是终于明白,替死鬼不会救任何人。"
         },
         {
           "if": {
@@ -1616,7 +1672,7 @@
               "arc.s3_refused_h1987": true
             }
           },
-          "text": "你在 S3 钟前写了「不」。\n\n夜班评议会**第一次**记录到这种事。\n\n《异常事件记录表》浮现:\n\n「G-273-X 案号:\n  本届拒绝接受 H = 1987 编号。\n  这是杭州常数运行 37 年来第一次。\n  判定:授予『候补判官 — 边界判例』。\n\n  特别条款:你审判的不是 11 任前任 G-273。\n  你审判的是**杭州常数本身**。」\n\n你的工牌反面,**烫的不是章**——\n\n是一个**问号**。"
+          "text": "你在 S3 钟前写了「不」。\n\n夜班评议会没有夸你。\n\n它把那一笔复印了 11 份,夹进 11 任前任 G-273 的记录表。\n\n「案由二:赵某拒绝接受 H = 1987 编号。\n  证据:钟面铜锈、手腕印痕、未响完的第八声。\n  风险:杭州常数无法把本届巡夜员归类。」\n\n你的工牌反面没有烫出章。\n\n只烫出一个问号。\n\n问号不是奖励。\n\n问号是系统承认:它暂时不知道怎么吞掉你。"
         },
         {
           "if": {
@@ -1624,7 +1680,7 @@
               "arc.s6_replaced_seven": true
             }
           },
-          "text": "你在 S6 井底说『我替七个工人』。\n\n《异常事件记录表》自己翻页:\n\n「夜班评议会注:\n  本届巡夜员愿意替 7 人共担一夜。\n  这超出『候补判官』的章程范围。\n  授予『候补判官 — 担当』。\n  额外津贴:7 顶柳条帽**自动还到栏杆**。\n  你的右肩,**多了一份重量**——\n  那是 7 个工人 38 年的疲惫。」\n\n你的工牌**变重了**。"
+          "text": "你在 S6 井底说过『我替七个工人』。\n\n评议会把这句话单独拎出来。\n\n「案由三:赵某试图用一个活人的夜班抵 7 个死者的归航。\n  证据:井底录音、柳条安全帽、右肩红印。\n  判读:有担当,也有傲慢。」\n\n最后两个字压得很重。\n\n你本能地想反驳。\n\n但纸页下面浮出 7 个名字。\n\n它们没有要求你替。\n\n它们只要求你别把『替』说得像救赎。"
         },
         {
           "if": {
@@ -1632,7 +1688,7 @@
               "oneshot.defied_token": true
             }
           },
-          "text": "你刚入职那天撕了 1984 年的小票。\n\n夜班评议会**记得**。\n\n《异常事件记录表》浮现:\n\n「G-273 赵某入职日已留下『违逆标记』。\n  本届表现『非正分类』。\n  授予『候补判官 — 革命党 第 1 号』临时章。\n\n  注:这个章用过 0 次。\n  上一次有人撕入职小票,是 G-001。\n  G-001 的故事,已经无人记得。\n  你可能是第一个**让人记得 G-001 的故事**的人。」"
+          "text": "你刚入职那天撕了 1984 年的小票。\n\n夜班评议会记得。\n\n「案由零:赵某在知道规则前,先破坏了规则的信物。\n  证据:黄色纸屑、铅笔灰、垃圾桶里不存在的半张小票。\n  备注:这不是勇敢。多半是穷、烦、急,以及一点不服气。」\n\n你看着最后一句,喉咙发紧。\n\n它说对了。\n\n你不是天生反抗者。\n\n你只是那天真的交不起房租。"
         }
       ],
       "narrative": "你听见一个很老的声音,从你**胸袋里**传出来——\n\n是《异常事件记录表》自己说的。\n\n不是声音,是字。表的最末页,本来是空白,现在浮现出一段印刷字:\n\n「夜班评议会案号 G-273-X 第 14 卷:\n  本届巡夜员表现『未分类』。\n  根据章程,授予『候补判官』临时章。\n  请到 B3 档案室,报到。」\n\n你的工牌反面,自己**烫**出一个章。\n\n章上写着:「夜班评议会·候补判官」。",
@@ -1660,10 +1716,7 @@
           "text": "不去。继续巡逻。",
           "next": "n_landmark_picker",
           "effects": {
-            "PR": 5,
-            "flags": {
-              "arc.got_judge_seal": true
-            }
+            "PR": 5
           }
         }
       ]
@@ -1830,7 +1883,38 @@
     },
     "n_npc_cleaner_null": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_page"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "over_shoulder_empty_corridor",
+        "cg_intent": "cleaner_erases_identity_trace",
+        "transition_intent": "identity_deletion"
+      },
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.live_streaming": true
+            }
+          },
+          "text": "清洁工出现在直播回放里。\n\n不是当前画面。\n\n是你 17 分钟前拍过的背景。\n\n他推着空桶,从每一帧边缘慢慢经过。\n\n经过一次,画面里少一个名字。\n\n林晓燕的字幕先糊掉。\n\n7 个工人的工号变成马赛克。\n\n最后连你的脸也被拖把抹成一块白色。\n\n他没有脸,但手机扬声器里传来很轻的雪花声:\n\n「曝光不是记住。\n  曝光只是把人交给下一台机器清洗。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.all_archives_photoed": true
+            }
+          },
+          "text": "你拍完整个档案室以后,清洁工终于停下拖把。\n\n他把空桶翻过来。\n\n桶底没有水。\n\n有 27 张被泡烂的照片。\n\n每一张都是你刚拍过的档案。\n\n他把照片一张一张摆在地上,像摆证物。\n\n然后他指着你的手机。\n\n屏幕上弹出一句系统提示:\n\n「是否清理重复文件?」\n\n你忽然明白,他不是来吓你。\n\n他是这座城市专门负责把『证据』改名成『重复文件』的人。"
+        },
         {
           "if": {
             "flags": {
@@ -1859,7 +1943,7 @@
       "narrative": "你眼角余光看见**有人**在动。\n\n5 米外。\n\n是一个清洁工。\n\n他在拖地——拖把推过地面,**沙、沙、沙**。\n\n但你听这条走廊不是该有清洁工巡逻的位置。\n\n现在是凌晨。\n\n商场清洁工 22 点就下班。\n\n你转头**直视**他——\n\n他**没有动作**。\n\n他**还在拖地**。\n\n但他的拖把**没有沾水**。\n\n他的桶**是空的**。\n\n他的拖把**离地 3 厘米**——他在**空气**里拖。\n\n他抬头。\n\n他没有脸。\n\n不是黑色,不是白色——\n\n他脸的位置,是**1984 年黑白电视的雪花屏**。\n\n雪花屏里隐约有人影,但你眼睛对不上焦。\n\n他播放出**电视开机时的雪花声**。\n\n声音不是从他身上发出来的——\n\n是从你的**对讲机扬声器**和**手机扬声器**和**商场广播喇叭****同时**发出。\n\n三处声音**完全同步**,在你脑袋里**叠成一个频段**。\n\nHUD 提示:「不存在的清洁工 Tier 上升。」\n\n你不知道 Tier 是什么。\n\n他朝你**走过来**。\n\n他每走一步,他**和你的距离不变**。\n\n他**没有靠近你**。\n\n但他**在走**。",
       "choices": [
         {
-          "text": "用强光手电照他。",
+          "text": "用强光手电照他,逼他留下影子。",
           "next": "n_landmark_picker",
           "effects": {
             "PR": 5,
@@ -1867,7 +1951,7 @@
           }
         },
         {
-          "text": "跟着他回工具间。",
+          "text": "跟着他回工具间,看他到底在清理什么。",
           "next": "n_npc_ghost_guard",
           "effects": {
             "PR": 10,
@@ -1875,7 +1959,7 @@
           }
         },
         {
-          "text": "让他删一件你背包里的物品。",
+          "text": "让他删掉你和前任之间最危险的联系。",
           "next": "n_landmark_picker",
           "effects": {
             "GR": 5,
@@ -2378,7 +2462,38 @@
     },
     "n_scene_evaluator_room": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_predecessor",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "wide_archive_room_candle_table",
+        "cg_intent": "evaluator_room_case_evidence",
+        "transition_intent": "case_review"
+      },
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.s6_no_fingerprint": true
+            }
+          },
+          "text": "你走进档案室时,第 12 本空白记录表没有翻开。\n\n它先吐出一张指纹卡。\n\n卡上本该有你的拇指纹。\n\n现在只有一片干净的白。\n\n11 任前任 G-273 同时抬头。\n\n评议会的字慢慢浮现:\n\n「案由:无指纹,未注销。\n  清洁工已执行第一步。\n  本室只确认第二步:这个人是否还被自己的名字承认?」\n\n你看见工牌上的『赵某』闪了一下。\n\n它还在。\n\n但已经很薄。"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.all_archives_photoed": true
+            }
+          },
+          "text": "你带着整套档案照片走进来。\n\n档案室没有欢迎你。\n\n11 本记录表同时合上,像 11 张嘴闭紧。\n\n桌上多出一张清单:\n\n「已拍摄:27 份。\n  已理解:未知。\n  已公开:待定。\n  风险:把证据误当胜利。」\n\n你第一次意识到,拍下真相只是取证。\n\n取证之后怎么命名、给谁看、是否允许他们把死人剪成标题,才是审判。"
+        },
         {
           "if": {
             "puzzle_pieces_min": 5
@@ -3385,7 +3500,29 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_DATA",
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black",
+        "camera": "crt_noise_fullscreen",
+        "cg_intent": "ending_data_identity_erased",
+        "transition_intent": "datafication"
+      },
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.live_streaming": true
+            }
+          },
+          "text": "你以为直播会把你留下。\n\n结果它留下的是版本。\n\n第 1 个你站在湖滨长椅。\n\n第 2 个你站在羊血弄。\n\n第 3 个你站在 B3 电视墙前。\n\n每个版本都被剪成 27 秒。\n\n夜班论坛给它们打标签:\n\n「胆大保安」\n「杭州怪谈」\n「疑似摆拍」\n「后续呢」\n\n清洁工推着空桶走过每段视频底部。\n\n他没有删视频。\n\n他只删掉你的名字。\n\n于是所有人都记得 G-273。\n\n没有人记得赵某。"
+        },
         {
           "if": {
             "all_of": [
@@ -3451,7 +3588,29 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_BROADCAST",
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "multi_screen_comment_wall",
+        "cg_intent": "ending_broadcast_forum_wall",
+        "transition_intent": "viral_consumption"
+      },
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "arc.all_archives_photoed": true
+            }
+          },
+          "text": "你把整套档案交给了直播间。\n\n27 台电视墙没有播放档案原文。\n\n它们播放弹幕整理版。\n\n『一分钟看懂杭州夜班保安。』\n\n『林晓燕到底是谁?』\n\n『7 个工人结局太刀了。』\n\n『赵某是不是剧本杀 NPC?』\n\n每一条弹幕都像一把小刀,把人名削成标签。\n\n你想关掉直播。\n\n但论坛已经接管了频道。\n\nG-272 最后一条私信只有一句:\n\n「你公开了真相。\n  但你没守住名字。」"
+        },
         {
           "if": {
             "flags": {
@@ -3589,7 +3748,29 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_HIDDEN",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": "sp_predecessor",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "fade_to_black",
+        "camera": "judge_chair_reverse_shot",
+        "cg_intent": "ending_hidden_judge_chair",
+        "transition_intent": "role_replacement"
+      },
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.s6_no_fingerprint": true
+            }
+          },
+          "text": "你坐进空椅子时,正章没有立刻落下。\n\n桌面先弹出一张注销单。\n\n姓名:赵某。\n\n工号:G-273。\n\n指纹:空白。\n\n执行人:不存在的清洁工。\n\n评议会问你最后一个问题:\n\n「一个没有指纹的人,是否还能做判官?」\n\n你低头看自己的手。\n\n手指还在。\n\n纹路没有。\n\n你忽然明白,这把椅子为什么总是空的。\n\n它不是没人坐。\n\n是坐上去的人,最后都会被清洁工擦到只剩职位。"
+        },
         {
           "if": {
             "all_of": [
