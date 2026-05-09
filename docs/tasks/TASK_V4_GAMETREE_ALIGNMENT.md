@@ -1,6 +1,6 @@
 # TASK: v4 生成器对齐 GameTree v1 沙盒拓扑
 
-版本: v0.1
+版本: v0.2
 状态: Active
 关联:
 - `docs/tasks/TASK_GAMETREE_V1.md`
@@ -32,9 +32,9 @@
 
 ### 目标
 
-- [ ] 扩展 `PlotSkeleton` 数据模型,让 beat 能表达沙盒所需的最小定位信息;
-- [ ] 更新 `plot-skeleton.prompt.md`,要求 LLM 输出地标、NPC、工具节点和演出提示;
-- [ ] 增加一个 `GameTreePlan` 或等价中间层,把骨架大纲转成 `GameTree v1` 形状前的结构计划;
+- [x] 扩展 `PlotSkeleton` 数据模型,让 beat 能表达沙盒所需的最小定位信息;
+- [x] 更新 `plot-skeleton.prompt.md`,要求 LLM 输出地标、NPC、工具节点和演出提示;
+- [x] 增加一个 `GameTreePlan` 或等价中间层,把骨架大纲转成 `GameTree v1` 形状前的结构计划;
 - [ ] 让生成链路产物能被 `audit_playability.py` 和后续 `audit_sandbox.py` 检查;
 - [ ] 保持 v3 legacy / 当前手写 v7 正式树兼容。
 
@@ -82,21 +82,21 @@
 
 ### M1: 模型与兼容
 
-- [ ] 扩展 `skeleton_model.py`;
-- [ ] 更新 `tests/test_skeleton_model.py`,确保 `to_dict/from_dict` 往返不丢字段;
-- [ ] 老 skeleton JSON 缺字段时仍能加载。
+- [x] 扩展 `skeleton_model.py`;
+- [x] 更新 `tests/test_skeleton_model.py`,确保 `to_dict/from_dict` 往返不丢字段;
+- [x] 老 skeleton JSON 缺字段时仍能加载。
 
 ### M2: Prompt 与生成
 
-- [ ] 更新 `templates/plot-skeleton.prompt.md`;
-- [ ] 更新 `skeleton_generator.py` 的解析 / 校验;
-- [ ] 为新字段加最小单测。
+- [x] 更新 `templates/plot-skeleton.prompt.md`;
+- [x] 更新 `skeleton_generator.py` 的解析 / 校验;
+- [x] 为新字段加最小单测。
 
 ### M3: GameTreePlan 草案
 
-- [ ] 新增 `pregenerator/gametree_plan.py`;
-- [ ] 从 `PlotSkeleton` 生成最小 `GameTreePlan`;
-- [ ] 为 hub / landmark / tool / ending_gate 建最小结构测试。
+- [x] 新增 `pregenerator/gametree_plan.py`;
+- [x] 从 `PlotSkeleton` 生成最小 `GameTreePlan`;
+- [x] 为 hub / landmark / tool / ending_gate 建最小结构测试。
 
 ### M4: 审计接入
 
@@ -113,3 +113,16 @@
 - v4 生成链路能明确产出“沙盒计划”,而不是只产出线性 act/beat;
 - 文档明确 `PlotSkeleton` 和 `GameTreePlan` 的职责边界;
 - 不影响正式 `hangzhou_yebanbaoan/tree.json` 的运行与审计结果。
+
+---
+
+## 5. 进展记录
+
+### 2026-05-09: M1-M3 第一批落地
+
+- `BeatConfig` 增加 `location_id / npc_ids / event_slots / asset_cues / sandbox_role / revisit_hooks`,全部为可选字段;
+- `PlotSkeleton.from_dict()` 继续兼容旧 JSON,缺少新字段时默认给空值;
+- `plot-skeleton.prompt.md` 已要求 LLM 输出地标、NPC、工具节点、演出提示和重访钩子;
+- 新增 `pregenerator/gametree_plan.py`,把内容骨架转换成计划层的 `locations / tools / npc_routes / beats / presentation_defaults / acceptance`;
+- `GameTreePlan.to_minimal_tree()` 只用于内存测试和后续生成器对齐,不写正式树、不改 DB schema、不接入正式审计链;
+- M4 仍保留为后续工作:新增或接入 `audit_sandbox.py`,并决定何时挂入 `tools/run_all_tests.py`。

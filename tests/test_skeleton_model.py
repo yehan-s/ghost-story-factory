@@ -89,6 +89,12 @@ def test_plot_skeleton_roundtrip_dict():
             is_critical_branch_point=False,
             leads_to_ending=False,
             branches=branches,
+            location_id="S1",
+            npc_ids=["g273", "red_girl"],
+            event_slots=["npc_meet", "tool"],
+            asset_cues={"background": "security_room", "sfx": ["radio_noise"]},
+            sandbox_role="tool",
+            revisit_hooks=["deduction_resolved:radio_signal"],
         )
     ]
 
@@ -112,4 +118,47 @@ def test_plot_skeleton_roundtrip_dict():
     assert restored.num_beats == original.num_beats
     assert restored.config.min_main_depth == original.config.min_main_depth
     assert restored.metadata.get("city") == "测试城"
+    beat = restored.beats[0]
+    assert beat.location_id == "S1"
+    assert beat.npc_ids == ["g273", "red_girl"]
+    assert beat.event_slots == ["npc_meet", "tool"]
+    assert beat.asset_cues == {"background": "security_room", "sfx": ["radio_noise"]}
+    assert beat.sandbox_role == "tool"
+    assert beat.revisit_hooks == ["deduction_resolved:radio_signal"]
 
+
+def test_plot_skeleton_loads_legacy_beat_without_sandbox_fields():
+    """旧骨架缺少沙盒字段时仍能加载,默认值为空。"""
+    data = {
+        "title": "Legacy Story",
+        "config": {
+            "min_main_depth": 5,
+            "target_main_depth": 8,
+            "target_endings": 1,
+            "max_branches_per_node": 2,
+        },
+        "acts": [
+            {
+                "index": 1,
+                "label": "Act I",
+                "beats": [
+                    {
+                        "id": "B1",
+                        "act_index": 1,
+                        "beat_type": "setup",
+                        "branches": [],
+                    }
+                ],
+            }
+        ],
+    }
+
+    skeleton = PlotSkeleton.from_dict(data)
+    beat = skeleton.beats[0]
+
+    assert beat.location_id is None
+    assert beat.npc_ids == []
+    assert beat.event_slots == []
+    assert beat.asset_cues == {}
+    assert beat.sandbox_role is None
+    assert beat.revisit_hooks == []

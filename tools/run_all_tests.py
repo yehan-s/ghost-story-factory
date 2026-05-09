@@ -106,6 +106,7 @@ def main():
             [
                 "tests/test_skeleton_model.py",
                 "tests/test_skeleton_generator.py",
+                "tests/test_gametree_plan.py",
                 "tests/test_tree_builder_guided.py",
                 "tests/test_text_filler.py",
                 "tests/test_story_report.py",

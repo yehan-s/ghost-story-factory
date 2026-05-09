@@ -19,6 +19,9 @@ v4 版本的目标：在保持现有 v3 成熟组件的前提下，引入**骨�
 - **v4 主路径（默认）**：  
   文档 → Skeleton Generator（PlotSkeleton）→ TreeBuilder（guided）→ 文本填充（NodeTextFiller）→ 校验（story_report）
 
+- **v4 沙盒对齐方向（GameTree v1）**：
+  文档 → Skeleton Generator（PlotSkeleton 内容大纲）→ GameTreePlan（沙盒拓扑计划）→ 后续 GameTree v1 导出 / 审计
+
 - **v3 兼容路径**：  
   文档 → `DialogueTreeBuilder`（结构+文案一起生成）→ 校验 → 同轮扩展 / env 降级（legacy heuristics）
 
@@ -59,9 +62,30 @@ v4 版本的目标：在保持现有 v3 成熟组件的前提下，引入**骨�
     - 默认 `USE_PLOT_SKELETON=1`：必须先尝试骨架生成，进入 v4 骨架模式；
     - `USE_PLOT_SKELETON=0`：跳过本阶段，直接走 v3 兼容路径。
 
+### Stage B2：GameTreePlan（沙盒拓扑计划，v7 对齐层）
+
+**新组件**：`pregenerator/gametree_plan.py`
+
+- 输入：
+  - `PlotSkeleton`
+- 输出：
+  - `GameTreePlan`
+- 职责边界：
+  - `PlotSkeleton` 只记录内容大纲：幕、节拍、张力、分支、`location_id`、`npc_ids`、`event_slots`、`asset_cues`、`sandbox_role`、`revisit_hooks`;
+  - `GameTreePlan` 负责计划沙盒拓扑：地标、地标连接、工具节点、NPC 路线、beat 到未来节点的映射、演出兜底和验收目标;
+  - `GameTreePlan.to_minimal_tree()` 只作为 M3 内存验证和后续生成器对齐用的草案导出,不是最终正式剧本。
+- 设计约束：
+  - 不修改 DB schema;
+  - 不替换 `hangzhou_yebanbaoan/tree.json`;
+  - 不在 M3 阶段把 `audit_playability.py` 正式接进生成流水线;
+  - M4 再决定 `audit_sandbox.py` / `audit_playability.py` 的生成链路守门方式。
+
 ### Stage C：骨架驱动的 TreeBuilder（v4 guided）
 
 **改造组件**：`DialogueTreeBuilder`
+
+> 兼容说明：Stage C 是当前 v4 默认生成链路的运行路径。
+> 对齐 ADR-010 后，`PlotSkeleton` 的职责收敛为内容大纲；沙盒地图、工具节点、NPC 出没和演出槽位应先进入 `GameTreePlan`，再进入后续 GameTree v1 导出。不要把这些拓扑细节塞回 `DialogueTreeBuilder` 的启发式里。
 
 - 新增参数：
 
@@ -107,7 +131,7 @@ def __init__(..., plot_skeleton: Optional[Dict[str, Any]] = None, ...):
   - 对 narrative 为空或全空白的节点填充占位叙事，不覆盖已有文案。
 - `build_story_report(tree, skeleton)`：
   - 利用 `TimeValidator` + 骨架指标生成结构+时长+结局综合报告；
-  - 至少打印主角 `depth_ok / duration_ok / endings_ok` 摘要，作为人工验收入口。
+- 至少打印主角 `depth_ok / duration_ok / endings_ok` 摘要，作为人工验收入口。
 
 ---
 

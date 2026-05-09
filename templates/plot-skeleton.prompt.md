@@ -46,6 +46,17 @@
           "tension_level": 3,
           "is_critical_branch_point": false,
           "leads_to_ending": false,
+          "location_id": "S1_security_room",
+          "npc_ids": ["g273"],
+          "event_slots": ["hub", "npc_meet"],
+          "asset_cues": {
+            "background": "security_room",
+            "sprite": "g273",
+            "sfx": ["radio_noise"],
+            "cg_unlock": null
+          },
+          "sandbox_role": "hub",
+          "revisit_hooks": ["ending_seen:E_TRUTH"],
           "branches": [
             {
               "branch_type": "NORMAL",
@@ -77,6 +88,12 @@
     - `tension_level`: 1-10，表示紧张度
     - `is_critical_branch_point`: 若为 true，表示这里会产生 CRITICAL 分支
     - `leads_to_ending`: 若为 true，表示此节拍可以落到结局
+    - `location_id`: 该节拍归属的地标 / 场景 ID，建议使用稳定短 ID（例如 `S1_security_room`）
+    - `npc_ids`: 该节拍主要出场 NPC ID 列表，可为空数组
+    - `event_slots`: 该节拍承担的事件槽，例如 `"hub" | "landmark" | "tool" | "npc_meet" | "revisit" | "ending_gate"`
+    - `asset_cues`: VN 演出提示对象，可包含 `background` / `sprite` / `sfx` / `cg_unlock`，没有则给空对象或 null 值
+    - `sandbox_role`: 该节拍在沙盒拓扑中的角色，例如 `"hub" | "landmark" | "tool" | "payoff" | "ending"`
+    - `revisit_hooks`: 重访时可切换叙述的状态钩子，例如 `"deduction_resolved:radio_signal"` / `"ending_seen:E_TRUTH"`
     - `branches`: 针对该节拍的分支规划
       - `branch_type`: `"CRITICAL" | "NORMAL" | "MICRO"`
       - `max_children`: 此类分支在对应节点上的最大子节点数
@@ -118,10 +135,18 @@
    - `leads_to_ending = true` 的节拍应集中在后 1/3 的深度区间；
    - 早期幕（Act I）一般不直接落结局，除非是极端失败分支。
 
+5. **沙盒定位**
+   - 不要把骨架写成 `entry -> s1 -> s2 -> ending` 的死剧本。
+   - 至少规划 4 个可重复识别的 `location_id`，后续会转换为 `GameTreePlan.locations`。
+   - 至少 1 个节拍标记为 `sandbox_role = "hub"` 或 `event_slots` 包含 `"hub"`。
+   - 至少 2 个节拍标记为 `sandbox_role = "tool"` 或 `event_slots` 包含 `"tool"`，并给出 `revisit_hooks`。
+   - NPC 不要只出场一次；重要 NPC 应在多个 location / beat 中重复出现，并通过 `revisit_hooks` 体现状态变化。
+   - `asset_cues` 只给演出提示，不要编造真实图片路径。
+
 ---
 
 ## 输出要求（非常重要）
 
 1. **严格只输出一个 JSON 顶层对象**，不要输出任何解释性文字。
 2. 允许在 JSON 外层包裹 ```json 代码块（推荐）；也可以直接输出 JSON。
-3. 不要在 JSON 中包含注释或多余字段，保持结构与上文示例兼容。
+3. 不要在 JSON 中包含注释；字段应使用本文定义的 PlotSkeleton 字段，保持旧结构兼容。
