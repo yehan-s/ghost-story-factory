@@ -19,7 +19,10 @@
         "sprite": "sp_g273",
         "expression": "tired",
         "cg_unlock": null,
-        "transition": "fade"
+        "transition": "fade",
+        "camera": "phone_lock_screen_to_guard_badge",
+        "cg_intent": "opening_rent_pressure_badge",
+        "transition_intent": "start_shift"
       },
       "narrative": "你叫赵某。\n\n至少合同上这么写。\n\n手机屏幕停在 20:17,电量 9%。房东 19:42 发来最后一条微信:「小赵,今晚再不转,明早就换锁。」\n\n你盯着那行字看了 7 秒,又把屏幕按灭。\n\n面试那天,HR 反复跟你强调:「夜班就是坐岗,每小时巡一次,有空调,有夜宵,没事刷手机。」她笑得太用力,嘴角像贴上去的。\n\n你没有问为什么上一任不干了。\n\n你只问:「工资能不能月底前结?」\n\n她说能。\n\n于是你签了。\n\n现在,你站在湖滨国际名品街的员工通道口,胸前多了一张塑料工牌:\n\n**G-273**。\n\n工牌贴上制服的那一秒,你忽然觉得自己的名字被往后推了一格。\n\n赵某还在。\n\n但今晚先轮到 G-273 说话。\n\n你刚领到「商场总控钥匙」。钥匙圈上贴着一张泛黄的小票:\n\n「1984/06/15  西湖牌 14 寸黑白电视  ¥273.00」\n\n——和你的工号尾号一样。\n\n你把小票翻过来,背面用铅笔写着一行字:\n\n「夜班没有尽头,只有下一班。」\n\n字迹有点像你自己的笔迹。\n\n但你确定,至少今晚之前,你还没疯到给自己留这种话。",
       "show_hud": false,
@@ -99,7 +102,10 @@
         "sprite": "sp_g273",
         "expression": "tense",
         "cg_unlock": null,
-        "transition": "cut"
+        "transition": "cut",
+        "camera": "locker_room_notice_table",
+        "cg_intent": "briefing_record_form_first_open",
+        "transition_intent": "rules_enter_game"
       },
       "narrative": "更衣室。\n\n灯管闪了两下,把你的影子切成一截一截。\n\n队长把一本卷边的《异常事件记录表》摔在你面前:「7 个打卡点,见到不对劲就填表。漏一栏扣 10%,连续三栏空白——你就别来了。」\n\n他说这话的时候没有看你。\n\n他在看你胸口的工牌。\n\n像是在确认它终于找到下一个能挂住的人。\n\n你翻开记录表:\n\n[01] 湖滨长椅\n[02] 柳浪闻莺 307 阶\n[03] 九溪理安寺\n[04] 中山中路·羊血弄 2 号\n[05] 留下小学旧楼 203 琴房\n[06] 滨江·联庄站盾构井\n[07] 平海街 1 号货梯井\n\n每一栏后面都有一个空格。\n\n空格很小。\n\n但你看久了,会觉得那是给名字留的位置。\n\n表格最下方:\n\n「填完才能走。」\n\n你听见身后有柜门轻轻响了一声。\n\n回头看,第 272 号储物柜开着,里面挂着一件旧雨衣,袖口还在滴水。\n\n墙上挂钟:20:27。\n\n队长把对讲机推过来:「随便。先去哪个,你自己定。」\n\n这句话听起来像自由。\n\n但纸上的 7 个空格,已经开始等你写错。",
       "show_hud": false,
@@ -136,7 +142,10 @@
         "sprite": null,
         "expression": null,
         "cg_unlock": null,
-        "transition": "cut"
+        "transition": "cut",
+        "camera": "wall_map_overhead_red_circles",
+        "cg_intent": "map_picker_red_circle_routes",
+        "transition_intent": "sandbox_route_select"
       },
       "_is_map_picker": true,
       "narrative_variants": [
@@ -849,6 +858,21 @@
     },
     "n_npc_red_dress_girl": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "tv_screen_child_reflection",
+        "cg_intent": "redgirl_tv_face_reveal",
+        "transition_intent": "child_memory_intrusion"
+      },
       "_foreshadow_slot": [
         "1996_red_girl_truth",
         "1987_red_dress_truth"
@@ -1832,6 +1856,21 @@
     },
     "n_npc_eight_self": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_g273",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "eight_coffins_first_person",
+        "cg_intent": "eight_self_roster_coffins",
+        "transition_intent": "self_roster_reveal"
+      },
       "_foreshadow_slot": [
         "8_self_roster",
         "1985_linmou_other26",
@@ -2468,6 +2507,21 @@
     },
     "n_scene_b3_corridor": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "b3_tv_wall_wide",
+        "cg_intent": "b3_twenty_seven_screens_judgement",
+        "transition_intent": "pre_ending_judgement"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -2782,6 +2836,21 @@
     },
     "n_scene_lost_archive": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "archive_drawer_document_closeup",
+        "cg_intent": "lost_archive_all_cases_table",
+        "transition_intent": "evidence_tool_open"
+      },
       "_is_tool": true,
       "_tool_id": "archive",
       "_tool_label": "遗失档案",
@@ -3087,6 +3156,21 @@
     },
     "n_scene_red_telephone": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "red_phone_booth_dial_closeup",
+        "cg_intent": "red_telephone_predecessor_call",
+        "transition_intent": "tool_call_waiting"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -3208,7 +3292,10 @@
         "sprite": "sp_g273",
         "expression": "exhausted",
         "cg_unlock": null,
-        "transition": "fade"
+        "transition": "fade",
+        "camera": "lakeside_bench_dawn_wide",
+        "cg_intent": "morning_lakeside_result_table",
+        "transition_intent": "end_shift_return"
       },
       "_one_way": true,
       "_one_way_hint": "06:03 · 湖滨 — 夜班已经结束。回不去地图了。",
@@ -3596,6 +3683,20 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_TRUE",
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": "sp_g273",
+        "expression": "exhausted",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "dawn_lakeside_bench_true_end",
+        "cg_intent": "ending_true_shift_closed",
+        "transition_intent": "constant_shutdown"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -3740,6 +3841,21 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_TRUTH",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_page",
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "archive_wall_truth_documents",
+        "cg_intent": "ending_truth_public_memory_wall",
+        "transition_intent": "truth_upload"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -3947,6 +4063,21 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_BAD_1987",
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_redgirl",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "vhs_1987_red_dress_loop",
+        "cg_intent": "ending_bad_1987_identity_overlay",
+        "transition_intent": "bad_loop_assignment"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -3978,6 +4109,21 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_BAD_DROWN",
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_water",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black",
+        "camera": "underwater_hat_sink_first_person",
+        "cg_intent": "ending_bad_drown_eighth_hat",
+        "transition_intent": "drowning_assignment"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -4020,6 +4166,20 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_NEUTRAL",
+      "presentation": {
+        "background": "bg_locker_room",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": "sp_g273",
+        "expression": "tired",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "locker_room_payroll_after_shift",
+        "cg_intent": "ending_neutral_payroll_return",
+        "transition_intent": "ordinary_life_reasserts"
+      },
       "narrative_variants": [
         {
           "if": {

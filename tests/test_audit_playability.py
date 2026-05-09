@@ -185,8 +185,39 @@ def test_presentation_asset_reference_error():
     assert any("background 引用不存在资产" in item for item in report.errors)
 
 
+def test_key_presentation_intent_warning():
+    """正式关键节点缺少镜头 / CG / 转场意图时要被审计提示。"""
+    tree = {
+        "start_node": "n_intro",
+        "assets": {
+            "backgrounds": {"bg_ok": {"kind": "text_fallback"}},
+            "bgm": {},
+            "sfx": {},
+            "sprites": {},
+        },
+        "nodes": {
+            "n_intro": {
+                "choices": [],
+                "is_ending": True,
+                "ending_type": "E_OK",
+                "presentation": {
+                    "background": "bg_ok",
+                    "bgm": None,
+                    "sfx": [],
+                    "sprite": None,
+                },
+            },
+        },
+    }
+
+    report = analyze_playability(tree)
+
+    assert report.ok is True
+    assert any("关键演出意图缺少字段" in item for item in report.warnings)
+
+
 def test_official_hangzhou_tree_has_vn_presentation_contract():
-    """正式杭州树必须有 assets manifest,且所有节点都有 presentation。"""
+    """正式杭州树必须有 assets manifest,且关键节点具备演出意图。"""
     import json
 
     tree = json.loads(
@@ -198,3 +229,4 @@ def test_official_hangzhou_tree_has_vn_presentation_contract():
     assert report.ok is True
     assert report.presentation_nodes == report.total_nodes == 145
     assert not any("presentation" in item for item in report.warnings)
+    assert not any("关键演出意图缺少字段" in item for item in report.warnings)

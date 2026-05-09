@@ -142,6 +142,31 @@ def is_ending_node(node: Dict[str, Any]) -> bool:
     return False
 
 
+KEY_PRESENTATION_INTENT_NODES: Set[str] = {
+    "n_intro",
+    "n_briefing",
+    "n_landmark_picker",
+    "n_npc_red_dress_girl",
+    "n_npc_forum_lurkers",
+    "n_npc_evaluator_chair",
+    "n_npc_eight_self",
+    "n_npc_cleaner_null",
+    "n_scene_b3_corridor",
+    "n_scene_evaluator_room",
+    "n_scene_lost_archive",
+    "n_scene_morning_lakeside",
+    "n_scene_red_telephone",
+    "n_end_true",
+    "n_end_truth",
+    "n_end_data",
+    "n_end_broadcast",
+    "n_end_bad_1987",
+    "n_end_bad_drown",
+    "n_end_neutral",
+    "n_end_hidden",
+}
+
+
 def landmark_targets(payload: Dict[str, Any], report: PlayabilityReport) -> Set[str]:
     """抽取 `landmark_map` 中的动态目标,并检查地标连接。"""
     targets: Set[str] = set()
@@ -287,6 +312,17 @@ def validate_presentation(
         for item in presentation.get("sfx") or []:
             if item and sfx and item not in sfx:
                 report.errors.append(f"{nid}: presentation.sfx 引用不存在资产: {item}")
+
+        if has_v7_shape and nid in KEY_PRESENTATION_INTENT_NODES:
+            missing_intent = [
+                field_name
+                for field_name in ("camera", "cg_intent", "transition_intent")
+                if not presentation.get(field_name)
+            ]
+            if missing_intent:
+                report.warnings.append(
+                    f"{nid}: 关键演出意图缺少字段: {', '.join(missing_intent)}"
+                )
 
 
 def reachable_from(start: str, edges: Dict[str, Set[str]]) -> Set[str]:
