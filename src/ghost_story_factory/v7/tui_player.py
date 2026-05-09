@@ -74,7 +74,9 @@ from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
     State, choice_affordance_suffix, collect_important_items,
+    format_behavior_profile_lines, format_choice_after_feedback_lines,
     format_presentation_lines, mark_tool_visit, resolve_narrative, resolve_next,
+    should_show_behavior_profile,
 )
 from ghost_story_factory.v7.map_view import format_map_lines
 from ghost_story_factory.v7.save_manager import (
@@ -384,6 +386,7 @@ class GhostStoryApp(App):
                 else:
                     log.write(text)
             log.write(f"\n[dim]{'─' * 58}[/]\n")
+            self._render_behavior_profile_tui(node, log)
         else:
             # _one_way 节点 — 在 narrative 前打一条红色"无回头路"横条
             if node.get("_one_way"):
@@ -401,6 +404,7 @@ class GhostStoryApp(App):
                     else:
                         log.write("")
                 log.write("")
+            self._render_behavior_profile_tui(node, log)
 
         # 首次发现伏笔 — 用青色短条反馈
         if newly_seen_slots:
@@ -565,7 +569,8 @@ class GhostStoryApp(App):
         from ghost_story_factory.v7.map_view import expand_known_landmarks
         newly_known = expand_known_landmarks(self.state, self._tree, effects)
         log = self.query_one("#narrative", RichLog)
-        log.write(f"\n[bold yellow]▸[/] [bold]{chosen.get('text', '')}[/]")
+        log.write(f"\n[bold yellow]▸[/] [bold]{_escape_rich_literal(chosen.get('text', ''))}[/]")
+        self._render_choice_after_feedback_tui(chosen, log)
         if newly_known:
             for sid in newly_known:
                 lm = next((l for l in self._tree.get("landmark_map", []) if l.get("id") == sid), {})
@@ -605,6 +610,22 @@ class GhostStoryApp(App):
             return
         log.write("")
         for line in lines:
+            log.write(f"[dim]  {_escape_rich_literal(line)}[/]")
+
+    def _render_behavior_profile_tui(self, node, log) -> None:
+        """TUI 本轮行为画像。"""
+        if not should_show_behavior_profile(node, self.current_id):
+            return
+        lines = format_behavior_profile_lines(self.state)
+        if not lines:
+            return
+        log.write("")
+        for line in lines:
+            log.write(f"[dim]  {_escape_rich_literal(line)}[/]")
+
+    def _render_choice_after_feedback_tui(self, choice, log) -> None:
+        """TUI 选择后短反馈。"""
+        for line in format_choice_after_feedback_lines(choice):
             log.write(f"[dim]  {_escape_rich_literal(line)}[/]")
 
     def _render_apply_events_tui(self, events, log) -> None:

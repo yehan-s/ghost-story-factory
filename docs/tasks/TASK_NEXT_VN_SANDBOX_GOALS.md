@@ -13,6 +13,7 @@
 - `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`
 - `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`
 - `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`
+- `docs/tasks/TASK_BEHAVIOR_PROFILE_PASS13.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -208,6 +209,24 @@
 - 团队评审留痕;
 - 后续 Pass 13 可直接从方案切出 Task / Issue。
 
+### M10: 选择后反馈闭环与本轮行为画像
+
+状态: Done,见 `docs/tasks/TASK_BEHAVIOR_PROFILE_PASS13.md`。
+
+目标:
+
+- 选择后显示短反馈,让玩家知道路线账本记住了这一步;
+- 在地图 hub、B3、评价室、晨湖和结局节点显示本轮行为画像;
+- 至少覆盖取证、曝光、救援/命名、审判/删除、漏卡/绕开等倾向;
+- 不新增 DB schema,不暴露 PR / GR 数字。
+
+验收:
+
+- CLI/TUI 都显示选择后反馈;
+- 关键节点能显示最多 2 行行为画像;
+- 新增行为画像测试;
+- `audit_all` 与统一测试通过。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -217,7 +236,8 @@
 3. 当前优先做 M6 Pass 9,把“可玩闭环”推进到“内容厚度达标”;
 4. M7 已完成,演出字段已进入运行时;
 5. M8 已完成,选择意图已进入运行时;
-6. 当前以 M9 作为下一阶段总方案,后续优先切 `Pass 13: 选择后反馈闭环与本轮行为画像`。
+6. M9 已完成,下一阶段总方案已落地;
+7. M10 已完成,选择前意图已经接上选择后反馈闭环。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 

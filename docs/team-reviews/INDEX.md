@@ -28,6 +28,7 @@
 | 2026-05-09 | VN 演出契约进入运行时 Pass 10 | 修改后放行 | [报告](2026-05-09-vn-presentation-runtime-pass10.md) |
 | 2026-05-09 | 选择意图与风险提示 Pass 11 | 修改后放行 | [报告](2026-05-09-choice-affordance-pass11.md) |
 | 2026-05-09 | VN 沙盒体验改进总方案 Pass 12 | 修改后放行 | [报告](2026-05-09-vn-sandbox-improvement-plan-pass12.md) |
+| 2026-05-10 | 选择后反馈闭环与本轮行为画像 Pass 13 | 修改后放行 | [报告](2026-05-10-behavior-profile-pass13.md) |
 
 ---
 

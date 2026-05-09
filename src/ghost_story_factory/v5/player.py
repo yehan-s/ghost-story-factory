@@ -560,6 +560,143 @@ def choice_affordance_suffix(choice: Dict[str, Any]) -> str:
     return "〔" + " · ".join(tags) + "〕"
 
 
+_BEHAVIOR_PROFILE_NODE_IDS = {
+    "n_landmark_picker",
+    "n_l1985_landmark_picker",
+    "n_scene_b3_corridor",
+    "n_scene_evaluator_room",
+    "n_scene_morning_lakeside",
+}
+
+
+def _state_has_flag(state: State, *keys: str) -> bool:
+    """检查当前周目是否设置过任一 flag。"""
+    return any(bool(state.flags.get(key)) for key in keys)
+
+
+def _state_has_flag_prefix(state: State, *prefixes: str) -> bool:
+    """检查当前周目是否设置过指定前缀的任一 flag。"""
+    return any(
+        bool(value) and any(str(key).startswith(prefix) for prefix in prefixes)
+        for key, value in state.flags.items()
+    )
+
+
+def behavior_profile_axes(state: State, limit: int = 5) -> List[str]:
+    """从当前 State 派生本轮行为画像。
+
+    只描述行为倾向,不暴露 PR / GR 数字,也不新增状态来源。
+    """
+    axes: List[str] = []
+
+    def add(text: str) -> None:
+        if text and text not in axes and len(axes) < limit:
+            axes.append(text)
+
+    if state.puzzle_pieces or _state_has_flag_prefix(state, "know."):
+        add("取证:记录已成形")
+    if _state_has_flag(
+        state,
+        "oneshot.live_streaming",
+        "oneshot.forum_posted",
+        "oneshot.posted_photo",
+        "oneshot.s4_posted_blood_face",
+        "arc.s1_post_forum",
+    ):
+        add("曝光:围观已介入")
+    if _state_has_flag(
+        state,
+        "arc.redgirl_trusts_zhao",
+        "know.told_red_girl_truth",
+        "arc.piano_appeased",
+        "arc.seven_returned",
+        "arc.named_the_dead",
+        "arc.completed_yang",
+    ):
+        add("救援:有人回应")
+    if _state_has_flag(state, "arc.got_judge_seal", "arc.became_judge"):
+        add("审判:正章在案")
+    if _state_has_flag(state, "oneshot.chose_data", "oneshot.locked_eight_coffins"):
+        add("删除:系统接管")
+    if state.skipped_landmarks or state.shifts_skipped:
+        add("漏卡:记录有空栏")
+
+    return axes
+
+
+def format_behavior_profile_lines(state: State) -> List[str]:
+    """格式化本轮行为画像,供 CLI/TUI 共享。"""
+    axes = behavior_profile_axes(state)
+    if not axes:
+        return []
+
+    lines = ["本轮行为画像: " + " · ".join(axes[:4])]
+    route_bits: List[str] = []
+    if state.visited_landmarks:
+        route_bits.append(f"已巡 {len(state.visited_landmarks)} 处")
+    if state.puzzle_pieces:
+        route_bits.append(f"拼图 {len(state.puzzle_pieces)} 片")
+    if state.skipped_landmarks or state.shifts_skipped:
+        route_bits.append(f"漏卡 {state.shifts_skipped} 次")
+    if route_bits:
+        lines.append("路线账本: " + " · ".join(route_bits))
+    return lines
+
+
+def should_show_behavior_profile(node: Dict[str, Any], node_id: str) -> bool:
+    """关键节点自动显示行为画像。"""
+    return bool(node.get("is_ending")) or node_id in _BEHAVIOR_PROFILE_NODE_IDS
+
+
+def render_behavior_profile(state: State, node: Dict[str, Any], node_id: str) -> None:
+    """CLI 本轮行为画像。无行为痕迹或非关键节点时静默。"""
+    if not should_show_behavior_profile(node, node_id):
+        return
+    lines = format_behavior_profile_lines(state)
+    if not lines:
+        return
+    print()
+    for line in lines:
+        print(dim(f"  {line}"))
+
+
+def format_choice_after_feedback_lines(choice: Dict[str, Any]) -> List[str]:
+    """选择后短反馈:告诉玩家路线账本记住了这一步。"""
+    tags = choice_affordance_tags(choice)
+    if not tags:
+        return []
+
+    marks: List[str] = []
+
+    def add(mark: str) -> None:
+        if mark and mark not in marks and len(marks) < 2:
+            marks.append(mark)
+
+    if any(t in tags for t in ("记下线索", "带走物件", "关键线索", "伏笔")):
+        add("证据栏更新")
+    if any(t in tags for t in ("曝光", "留下痕迹")):
+        add("围观痕迹写入")
+    if any(t in tags for t in ("关系推进", "意图选择")):
+        add("关系账本改写")
+    if any(t in tags for t in ("漏卡风险", "前往", "巡点")):
+        add("路线栏更新")
+    if any(t in tags for t in ("心境波动", "异常注视", "压住心跳", "注视减弱")):
+        add("工牌短暂发冷")
+    if not marks:
+        add("动作已记入本轮")
+
+    return ["路线账本: " + " · ".join(marks) + "。"]
+
+
+def render_choice_after_feedback(choice: Dict[str, Any]) -> None:
+    """CLI 选择后短反馈。"""
+    lines = format_choice_after_feedback_lines(choice)
+    if not lines:
+        return
+    for line in lines:
+        print(dim(f"  {line}"))
+
+
 def render_choices(
     visible: List[Dict[str, Any]],
     locked: Optional[List[Tuple[Dict[str, Any], str]]] = None,
@@ -1038,6 +1175,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                            current_node_id=current_id, story_id=story_id,
                            mode="site",
                            travel_indices=travel_idx)
+            render_behavior_profile(state, node, current_id)
         else:
             # _one_way 节点 — 用 glitch 闪一段红字"无回头路"
             if node.get("_one_way"):
@@ -1053,6 +1191,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             narrative = resolve_narrative(node, state)
             if narrative:
                 render_narrative(narrative)
+            render_behavior_profile(state, node, current_id)
         # 首次发现伏笔 — 用 glitch 闪一段青字(像系统弹窗 corruption 后定下来)
         if newly_seen_slots:
             from ghost_story_factory.v7.animate import glitch_text
@@ -1294,6 +1433,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
                 save_manager.add_foreshadow_shard(tree, story_id, slot, shard)
         effects = chosen.get("effects") or {}
         state.apply(effects)
+        render_choice_after_feedback(chosen)
         # 渐进展开 known_landmarks(landmark_visited / reveal_landmarks 触发)
         from ghost_story_factory.v7.map_view import expand_known_landmarks
         newly_known = expand_known_landmarks(state, tree, effects)
