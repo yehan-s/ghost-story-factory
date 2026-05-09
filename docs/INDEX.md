@@ -92,6 +92,7 @@
 | [TASK_GAMETREE_V1.md](tasks/TASK_GAMETREE_V1.md) | GameTree v1 可玩闭环与 VN/沙盒契约收敛 |
 | [TASK_SCRIPT_SANDBOX_PASS1.md](tasks/TASK_SCRIPT_SANDBOX_PASS1.md) | 正式剧本沙盒化深层迭代 Pass 1 |
 | [TASK_SCRIPT_SANDBOX_PASS2.md](tasks/TASK_SCRIPT_SANDBOX_PASS2.md) | 正式剧本人物弧线深挖 Pass 2 |
+| [TASK_NEXT_VN_SANDBOX_GOALS.md](tasks/TASK_NEXT_VN_SANDBOX_GOALS.md) | 下一阶段目标：剧本深挖与 VN 沙盒可玩闭环 |
 
 ---
 
