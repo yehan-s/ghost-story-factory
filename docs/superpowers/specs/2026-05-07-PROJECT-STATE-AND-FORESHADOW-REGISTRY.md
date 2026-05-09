@@ -176,20 +176,21 @@ class State:
 | 7 工人速写 | 贴在 1986 沉船档案旁 |
 | 前任电话号码 | 红色电话亭可拨 |
 
-### 5.2 Flag-driven 装饰(15 件)
+### 5.2 展示 / 档案物件
 
-这些道具被获得时**同时设置 flag**,后续 require 用 flag 而非 inv_has。语义上有用,但 UX 上玩家感受到的是"装饰":
+部分物件不是 `require.inv_has` 消耗品,而是 NPC 档案 `key_items` 或剧情展示物。
+`audit_tree` 会把 `npcs[*].key_items` 纳入使用口径,避免把档案物件误报为孤儿道具。
 
-```
-14 寸黑白电视 / 1959-043 粮票 / 1987 录像带 / 7 顶柳条安全帽 /
-倒带背书声 / 十三号湿巾 / 商场总控钥匙 / 工牌 G-273 /
-柳条安全帽 (粘住) / 红衣女孩铜锈 / 羊公会名册 / 羊公会欠条 /
-血毛笔 / 铁锈湖泥湿巾 / 铜锈片
+```text
+14 寸黑白电视 / 1959-043 粮票 / 7 顶柳条安全帽 /
+十三号湿巾 / 商场总控钥匙 / 工牌 G-273 /
+红衣女孩铜锈 / 血毛笔 / 铜锈片
 ```
 
 ### 5.3 inv_descriptions
 
-`tree.json` 顶层 `inv_descriptions` 字典,玩家获得时显示用途说明(31 条)。详见 `tools/merge_fragments.py STORY_META`。
+`tree.json` 顶层 `inv_descriptions` 字典,玩家获得时显示用途说明。
+当前为 27 条正式说明 + 1 条 `未注明物品` fallback。详见 `tools/merge_fragments.py STORY_META`。
 
 ---
 

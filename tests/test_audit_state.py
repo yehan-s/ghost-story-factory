@@ -133,6 +133,7 @@ def test_forbidden_term_detected(tmp_path):
     report = audit_tree(p)
     bad = [v for v in report["term_violations"] if v[1] == "管理委员会"]
     assert len(bad) == 1
+    assert "term_violations" in report["severity"]["errors"]
 
 
 def test_exit_code_blocks_on_lore_violation(tmp_path):
@@ -167,6 +168,17 @@ def test_exit_code_warning_only_when_strict(minimal_tree):
     report = audit_tree(minimal_tree)
     assert _exit_code(report, strict=False) == 0  # 0 — 死字段不阻断
     assert _exit_code(report, strict=True) == 1  # 1 — 严格模式下报警
+
+
+def test_audit_state_groups_findings_by_severity(minimal_tree):
+    """报告应把阻断、警告、信息分开,避免历史噪声淹没真错误。"""
+    report = audit_tree(minimal_tree)
+
+    assert "severity" in report
+    assert "dead_require_flags" in report["severity"]["warnings"]
+    assert "dead_set_flags" in report["severity"]["info"]
+    assert report["severity"]["counts"]["warnings"] >= 1
+    assert report["severity"]["counts"]["info"] >= 1
 
 
 def test_inv_dead_set_detected(tmp_path):

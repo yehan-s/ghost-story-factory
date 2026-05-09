@@ -45,6 +45,49 @@ FLAG_COUNT_CEILING = 100
 VARIANT_COUNT_PER_NODE_WARN = 8
 
 
+def _build_severity(report: Dict[str, Any]) -> Dict[str, Any]:
+    """把旧审计字段归入 error / warning / info 三层。
+
+    旧字段仍保留给测试和脚本兼容;新增 severity 只负责降低人工阅读噪声。
+    """
+    errors: Dict[str, Any] = {}
+    warnings: Dict[str, Any] = {}
+    info: Dict[str, Any] = {}
+
+    if report.get("term_violations"):
+        errors["term_violations"] = report["term_violations"]
+    if report.get("flag_count_over_ceiling"):
+        errors["flag_count_over_ceiling"] = {
+            "flag_total": report.get("flag_total"),
+            "flag_count_ceiling": report.get("flag_count_ceiling"),
+        }
+
+    for key in (
+        "dead_require_flags",
+        "namespace_violations",
+        "require_namespace_violations",
+        "variant_count_overflow",
+        "variant_if_dupes",
+    ):
+        if report.get(key):
+            warnings[key] = report[key]
+
+    for key in ("year_violations", "dead_set_flags", "dead_set_inv"):
+        if report.get(key):
+            info[key] = report[key]
+
+    return {
+        "errors": errors,
+        "warnings": warnings,
+        "info": info,
+        "counts": {
+            "errors": sum(len(v) if isinstance(v, list) else 1 for v in errors.values()),
+            "warnings": sum(len(v) if isinstance(v, list) else 1 for v in warnings.values()),
+            "info": sum(len(v) if isinstance(v, list) else 1 for v in info.values()),
+        },
+    }
+
+
 def _walk_requires(node: Dict[str, Any]):
     """遍历节点中所有 require 字典(选项 + variants)。"""
     for ch in node.get("choices") or []:
@@ -187,7 +230,7 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
     all_inv = set(inv_add_by) | set(inv_require_by)
     dead_set_inv = sorted(set(inv_add_by) - set(inv_require_by))
 
-    return {
+    report = {
         "tree_path": str(tree_path),
         "node_count": len(nodes),
         "flags": {
@@ -217,6 +260,8 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
         "year_violations": year_violations,
         "term_violations": term_violations,
     }
+    report["severity"] = _build_severity(report)
+    return report
 
 
 def _exit_code(report: Dict[str, Any], strict: bool) -> int:

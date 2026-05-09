@@ -8,6 +8,7 @@
 - `docs/tasks/TASK_SCRIPT_SANDBOX_PASS3.md`
 - `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md`
 - `docs/tasks/TASK_SCRIPT_BEHAVIOR_NPC_PASS5.md`
+- `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
 
@@ -39,8 +40,8 @@
 ### 1.2 非阻塞技术债
 
 - `database/ghost_stories_test.db` 会被测试改动,当前是本地脏文件,不应提交;
-- `audit_tree` 仍报告 9 个 `inv_descriptions` 孤儿道具,这是内容资产债,不是运行阻塞;
-- `audit_state` 输出里仍有历史状态和年份告警,需要后续分级,否则噪音会淹没真问题;
+- `audit_tree` 的 9 个 `inv_descriptions` 孤儿道具已在 Issue `#27` 第一批处理中收敛为 0;
+- `audit_state` 已新增 `severity.errors / warnings / info` 分级输出,剩余 warning/info 可按后续任务继续压缩;
 - `TASK_GAMETREE_V1.md` 和 GitHub Issue `#19` 仍处于 Active,需要单独收尾或拆出剩余项;
 - `docs/specs/ISSUE_*` 与 `SPEC_TODO.md` 存在大量历史 TODO,不能作为下一阶段唯一真相源。
 
@@ -98,6 +99,8 @@
 - CLI 仍能用 text fallback 正常运行。
 
 ### M4: 工具债收敛
+
+状态: In Progress。Issue `#27` 已完成 audit_tree 孤儿道具口径修正与 audit_state 分级输出,剩余为全量验收和后续细项压缩。
 
 目标:
 
