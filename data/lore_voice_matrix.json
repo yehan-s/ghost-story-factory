@@ -1,0 +1,69 @@
+{
+  "_comment": "Lore Keeper 评审产出 — NPC 语气切档锚点。Phase 4 内容创作必须查表替换,禁止自由发挥。",
+  "_source": "docs/team-reviews/2026-05-07-dramatic-reaction.md § 6",
+  "version": 1,
+  "matrix": {
+    "linmou_1985": {
+      "before": {
+        "address": "小同志/小鬼",
+        "tone": "公事公办的关心",
+        "era_words": []
+      },
+      "after": {
+        "address": "小赵/小张",
+        "tone": "迟疑的具名",
+        "era_words": ["副科长", "登记表"]
+      }
+    },
+    "old_grandma": {
+      "before": {
+        "address": "后生",
+        "tone": "陌生敷衍",
+        "era_words": []
+      },
+      "after": {
+        "address": "后生家",
+        "tone": "亲近",
+        "era_words": ["伐", "晓得伐"]
+      }
+    },
+    "red_dress_girl": {
+      "before": {
+        "address": "(不语)",
+        "tone": "凝视",
+        "era_words": []
+      },
+      "after": {
+        "address": "(开口,1985 年代腔)",
+        "tone": "幼稚而陈旧",
+        "era_words": ["的确良", "搪瓷缸", "广播体操"]
+      }
+    },
+    "worker_1986": {
+      "before": {
+        "address": "师傅",
+        "tone": "工地客气",
+        "era_words": []
+      },
+      "after": {
+        "address": "老法师",
+        "tone": "工友",
+        "era_words": ["盾构井", "8 班倒"]
+      }
+    }
+  },
+  "redlines": [
+    "禁止非杭州地标(外滩/长城/胡同/陆家嘴)",
+    "禁止非 80 年代物件(智能手机/扫码/微信)",
+    "禁止非国营夜班用语(打工人/内卷/996)",
+    "禁止把红衣女子写成日式怨灵(贞子式/白裙)",
+    "红衣女子是西湖溺亡叙事谱系,不是日式怨灵",
+    "G-273 是工号,不是员工编号,不是 ID",
+    "评议会不是管理委员会",
+    "林副科长不是林先生,不是林总",
+    "夜班不是加班,不是 OT",
+    "保安不是保镖,不是 security",
+    "西湖水汽 ≠ 江南雾(地域性优先)",
+    "桂花是 9-10 月限定锚点(其他季节别用)"
+  ]
+}

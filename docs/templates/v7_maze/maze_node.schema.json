@@ -1,0 +1,149 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "v7 Maze Node Schema",
+  "description": "v7 真迷宫节点的 JSON 结构定义。每个节点都是 nodes 字典中的一个 entry。",
+  "type": "object",
+  "properties": {
+    "scene": {
+      "type": "string",
+      "description": "节点所属场景标签,如 S1 / S2 / NPC / SCENE / END",
+      "examples": ["S1", "NPC", "SCENE", "END", "MAP"]
+    },
+    "narrative": {
+      "type": "string",
+      "description": "默认 narrative 文本(第一次到达 / 所有 variants 都不满足时的 fallback)。建议 150-300 字,第二人称。"
+    },
+    "narrative_variants": {
+      "type": "array",
+      "description": "状态相关的 narrative 变体。按顺序匹配,第一个 require 满足的 variant 用其 text。",
+      "items": {
+        "type": "object",
+        "properties": {
+          "if": {"$ref": "#/definitions/require"},
+          "text": {"type": "string"}
+        },
+        "required": ["if", "text"]
+      }
+    },
+    "show_hud": {
+      "type": "boolean",
+      "description": "是否在选项前显示 HUD 状态条。默认 true。intro / briefing 等纯叙事节点设为 false。"
+    },
+    "is_ending": {
+      "type": "boolean",
+      "description": "是否为结局节点。结局节点不需要 choices。"
+    },
+    "ending_type": {
+      "type": "string",
+      "description": "若 is_ending=true,标识结局类型。对应 STORY_META.endings 中的 key。",
+      "examples": ["E_TRUE", "E_TRUTH", "E_DATA", "E_BAD_1987"]
+    },
+    "choices": {
+      "type": "array",
+      "description": "玩家选项数组。非结局节点必须至少 1 个。",
+      "items": {"$ref": "#/definitions/choice"}
+    },
+    "_foreshadow_slot": {
+      "type": "array",
+      "description": "(可选)伏笔槽元数据。player 忽略,人类用 grep 找伏笔。",
+      "items": {"type": "string"}
+    },
+    "_foreshadow_solved_by": {
+      "type": "array",
+      "description": "(可选)解释这个伏笔的角色 route 名。player 忽略。",
+      "items": {"type": "string"}
+    }
+  },
+  "anyOf": [
+    {"required": ["narrative", "is_ending"]},
+    {"required": ["narrative", "choices"]},
+    {"required": ["narrative_variants", "choices"]}
+  ],
+  "definitions": {
+    "require": {
+      "type": "object",
+      "description": "状态条件。所有顶层字段是 AND 关系。any_of/all_of/not 可嵌套组合。",
+      "properties": {
+        "PR_min": {"type": "integer", "minimum": 0, "maximum": 100},
+        "PR_max": {"type": "integer", "minimum": 0, "maximum": 100},
+        "GR_min": {"type": "integer", "minimum": 0, "maximum": 100},
+        "GR_max": {"type": "integer", "minimum": 0, "maximum": 100},
+        "inv_has": {"type": "array", "items": {"type": "string"}},
+        "inv_lacks": {"type": "array", "items": {"type": "string"}},
+        "flags": {
+          "type": "object",
+          "additionalProperties": {"type": "boolean"}
+        },
+        "shifts_completed_min": {"type": "integer"},
+        "shifts_skipped_min": {"type": "integer"},
+        "puzzle_pieces_min": {"type": "integer"},
+        "landmark_visited": {"type": "array", "items": {"type": "string"}},
+        "character": {
+          "anyOf": [
+            {"type": "string"},
+            {"type": "array", "items": {"type": "string"}}
+          ],
+          "description": "v7 多角色伏笔接口 — 限定哪些角色看得到"
+        },
+        "meta_flags": {
+          "type": "object",
+          "additionalProperties": {"type": "boolean"},
+          "description": "v7 跨周目记忆 — 玩过特定角色后浮现的内容"
+        },
+        "any_of": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/require"}
+        },
+        "all_of": {
+          "type": "array",
+          "items": {"$ref": "#/definitions/require"}
+        },
+        "not": {"$ref": "#/definitions/require"}
+      }
+    },
+    "choice": {
+      "type": "object",
+      "properties": {
+        "text": {"type": "string", "description": "选项显示文本(玩家看到的)"},
+        "next": {"type": "string", "description": "下一节点 ID"},
+        "next_variants": {
+          "type": "array",
+          "description": "状态相关的 next 变体。按顺序匹配。",
+          "items": {
+            "type": "object",
+            "properties": {
+              "if": {"$ref": "#/definitions/require"},
+              "next": {"type": "string"}
+            },
+            "required": ["if", "next"]
+          }
+        },
+        "effects": {"$ref": "#/definitions/effects"},
+        "require": {
+          "$ref": "#/definitions/require",
+          "description": "选项可见条件(状态不满足时该选项隐藏)"
+        }
+      },
+      "required": ["text"]
+    },
+    "effects": {
+      "type": "object",
+      "description": "选择此项后对状态的修改。",
+      "properties": {
+        "PR": {"type": "integer", "description": "PR 增减(支持负数)"},
+        "GR": {"type": "integer"},
+        "shifts_completed": {"type": "integer"},
+        "shifts_skipped": {"type": "integer"},
+        "inv_add": {"type": "array", "items": {"type": "string"}},
+        "inv_remove": {"type": "array", "items": {"type": "string"}},
+        "flags": {
+          "type": "object",
+          "additionalProperties": {"type": "boolean"}
+        },
+        "landmark_visited": {"type": "string"},
+        "landmark_skipped": {"type": "string"},
+        "puzzle_add": {"type": "string", "description": "拼图碎片 ID"}
+      }
+    }
+  }
+}

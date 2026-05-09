@@ -29,6 +29,10 @@ try:
     from crewai.llm import LLM
     _CREWAI_AVAILABLE = True
 except ImportError:
+    Agent = None  # type: ignore
+    Task = None  # type: ignore
+    Crew = None  # type: ignore
+    LLM = None  # type: ignore
     _CREWAI_AVAILABLE = False
 
 # templates 目录：项目根目录下的 templates/

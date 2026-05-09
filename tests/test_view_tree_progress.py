@@ -17,7 +17,7 @@ import sys
 project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
-from tools.view_tree_progress import summarize_tree
+from tools.view_tree_progress import _load_tree_from_checkpoint, summarize_tree
 
 
 def _build_small_tree() -> Dict[str, Any]:
@@ -101,3 +101,44 @@ def test_summarize_tree_basic_stats(tmp_path: Path):
     ids = {n["node_id"] for n in recent_nodes}
     assert "node_0002" in ids and "node_0003" in ids
 
+
+def test_summarize_tree_supports_v7_nodes_subtree():
+    """验证 v7 GameTree 的 nodes 子树不会被顶层 metadata 污染统计"""
+    tree = {
+        "title": "测试故事",
+        "start_node": "n_intro",
+        "nodes": {
+            "n_intro": {
+                "node_id": "n_intro",
+                "scene": "INTRO",
+                "choices": [{"text": "继续", "next": "n_end"}],
+            },
+            "n_end": {
+                "node_id": "n_end",
+                "scene": "ENDING",
+                "choices": [],
+                "ending_type": "E_OK",
+            },
+        },
+        "endings": {"E_OK": "完成"},
+    }
+
+    report = summarize_tree(tree)
+
+    assert report["summary"]["total_nodes"] == 2
+    assert report["summary"]["ending_count"] == 1
+    assert [n["node_id"] for n in report["main_path"]] == ["n_intro", "n_end"]
+
+
+def test_load_tree_preserves_v7_metadata(tmp_path: Path):
+    """CLI 加载 v7 文件时必须保留 start_node,否则主线路径会断。"""
+    path = tmp_path / "tree.json"
+    path.write_text(
+        '{"start_node":"n_intro","nodes":{"n_intro":{"choices":[],"is_ending":true}}}',
+        encoding="utf-8",
+    )
+
+    loaded = _load_tree_from_checkpoint(path)
+
+    assert loaded["start_node"] == "n_intro"
+    assert "nodes" in loaded

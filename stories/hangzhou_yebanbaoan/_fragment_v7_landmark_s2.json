@@ -1,0 +1,572 @@
+{
+  "_comment": "v7 S2 柳浪闻莺 307 阶 + 红衣电视女孩",
+  "_meta": {
+    "fragment_owner": "team-lead-pickup",
+    "version": "v7",
+    "landmark": "S2",
+    "node_count": 12,
+    "internal_loops": 5,
+    "cross_scene_exits": 4,
+    "shared_npc_exits": 5,
+    "mini_endings": 1
+  },
+  "nodes": {
+    "n_s2_arrive": {
+      "scene": "S2",
+      "_scene_details": [
+        {
+          "label": "灯柱底下的小广告",
+          "text": "灯柱底贴着十几张小广告,潮得字都化开了。\n\n你弯腰看清最底下那张——\n\n「**留下小学家长求购 1991 年班级合照**\n联系方式:**屠某某 · 副校长(已故)**」\n\n这张广告的纸是新的,**今晚才贴的**。\n\n但电话号码区位是 1991 年的格式 —— 5 位号 + 区号 0571。"
+        },
+        {
+          "label": "台阶旁的『请勿打扰』告示",
+          "text": "第 3 阶旁边的水泥栏杆上,贴着一张白纸:\n\n「**请勿打扰** · 1987」\n\n纸边卷曲,墨迹在灯下还泛着青——\n\n你想起《异常事件记录表》上,**第 7 任 G-273** 的最后一栏写着:\n\n「**1987 还在**。它不在过去,在这里。」",
+          "_foreshadow_clue": [
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "do_not_disturb"
+            }
+          ]
+        },
+        {
+          "label": "数到第 308 阶",
+          "text": "你试着一阶一阶往上走。\n\n308。\n\n你听见**身后**有声音说:「**1987**」 —— 不是你的声音。\n\n你回头,什么都没有。\n\n但《异常事件记录表》自动浮现新栏,光标在 [02] 后面闪 —— 它在等你**写下年份**。",
+          "_foreshadow_clue": [
+            {
+              "slot": "1987_red_dress_truth",
+              "shard": "stair_count"
+            }
+          ]
+        }
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_s2_arrive": 3
+            }
+          },
+          "text": "你已经第 3 次站在 307 阶的入口。\n\n第 1 阶上的湿手掌印,叠成了三只——三个不同尺寸,小的、中的、大的。\n\n它们重合在同一个位置。\n\n灯泡里的「雪花」飘得更密了,像有人把电视雪花搬到了树梢。\n\n柳浪闻莺夜里有过吊死人,1987 年报纸登过——红衣女人,数到 1987 跳的湖。\n\n你打卡机叫了第 3 声「嘀」,这次屏幕没闪。\n\n屏幕黑了。\n\n屏幕里映出**你自己**——\n\n但你的左肩,坐着一个红衣的小孩。"
+        },
+        {
+          "if": {
+            "visit_count_min": {
+              "n_s2_arrive": 2
+            }
+          },
+          "text": "你又站在 307 阶的入口。\n\n灯柱比刚才暗一格。\n\n第 1 阶上,刚才你蹲下擦鞋的位置——多了一个**手掌印**。\n\n手掌印是湿的,五指张开,大小是个 11 岁女孩的。\n\n她在等你回来。"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.s2_heard_tv": true
+            }
+          },
+          "text": "你又来到 307 阶。\n\n柳浪闻莺的雾比刚才浓——\n\n你能听见**雪花声**从台阶尽头传过来,清清楚楚。\n\n14 寸黑白电视,在某一阶上等你。\n\n但你不知道是第几阶。\n\n《异常事件记录表》[02]栏的光标,等你写。"
+        }
+      ],
+      "narrative": "21:47 的柳浪闻莺。\n\n夜雾像洗碗水,一层灰白盖在湖面。\n\n307 阶。这是当地老人对这条山道的别名——\n\n上去 307 阶,你就到老和山观景台。\n\n但你今晚的打卡点不是观景台。\n\n你的打卡点,在第 308 阶。\n\n据队长说:**「上到 307,你就别往上数了。」**\n\n你抬头——\n\n第一根灯柱,亮的。第二根,暗的。第三根,亮的——\n\n但灯泡里**没有钨丝**,是雪花在里面晃。\n\n你的脚还没踩第一阶。",
+      "choices": [
+        {
+          "text": "一阶一阶数着上去。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 2,
+            "landmark_visited": "S2"
+          }
+        },
+        {
+          "text": "不数,跑步上山。",
+          "next": "n_s2_run_up",
+          "effects": {
+            "GR": 3,
+            "landmark_visited": "S2"
+          }
+        },
+        {
+          "text": "蹲下,先擦干净自己鞋上沾的湖泥。",
+          "next": "n_s2_clean_shoes",
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S2"
+          }
+        },
+        {
+          "text": "退回打卡机,跳到下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "landmark_skipped": "S2"
+          },
+          "require": {
+            "not": {
+              "visit_count_min": {
+                "n_s2_arrive": 2
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "landmark_skipped": "S2"
+          },
+          "require": {
+            "any_of": [
+              {
+                "visit_count_min": {
+                  "n_s2_arrive": 2
+                }
+              },
+              {
+                "flags": {
+                  "arc.s2_heard_tv": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "_landmark_header": {
+        "time": "21:47",
+        "place": "柳浪闻莺 307 阶"
+      }
+    },
+    "n_s2_count_stairs": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_s2_arrive": 2
+            }
+          },
+          "text": "你又开始数。\n\n但这次,你**已经知道结果**——\n\n307 阶完了,会出现 308。\n\n你数到 100 阶,数到 200 阶——\n\n你的脚步声**和身后的脚步声错开半拍**。\n\n这一次,你**不回头**。\n\n你数到 307 阶——\n\n你前面,**直接是 308 阶**。\n\n红木门**已经开**了一条缝。\n\n它在等你。"
+        },
+        {
+          "if": {
+            "flags": {
+              "oneshot.s2_following_footprints": true
+            }
+          },
+          "text": "你跟着两个潮湿的脚印往上数。\n\n你的脚和女孩的脚**重叠着前进**。\n\n你的脚印踩在她的脚印上——\n\n严丝合缝。\n\n你 27 岁的脚,踩进 11 岁的脚里。\n\n这不应该。\n\n但你抬头——\n\n307 阶尽头,**红木门为你打开**。\n\n比第一次开得更宽。"
+        },
+        {
+          "if": {
+            "PR_min": 30,
+            "flags": {
+              "oneshot.s2_pushed_through": true
+            }
+          },
+          "text": "你已经在跑。\n\n你不数。\n\n你只跑。\n\n但你的喉咙,**自己发出数字**——\n\n100、200、307。\n\n你的喉咙**比你的脚先到 307**。\n\n你的脚还在第 50 阶。\n\n但你的喉咙数完了。\n\n红木门**自动闭合**——\n\n你今晚不能进了。\n\n你**白来一趟**。"
+        }
+      ],
+      "narrative": "你开始数。\n\n1、2、3...\n\n台阶是青石的,每一阶都被磨出一个浅坑——是几十年踩出来的。\n\n你数到 100 阶时,第一次抬头——\n\n看不到山顶。\n\n200 阶。雾把你前面的台阶全吞了。\n\n307 阶。\n\n你停下,脚还在第 307 阶上。\n\n你应该已经到山顶了。\n\n但你前面**还有台阶**。\n\n你低头数自己的脚下——\n\n是第 307 阶。\n\n再下一阶——\n\n是第 308 阶。",
+      "choices": [
+        {
+          "text": "踏上第 308 阶。",
+          "next": "n_s2_step_308",
+          "effects": {
+            "PR": 5
+          }
+        },
+        {
+          "text": "停在 307,蹲下系鞋带,等天亮。",
+          "next": "n_s2_wait_307",
+          "effects": {
+            "PR": 3
+          }
+        },
+        {
+          "text": "倒着下山,数着倒数。",
+          "next": "n_s2_descend_count",
+          "effects": {
+            "GR": 3
+          }
+        },
+        {
+          "text": "继续往上数:309、310、311...",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "PR": 8,
+            "GR": 5,
+            "flags": {
+              "oneshot.s2_kept_counting": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_step_308": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.s2_closed_door": true
+            }
+          },
+          "text": "你又上 308 阶。\n\n这次门没『自己』开。\n\n门**已经开了**——\n\n开得很宽。\n\n你能看见门里——\n\n14 寸电视前,**多了一双白布鞋**。\n\n鞋朝着门口。\n\n鞋后跟,有 1996 年的红色舞台粉。\n\n红衣女孩,**站在电视后**——\n\n这次她对你说:「叔叔,你**关过门一次**。\n  关一次,我等 7 年。\n  你又来了。\n  我等了 14 年。\n\n  你想再关吗?」"
+        },
+        {
+          "if": {
+            "flags": {
+              "oneshot.s2_offered_candy": true
+            }
+          },
+          "text": "你前面给过她一颗糖。\n\n你又上 308 阶——\n\n红木门**自己开**——\n\n开成 11 岁女孩**正好钻得过**的缝。\n\n你的脚,**自己变小**——\n\n你也变成 11 岁。\n\n11 岁的你,钻过门缝。\n\n门里,红衣女孩对**11 岁的你**鞠躬:\n\n「同学,**一起走 27 楼**。」"
+        }
+      ],
+      "narrative": "你抬脚,踏上第 308 阶。\n\n第 308 阶不是台阶——\n\n是一扇红木门的门槛。\n\n门是横在山道中央的,1980 年代旧式公寓门,深红漆斑驳。\n\n门上贴着一张泛黄的告示:\n\n「请勿打扰  1987」\n\n门没锁。\n\n门**自己**开了一条缝。\n\n里面,雪花声从一台 14 寸电视里漏出来。\n\n一个红色的影子,站在电视旁边,**等了你很久**。",
+      "choices": [
+        {
+          "text": "推开门,进去。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 8,
+            "flags": {
+              "arc.s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "敲门——「有人吗?」",
+          "next": "n_s2_knock_door",
+          "effects": {
+            "PR": 5,
+            "GR": 3
+          }
+        },
+        {
+          "text": "把门关上,退回 307 阶。",
+          "next": "n_s2_arrive",
+          "effects": {
+            "flags": {
+              "oneshot.s2_closed_door": true
+            }
+          }
+        },
+        {
+          "text": "扯下「请勿打扰 1987」的告示,塞进背包。",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 5,
+            "inv_add": [
+              "1987 告示残页"
+            ],
+            "puzzle_add": "piece_1987_notice"
+          }
+        },
+        {
+          "text": "我累了,不开门,直接下山打卡走人。",
+          "next": "n_s2_red_door_skip",
+          "effects": {
+            "PR": -3,
+            "flags": {
+              "oneshot.s2_skipped_door": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_knock_door": {
+      "scene": "S2",
+      "narrative": "你敲门。\n\n咚。咚。咚。\n\n第三声敲完——\n\n门里**敲了回来**。\n\n咚。咚。咚——\n\n第三声,**敲在你脖子后面**。\n\n你猛回头——\n\n身后的台阶上空无一人。\n\n但你脖子后面那块皮肤,**冷的**。\n\n像被一根手指按了一下。\n\n门缝里,一个童音飘出来:\n\n「叔叔,27 楼怎么走?」",
+      "choices": [
+        {
+          "text": "推门,告诉她。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "arc.s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "回答她:『27 楼不在 27 层。』",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_27th_clue"
+          }
+        },
+        {
+          "text": "什么都不说,转身下山。",
+          "next": "n_s2_descend_count",
+          "effects": {
+            "PR": -3,
+            "GR": 5
+          }
+        }
+      ]
+    },
+    "n_s2_run_up": {
+      "scene": "S2",
+      "narrative": "你不数。\n\n你跑上山。\n\n一口气冲到第 50 阶时——\n\n你听见**自己的脚步声**,在你身后响。\n\n不是回声——是错开半拍的、**第二个人**的脚步。\n\n你停下。\n\n身后的脚步,也停下。\n\n但停得**慢半拍**。\n\n你低头看自己的影子——\n\n月光下,你的影子,有**两个**。\n\n一个是你。\n\n另一个,扎着小辫,穿连衣裙。",
+      "choices": [
+        {
+          "text": "猛回头。",
+          "next": "n_s2_turn_back",
+          "effects": {
+            "PR": 8,
+            "GR": 5
+          }
+        },
+        {
+          "text": "继续跑,一口气冲到顶。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 3,
+            "flags": {
+              "oneshot.s2_pushed_through": true
+            }
+          }
+        },
+        {
+          "text": "蹲下,两脚踩住自己的影子。",
+          "next": "n_s2_step_on_shadow",
+          "effects": {
+            "GR": 8
+          }
+        },
+        {
+          "text": "丢下《异常事件记录表》,跑下山。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "landmark_skipped": "S2",
+            "PR": -8
+          }
+        }
+      ]
+    },
+    "n_s2_turn_back": {
+      "scene": "S2",
+      "narrative": "你猛回头。\n\n台阶上空无一人。\n\n但你的左脚边,**有一只布鞋**。\n\n白色,女孩款,鞋头朝着山下,鞋后跟刚刚被脱掉。\n\n鞋底沾着**红色舞台粉**——是 1996 年六一儿童节学校彩排用的那种。\n\n你的呼吸停了半秒。\n\n你听见——\n\n**鞋的另一只**,从台阶上方**跳着**下来。\n\n啪嗒。啪嗒。\n\n离你 5 阶。",
+      "choices": [
+        {
+          "text": "捡起布鞋,放在台阶上,鞋头朝山顶。",
+          "next": "n_s2_step_308",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_red_girl_truth"
+          }
+        },
+        {
+          "text": "踩烂布鞋。",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "GR": 12
+          }
+        },
+        {
+          "text": "把布鞋扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 10
+          }
+        }
+      ]
+    },
+    "n_s2_step_on_shadow": {
+      "scene": "S2",
+      "narrative": "你蹲下,两只脚同时踩住地上**两个影子**——\n\n一个是你的,一个是那个扎小辫的。\n\n你以为踩住,影子就不动。\n\n影子动了。\n\n它从你脚底**抽出去**——\n\n像被从下面拽走。\n\n你脚下的青石,出现两个**潮湿的脚印**——\n\n一个是你穿着皮鞋的脚印。\n\n另一个,是赤脚,11 岁女孩的尺码。\n\n两个脚印,**朝山顶**走去。",
+      "choices": [
+        {
+          "text": "跟着潮湿的脚印,继续上山。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "oneshot.s2_following_footprints": true
+            }
+          }
+        },
+        {
+          "text": "脱下自己的鞋,光脚踩在两个脚印中间。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 12,
+            "GR": 8,
+            "flags": {
+              "arc.s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "拍照发夜班论坛。",
+          "next": "n_npc_forum_lurkers",
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "oneshot.posted_photo": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_clean_shoes": {
+      "scene": "S2",
+      "narrative": "你蹲在第一阶,从兜里抽出一张湿巾,擦自己制服皮鞋上的湖泥。\n\n湿巾擦过——\n\n泥被擦下来,湿巾变红。\n\n你以为是 S1 长椅那边沾的铜锈水。\n\n你低头看——\n\n是**血**。\n\n血是新鲜的,温的。\n\n湿巾上面,渐渐浮现一行字:\n\n「你不是第一个想擦干净的。\n  你是第 13 个。」",
+      "choices": [
+        {
+          "text": "把湿巾收好,继续上山。",
+          "next": "n_s2_count_stairs",
+          "effects": {
+            "PR": 3,
+            "inv_add": [
+              "十三号湿巾"
+            ],
+            "puzzle_add": "piece_13th"
+          }
+        },
+        {
+          "text": "把湿巾扔进湖里。",
+          "next": "n_scene_lake_underwater",
+          "effects": {
+            "GR": 8
+          }
+        },
+        {
+          "text": "用湿巾擦自己的脸。",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "PR": 10,
+            "GR": 12,
+            "flags": {
+              "arc.marked_lamb": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_wait_307": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "arc.redgirl_trusts_zhao": true
+            }
+          },
+          "text": "你蹲在第 307 阶。\n\n这次她没有绕着你走圈。\n\n她也蹲下来,把电视放在你们中间。\n\n电视雪花里出现一只手,正在按货梯按钮:27。\n\n她说:「叔叔,你问过我要找爸爸还是回家。\n\n  我想清楚了。\n  如果爸爸在 27 楼,那 27 楼就是家。」\n\n第 308 阶上的红木门,第一次没有催你。"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "1991 班级合照"
+            ]
+          },
+          "text": "你蹲在第 307 阶。\n\n胸袋里的 1991 班级合照自己滑出来。\n\n照片上第三排第二个旁边,原本是叶某。\n\n现在多了一道淡红色影子。\n\n影子穿 1996 年红裙,却站在 1991 年合照里。\n\n她不是进错了照片。\n\n是这座城把所有没下课、没下班、没回家的孩子,塞进同一张底片。"
+        }
+      ],
+      "narrative": "你蹲在第 307 阶。\n\n你不上去,也不下来。\n\n你以为这样就能耗到天亮。\n\n你的手机时间,卡在 22:13。\n\n22:13。22:13。22:13——\n\n你看了一千下,数字没动。\n\n但夜雾**变厚了**。\n\n你听见第 308 阶上,有人**穿着布鞋**走来走去。\n\n啪嗒、啪嗒、啪嗒。\n\n绕着你蹲的位置走圈。\n\n第 7 圈走完——\n\n她**蹲下**了。\n\n蹲在你正前方 10 厘米。\n\n虽然你看不见她。",
+      "choices": [
+        {
+          "text": "睁眼,直视她。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "arc.s2_heard_tv": true
+            }
+          }
+        },
+        {
+          "text": "闭着眼,等她走。",
+          "next": "n_s2_endless_loop",
+          "effects": {
+            "PR": -5,
+            "GR": 15
+          }
+        },
+        {
+          "text": "从口袋里掏出一颗糖,放在面前。",
+          "next": "n_npc_red_dress_girl",
+          "effects": {
+            "PR": 12,
+            "puzzle_add": "piece_red_girl_truth",
+            "flags": {
+              "oneshot.s2_offered_candy": true,
+              "arc.s2_heard_tv": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s2_descend_count": {
+      "scene": "S2",
+      "narrative_variants": [
+        {
+          "if": {
+            "inv_has": [
+              "红衣女孩铜锈"
+            ]
+          },
+          "text": "你转身下山,倒数。\n\n307、306、305。\n\n胸袋里的红衣女孩铜锈越来越冷。\n\n你每倒数 13 阶,台阶边缘就浮出一个 1987 年的名字。\n\n你倒数到 100,看见第 13 个名字。\n\n再往下,名字又从第 1 个开始。\n\n你明白了:这条山路不是下山路。\n\n它是 13 个名字的循环播放条。"
+        },
+        {
+          "if": {
+            "flags": {
+              "oneshot.s5_freed_yeh": true
+            }
+          },
+          "text": "你转身下山,倒数。\n\n307、306、305。\n\n数到 199 时,你听见远处有钢琴声。\n\n叶某已经离开 203 琴房,但她的最后一个音还留在山路上。\n\n它替你数了一阶。\n\n你少走一阶。\n\n这不是逃跑。\n\n这是有人帮你把一段路认领掉了。"
+        }
+      ],
+      "narrative": "你转身下山,倒数:307、306、305...\n\n你以为下山很快。\n\n你数到 200 阶时,抬头——\n\n你前面**还有 100 多阶**。\n\n你下到 100 阶——\n\n你前面**还有 100 多阶**。\n\n你下到 50 阶——\n\n你前面,还有 100 多阶。\n\n你低头看自己的脚下——\n\n是第 307 阶。\n\n你**没动**。",
+      "choices": [
+        {
+          "text": "干脆坐下,等天亮。",
+          "next": "n_s2_wait_307",
+          "effects": {
+            "PR": -3
+          }
+        },
+        {
+          "text": "回头,跑上 308 阶。",
+          "next": "n_s2_step_308",
+          "effects": {
+            "PR": 5
+          }
+        },
+        {
+          "text": "拨打前任电话求助。",
+          "next": "n_scene_red_telephone",
+          "effects": {
+            "PR": 5
+          },
+          "require": {
+            "inv_has": [
+              "前任电话号码"
+            ]
+          }
+        }
+      ]
+    },
+    "n_s2_endless_loop": {
+      "scene": "S2",
+      "is_ending": true,
+      "ending_type": "E_BAD_1987",
+      "narrative": "你继续往上数。\n\n308、309、310、500、1000、1987...\n\n你停不下来。\n\n你的脚自己迈,你的嘴自己数。\n\n第 1987 阶,你抬头——\n\n你**还在第 1 阶**。\n\n你回头——\n\n柳浪闻莺的雾里,站着一排小学生,穿着 1987 年的红白校服,排成两列,**等你领他们上山**。\n\n你想停下。\n\n你的腿不听。\n\n你的口水变成砂砾。\n\n你的喉咙喊不出。\n\n《异常事件记录表》[02]栏自己写完了:\n\n「赵某 G-273  21:47-永远  自愿替补 1987-12-24-013」\n\n你成了 1987 年踩踏事故里,**那个原本不应该死**的第 14 个人。",
+      "show_hud": true
+    },
+    "n_s2_red_door_skip": {
+      "scene": "S2",
+      "narrative": "你站在 308 阶红木门前。\n\n门里有一个红衣女孩。\n\n你不想进去——\n\n不是怕,是**累**。\n\n你已经看过 1987 的告示。你已经看过双影子。你已经擦出血色的湿巾。\n\n你想下班。\n\n你转身,走下 307 阶。\n\n下山的路上,雾散了。\n\n柳浪闻莺,现在只是一个普通的湿冷的山道。\n\n你回到打卡机前,自动盖章。\n\n[02]栏: 「无观察。亦未被观察。」\n\n你以为你赢了。\n\n但是你回到记录表第一页时,光标停在那里——\n\n等你写下一栏。",
+      "choices": [
+        {
+          "text": "继续下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -5,
+            "flags": {
+              "oneshot.s2_skipped_door": true
+            }
+          }
+        }
+      ]
+    }
+  }
+}

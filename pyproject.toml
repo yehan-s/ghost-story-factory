@@ -27,6 +27,7 @@ dependencies = [
     "pydantic>=2.5.0",
     "rich>=13.7.0",
     "langgraph>=1.0.0",  # ADR-005: Agent orchestration
+    "textual>=8.0",      # v7 TUI: full-screen terminal UI for play_tui.py
 ]
 
 [project.scripts]

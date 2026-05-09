@@ -1,0 +1,538 @@
+{
+  "_comment": "v7 S6 联庄站盾构井 + 7 顶柳条安全帽",
+  "_meta": {
+    "fragment_owner": "team-lead-pickup",
+    "version": "v7",
+    "landmark": "S6",
+    "node_count": 16,
+    "internal_loops": 5,
+    "cross_scene_exits": 4,
+    "shared_npc_exits": 5,
+    "mini_endings": 2
+  },
+  "nodes": {
+    "n_s6_arrive": {
+      "scene": "S6",
+      "_scene_details": [
+        {
+          "label": "井底散落的 8 张归航船票存根",
+          "text": "你蹲在井底,捡起一叠**已被水泡烂**的船票存根。\n\n8 张,但只有 7 张签了名。\n\n第 8 张的存根**没有签名**,只剩一个**指纹**。\n\n你用手机灯照那个指纹 —— 比对方式只有一种:**死人的**。指纹纹路完全平整,**没有皮肤张力**。\n\n你想起对讲机里前任那句:「**第 8 个,没上船。**」",
+          "_foreshadow_clue": [
+            {
+              "slot": "1986_no_eighth",
+              "shard": "ticket_stub"
+            }
+          ]
+        },
+        {
+          "label": "硬币背面的『1986·林』刻字",
+          "text": "你把工人塞给你的那枚硬币翻过来。\n\n背面刻着:「**1986·林**」\n\n这种『年份+姓』的刻法,1986 年还**没有流通**。\n\n硬币的成色像是被人**用手心捏了几十年** —— 但手心的温度是**死人的**。",
+          "require": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          },
+          "_foreshadow_clue": [
+            {
+              "slot": "1986_lin_coin",
+              "shard": "coin_inscription"
+            }
+          ]
+        }
+      ],
+      "narrative_variants": [
+        {
+          "if": {
+            "visit_count_min": {
+              "n_s6_arrive": 2
+            }
+          },
+          "text": "你又下到联庄站底层。\n\n刚才你看过盾构井。\n\n现在,井口**多了一顶柳条安全帽**——\n\n第 8 顶。\n\n第 8 顶的内侧,刻着「G-273」。"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.seven_returned": true
+            }
+          },
+          "text": "你已经把帽子还给了 7 个工人。\n\n但你回来时——\n\n7 顶帽子**全部漂在井口水面**。\n\n7 个工人**一个都不在**。\n\n7 顶帽子在水面拼出一个字:\n\n「**等**」"
+        }
+      ],
+      "narrative": "01:52 的滨江·联庄站。\n\n地铁早就停运。\n\n站厅一片漆黑,但你的工卡能解锁。\n\n你走下 B1、B2、B3、B4。\n\nB4 是「盾构井维护层」,白天工人在这里下井检修地铁隧道。\n\n你走到 DK30+477 处——\n\n那是一口直径 6 米的圆形深井,井底是积水,深不可见。\n\n井口围着 80 年代的红色铁栏杆。\n\n栏杆上,挂着 7 顶**柳条安全帽**——\n\n柳条是 80 年代的款式,现在工人都戴黄色塑料盔了。\n\n7 顶帽子,在你刚下到 B4 时,**齐齐自己晃了一下**。\n\n井底有水声。\n\n是**轮渡引擎**的声音。\n\n但 1986 年那条沉的轮渡,**早就被打捞**了。",
+      "choices": [
+        {
+          "text": "走到井边,看井底。",
+          "next": "n_s6_look_down",
+          "effects": {
+            "PR": 5,
+            "landmark_visited": "S6"
+          }
+        },
+        {
+          "text": "拿起一顶柳条安全帽,看内侧。",
+          "next": "n_s6_inspect_helmet",
+          "effects": {
+            "PR": 3,
+            "landmark_visited": "S6"
+          }
+        },
+        {
+          "text": "沿 B4 走廊往里走,看盾构机。",
+          "next": "n_s6_go_to_machine",
+          "effects": {
+            "GR": 5,
+            "landmark_visited": "S6"
+          }
+        },
+        {
+          "text": "上去打卡,跳下一个地标。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "landmark_skipped": "S6"
+          },
+          "require": {
+            "not": {
+              "visit_count_min": {
+                "n_s6_arrive": 2
+              }
+            }
+          }
+        },
+        {
+          "text": "已经走过这里,直接离开,继续下一个地标。",
+          "next": "n_landmark_picker",
+          "require": {
+            "any_of": [
+              {
+                "visit_count_min": {
+                  "n_s6_arrive": 2
+                }
+              },
+              {
+                "flags": {
+                  "arc.seven_returned": true
+                }
+              }
+            ]
+          }
+        }
+      ],
+      "_landmark_header": {
+        "time": "01:52",
+        "place": "联庄站 B4 盾构井"
+      }
+    },
+    "n_s6_look_down": {
+      "scene": "S6",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.s5_freed_yeh": true
+            }
+          },
+          "text": "你走到井边。\n\n胸袋里的 1991 请假条已经变成白纸,但纸面忽然鼓起一行铅笔字:\n\n『点名时,要等本人答到。』\n\n井壁上的 7 个工人同时抬头。\n\n他们没有脸,可你第一次感觉到他们在听。\n\n不是听你。\n\n是听那个已经走出 203 的女孩,替他们把这句话带到地下。"
+        },
+        {
+          "if": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          },
+          "text": "你走到井边。\n\n1986 林字硬币在掌心里发烫。\n\n井底没有风,但硬币自己立起来,沿着边缘转。\n\n它每转一圈,井壁上的 7 个工人就清楚一点。\n\n第 7 个工人胸口挂着工牌,不是厂号,是 **G-272**。\n\n你听见井底有人说:\n\n『林志诚的钱没沉完。还有一枚在你手里。』"
+        },
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_LINMOU_REGRET"
+            }
+          },
+          "text": "你走到井边。\n\n这次你知道林志诚为什么怕水。\n\n不是因为他投过湖。\n\n是因为他知道水下面不只有他。\n\n7 个工人站在井壁上,同时抬头。\n\n他们不是看你。\n\n他们在看你身后那个穿米色风衣的人。\n\n他终于跟来了。"
+        }
+      ],
+      "narrative": "你走到井边。\n\n井深得看不到底。\n\n你打开手电,光柱往下射——\n\n光柱**没打到底**。\n\n但光柱沿途,出现了 7 个**戴柳条安全帽**的人,**站着**——\n\n他们**站在井壁上**。\n\n他们的脚,**和井壁垂直**。\n\n他们的脸,朝向井口,朝向你。\n\n他们一齐抬头。\n\n他们没有脸。\n\n他们的安全帽,内侧有红色的字——\n\n你看不清,但你知道是「H = 1987」。",
+      "choices": [
+        {
+          "text": "「7 人归航」——把头上戴着的柳条帽递给第一个工人。",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 15
+          }
+        },
+        {
+          "text": "把 7 顶帽子全部从栏杆薅下来。",
+          "next": "n_s6_grab_seven",
+          "effects": {
+            "GR": 22,
+            "flags": {
+              "oneshot.drown_marked": true,
+              "oneshot.s6_grab_seven": true
+            }
+          }
+        },
+        {
+          "text": "把对讲机贴近井口,听轮渡引擎声。",
+          "next": "n_s6_listen_engine",
+          "effects": {
+            "PR": 8
+          }
+        },
+        {
+          "text": "把 1986 年硬币(如果有)扔进井里。",
+          "next": "n_s6_drop_coin",
+          "effects": {
+            "PR": 12
+          },
+          "require": {
+            "inv_has": [
+              "1986 林字硬币"
+            ]
+          }
+        }
+      ]
+    },
+    "n_s6_grab_seven": {
+      "scene": "S6",
+      "is_ending": true,
+      "ending_type": "E_BAD_DROWN",
+      "narrative": "你薅下 7 顶柳条帽,塞进背包。\n\n你以为你赢了。\n\n你回头——\n\n井壁上**7 个工人,贴着井壁,慢慢走上来**。\n\n他们的脚不发出声音。\n\n他们爬到井口。\n\n他们没有脸。\n\n他们伸出手——\n\n他们要的不是帽子。\n\n他们要**戴帽子的脑袋**。\n\n你的脖子,**自己往前伸**。\n\n第一个工人摸到你的喉结。\n\n他说:「这一顶,你戴。」\n\n你的脑袋上,**多了一顶第 8 帽子**。\n\n柳条紧紧箍住你的颅骨。\n\n你跟着 7 个工人,走回井底。\n\n沉船备份池,正在等下一班「轮渡」。\n\n你成了**第 8 个工人**。\n\n下一任 G-273 来到 B4 时,他会数到**8 顶帽子**。",
+      "show_hud": true
+    },
+    "n_s6_inspect_helmet": {
+      "scene": "S6",
+      "narrative": "你拿起最近的一顶柳条安全帽。\n\n内侧——\n\n用墨写着工号:「闸口路 03 号 钱某 1986-08-17」。\n\n1986-08-17,是钱塘江轮渡沉船的日子。\n\n钱某是船上 7 个工人之一。\n\n你翻第二顶——\n\n「闸口路 04 号 孙某 1986-08-17」。\n\n第三顶,第四顶,第五顶,第六顶——\n\n都是 1986-08-17。\n\n第七顶——\n\n内侧是空白的。\n\n但空白处,**慢慢渗出红字**:\n\n「赵某 G-273  2024-XX-XX」\n\n日期没写完。\n\n等你写。",
+      "choices": [
+        {
+          "text": "把第七顶戴在自己头上。",
+          "next": "n_s6_wear_seventh",
+          "effects": {
+            "GR": 18,
+            "flags": {
+              "oneshot.helmet_stuck": true,
+              "arc.marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "把第七顶倒扣在地上。",
+          "next": "n_s6_revisit_well_alt",
+          "effects": {
+            "PR": 8
+          }
+        },
+        {
+          "text": "把日期写成「永不」。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 18,
+            "puzzle_add": "piece_judge_seal",
+            "flags": {
+              "arc.got_judge_seal": true
+            }
+          }
+        },
+        {
+          "text": "把 7 顶帽子整齐归位回栏杆。",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 12,
+            "GR": 5
+          }
+        }
+      ]
+    },
+    "n_s6_wear_seventh": {
+      "scene": "S6",
+      "is_ending": true,
+      "ending_type": "E_DATA",
+      "narrative": "你戴上第七顶柳条帽。\n\n柳条**收紧**——\n\n紧到你的太阳穴出血。\n\n你想摘下来——\n\n摘不动。\n\n柳条已经**长进**你的颅骨。\n\n你的视野,变成 1986-08-17 那一天的钱塘江——\n\n上午 9:14,轮渡。\n\n你和 6 个工人坐在船尾,**笑**——\n\n工人之一回头,他的脸是空的。\n\n他指着船头:「那里,有人 wave。」\n\n船头无人。\n\n但你看到一个**穿警服**的男人——是你自己,2024 年的你——\n\n站在船头,手里举着工牌。\n\n2024 的你,对 1986 的你说:「上船。」\n\n船,翻了。\n\n你成了 1986 沉船第 8 名。\n\nB4 盾构井,8 顶帽子等下一个 G-273。",
+      "show_hud": true
+    },
+    "n_s6_revisit_well_alt": {
+      "scene": "S6",
+      "narrative": "你把第七顶帽子倒扣在地上。\n\n帽内的红字朝下。\n\n红字渗进**地面混凝土**——\n\n混凝土地面上,慢慢浮现一行字:\n\n「赵某,你不戴。\n  那么你必须找到第 8 个戴的人。\n  他在 27 楼。」\n\n你抬头——\n\nB4 走廊尽头,出现一道**电梯门**。\n\n电梯门是黑色的。\n\n按钮只有一个:「27」。\n\n按钮亮着红光。",
+      "choices": [
+        {
+          "text": "走过去,按 27。",
+          "next": "n_scene_27th_floor_corridor",
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "know.saw_27th_floor": true
+            }
+          }
+        },
+        {
+          "text": "不去。退回井边。",
+          "next": "n_s6_arrive"
+        },
+        {
+          "text": "把工牌塞进电梯按钮里。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 8,
+            "inv_add": [
+              "27F 铜钥匙"
+            ]
+          }
+        }
+      ]
+    },
+    "n_s6_listen_engine": {
+      "scene": "S6",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.s5_freed_yeh": true
+            }
+          },
+          "text": "你把对讲机贴近井口。\n\n井底先传来的不是轮渡引擎。\n\n是 203 琴房的钢琴余音。\n\n七个声音在余音里依次报数。\n\n一。\n\n二。\n\n三。\n\n四。\n\n五。\n\n六。\n\n七。\n\n第八声没有响。\n\n对讲机里有人说:\n\n「G-273,这次别替答到。\n\n  我们不是少一个替死鬼。\n  我们是少七个能被叫出口的名字。」"
+        }
+      ],
+      "narrative": "你把对讲机贴近井口。\n\n对讲机「滋——」一声。\n\n井底的轮渡引擎声,**变成人声**:\n\n「G-273,听到请回答。\n  我们 7 个,1986 年 8 月 17 日,在钱塘江口集体翻船。\n  当时船上还有第 8 个人,买了票但没上船。\n  那个人,是上一任 G-273。\n  这一次,他没买票。\n  这一次,你**自己来**了。」",
+      "choices": [
+        {
+          "text": "回答:『我替他来了。』",
+          "next": "n_npc_helmet_workers",
+          "effects": {
+            "PR": 15,
+            "flags": {
+              "oneshot.s6_volunteered": true,
+              "arc.seven_returned": true
+            }
+          }
+        },
+        {
+          "text": "回答:『你们是 7 个,我是 1 个。我不替他,我替你们。』",
+          "next": "n_s6_replace_seven",
+          "effects": {
+            "PR": 25,
+            "puzzle_add": "piece_seven_returned",
+            "flags": {
+              "arc.s6_replaced_seven": true,
+              "arc.seven_returned": true,
+              "oneshot.b3_unlocked": true
+            }
+          }
+        },
+        {
+          "text": "挂掉对讲机。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "GR": 5
+          }
+        },
+        {
+          "text": "问:『1986 年那天,第 8 个人为什么没上船?』",
+          "next": "n_npc_predecessor_voice",
+          "effects": {
+            "PR": 10,
+            "puzzle_add": "piece_truancy"
+          }
+        }
+      ]
+    },
+    "n_s6_replace_seven": {
+      "scene": "S6",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "oneshot.s5_freed_yeh": true
+            }
+          },
+          "text": "你的话音落下时,井底没有立刻安静。\n\n七个声音先互相确认了一遍。\n\n不是工号。\n\n是名字。\n\n你听不清每一个字,但你听得出他们不是在排队找替身。\n\n他们在确认:这次终于有人等他们本人答到。\n\n最后一个声音说:\n\n「203 那个小姑娘说得对。\n\n  替答到的人,最后都会被罚站。\n  你别站了。我们自己回。」"
+        }
+      ],
+      "narrative": "你的话音落下时,7 顶帽子从栏杆上**自己**飘起来——\n\n它们围成一圈,绕你**转一圈**——\n\n然后,7 顶帽子**整齐地戴回栏杆**。\n\n井底,轮渡引擎声**停了**。\n\nB3 走廊尽头的钢门,远远传来「咔哒」一声——\n\n那扇门,**为你开了**。\n\n你听见井底,7 个声音齐声说:\n\n「替死鬼,我们不要。\n  你这一夜,是替活人的。\n  你下班吧。」\n\n井口出现一阵晚风——\n\n但 B4 是地下 4 层,不可能有风。\n\n这阵风,带着 1986 年钱塘江的潮味。\n\n是 7 个工人,**送你**。",
+      "choices": [
+        {
+          "text": "鞠躬,继续巡逻。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": 30,
+            "GR": -10,
+            "puzzle_add": "piece_seven_freed"
+          }
+        }
+      ]
+    },
+    "n_s6_drop_coin": {
+      "scene": "S6",
+      "narrative": "你把 1986 年的「林」字硬币扔进井里。\n\n你听见硬币沿井壁,叮、叮、叮——\n\n响 17 声,然后**没有水声**。\n\n它没落进水里。\n\n它落到**别的东西**上。\n\n井底有声音传上来:\n\n「钱,我收到了。\n  谢谢你帮林某还的。\n\n  现在,**你借了林某 27 块**。\n  夜班评议会的账本上,你欠 27 笔。」\n\n你的工牌反面,自己烫出 27 道竖线。\n\n这是**未结**的标记。",
+      "choices": [
+        {
+          "text": "把工牌反过来,接受 27 笔欠债。",
+          "next": "n_npc_evaluator_chair",
+          "effects": {
+            "PR": 10,
+            "GR": 8,
+            "flags": {
+              "arc.got_judge_seal": true
+            }
+          }
+        },
+        {
+          "text": "把工牌烧了。",
+          "next": "n_s6_burn_id",
+          "effects": {
+            "GR": 25
+          }
+        },
+        {
+          "text": "回到井边,继续巡逻。",
+          "next": "n_s6_look_down"
+        }
+      ]
+    },
+    "n_s6_burn_id": {
+      "scene": "S6",
+      "narrative": "你掏出打火机,烧自己的工牌。\n\n工牌是塑料的,本来应该立刻熔化。\n\n但工牌**不熔**。\n\n火苗烧了 30 秒,工牌完好如初。\n\n但你的**手指**——\n\n烫黑了。\n\n你低头看自己的手——\n\n你的指纹**消失**了。\n\nHUD 提示:「身份残值 -50%。摄像头死角累积加速。」\n\n你的工牌,自动浮现一行字:\n\n「未注销。但已无指纹归属。\n  夜班评议会处理中。」",
+      "choices": [
+        {
+          "text": "去 B3 档案室,看处理结果。",
+          "next": "n_scene_evaluator_room",
+          "effects": {
+            "PR": 5,
+            "flags": {
+              "oneshot.s6_no_fingerprint": true
+            }
+          }
+        },
+        {
+          "text": "继续巡逻,假装没事。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "GR": 10,
+            "flags": {
+              "oneshot.s6_no_fingerprint": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_go_to_machine": {
+      "scene": "S6",
+      "narrative": "你沿 B4 走廊往里。\n\n50 米尽头,是「钱塘一号」盾构机。\n\n8 米直径的钢铁怪物,前面装着 17 把巨型刀片,叫「刀盘」。\n\n刀盘,**自己**慢慢转。\n\n但盾构机的电源**是关的**。\n\n你走近——\n\n刀盘的每一片刀,都**沾着新鲜的红色**。\n\n不是铁锈红。\n\n是**血红**。\n\n刀盘后面的操作间,亮着灯。\n\n操作间里,一个人影在背对你**敲键盘**。",
+      "choices": [
+        {
+          "text": "走进操作间,看那个人。",
+          "next": "n_s6_operator_room",
+          "effects": {
+            "PR": 8
+          }
+        },
+        {
+          "text": "用扳手卡住刀盘。",
+          "next": "n_s6_jam_blade",
+          "effects": {
+            "GR": 15
+          }
+        },
+        {
+          "text": "走到盾构机正面,挡住刀盘。",
+          "next": "n_s6_stand_blade",
+          "effects": {
+            "GR": 25,
+            "flags": {
+              "arc.marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "退回井边,不进操作间。",
+          "next": "n_s6_arrive"
+        }
+      ]
+    },
+    "n_s6_operator_room": {
+      "scene": "S6",
+      "narrative": "你推开操作间的玻璃门。\n\n屋里很冷。\n\n那个背对你的人,**慢慢回头**。\n\n他穿着 1980 年代的工装,胸前别着工号牌:\n\n「钱塘一号 操作员 林某 1986-08-17」\n\n林某。\n\n又是林某。\n\n他的脸是湿的——\n\n是**淹死的人**的脸。\n\n他对你说:\n\n「我不是开盾构机的。\n  我是 1985 年投湖的。\n  但我的尸体被打捞工人捞起来,捞错了——\n  他们以为我是 1986 钱塘江沉船的工人。\n  所以我成了**他们的第 8 个**。\n  你能帮我**改名字**吗?」",
+      "choices": [
+        {
+          "text": "在他工号牌上,把「1986-08-17」改成「1985-10-18」。",
+          "next": "n_npc_drowned_official",
+          "effects": {
+            "PR": 25,
+            "puzzle_add": "piece_linmou_full",
+            "flags": {
+              "oneshot.s6_corrected_linmou": true,
+              "know.claimed_linmou": true
+            }
+          }
+        },
+        {
+          "text": "拒绝。这不是我能改的。",
+          "next": "n_landmark_picker",
+          "effects": {
+            "PR": -8
+          }
+        },
+        {
+          "text": "把自己的工牌也放进操作间,『让我也当第 8 个』。",
+          "next": "n_npc_eight_self",
+          "effects": {
+            "PR": 20,
+            "flags": {
+              "know.linked_to_eight_self": true
+            }
+          }
+        }
+      ]
+    },
+    "n_s6_jam_blade": {
+      "scene": "S6",
+      "narrative": "你拿起墙边的扳手,塞进刀盘缝隙。\n\n刀盘**停了**。\n\n操作间里,人影**回头**——\n\n他的脸,是**雪花**。\n\n他对着你的方向,**张嘴**。\n\n他的雪花脸里,字幕浮现:\n\n「你卡了我的进度。\n  我现在不能挖到 27 楼了。\n  你帮了上一任 G-273。\n  上一任 G-273 在 27 楼,记了 11 年。\n  现在他可以下班了。」\n\n操作间的灯**灭了**。",
+      "choices": [
+        {
+          "text": "去 27 楼接前任。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 18,
+            "inv_add": [
+              "27F 铜钥匙"
+            ],
+            "puzzle_add": "piece_27th_clue"
+          }
+        },
+        {
+          "text": "把扳手拿出来,让刀盘继续转。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "PR": -10,
+            "GR": 8
+          }
+        }
+      ]
+    },
+    "n_s6_stand_blade": {
+      "scene": "S6",
+      "narrative": "你站到盾构机正面,挡住刀盘。\n\n17 把刀片转向你。\n\n你以为它们会绞碎你。\n\n它们**停下来**。\n\n刀片离你胸口 1 厘米,纹丝不动。\n\n刀盘上的血,**自动倒流**回刀片的缝隙里。\n\n你听见盾构机内部传来一句话——\n\n是 7 个工人齐声说的:\n\n「这是上一任 G-273 用过的姿势。\n  他比你早 11 年,挡了一次。\n  这次你挡的话,他可以下班。」\n\n你低头——\n\n你的胸前,出现一道**11 厘米长的红印**。\n\n是 11 年前,前任 G-273 留下的。\n\n现在,**传给你**。",
+      "choices": [
+        {
+          "text": "接受这道红印。",
+          "next": "n_npc_ghost_guard",
+          "effects": {
+            "PR": 25,
+            "GR": 10,
+            "puzzle_add": "piece_predecessor_log",
+            "flags": {
+              "arc.s6_inherited_scar": true,
+              "arc.marked_lamb": true
+            }
+          }
+        },
+        {
+          "text": "退后,让刀盘继续转。",
+          "next": "n_s6_arrive",
+          "effects": {
+            "PR": -15,
+            "GR": 5
+          }
+        }
+      ]
+    }
+  }
+}

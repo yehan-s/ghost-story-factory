@@ -1,0 +1,71 @@
+{
+  "_template_name": "shared_npc",
+  "_template_version": "v7.0",
+  "_usage": "把 <PLACEHOLDER> 替换为新故事的具体内容。NPC ID 用 n_npc_<who>(英文小写下划线)。每个 NPC 至少 4 个 narrative_variants(根据从哪个地标来 / 手上有什么)。每个 NPC 3-4 个 choices,出口分布:1) 引向另一个共享场景, 2) 给 puzzle/inv 后回 picker, 3) 触发 mini-ending,4) 退回。",
+  "n_npc_<who>": {
+    "scene": "NPC",
+    "_foreshadow_slot": ["<slot_name_for_this_NPC>"],
+    "_foreshadow_solved_by": ["<future_role_route>"],
+    "narrative_variants": [
+      {
+        "if": {"flags": {"<came_from_landmark_X>": true}},
+        "text": "<NPC 看到玩家从 X 进来时的 150-300 字描写。要让玩家感觉 NPC『记得』他做过什么。>"
+      },
+      {
+        "if": {"flags": {"<came_from_landmark_Y>": true}},
+        "text": "<同上,Y 视角>"
+      },
+      {
+        "if": {"inv_has": ["<key_item_relevant_to_this_NPC>"]},
+        "text": "<玩家手上有特定物品时,NPC 会注意到并对话>"
+      },
+      {
+        "if": {"meta_flags": {"<played_npc_role>": true}},
+        "text": "<v8 多角色:玩家先玩过这个 NPC 的角色后,再玩主角时,NPC 多说一句『我们认识』>"
+      }
+    ],
+    "narrative": "<默认 narrative,300 字以内,描述 NPC 出现时的情景。第二人称,感官细节,留悬念。>",
+    "choices": [
+      {
+        "text": "<给予 / 索取 / 完成关键剧情>",
+        "next": "n_npc_<who>_payoff",
+        "effects": {"PR": 10, "inv_add": ["<gift_item>"], "puzzle_add": "<piece>", "flags": {"<key_quest_done>": true}}
+      },
+      {
+        "text": "<跨地标跳转 — 引向另一共享场景>",
+        "next": "n_scene_<another>",
+        "effects": {"GR": 5}
+      },
+      {
+        "text": "<极端选择,触发 mini-ending 或献祭>",
+        "next": "n_end_<ending_id>",
+        "effects": {"flags": {"<sacrificial>": true}},
+        "require": {"all_of": [
+          {"flags": {"<prerequisite>": true}}
+        ]}
+      },
+      {
+        "text": "<退回 picker(不要随便用,只在『放弃』语义时合适)>",
+        "next": "n_landmark_picker",
+        "effects": {}
+      }
+    ]
+  },
+  "n_npc_<who>_payoff": {
+    "_comment": "payoff 节点 — 关键正面动作的中间步骤,呈现行动后果再回 picker。避免选项立刻汇合给玩家『选了等于没选』的感觉。",
+    "scene": "NPC",
+    "narrative": "<玩家完成关键动作后的 200-300 字情景。NPC 离场或变化,玩家拿到东西、看到结果。>",
+    "choices": [
+      {
+        "text": "<继续巡逻 / 鞠躬目送>",
+        "next": "n_landmark_picker",
+        "effects": {"PR": 8, "puzzle_add": "<extra_piece>"}
+      },
+      {
+        "text": "<追问真相,跳到深层共享场景>",
+        "next": "n_scene_lost_archive",
+        "effects": {"PR": 12, "puzzle_add": "<truth_piece>"}
+      }
+    ]
+  }
+}

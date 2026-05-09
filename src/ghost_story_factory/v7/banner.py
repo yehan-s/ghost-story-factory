@@ -1,0 +1,81 @@
+"""标题 banner — CLI/TUI 共享。
+
+设计:
+- 不引入 figlet 依赖(已有 rich + 自定义 ANSI 足够)
+- 硬编码两段:英文像素字主标题 + 中文副标题
+- 提供 render_banner_lines() 返回纯文本行(无颜色),由调用方加颜色
+"""
+
+from __future__ import annotations
+
+from typing import List
+
+from ghost_story_factory.v7._utils import visible_width
+
+
+# 主标题:GHOST STORIES (用 ANSI Shadow 风格手写,7 行高)
+# 字宽控制在 60 字符内,适配标准终端
+_BANNER_LINES: List[str] = [
+    " ██████╗ ██╗  ██╗ ██████╗ ███████╗████████╗",
+    "██╔════╝ ██║  ██║██╔═══██╗██╔════╝╚══██╔══╝",
+    "██║  ███╗███████║██║   ██║███████╗   ██║   ",
+    "██║   ██║██╔══██║██║   ██║╚════██║   ██║   ",
+    "╚██████╔╝██║  ██║╚██████╔╝███████║   ██║   ",
+    " ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚══════╝   ╚═╝   ",
+]
+
+_SUBTITLE = "G H O S T   S T O R I E S"
+
+
+def render_banner_lines(width: int = 60) -> List[str]:
+    """返回 banner 多行纯文本(无颜色),调用方自行染色。
+
+    Args:
+        width: 目标终端宽度(用于居中)
+
+    Returns:
+        List[str]: 多行文本,每行已居中
+    """
+    out: List[str] = [""]
+    for line in _BANNER_LINES:
+        out.append(_center(line, width))
+    out.append("")
+    out.append(_center(_SUBTITLE, width))
+    out.append("")
+    return out
+
+
+def banner_pieces(width: int = 60) -> dict:
+    """分块返回 banner 各部件(给分阶段动画用)。
+
+    Returns:
+        {
+          "ascii_lines": [像素字 6 行,已居中],
+          "subtitle": 居中后的副标题,
+        }
+    """
+    return {
+        "ascii_lines": [_center(line, width) for line in _BANNER_LINES],
+        "subtitle": _center(_SUBTITLE, width),
+    }
+
+
+def _center(text: str, width: int) -> str:
+    """中文 + ASCII 混合居中(中文按 2 宽度算)。"""
+    visible = visible_width(text)
+    if visible >= width:
+        return text
+    pad = (width - visible) // 2
+    return " " * pad + text
+
+
+# Rich-friendly markup 版本(给 textual 用)
+def render_banner_rich(width: int = 60) -> str:
+    """返回带 rich markup 的多行字符串。"""
+    lines = []
+    lines.append("")
+    for line in _BANNER_LINES:
+        lines.append(f"[bold red]{_center(line, width)}[/]")
+    lines.append("")
+    lines.append(f"[bold yellow]{_center(_SUBTITLE, width)}[/]")
+    return "\n".join(lines)

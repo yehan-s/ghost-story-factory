@@ -1,8 +1,16 @@
 # ADR-001: 采用「骨架优先」的新故事生成流水线
 
-- 状态: Accepted
-- 日期: 2025-11-15
+- 状态: Accepted(技术上仍生效,但语境过时 — 见警告)
+- 日期: 2025-11-15(2026-05-08 加沙盒契约引用)
 - 作者: yehan
+
+> ⚠️ **警告**:本 ADR 的"act / beat / branching tree"语境是 v4 早期 AI 生成路径的语境。
+> v7 阶段(`hangzhou_yebanbaoan` 周目)已演化为**沙盒拓扑**,详见 **ADR-010 沙盒拓扑契约**。
+>
+> 任何手写剧本(非 AI 生成路径)的拓扑骨架 ≠ 本 ADR 描述的"branching tree",而是:
+> picker hub + landmark `connections` 网 + `_is_tool` 工具节点 + `narrative_variants` 反应切档。
+>
+> **本 ADR 的 PlotSkeleton 仅是"内容大纲生成器",节点拓扑必须按 ADR-010 走。**
 
 ---
 

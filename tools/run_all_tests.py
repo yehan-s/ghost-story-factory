@@ -33,8 +33,9 @@ def run_test(test_name: str, test_file: str) -> tuple:
             return (test_name, True, "")
         else:
             console.print(f"❌ {test_name}: 失败\n")
-            console.print(f"错误输出:\n{result.stderr[:500]}\n")
-            return (test_name, False, result.stderr[:200])
+            output = result.stderr or result.stdout
+            console.print(f"错误输出:\n{output[:1000]}\n")
+            return (test_name, False, output[:200])
 
     except subprocess.TimeoutExpired:
         console.print(f"⏰ {test_name}: 超时\n")
@@ -65,8 +66,9 @@ def run_pytest_suite(test_name: str, pytest_args) -> tuple:
             return (test_name, True, "")
         else:
             console.print(f"❌ {test_name}: 失败\n")
-            console.print(f"错误输出:\n{result.stderr[:500]}\n")
-            return (test_name, False, result.stderr[:200])
+            output = result.stderr or result.stdout
+            console.print(f"错误输出:\n{output[:1000]}\n")
+            return (test_name, False, output[:200])
 
     except subprocess.TimeoutExpired:
         console.print(f"⏰ {test_name}: 超时\n")
@@ -111,9 +113,10 @@ def main():
             ],
         ),
         (
-            "工具类单元测试 / 生成进度可视化",
+            "工具类单元测试 / 生成进度可视化 / GameTree 可玩性审计",
             [
                 "tests/test_view_tree_progress.py",
+                "tests/test_audit_playability.py",
             ],
         ),
         (
@@ -123,6 +126,14 @@ def main():
                 "tests/test_choice_evaluator_bmad.py",
                 "tests/test_response_llmclient.py",
                 "tests/test_state_manager_scope.py",
+            ],
+        ),
+        (
+            "v7 运行时存档 / 菜单 / 档案视图回归测试",
+            [
+                "tests/test_save_manager_query.py",
+                "tests/test_menu_registry.py",
+                "tests/test_archive_view.py",
             ],
         ),
     ]

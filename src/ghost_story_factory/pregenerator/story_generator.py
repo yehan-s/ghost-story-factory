@@ -265,7 +265,7 @@ class StoryGeneratorWithRetry:
                 # 测试模式的深度约束必须可达：避免 min_main_path_depth > max_depth 导致无意义长跑/超时
                 if self.test_mode and min_main_path > max_depth:
                     print(
-                        f\"   ⚠️  [测试模式] 主线最小深度约束不可达：min_main_path={min_main_path} > max_depth={max_depth}，已裁剪为 {max_depth}\"
+                        f"   ⚠️  [测试模式] 主线最小深度约束不可达：min_main_path={min_main_path} > max_depth={max_depth}，已裁剪为 {max_depth}"
                     )
                     min_main_path = max_depth
 
