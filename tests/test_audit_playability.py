@@ -227,6 +227,7 @@ def test_official_hangzhou_tree_has_vn_presentation_contract():
     report = analyze_playability(tree)
 
     assert report.ok is True
-    assert report.presentation_nodes == report.total_nodes == 145
+    assert report.presentation_nodes == report.total_nodes
+    assert report.total_nodes >= 160
     assert not any("presentation" in item for item in report.warnings)
     assert not any("关键演出意图缺少字段" in item for item in report.warnings)

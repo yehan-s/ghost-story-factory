@@ -16,6 +16,15 @@
       "narrative_variants": [
         {
           "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_LINMOU_EXPOSED"
+            }
+          },
+          "text": "你转进羊血弄时,弄口木匾没有写「⺶记屠铺」。\n\n它写着「林志诚同志昨夜不慎落水」。\n\n每个字都像广播喇叭里念出来的。\n\n黑山羊倒吊在铁钩上,脖颈断面渗出的不是血,是被水泡皱的证明材料。\n\n你忽然明白,这里屠的不是羊。\n\n这里专门把死人的名字剁成事故。"
+        },
+        {
+          "if": {
             "visit_count_min": {
               "n_s4_arrive": 3
             }

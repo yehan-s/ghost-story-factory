@@ -42,6 +42,8 @@ Accepted
 
 少于这个骨架的提案,直接打回 — 不是"沙盒不足",是"还没成沙盒"。
 
+注意:这只是**沙盒最低门槛**,不是剧本厚度验收。通过 ADR-010 只能说明一棵树没有退回死剧本;它不能证明地标层数、人物回收、复访变化、VN 演出密度已经达到 galgame / 视觉小说目标。剧本深度与广度由 `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md` 和 `tools/audit_script_depth.py` 单独验收。
+
 ### "死剧本"反模式黑名单(评审一票否决)
 
 - ❌ entry → 单链 → ending(没有 picker)

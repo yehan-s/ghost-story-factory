@@ -9,9 +9,11 @@
 - `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md`
 - `docs/tasks/TASK_SCRIPT_BEHAVIOR_NPC_PASS5.md`
 - `docs/tasks/TASK_SCRIPT_BEHAVIOR_FEEDBACK_PASS6.md`
+- `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
+- GitHub Milestone: `v7 剧本深度与广度补强`
 
 ---
 
@@ -132,14 +134,32 @@
 - 新增 `tests/test_npc_accountability_pass8.py`;
 - `audit_all` 与统一测试通过。
 
+### M6: 剧本 Pass 9 - 深度与广度补强
+
+状态: Active,见 `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md`。
+
+目标:
+
+- 把“剧本厚度”从主观评价变成审计指标:节点数、最短结局路径、薄节点比例、地标层数、工具复访、variant 密度、VN 演出意图覆盖;
+- 让林某 1985 线成为正式可达内容,不再只是注册在 `characters` 里的孤立前传;
+- 补强至少 3 个 G-273 地标的跨地标 / 跨角色因果回收;
+- 保持开放沙盒,不新增 DB schema,不把玩法改成线性章节。
+
+验收:
+
+- `tools/audit_script_depth.py` 通过;
+- 正式树节点数不得低于 160;
+- 林某线在深度审计中单独计入并可从角色入口游玩;
+- `camera / cg_intent / transition_intent` 覆盖的关键节点数量不得低于 30;
+- `audit_all` 与统一测试通过。
+
 ---
 
 ## 3. 推荐执行顺序
 
-1. 先做 M4 的 `TASK_GAMETREE_V1` 收尾,把项目账本理干净;
-2. 再做 M1 剧本 Pass 3,优先补叶某和巡夜员群像;
-3. 然后做 M2 行为画像,让玩家选择被世界记住;
-4. 最后做 M3 VN 演出契约,给未来图形化客户端铺路。
+1. 已完成 M4 的 `TASK_GAMETREE_V1` 收尾,项目账本已清;
+2. 已完成 M1-M5 的剧本、行为反馈、VN 契约和 NPC 账本;
+3. 当前优先做 M6 Pass 9,把“可玩闭环”推进到“内容厚度达标”。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
