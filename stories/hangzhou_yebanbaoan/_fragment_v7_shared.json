@@ -348,6 +348,22 @@
       "scene": "NPC",
       "narrative_variants": [
         {
+          "if": {
+            "flags": {
+              "know.redgirl_is_lin_daughter": true
+            }
+          },
+          "text": "湖水漫上岸。\n\n中山装的男人站在水里,这次没有先问你认不认领。\n\n你说出『林晓燕』三个字。\n\n他的脸第一次像活人一样抽了一下。\n\n「她……还在问 27 楼怎么走?」\n\n你点头。\n\n他低头看自己的湿袖口,像终于想起那一年医院走廊里的哭声。\n\n「我 1985 年下水的时候,她还没出生。\n\n  我以为我一个人死,就能把账带走。\n  后来我才知道,账不是纸。\n  账会长到孩子身上。」"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.redgirl_trusts_zhao": true
+            }
+          },
+          "text": "湖水自己漫上岸。\n\n林志诚看着你,像看一个把坏消息带回家的人。\n\n「她信你了?」\n\n你没有立刻回答。\n\n他笑了一下,很苦。\n\n「那你比我强。\n\n  我女儿活着的时候,我没来得及让她信我。\n  我死以后,她连我的脸都只能从货梯雪花里猜。」\n\n水线退了一寸。\n\n不是他走远。\n\n是他在给你让路。"
+        },
+        {
           "_variant_id": "V4_truth",
           "if": {
             "deduction_resolved": "predecessor_loop"
@@ -457,6 +473,21 @@
               "asked_predecessor_name": true
             }
           }
+        },
+        {
+          "text": "问他:『林晓燕在等你。你敢不敢去 27 楼?』",
+          "next": "n_scene_27th_floor_corridor",
+          "require": {
+            "flags": {
+              "know.redgirl_is_lin_daughter": true
+            }
+          },
+          "effects": {
+            "PR": 12,
+            "flags": {
+              "know.redgirl_wants_father": true
+            }
+          }
         }
       ]
     },
@@ -500,6 +531,15 @@
         }
       ],
       "narrative_variants": [
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_DATA"
+            }
+          },
+          "text": "对讲机接通。\n\n这次 G-272 没讲公式,没讲 1985,也没再解释自己替了谁。\n\n他只说:\n\n「小赵,你已经试过一次把工牌交出去。\n\n  数据化不是死。\n  死至少会安静。\n\n  数据化是你每天都听见别人叫你下班,但你永远按不下回复键。\n\n  这次别把工牌给任何人。\n  也别把林晓燕一个人带进 27 楼。\n\n  她等爸爸,不是等一个新保安替她。」\n\n对讲机里有很轻的电流声。\n\n像一个人把话说完以后,终于把手从 PTT 上松开。"
+        },
         {
           "if": {
             "deduction_resolved": "predecessor_loop"
@@ -718,6 +758,40 @@
         },
         {
           "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.yeh_asks_save_redgirl": true
+                }
+              }
+            ]
+          },
+          "text": "她把电视抱得很低。\n\n屏幕里不是 307 阶,也不是货梯。\n\n是 203 琴房。\n\n叶某站在钢琴旁边,对她挥手。\n\n红衣女孩看了很久,说:\n\n「叔叔,那个姐姐让你不要只救她。\n\n  她是不是也等过大人来接?\n\n  如果她能自己走出琴房,那我是不是也可以自己走进 27 楼?」\n\n她第一次没有把问题丢给你。\n\n她像是在练习一个答案。"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "know.redgirl_wants_father": true
+                }
+              },
+              {
+                "flags": {
+                  "know.redgirl_is_lin_daughter": true
+                }
+              }
+            ]
+          },
+          "text": "她这次先说自己的名字。\n\n「叔叔,我叫林晓燕。\n\n  林是树林的林,晓是天快亮的晓,燕是燕子的燕。\n\n  我以前怕说出来。\n  一说出来,电视就会黑屏。\n\n  但你知道我爸爸叫什么。\n  所以我也想知道——\n\n  如果我在 27 楼叫他,他会不会答应?」\n\n电视雪花停了一秒。\n\n那一秒里,她的眼睛像活人的眼睛。"
+        },
+        {
+          "if": {
             "flags": {
               "arc.redgirl_trusts_zhao": true
             }
@@ -800,6 +874,22 @@
             "stay": true,
             "flags": {
               "arc.redgirl_trusts_zhao": true,
+              "know.redgirl_wants_father": true
+            }
+          }
+        },
+        {
+          "text": "告诉她:『我见过林志诚。他也在等你。』",
+          "next": "n_npc_drowned_official",
+          "require": {
+            "flags": {
+              "arc.redgirl_trusts_zhao": true
+            }
+          },
+          "effects": {
+            "PR": 10,
+            "flags": {
+              "know.redgirl_is_lin_daughter": true,
               "know.redgirl_wants_father": true
             }
           }
@@ -1918,6 +2008,40 @@
       "narrative_variants": [
         {
           "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "know.redgirl_wants_father": true
+                }
+              }
+            ]
+          },
+          "text": "你带林晓燕来到 27 楼。\n\n这次走廊没有先亮灯。\n\n她站在黑暗里,把电视抱在胸前,小声练习:\n\n「爸爸。」\n\n第一遍,电视雪花把声音吞掉。\n\n第二遍,墙上的 11 张工牌同时轻轻晃了一下。\n\n第三遍,走廊尽头的黑门里传来水滴声。\n\n不是西湖水。\n\n是一个男人站在门后,湿袖口滴到地面的声音。"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "know.claimed_linmou": true
+                }
+              }
+            ]
+          },
+          "text": "你已经认领林志诚那 27 笔未结。\n\n现在你带着他的女儿站在 27 楼。\n\n墙上的 G-273 工牌不再背面朝外。\n\n它们一张一张翻回来,像一排没人敢说话的证人。\n\n林晓燕问:「叔叔,他们为什么都看着我?」\n\n你知道答案。\n\n因为她不是支线谜题。\n\n她是这 27 笔账最后一个还活着的后果。"
+        },
+        {
+          "if": {
             "flags": {
               "oneshot.led_red_girl": true
             }
@@ -2022,6 +2146,28 @@
           }
         },
         {
+          "text": "让林晓燕先敲门,你站在她身后。",
+          "next": "n_end_true",
+          "require": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "know.claimed_linmou": true
+                }
+              }
+            ]
+          },
+          "effects": {
+            "PR": 20,
+            "puzzle_add": "piece_redgirl_reunion"
+          }
+        },
+        {
           "text": "退回电梯。",
           "next": "n_landmark_picker",
           "effects": {
@@ -2035,6 +2181,31 @@
     "n_scene_b3_corridor": {
       "scene": "SCENE",
       "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              }
+            ]
+          },
+          "text": "你走进 B3 走廊。\n\n27 台电视没有一起喊你的名字。\n\n它们一台一台亮起,按你刚才念过的顺序显示姓名。\n\n到林晓燕那一台时,屏幕没有雪花。\n\n屏幕里是一个 11 岁女孩站在货梯门口,身后是你。\n\n你没有替她敲门。\n\n你只是站在她身后,让她知道这次不是一个人。"
+        },
+        {
+          "if": {
+            "flags": {
+              "arc.rent_pressure": true
+            }
+          },
+          "text": "你走进 B3 走廊。\n\n27 台电视同时显示你的工资条。\n\n基本工资、夜班津贴、绩效扣款、房租转账记录。\n\n最中间那台电视停在一行字上:\n\n『活人不能随便离职。』\n\n你忽然明白杭州常数为什么总能找下一个保安。\n\n不是因为鬼强。\n\n是因为活人的账单比鬼更准时。"
+        },
         {
           "if": {
             "flags": {
@@ -2736,6 +2907,23 @@
       "narrative_variants": [
         {
           "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "know.redgirl_wants_father": true
+                }
+              }
+            ]
+          },
+          "text": "04:17。B3 货梯井。\n\n钢门前多了一道很小的脚印。\n\n不是你的。\n\n林晓燕站在门边,抱着电视,没有催你开门。\n\n她问:「叔叔,如果里面不是爸爸呢?」\n\n你听见对讲机里 G-272 的水声,也听见湖滨方向有一个男人的袖口在滴水。\n\n这扇门后面不只是终局。\n\n是一个孩子把 28 年的问题问完的地方。"
+        },
+        {
+          "if": {
             "flags": {
               "arc.named_the_dead": true
             }
@@ -2813,6 +3001,28 @@
       "is_ending": true,
       "ending_type": "E_TRUE",
       "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              },
+              {
+                "flags": {
+                  "know.claimed_linmou": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              }
+            ]
+          },
+          "text": "林晓燕敲了三下门。\n\n不是你替她敲。\n\n她自己敲。\n\n第一下,27 楼走廊所有工牌都安静。\n\n第二下,湖滨第三把长椅上的米色风衣终于从水里站直。\n\n第三下,门里传来一个男人哑得不像人的声音:\n\n「晓燕。」\n\n她没有立刻扑过去。\n\n她回头看了你一眼。\n\n你点头。\n\n她这才抱着电视走进去。\n\n电视在门槛上碎成一地雪花。\n\n雪花没有飞起来。\n\n它们像普通灰尘一样落下。\n\n你在记录表最后一栏写:\n\n「本班未替任何人决定团圆。只负责把门打开。」"
+        },
         {
           "if": {
             "all_of": [
@@ -2932,6 +3142,14 @@
       "is_ending": true,
       "ending_type": "E_DATA",
       "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "arc.rent_pressure": true
+            }
+          },
+          "text": "你数据化以后,第一条进入频道的不是鬼叫。\n\n是房东的微信语音。\n\n『小赵,房租什么时候转?』\n\n你想回复,但你只是一台 14 寸黑白电视里的雪花。\n\n雪花抖了三下。\n\n对面显示:消息发送失败。\n\nG-272 在频道深处说:\n\n「我当年也有一条没回的短信。\n\n  数据化最狠的地方不是死不了。\n  是你知道活人还在等你回消息。」"
+        },
         {
           "if": {
             "flags": {

@@ -188,6 +188,14 @@
         {
           "if": {
             "flags": {
+              "know.redgirl_wants_father": true
+            }
+          },
+          "text": "你把手按上风衣袖子。\n\n这次湿布下面不是呼吸。\n\n是一个男人很轻地把手缩了一下。\n\n你刚听林晓燕说她要找爸爸。\n\n风衣里的空位像被这句话烫到,袖口慢慢渗出黑水。\n\n水在你掌心写出两个字:\n\n『晓燕』。\n\n字刚成形,就被湖风吹散。"
+        },
+        {
+          "if": {
+            "flags": {
               "know.linmou_corruption": true
             }
           },
