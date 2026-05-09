@@ -113,6 +113,7 @@ def analyze_script_depth(
     min_intent_nodes: int = 30,
     min_linmou_path: int = 5,
     min_g273_echo_nodes: int = 3,
+    max_thin_nodes: int = 31,
 ) -> ScriptDepthReport:
     """审计正式剧本是否达到 Pass 9 的最低厚度。"""
     nodes = node_map(payload)
@@ -126,6 +127,10 @@ def analyze_script_depth(
     if report.intent_nodes < min_intent_nodes:
         report.errors.append(
             f"关键演出意图节点不足: {report.intent_nodes}/{min_intent_nodes}"
+        )
+    if len(report.thin_nodes) > max_thin_nodes:
+        report.errors.append(
+            f"薄节点过多: {len(report.thin_nodes)}/{max_thin_nodes}"
         )
 
     _check_linmou(payload, nodes, report, min_linmou_path)

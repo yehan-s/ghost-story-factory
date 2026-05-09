@@ -33,6 +33,7 @@
 | 2026-05-10 | TUI 当前场景视图与过门反馈 Pass 15 | 修改后放行 | [报告](2026-05-10-tui-scene-view-pass15.md) |
 | 2026-05-10 | TUI 表达层边界拆分 Pass 16 | 修改后放行 | [报告](2026-05-10-tui-presenter-boundary-pass16.md) |
 | 2026-05-10 | 正式剧本病根深改 Pass 17 | 已落地,验证通过 | [报告](2026-05-10-script-root-cause-pass17.md) |
+| 2026-05-10 | 正式剧本薄节点压缩 Pass 18 | 已落地,验证通过 | [报告](2026-05-10-script-thin-nodes-pass18.md) |
 
 ---
 

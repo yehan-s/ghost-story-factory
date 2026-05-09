@@ -15,6 +15,7 @@ def test_official_hangzhou_tree_meets_pass9_depth_contract():
     assert report.ok
     assert report.node_count >= 160
     assert report.intent_nodes >= 30
+    assert len(report.thin_nodes) <= 31
     assert report.linmou_shortest_ending_path >= 5
     assert len(report.linmou_landmark_variant_nodes) == 4
     assert len(report.g273_linmou_echo_nodes) >= 3
@@ -130,6 +131,52 @@ def test_linear_thin_tree_fails_depth_contract():
     assert any("节点数不足" in error for error in report.errors)
     assert any("最短结局路径过短" in error for error in report.errors)
     assert any("地标缺少" in error for error in report.errors)
+
+
+def test_too_many_thin_nodes_fails_depth_contract():
+    """薄节点数量超标不能继续伪装成厚剧本。"""
+    tree = {
+        "start_node": "n_intro",
+        "characters": {
+            "linmou_1985": {"start_node": "n_l1985_entry"},
+        },
+        "nodes": {
+            "n_intro": {
+                "narrative": "短。",
+                "choices": [{"text": "去 1", "next": "n_thin_1"}],
+            },
+            "n_thin_1": {
+                "narrative": "短。",
+                "choices": [{"text": "去 2", "next": "n_thin_2"}],
+            },
+            "n_thin_2": {
+                "narrative": "短。",
+                "choices": [{"text": "结束", "next": "n_end"}],
+            },
+            "n_end": {"is_ending": True, "ending_type": "E_BAD", "narrative": "结束。"},
+            "n_l1985_entry": {
+                "narrative": "林某开始。",
+                "choices": [{"text": "跳湖", "next": "E_LINMOU_RELEASE"}],
+            },
+            "E_LINMOU_RELEASE": {
+                "is_ending": True,
+                "ending_type": "E_LINMOU_RELEASE",
+                "narrative": "结束。",
+            },
+        },
+    }
+
+    report = analyze_script_depth(
+        tree,
+        min_nodes=1,
+        min_intent_nodes=0,
+        min_linmou_path=1,
+        min_g273_echo_nodes=0,
+        max_thin_nodes=2,
+    )
+
+    assert not report.ok
+    assert any("薄节点过多: 4/2" in error for error in report.errors)
 
 
 def test_morning_lakeside_ending_menu_without_gates_fails():
