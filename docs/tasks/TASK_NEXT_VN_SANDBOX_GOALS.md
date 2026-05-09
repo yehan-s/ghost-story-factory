@@ -11,6 +11,7 @@
 - `docs/tasks/TASK_SCRIPT_BEHAVIOR_FEEDBACK_PASS6.md`
 - `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md`
 - `docs/tasks/TASK_SCRIPT_ROOT_CAUSE_PASS17.md`
+- `docs/tasks/TASK_SCRIPT_THIN_NODES_PASS18.md`
 - `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`
 - `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`
 - `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`
@@ -305,6 +306,23 @@
 - `audit_script_depth` 能报告单行路回地图与 G-273 旧履历泄漏;
 - fragments 合并后的正式树通过 `audit_all` 与统一测试。
 
+### M15: 正式剧本薄节点压缩
+
+状态: Done,见 `docs/tasks/TASK_SCRIPT_THIN_NODES_PASS18.md`。
+
+目标:
+
+- 将 `audit_script_depth` 的薄节点数从 50 压到 31;
+- 补强林某证据链和 G-273 前半夜行动节点;
+- 让关键选择不再像提纲跳转,而是有动作、感官、后果;
+- 新增薄节点上限审计,防止回退。
+
+验收:
+
+- 正式树薄节点数不高于 31;
+- `audit_script_depth` 能把薄节点超标作为错误;
+- fragments 合并后的正式树通过 `audit_all` 与统一测试。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -319,7 +337,8 @@
 8. M11 已完成,TUI 从“能玩”推进到“读起来不累”的第一层闭环;
 9. M12 已完成,主阅读区已从滚动日志改成当前场景视图;
 10. M13 已完成,拆出 TUI 表达层,处理反复长体验问题的病根;
-11. M14 已完成,正式剧本终局入口、单行路和 G-273 履历一致性进入审计红线。
+11. M14 已完成,正式剧本终局入口、单行路和 G-273 履历一致性进入审计红线;
+12. M15 已完成,薄节点从 50 降到 31,并进入审计红线。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
