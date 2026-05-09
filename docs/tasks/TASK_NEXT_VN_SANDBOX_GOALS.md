@@ -8,6 +8,7 @@
 - `docs/tasks/TASK_SCRIPT_SANDBOX_PASS3.md`
 - `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md`
 - `docs/tasks/TASK_SCRIPT_BEHAVIOR_NPC_PASS5.md`
+- `docs/tasks/TASK_SCRIPT_BEHAVIOR_FEEDBACK_PASS6.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -68,7 +69,7 @@
 
 ### M2: 互动反馈 - 玩家不是摄像机
 
-状态: Partially Done。Pass 4 已先完成入口、地图、晨湖和核心结局的赵某身份回收;Pass 5 已完成论坛 / 清洁工 / 评价室对曝光、注销、审判姿态的回收。见 `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md` 与 `docs/tasks/TASK_SCRIPT_BEHAVIOR_NPC_PASS5.md`。
+状态: Done。Pass 4 已完成入口、地图、晨湖和核心结局的赵某身份回收;Pass 5 已完成论坛 / 清洁工 / 评价室对曝光、注销、审判姿态的回收;Pass 6 已把行为画像前移到地图 hub、工具回访、B3 与晨湖。见 `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md`、`docs/tasks/TASK_SCRIPT_BEHAVIOR_NPC_PASS5.md` 与 `docs/tasks/TASK_SCRIPT_BEHAVIOR_FEEDBACK_PASS6.md`。
 
 目标:
 
