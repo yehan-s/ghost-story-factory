@@ -16,10 +16,12 @@ from pathlib import Path
 from typing import Any, Dict, Iterable, List, Optional, Set, Tuple
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
+for path in (ROOT_DIR, ROOT_DIR / "src"):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
 from tools.audit_playability import choices_of, choice_targets, load_payload, node_map
+from ghost_story_factory.v5.player import State, resolve_narrative
 
 
 LINMOU_LANDMARKS = {
@@ -28,6 +30,31 @@ LINMOU_LANDMARKS = {
     "n_l1985_archive_01",
     "n_l1985_pavilion_01",
 }
+
+G273_BIOGRAPHY_AUDIT_NODES = [
+    "n_npc_predecessor_voice",
+    "n_scene_lost_archive",
+    "n_lore_leifeng_worm",
+    "n_lore_songmuchang_inn",
+    "n_lore_zheda_clock_girl",
+    "n_lore_wulinmen_execution",
+    "n_lore_kongque_collapse",
+]
+
+G273_OLD_BIOGRAPHY_TERMS = [
+    "你媳妇",
+    "你儿子",
+    "你今年 51",
+    "做夜班保安第 14 年",
+    "你按了 14 年",
+    "你 1985 年从二轻物资",
+    "你父亲",
+    "你妈临死",
+    "2014 年自己扫",
+    "2010 年接",
+    "一个月工资是 38 块",
+    "1987 年坐 K6",
+]
 
 
 @dataclass
@@ -45,6 +72,9 @@ class ScriptDepthReport:
     linmou_landmark_variant_nodes: List[str] = field(default_factory=list)
     linmou_endings: List[str] = field(default_factory=list)
     g273_linmou_echo_nodes: List[str] = field(default_factory=list)
+    ending_gate_violations: List[str] = field(default_factory=list)
+    one_way_violations: List[str] = field(default_factory=list)
+    protagonist_biography_violations: List[str] = field(default_factory=list)
     errors: List[str] = field(default_factory=list)
     warnings: List[str] = field(default_factory=list)
 
@@ -67,6 +97,9 @@ class ScriptDepthReport:
             "linmou_landmark_variant_nodes": self.linmou_landmark_variant_nodes,
             "linmou_endings": self.linmou_endings,
             "g273_linmou_echo_nodes": self.g273_linmou_echo_nodes,
+            "ending_gate_violations": self.ending_gate_violations,
+            "one_way_violations": self.one_way_violations,
+            "protagonist_biography_violations": self.protagonist_biography_violations,
             "errors": self.errors,
             "warnings": self.warnings,
         }
@@ -97,6 +130,9 @@ def analyze_script_depth(
 
     _check_linmou(payload, nodes, report, min_linmou_path)
     _check_g273_echo(nodes, report, min_g273_echo_nodes)
+    _check_morning_lakeside_ending_gates(nodes, report)
+    _check_one_way_contract(nodes, report)
+    _check_g273_protagonist_biography(nodes, report)
 
     if len(report.thin_nodes) > 80:
         report.warnings.append(
@@ -203,6 +239,145 @@ def _check_g273_echo(
         )
 
 
+def _check_morning_lakeside_ending_gates(
+    nodes: Dict[str, Dict[str, Any]],
+    report: ScriptDepthReport,
+) -> None:
+    """检查晨湖终局入口不能退回菜单式自选。
+
+    这里锁的是剧本品味红线:高阶结局必须读取本轮行为账本。True / Truth /
+    Broadcast / Data / Hidden 不能只靠一行文案伪装成结算。
+    """
+    node = nodes.get("n_scene_morning_lakeside") or {}
+    if not node:
+        report.errors.append("缺少晨湖终局节点: n_scene_morning_lakeside")
+        return
+
+    requirements = {
+        "n_end_true": [
+            ("inv_has", "⺶ 符文"),
+            ("inv_has", "林副科长账本残页"),
+            ("flag", "arc.seven_returned"),
+            ("flag", "arc.named_the_dead"),
+            ("flag", "know.claimed_linmou"),
+            ("shifts_completed_min", None),
+        ],
+        "n_end_truth": [
+            ("puzzle_pieces_min", None),
+            ("flag", "arc.all_archives_photoed"),
+            ("flag", "arc.named_the_dead"),
+        ],
+        "n_end_broadcast": [
+            ("flag", "oneshot.posted_photo"),
+            ("flag", "oneshot.live_streaming"),
+            ("PR_min", None),
+        ],
+        "n_end_data": [
+            ("flag", "oneshot.chose_data"),
+            ("flag", "know.saw_8_zhao"),
+            ("inv_has", "工牌 G-273"),
+        ],
+        "n_end_hidden": [
+            ("flag", "arc.became_judge"),
+            ("flag", "arc.got_judge_seal"),
+        ],
+    }
+    low_route_targets = {
+        "n_end_bad_1987",
+        "n_end_bad_drown",
+    }
+
+    for idx, choice in enumerate(choices_of(node), start=1):
+        target = choice.get("next")
+        if target not in requirements and target not in low_route_targets:
+            continue
+        require = choice.get("require")
+        if not isinstance(require, dict) or not require:
+            report.ending_gate_violations.append(
+                f"n_scene_morning_lakeside choices[{idx}] -> {target} 缺少 require"
+            )
+            continue
+        if _require_contains(require, "ending_seen", None):
+            # 跨周目入口已经由通关历史锁住,不强套本轮基础结局门槛。
+            continue
+        for kind, value in requirements.get(target, []):
+            if not _require_contains(require, kind, value):
+                report.ending_gate_violations.append(
+                    f"n_scene_morning_lakeside choices[{idx}] -> {target} "
+                    f"缺少门槛 {kind}:{value or '*'}"
+                )
+
+    if report.ending_gate_violations:
+        report.errors.extend(report.ending_gate_violations)
+
+
+def _check_one_way_contract(
+    nodes: Dict[str, Dict[str, Any]],
+    report: ScriptDepthReport,
+) -> None:
+    """检查 `_one_way` 节点不要偷偷返回地图。"""
+    for node_id, node in nodes.items():
+        if not node.get("_one_way"):
+            continue
+        for idx, choice in enumerate(choices_of(node), start=1):
+            if choice.get("breaks_one_way"):
+                continue
+            targets = set(choice_targets(choice))
+            if "n_landmark_picker" in targets:
+                report.one_way_violations.append(
+                    f"{node_id} choices[{idx}] 在 _one_way 节点返回 n_landmark_picker"
+                )
+    if report.one_way_violations:
+        report.errors.extend(report.one_way_violations)
+
+
+def _check_g273_protagonist_biography(
+    nodes: Dict[str, Dict[str, Any]],
+    report: ScriptDepthReport,
+) -> None:
+    """检查 G-273 首访文本不能泄漏旧版中年老保安设定。"""
+    state = State({"character": "G-273"})
+    for node_id in G273_BIOGRAPHY_AUDIT_NODES:
+        node = nodes.get(node_id)
+        if not node:
+            continue
+        text = resolve_narrative(node, state)
+        leaks = [term for term in G273_OLD_BIOGRAPHY_TERMS if term in text]
+        if leaks:
+            report.protagonist_biography_violations.append(
+                f"{node_id} 混入旧主角履历: {', '.join(leaks)}"
+            )
+    if report.protagonist_biography_violations:
+        report.errors.extend(report.protagonist_biography_violations)
+
+
+def _require_contains(require: Dict[str, Any], kind: str, value: Optional[str]) -> bool:
+    """递归查找 require 是否包含指定门槛。"""
+    if not isinstance(require, dict):
+        return False
+    if kind == "flag" and value:
+        flags = require.get("flags") or {}
+        if isinstance(flags, dict) and bool(flags.get(value)):
+            return True
+    elif kind == "inv_has" and value:
+        if value in (require.get("inv_has") or []):
+            return True
+    elif kind in {"puzzle_pieces_min", "PR_min", "shifts_completed_min"}:
+        if kind in require:
+            return True
+    elif kind == "ending_seen":
+        if "ending_seen" in require:
+            return True
+
+    for key in ("all_of", "any_of"):
+        for sub in require.get(key) or []:
+            if _require_contains(sub, kind, value):
+                return True
+    if isinstance(require.get("not"), dict):
+        return _require_contains(require["not"], kind, value)
+    return False
+
+
 def _bfs_from_start(
     nodes: Dict[str, Dict[str, Any]],
     start: str,
@@ -267,6 +442,9 @@ def render_report(report: ScriptDepthReport) -> str:
         f"林某地标 variant: {len(report.linmou_landmark_variant_nodes)}/4",
         f"林某结局: {len(report.linmou_endings)}",
         f"G-273 林某回声节点: {len(report.g273_linmou_echo_nodes)}",
+        f"终局门槛违规: {len(report.ending_gate_violations)}",
+        f"单行路违规: {len(report.one_way_violations)}",
+        f"主角履历违规: {len(report.protagonist_biography_violations)}",
         "",
     ]
     if report.errors:
