@@ -35,6 +35,16 @@ DUMMY_SKELETON_JSON = """
           "tension_level": 3,
           "is_critical_branch_point": false,
           "leads_to_ending": false,
+          "location_id": "S1_security_room",
+          "npc_ids": ["g273"],
+          "event_slots": ["hub", "npc_meet"],
+          "asset_cues": {
+            "background": "security_room",
+            "sprite": "g273",
+            "sfx": ["radio_noise"]
+          },
+          "sandbox_role": "hub",
+          "revisit_hooks": ["ending_seen:E_TRUTH"],
           "branches": [
             {
               "branch_type": "NORMAL",
@@ -192,6 +202,13 @@ def test_skeleton_generator_with_llm_client(monkeypatch):
     assert skeleton.num_beats >= skeleton.config.min_main_depth
     assert skeleton.num_ending_beats >= skeleton.config.target_endings
     assert skeleton.metadata.get("city") == "测试城"
+    beat = skeleton.beats[0]
+    assert beat.location_id == "S1_security_room"
+    assert beat.npc_ids == ["g273"]
+    assert beat.event_slots == ["hub", "npc_meet"]
+    assert beat.asset_cues["background"] == "security_room"
+    assert beat.sandbox_role == "hub"
+    assert beat.revisit_hooks == ["ending_seen:E_TRUTH"]
 
 
 def test_skeleton_generator_smoke(monkeypatch):

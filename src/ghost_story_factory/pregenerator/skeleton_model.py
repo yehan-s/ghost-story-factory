@@ -15,6 +15,20 @@ BeatType = Literal["setup", "escalation", "twist", "climax", "aftermath"]
 BranchType = Literal["CRITICAL", "NORMAL", "MICRO"]
 
 
+def _string_list(value: Any) -> List[str]:
+    """把 LLM 可能返回的列表字段收敛成字符串列表。"""
+    if not isinstance(value, list):
+        return []
+    return [str(item).strip() for item in value if str(item).strip()]
+
+
+def _dict_value(value: Any) -> Dict[str, Any]:
+    """只接受对象字段,避免把错误类型带进内部模型。"""
+    if isinstance(value, dict):
+        return value
+    return {}
+
+
 @dataclass
 class BranchSpec:
     """分支规格（定义某个节拍下可用的分支类型与数量约束）"""
@@ -46,6 +60,14 @@ class BeatConfig:
     is_critical_branch_point: bool = False
     leads_to_ending: bool = False
     branches: List[BranchSpec] = field(default_factory=list)
+    # 以下字段只描述内容大纲到沙盒拓扑的最小定位信息。
+    # 它们全部可空,保证旧 PlotSkeleton JSON 仍可正常加载。
+    location_id: Optional[str] = None
+    npc_ids: List[str] = field(default_factory=list)
+    event_slots: List[str] = field(default_factory=list)
+    asset_cues: Dict[str, Any] = field(default_factory=dict)
+    sandbox_role: Optional[str] = None
+    revisit_hooks: List[str] = field(default_factory=list)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "BeatConfig":
@@ -63,6 +85,8 @@ class BeatConfig:
 
         branches_raw = data.get("branches") or []
         branches = [BranchSpec.from_dict(b) for b in branches_raw if isinstance(b, dict)]
+        location_id = str(data.get("location_id") or "").strip() or None
+        sandbox_role = str(data.get("sandbox_role") or "").strip() or None
 
         return cls(
             id=str(data.get("id") or ""),
@@ -72,6 +96,12 @@ class BeatConfig:
             is_critical_branch_point=bool(data.get("is_critical_branch_point", False)),
             leads_to_ending=bool(data.get("leads_to_ending", False)),
             branches=branches,
+            location_id=location_id,
+            npc_ids=_string_list(data.get("npc_ids")),
+            event_slots=_string_list(data.get("event_slots")),
+            asset_cues=_dict_value(data.get("asset_cues")),
+            sandbox_role=sandbox_role,
+            revisit_hooks=_string_list(data.get("revisit_hooks")),
         )
 
 
