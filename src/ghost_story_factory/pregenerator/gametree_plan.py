@@ -97,6 +97,8 @@ class GameTreePlan:
         这个导出只服务 M3 单元测试和后续生成器对齐,不是最终剧本。
         """
         picker_node_id = "n_map_picker"
+        ending_node_id = "n_end_sandbox_probe"
+        ending_type = "E_SANDBOX_PROBE"
         backgrounds = {"text_fallback": {"text_fallback": "文本演出兜底"}}
         nodes: Dict[str, Dict[str, Any]] = {
             self.start_node: {
@@ -112,10 +114,19 @@ class GameTreePlan:
                 "choices": [],
                 "presentation": {"background": "text_fallback"},
             },
+            ending_node_id: {
+                "node_id": ending_node_id,
+                "narrative": "沙盒探针结束。",
+                "choices": [],
+                "is_ending": True,
+                "ending_type": ending_type,
+                "presentation": {"background": "text_fallback"},
+            },
         }
 
         landmark_map: List[Dict[str, Any]] = []
         tool_by_location: Dict[str, List[ToolPlan]] = {}
+        location_by_id = {location.id: location for location in self.locations}
         for tool in self.tools:
             tool_by_location.setdefault(tool.location_id, []).append(tool)
 
@@ -129,9 +140,21 @@ class GameTreePlan:
                     "connections": list(location.connections),
                 }
             )
+            nodes[picker_node_id]["choices"].append(
+                {"text": f"前往 {location.label}", "next": node_id}
+            )
             choices: List[Dict[str, Any]] = []
             for tool in tool_by_location.get(location.id, []):
                 choices.append({"text": f"检查 {tool.id}", "next": f"n_{_slug(tool.id)}"})
+            for connected_id in location.connections:
+                connected = location_by_id.get(connected_id)
+                if connected:
+                    choices.append(
+                        {
+                            "text": f"前往 {connected.label}",
+                            "next": f"n_loc_{_slug(connected.id)}",
+                        }
+                    )
             if not choices:
                 choices.append({"text": "回到地图", "next": picker_node_id})
             presentation = self.presentation_defaults.get(
@@ -159,10 +182,13 @@ class GameTreePlan:
                         "text": "继续检查",
                         "next": node_id,
                         "effects": {"stay": True},
-                    }
+                    },
+                    {"text": "回到地图", "next": picker_node_id},
                 ],
                 "presentation": presentation,
             }
+            if index == len(self.tools) - 1:
+                node["choices"].append({"text": "结束调查", "next": ending_node_id})
             if index == 0:
                 node["narrative_variants"] = [
                     {
@@ -186,13 +212,22 @@ class GameTreePlan:
                 }
                 for tool in self.tools
             },
-            "endings": {},
+            "endings": {
+                ending_type: "沙盒探针结局",
+            },
             "assets": {
                 "backgrounds": backgrounds,
             },
             "reaction_contracts": {
                 "deductions": {
-                    "sandbox_probe": {"label": "沙盒探针"}
+                    "sandbox_probe": {
+                        "label": "沙盒探针",
+                        "resolver_node": ending_node_id,
+                        "consumer_nodes": [
+                            f"n_{_slug(self.tools[0].id)}"
+                        ] if self.tools else [],
+                        "trigger_type": "cross_run",
+                    }
                 },
                 "foreshadows": {},
                 "themes": {},

@@ -23,6 +23,7 @@
 | 2026-05-09 | 项目级同步事务与团队评审留痕 | 修改后放行 | [报告](2026-05-09-project-sync-workflow.md) |
 | 2026-05-09 | VN 演出意图契约 Pass 7 | 修改后放行 | [报告](2026-05-09-vn-presentation-contract-pass7.md) |
 | 2026-05-09 | Pass 8 NPC 关系账本与终局前回咬 | 修改后放行 | [报告](2026-05-09-npc-accountability-pass8.md) |
+| 2026-05-09 | v4 GameTreePlan 沙盒骨架审计接入 | 修改后放行 | [报告](2026-05-09-v4-sandbox-audit.md) |
 
 ---
 

@@ -118,6 +118,7 @@ def main():
             [
                 "tests/test_view_tree_progress.py",
                 "tests/test_audit_playability.py",
+                "tests/test_audit_sandbox.py",
                 "tests/test_npc_accountability_pass8.py",
             ],
         ),
