@@ -4,7 +4,7 @@
 
 **Goal:** 把「杭州夜班保安」v7 的状态空间从 234 个 flags + 8 个互相重叠的 State 字段瘦下来,建立审计基线和命名契约,为后续沙盒化工作打干净的地基。
 
-**Architecture:** 三层产出——(1) 共用模拟器 `tools/_state_sim.py` 解决 path_explorer 与 audit 工具的逻辑漂移;(2) 两个审计脚本 `audit_state.py` 与 `audit_variants.py` 输出引用矩阵和死字段清单;(3) 数据层清扫 `tree.json` 与 `player.py`,删死字段、合并重叠字段、把"知识类"flag 收编到 `know.*` 命名空间。零引擎扩展(除 `meta_flags` 删除),所有变更必须通过 path_explorer 回归(8 主结局 + 41 体验仍可达)。
+**Architecture:** 三层产出——(1) 共用模拟器 `tools/_state_sim.py` 解决 path_explorer 与 audit 工具的逻辑漂移;(2) 两个审计脚本 `audit_state.py` 与 `audit_variants.py` 输出引用矩阵和死字段清单;(3) 数据层清扫 `tree.json` 与 `player.py`,删死字段、合并重叠字段、把"知识类"flag 收编到 `know.*` 命名空间。除删除历史 `meta_flags` 支持外不扩展引擎能力;所有变更必须通过 path_explorer 回归(8 主结局 + 41 体验仍可达)。
 
 **Tech Stack:** Python 3.12 标准库(json/dataclasses/typing),pytest。无新依赖。
 

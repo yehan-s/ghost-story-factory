@@ -23,7 +23,7 @@ v6 曾被诟病:**"3 条平行路线 95% 不交叉,只在 S6 才汇合,选择只
 
 v7 把这个问题彻底重做了:
 
-| | v5(50 节点线性) | v6(94 节点 3 平行路线) | v7(109 节点 真迷宫图) |
+| | v5(50 节点线性) | v6(94 节点 3 平行路线) | v7(145 节点 真迷宫图) |
 |---|---|---|---|
 | 拓扑 | 线性 | 3 路线 + S6 汇合 | **7 地标 × 共享 NPC/场景** |
 | 路线 | 无 | A/B/C 锁定 | **不锁定,状态自然分化** |
@@ -32,7 +32,7 @@ v7 把这个问题彻底重做了:
 | 结局 | 5 | 8 | **8 主结局 + 9 mini = 17 种 narrative** |
 | narrative_variants | 无 | s6_hub 等 | **几乎所有关键节点都有** |
 | 环结构 | 无 | 少 | **每地标 ≥5 个真环** |
-| 节点 | 50 | 94 | **109(每地标迷宫 16 节点)** |
+| 节点 | 50 | 94 | **145(每地标迷宫 + 传闻/林某线扩展)** |
 | 字数 | ~1.8 万 | ~3.5 万 | **~5.6 万(173 KB)** |
 
 ---
@@ -121,7 +121,7 @@ S1 内部节点的环回:
 新 session 由 team-lead 一人补完 S2-S6,然后整合。
 
 实际产出:
-- ✅ 109 节点 100% 可达(path_explorer 静态分析)
+- ✅ 145 节点可玩闭环(path_explorer / audit_playability 静态分析)
 - ✅ 8 主结局全部可达
 - ✅ 9 mini-ending 全部可达
 - ✅ 0 悬空引用,0 孤儿节点
@@ -136,7 +136,7 @@ S1 内部节点的环回:
 - `play.py` / `play_tui.py` — CLI / TUI 入口(默认进主菜单)
 - `src/ghost_story_factory/v5/player.py` — 状态 + 渲染逻辑
 - `src/ghost_story_factory/v7/` — TUI player + 主菜单 + 存档系统 + 伏笔
-- `stories/hangzhou_yebanbaoan/tree.json` — **112 节点真迷宫图**
+- `stories/hangzhou_yebanbaoan/tree.json` — **145 节点真迷宫图**
 - `stories/hangzhou_yebanbaoan/_fragment_v7_*.json` — 7 个写作 fragment(共享 + 6 地标)
 - `tools/merge_fragments.py` — fragment 合并工具
 - `tools/path_explorer.py` — 全路径分析工具

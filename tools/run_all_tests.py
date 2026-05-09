@@ -128,6 +128,14 @@ def main():
                 "tests/test_state_manager_scope.py",
             ],
         ),
+        (
+            "v7 运行时存档 / 菜单 / 档案视图回归测试",
+            [
+                "tests/test_save_manager_query.py",
+                "tests/test_menu_registry.py",
+                "tests/test_archive_view.py",
+            ],
+        ),
     ]
     for test_name, args in pytest_suites:
         results.append(run_pytest_suite(test_name, args))

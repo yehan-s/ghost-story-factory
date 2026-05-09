@@ -72,7 +72,7 @@ Accepted
 - **拒绝原因**:沙盒不是 feature,是当前游戏拓扑本身。"可选"= 默认还是死剧本。
 
 ### C. 新写一个"沙盒 SDK"层
-- **拒绝原语**:已经有了 — `map_view.py` / `archive_view.py` / `_meets_clause` / `picker_choices` 就是 SDK。问题是文档没把它叫"SDK"。
+- **拒绝原因**:已经有了 — `map_view.py` / `archive_view.py` / `_meets_clause` / `picker_choices` 就是 SDK。问题是文档没把它叫"SDK"。
 
 ## Consequences
 

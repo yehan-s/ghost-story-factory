@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from typing import List
 
+from ghost_story_factory.v7._utils import visible_width
+
 
 # 主标题:GHOST STORIES (用 ANSI Shadow 风格手写,7 行高)
 # 字宽控制在 60 字符内,适配标准终端
@@ -60,23 +62,11 @@ def banner_pieces(width: int = 60) -> dict:
 
 def _center(text: str, width: int) -> str:
     """中文 + ASCII 混合居中(中文按 2 宽度算)。"""
-    visible = _visible_width(text)
+    visible = visible_width(text)
     if visible >= width:
         return text
     pad = (width - visible) // 2
     return " " * pad + text
-
-
-def _visible_width(text: str) -> int:
-    """估算可见宽度(中文 2,ASCII 1,box drawing 块字符 1)。"""
-    w = 0
-    for ch in text:
-        # 中文 / 全角字符 → 2
-        if "\u4e00" <= ch <= "\u9fff" or "\uff00" <= ch <= "\uffef":
-            w += 2
-        else:
-            w += 1
-    return w
 
 
 # Rich-friendly markup 版本(给 textual 用)

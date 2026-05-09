@@ -3171,6 +3171,9 @@
         {
           "text": "已经走过这里,直接离开,继续下一个地标。",
           "next": "n_landmark_picker",
+          "effects": {
+            "landmark_skipped": "S2"
+          },
           "require": {
             "any_of": [
               {

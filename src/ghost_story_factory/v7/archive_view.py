@@ -20,9 +20,11 @@ def _format_shard_progress(
     """返回 'N/M' 或空串(若该 foreshadow 没有 shards)。"""
     if not save_manager:
         return ""
+    if not hasattr(save_manager, "shard_progress"):
+        return ""
     try:
         c, t = save_manager.shard_progress(tree, story_id, slot_id)
-    except Exception:
+    except (KeyError, TypeError, ValueError):
         return ""
     if t == 0:
         return ""
@@ -67,7 +69,7 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
 
     if themes:
         print()
-        print(bold(yellow(f"  ── 主题(母题集合) ──")))
+        print(bold(yellow("  ── 主题(母题集合) ──")))
         for theme_id, meta in themes.items():
             name = meta.get("name", theme_id)
             icon = meta.get("icon", "·")
@@ -176,7 +178,7 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
     # === 时间年表 ===
     if timeline:
         print()
-        print(bold(yellow(f"  ── 时间年表 ──")))
+        print(bold(yellow("  ── 时间年表 ──")))
         for entry in timeline:
             year = entry.get("year", "????")
             date = entry.get("date", "")
@@ -224,7 +226,7 @@ def render_archive_cli(tree, save_manager, story_id: str) -> None:
             for ref in (entry.get("related_npcs") or []):
                 npc_to_fs.setdefault(ref, [])
         print()
-        print(bold(green(f"  ── 人物志 ──")))
+        print(bold(green("  ── 人物志 ──")))
         for npc_id, info in npcs.items():
             label = info.get("label", npc_id)
             death_year = info.get("death_year")
@@ -252,6 +254,8 @@ def render_archive_lines_rich(tree, save_manager, story_id: str) -> List[str]:
     deductions = (tree or {}).get("deductions") or {}
     timeline = (tree or {}).get("timeline") or []
     npcs = (tree or {}).get("npcs") or {}
+    themes = (tree or {}).get("themes") or {}
+    achievements = (tree or {}).get("achievements") or {}
 
     seen_set = set(save_manager.data.get("foreshadows_seen", {}).get(story_id, []))
     resolved_set = set(
@@ -260,14 +264,68 @@ def render_archive_lines_rich(tree, save_manager, story_id: str) -> List[str]:
     deductions_resolved = set(
         save_manager.data.get("deductions_resolved", {}).get(story_id, [])
     )
+    achievements_unlocked = set(save_manager.data.get("achievements_unlocked") or [])
+
+    reaction_contracts = (tree or {}).get("reaction_contracts") or {}
+    ded_contracts = reaction_contracts.get("deductions") or {}
+    fs_contracts = reaction_contracts.get("foreshadows") or {}
+    theme_contracts = reaction_contracts.get("themes") or {}
+
+    rich_color_map = {
+        "magenta": "magenta",
+        "red": "red",
+        "cyan": "cyan",
+        "yellow": "yellow",
+        "blue": "blue",
+        "green": "green",
+    }
 
     out: List[str] = []
+
+    # 主题宏观进度。TUI 必须和 CLI 同步,否则玩家按 s 看到的是半份档案。
+    if themes:
+        out.append("")
+        out.append("[bold yellow]── 主题(母题集合) ──[/]")
+        for theme_id, meta in themes.items():
+            name = meta.get("name", theme_id)
+            icon = meta.get("icon", "·")
+            color = rich_color_map.get(meta.get("color", ""), "white")
+            manifests = meta.get("manifestations") or []
+            resolved_count = sum(1 for m in manifests if m in resolved_set)
+            seen_count = sum(1 for m in manifests if m in seen_set)
+            total = len(manifests)
+            if seen_count == 0:
+                out.append(f"  [dim]{icon} {name}  (0/{total})[/]")
+                continue
+            if resolved_count == total and total > 0:
+                out.append(
+                    f"  [{color}]{icon}[/] [bold {color}]{name}[/]  "
+                    f"[{color}](✦ 通透 {resolved_count}/{total})[/]"
+                )
+            else:
+                out.append(
+                    f"  [{color}]{icon}[/] [bold]{name}[/]  "
+                    f"[dim]({seen_count}/{total} 已发现 · "
+                    f"{resolved_count}/{total} 已解)[/]"
+                )
+            desc = meta.get("description", "")
+            if desc:
+                out.append(f"    [dim]{desc}[/]")
+            if resolved_count == total and total > 0:
+                consumers = (
+                    (theme_contracts.get(theme_id) or {}).get("consumer_nodes") or []
+                )
+                if consumers:
+                    out.append(f"    [dim]↳ 影响节点: {', '.join(consumers)}[/]")
 
     # 推论
     if deductions:
         revealed = [d for d in deductions if d in deductions_resolved]
         out.append("")
-        out.append(f"[bold magenta]── 推论({len(revealed)}/{len(deductions)})──[/]")
+        out.append(
+            f"[bold magenta]── 推论({len(revealed)}/{len(deductions)})── "
+            f"两条以上伏笔解开后,会自动合并[/]"
+        )
         for ded_id, meta in deductions.items():
             title = meta.get("title", ded_id)
             if ded_id in deductions_resolved:
@@ -275,6 +333,9 @@ def render_archive_lines_rich(tree, save_manager, story_id: str) -> List[str]:
                 summary = meta.get("summary", "")
                 if summary:
                     out.append(f"    [dim]{summary}[/]")
+                consumers = (ded_contracts.get(ded_id) or {}).get("consumer_nodes") or []
+                if consumers:
+                    out.append(f"    [dim]↳ 影响节点: {', '.join(consumers)}[/]")
             else:
                 req = list(meta.get("requires_resolved") or [])
                 got = sum(1 for r in req if r in resolved_set)
@@ -307,6 +368,13 @@ def render_archive_lines_rich(tree, save_manager, story_id: str) -> List[str]:
                 summary = meta.get("summary_resolved", "")
                 if summary:
                     out.append(f"    [dim]{summary}[/]")
+                consumers = (fs_contracts.get(slot_id) or {}).get("consumer_nodes") or []
+                if consumers:
+                    out.append(f"    [dim]↳ 影响节点: {', '.join(consumers)}[/]")
+                for shard in meta.get("shards") or []:
+                    sh_label = shard.get("label", shard.get("id", ""))
+                    sh_text = shard.get("text", "")
+                    out.append(f"    [green]·[/] [dim]{sh_label}: {sh_text}[/]")
             elif slot_id in seen_set:
                 out.append(
                     f"  [cyan]?[/] [dim]{year_tag}[/] [bold]{title}[/] "
@@ -315,6 +383,18 @@ def render_archive_lines_rich(tree, save_manager, story_id: str) -> List[str]:
                 summary = meta.get("summary_locked", "")
                 if summary:
                     out.append(f"    [dim]{summary}[/]")
+                if hasattr(save_manager, "get_shards_collected"):
+                    got_shards = save_manager.get_shards_collected(story_id, slot_id)
+                else:
+                    got_shards = []
+                shards_meta = {
+                    s.get("id"): s for s in (meta.get("shards") or []) if s.get("id")
+                }
+                for sid in got_shards:
+                    shard = shards_meta.get(sid) or {}
+                    sh_label = shard.get("label", sid)
+                    sh_text = shard.get("text", "")
+                    out.append(f"    [cyan]·[/] [dim]{sh_label}: {sh_text}[/]")
             else:
                 out.append("  [dim]??? ???[/]")
 
@@ -335,5 +415,56 @@ def render_archive_lines_rich(tree, save_manager, story_id: str) -> List[str]:
                 out.append(f"  [yellow]·[/] [bold]{date_str}[/]  {event}  [dim]{tag_str}[/]")
             else:
                 out.append(f"  [dim]·  {year}  ???[/]")
+
+    # 成就
+    if achievements:
+        out.append("")
+        out.append(
+            f"[bold yellow]── 成就({len(achievements_unlocked)}/"
+            f"{len(achievements)})──[/]"
+        )
+        for ach_id, meta in achievements.items():
+            icon = meta.get("icon", "🏆")
+            name = meta.get("name", ach_id)
+            desc = meta.get("description", "")
+            if ach_id in achievements_unlocked:
+                out.append(f"  [yellow]{icon}[/] [bold]{name}[/]")
+                if desc:
+                    out.append(f"    [dim]{desc}[/]")
+            else:
+                out.append(f"  [dim]{icon} {name}[/]")
+                if desc:
+                    out.append(f"    [dim]{desc}[/]")
+
+    # NPC 人物志
+    if npcs:
+        npc_to_fs: Dict[str, List[str]] = {}
+        for slot, meta in foreshadows.items():
+            for ref in (meta.get("related_npcs") or []):
+                npc_to_fs.setdefault(ref, []).append(slot)
+        for entry in timeline:
+            for ref in (entry.get("related_npcs") or []):
+                npc_to_fs.setdefault(ref, [])
+
+        out.append("")
+        out.append("[bold green]── 人物志 ──[/]")
+        for npc_id, info in npcs.items():
+            label = info.get("label", npc_id)
+            death_year = info.get("death_year")
+            real_name = info.get("real_name")
+            related_fs = info.get("related_foreshadows") or npc_to_fs.get(npc_id, [])
+            relations = info.get("relations") or {}
+            known = bool(related_fs and any(r in seen_set for r in related_fs))
+            if known:
+                year_str = f"({death_year}†)" if death_year else ""
+                show_real_name = real_name and any(r in resolved_set for r in related_fs)
+                rn = f" · 真名: {real_name}" if show_real_name else ""
+                out.append(f"  [green]●[/] [bold]{label}[/] [dim]{year_str}{rn}[/]")
+                if relations and any(r in resolved_set for r in related_fs):
+                    for rel_npc, rel_type in relations.items():
+                        rel_label = (npcs.get(rel_npc) or {}).get("label", rel_npc)
+                        out.append(f"      [dim]→ {rel_type}: {rel_label}[/]")
+            else:
+                out.append(f"  [dim]○[/] [bold]{label}[/]")
 
     return out

@@ -8,7 +8,7 @@
 ## 🔴 共同基线:这是沙盒(ADR-010)
 
 **所有 7 个角色在审查前必须先确认**:任务是否符合**沙盒拓扑契约**(`docs/architecture/ADR-010-sandbox-topology-contract.md`)。
-任何"死剧本反模式"在 7 人中任意一票一票否决,Chief Editor 在汇总时必须列入"决议"节。
+任何"死剧本反模式"在 7 人中有一人提出否决,Chief Editor 在汇总时必须列入"决议"节。
 
 **沙盒原语清单**(出现在任何角色判定相关度时,自动深度参与):
 - picker hub(`_is_map_picker: true`)+ `landmark_map.connections`(网,非辐射)

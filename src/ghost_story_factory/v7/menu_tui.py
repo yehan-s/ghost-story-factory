@@ -130,7 +130,9 @@ class IntroScreen(Screen):
     def on_mount(self) -> None:
         # 启动屏不做入场动画 — 一次性静态显示,避免开屏墨迹
         pieces = banner_pieces(60)
-        banner = "\n".join(f"[bold red]{l}[/]" for l in pieces["ascii_lines"])
+        banner = "\n".join(
+            f"[bold red]{ascii_line}[/]" for ascii_line in pieces["ascii_lines"]
+        )
         self.query_one("#intro-banner", Static).update(banner)
         self.query_one("#intro-subtitle", Static).update(
             f"[bold yellow]{pieces['subtitle']}[/]"
@@ -215,7 +217,7 @@ class StoryScreen(Screen):
             story_save_id = str(s.tree.get("story_id") or s.id)
             cleared = sm.data.get("stories_completed", {}).get(story_save_id, [])
             mark = f" [green]✓ {len(cleared)} 结局[/]" if cleared else ""
-            seen, resolved, total = sm.foreshadow_progress(s.tree, story_save_id)
+            _seen, resolved, total = sm.foreshadow_progress(s.tree, story_save_id)
             fs_mark = f"  [cyan]伏笔 {resolved}/{total}[/]" if total else ""
             label = f"{i+1}. [bold]{s.label}[/]{mark}{fs_mark}\n   [dim]{s.subtitle}[/]"
             opts.add_option(Option(label, id=f"story:{i}"))

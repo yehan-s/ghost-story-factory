@@ -19,7 +19,7 @@ import re
 import sys
 import time
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 from ghost_story_factory.runtime.contracts import (
     EffectApplier,
@@ -308,8 +308,6 @@ def _highlight_narrative(line: str) -> str:
       - 时间(20:27)     → 黄
       - SID(S1-S7)       → magenta
     """
-    import re
-
     def _yellow_bold(m): return bold(yellow(m.group(1)))
     def _cyan(m): return cyan(m.group(0))
     def _dim_red(m): return dim(red(m.group(0)))
@@ -362,8 +360,10 @@ def render_narrative(text: str) -> None:
     print()
 
 
-def render_choices(visible: List[Dict[str, Any]],
-                   locked: List[tuple] = None) -> None:
+def render_choices(
+    visible: List[Dict[str, Any]],
+    locked: Optional[List[Tuple[Dict[str, Any], str]]] = None,
+) -> None:
     """渲染选项。
     - visible: 可点击,有编号 1..N
     - locked: 显示但禁用,带 🔒 + 缺失道具提示,无编号

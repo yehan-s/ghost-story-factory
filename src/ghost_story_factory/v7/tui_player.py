@@ -649,7 +649,7 @@ class GhostStoryApp(App):
             log.write("[dim]  屏幕亮了 — 屏保是你和你媳妇 2023 年的合照。[/]")
             log.write("[dim]  你点开『杭州地铁夜班巡逻图』 — 队长发的内部 app。[/]")
             log.write("[dim]  地图加载,信号是『 4G · 弱』。[/]")
-            log.write("[dim]  地图只画了你[bold]已经知道[/dim] [dim]的几个点。其他位置,只有问号。[/]")
+            log.write("[dim]  地图只画了你[/][bold]已经知道[/][dim]的几个点。其他位置,只有问号。[/]")
             log.write("")
         story_id = str(self._tree.get("story_id") or self._tree_path.stem)
         self.push_screen(MapScreen(

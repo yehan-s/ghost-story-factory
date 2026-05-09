@@ -164,7 +164,7 @@ def list_stories(city: City) -> List[Story]:
     if not city.playable or not city.dir.exists():
         return []
     out: List[Story] = []
-    for fn, (rank, fb_label, fb_subtitle) in sorted(
+    for fn, (_rank, fb_label, fb_subtitle) in sorted(
         _TREE_FALLBACK.items(), key=lambda kv: kv[1][0]
     ):
         path = city.dir / fn
@@ -194,8 +194,8 @@ def list_characters(story: Story, save_manager: Optional[SaveManager] = None) ->
 
     如果 tree.json 没定义 characters,fallback 到 CHARACTER_ROSTER 全集。
     若有 characters,只列出 tree.json 中定义的(交集)。
+    save_manager 为 None 时只按 roster 的 default_unlocked 展示,不触碰真实存档。
     """
-    sm = save_manager or SaveManager()
     tree_chars = story.tree.get("characters") or {}
     if tree_chars:
         # tree.json 中定义的角色 — 与 roster 交叉
@@ -205,7 +205,9 @@ def list_characters(story: Story, save_manager: Optional[SaveManager] = None) ->
             label = info.get("label", tree_chars[cid].get("label", cid))
             year = int(info.get("year", 0) or 0)
             subtitle = info.get("subtitle", tree_chars[cid].get("subtitle", ""))
-            unlocked = sm.is_unlocked(cid) or info.get("default_unlocked", False)
+            unlocked = bool(info.get("default_unlocked", False))
+            if save_manager is not None:
+                unlocked = save_manager.is_unlocked(cid) or unlocked
             hint = info.get("unlock_hint", "")
             out.append(CharacterEntry(
                 id=cid, label=label, year=year, subtitle=subtitle,
@@ -216,7 +218,7 @@ def list_characters(story: Story, save_manager: Optional[SaveManager] = None) ->
         for c in CHARACTER_ROSTER:
             if c["id"] in defined:
                 continue
-            unlocked = sm.is_unlocked(c["id"])
+            unlocked = save_manager.is_unlocked(c["id"]) if save_manager else False
             hint = c.get("unlock_hint", "")
             if unlocked:
                 hint = "已解锁,但本剧本暂无该角色线 — 待开发"
@@ -232,7 +234,9 @@ def list_characters(story: Story, save_manager: Optional[SaveManager] = None) ->
     # 无 characters → roster 全集
     out = []
     for c in CHARACTER_ROSTER:
-        unlocked = sm.is_unlocked(c["id"])
+        unlocked = bool(c.get("default_unlocked", False))
+        if save_manager is not None:
+            unlocked = save_manager.is_unlocked(c["id"]) or unlocked
         out.append(CharacterEntry(
             id=c["id"],
             label=c["label"],

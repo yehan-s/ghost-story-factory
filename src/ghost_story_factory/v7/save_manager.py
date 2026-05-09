@@ -23,6 +23,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 from datetime import datetime
 from pathlib import Path
@@ -160,14 +161,7 @@ class SaveManager:
 
     def __init__(self, path: Optional[Path] = None):
         self.path: Path = path if path is not None else _save_path()
-        self.data: Dict[str, Any] = dict(DEFAULT_SAVE)
-        self.data["unlocked_characters"] = list(DEFAULT_SAVE["unlocked_characters"])
-        self.data["endings_seen"] = {}
-        self.data["foreshadows_seen"] = {}
-        self.data["foreshadows_resolved"] = {}
-        self.data["foreshadow_shards"] = {}
-        self.data["deductions_resolved"] = {}
-        self.data["achievements_unlocked"] = []
+        self.data: Dict[str, Any] = copy.deepcopy(DEFAULT_SAVE)
         self.load()
 
     # --- IO ---
@@ -319,10 +313,7 @@ class SaveManager:
 
     def reset(self) -> None:
         """清空存档(开发/测试用)。"""
-        self.data = dict(DEFAULT_SAVE)
-        self.data["unlocked_characters"] = list(DEFAULT_SAVE["unlocked_characters"])
-        self.data["foreshadows_seen"] = {}
-        self.data["foreshadows_resolved"] = {}
+        self.data = copy.deepcopy(DEFAULT_SAVE)
         self.save()
 
     # --- 伏笔 API(v2) ---

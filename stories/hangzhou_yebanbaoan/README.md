@@ -1,7 +1,7 @@
 # 断桥残雪
 
 > 杭州·湖滨国际名品街·夜班保安 G-273 的一夜七班。
-> 112 节点真迷宫,7 个地标 + 13 共享 NPC + 7 共享场景,8 主结局 + 9 mini 结局,共 17 种 ending narrative。
+> 145 节点真迷宫,7 个地标 + 传闻索引 + 林某视角,13 共享 NPC + 7 共享场景,8 主结局 + 13 mini/支线结局,共 21 种 ending narrative。
 
 ## 玩法
 
@@ -90,7 +90,7 @@ lake_underwater, 27th_floor_corridor, b3_corridor, evaluator_room, lost_archive,
 
 ## 内容资产
 
-- `tree.json` (~240 KB) — 112 节点真迷宫图,Claude Opus 4.7 + team `ghost-v7-maze` 协作手写
+- `tree.json` (~500 KB) — 145 节点真迷宫图,Claude Opus 4.7 + team `ghost-v7-maze` 协作手写
 - `_fragment_v7_*.json` — 7 个写作 fragment(7 地标 + 共享),合并源文件
 
 合并 + 验证工具:

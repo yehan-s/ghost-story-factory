@@ -9,7 +9,7 @@ import json
 import tempfile
 from pathlib import Path
 
-from ghost_story_factory.v7.save_manager import SaveManager
+from ghost_story_factory.v7.save_manager import DEFAULT_SAVE, SaveManager
 
 
 def _save_with(data):
@@ -110,3 +110,31 @@ def test_check_achievements_counts_flattened_endings_seen():
     newly = sm.check_achievements(tree, state=None, story_id="杭州_v7")
 
     assert newly == ["A_TWO_ENDINGS"]
+
+
+def test_default_save_nested_data_is_not_shared_between_instances():
+    """默认存档里的嵌套列表/字典不能跨实例串味。"""
+    p1 = Path(tempfile.mkdtemp()) / "save1.json"
+    p2 = Path(tempfile.mkdtemp()) / "save2.json"
+    sm1 = SaveManager(p1)
+    sm2 = SaveManager(p2)
+
+    sm1.data["unlocked_characters"].append("linmou_1985")
+    sm1.data["foreshadows_seen"].setdefault("杭州_v7", []).append("F-001")
+
+    assert sm2.data["unlocked_characters"] == DEFAULT_SAVE["unlocked_characters"]
+    assert sm2.data["foreshadows_seen"] == {}
+
+
+def test_reset_restores_all_default_nested_fields():
+    """reset 应完整回到默认结构,不能只清一半字段。"""
+    p = Path(tempfile.mkdtemp()) / "save.json"
+    sm = SaveManager(p)
+    sm.data["endings_seen"] = {"杭州_v7": ["E_TRUTH"]}
+    sm.data["foreshadow_shards"] = {"杭州_v7": {"F-001": ["s1"]}}
+    sm.data["deductions_resolved"] = {"杭州_v7": ["D-001"]}
+    sm.data["achievements_unlocked"] = ["A-001"]
+
+    sm.reset()
+
+    assert sm.data == DEFAULT_SAVE

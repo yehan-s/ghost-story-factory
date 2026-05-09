@@ -39,9 +39,9 @@ variants **数量不稀疏**(平均 2-6 / 节点),问题在**触发条件交叉�
 ```json
 {
   "narrative_variants": [
-    {"if": {"visit_count": {"min": 3}}, "text": "<vibe D: 都市传说底牌>"},
-    {"if": {"visit_count": {"min": 2}}, "text": "<vibe C: 灵异密度>"},
-    {"if": {"visit_count": {"min": 1}}, "text": "<vibe B: 物理被记住>"},
+    {"if": {"visit_count_min": {"<node_id>": 3}}, "text": "<vibe D: 都市传说底牌>"},
+    {"if": {"visit_count_min": {"<node_id>": 2}}, "text": "<vibe C: 灵异密度>"},
+    {"if": {"visit_count_min": {"<node_id>": 1}}, "text": "<vibe B: 物理被记住>"},
     {"text": "<vibe A: 心理新鲜 / default>"}
   ]
 }
@@ -219,13 +219,13 @@ Pass 3 是**纯数据改动**(JSON variants 写作),引擎逻辑不变。已有 
     {"if": {"flags": {"oneshot.s1_jumped_lake": true}},
      "text": "你跳进西湖。\n\n你以为水会淹没你。水没有。\n\n你在湖底,可以呼吸。\n\n8 口 1987 年冷冻舱浮在水里,像 8 个透明灯笼。每口舱里,躺着一个你。"},
 
-    {"if": {"visit_count": {"min": 3}},
+    {"if": {"visit_count_min": {"n_scene_lake_underwater": 3}},
      "text": "<vibe D 都市传说>第四次了。\n\n8 口冷冻舱里的'你',现在你看清了——他们身上都穿着二轻物资财务科 1985 款工装。\n\n胸口工号 G-273 的铜牌,锈成铜绿。\n\n你忽然想起师父说过:'西湖底下,锁着一个还没下班的人'。"},
 
-    {"if": {"visit_count": {"min": 2}},
+    {"if": {"visit_count_min": {"n_scene_lake_underwater": 2}},
      "text": "<vibe C 灵异密度>第三次到湖底了。\n\n这次水底有声音——是老式半导体收音机的滋滋声,夹杂着新闻联播片头曲,但被水放慢了 30%。\n\n8 口舱里的'你'同时把头转过来,看你。\n\n他们的眼睛里都没有眼白。"},
 
-    {"if": {"visit_count": {"min": 1}},
+    {"if": {"visit_count_min": {"n_scene_lake_underwater": 1}},
      "text": "<vibe B 物理被记住>你又一次站在湖底。\n\n第二次比第一次更冷。\n\n你注意到 8 口舱排列的位置变了——上次是圆形,这次是北斗七星加一颗。\n\n第八颗,正对你。"},
 
     {"text": "<vibe A 心理新鲜>你站在湖底。\n\n这是不可能的——但你站着。\n\n水从你周围 20 厘米处停下,像有看不见的玻璃罩着。\n\n8 口透明的舱子在水里慢慢飘,你不敢看舱里。"}

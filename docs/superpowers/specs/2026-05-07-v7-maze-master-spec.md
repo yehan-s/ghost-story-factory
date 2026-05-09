@@ -24,7 +24,7 @@
 
 - `n_<landmark>_<sub>` — 地标内部节点,如 `n_s1_pocket_book`
 - `n_npc_<who>` — **共享 NPC 节点**,可被多个地标到达,如 `n_npc_faceless_coat`、`n_npc_predecessor_voice`
-- `n_scene_<what>` — **共享场景节点**,跨地标的特殊场景,如 `n_scene_lake_27th_floor`、`n_scene_b3_corridor`
+- `n_scene_<what>` — **共享场景节点**,跨地标的特殊场景,如 `n_scene_27th_floor_corridor`、`n_scene_b3_corridor`
 - `n_end_<id>` — 结局节点
 
 ### 图结构(顶层)

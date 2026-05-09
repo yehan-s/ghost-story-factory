@@ -1,7 +1,7 @@
 # v6 Graph · Master Spec
 
 **日期**: 2026-05-07
-**状态**: Active (team `ghost-v6-graph` 实施中)
+**状态**: Superseded by v7 Maze(2026-05-07 后仅作历史设计参考)
 **Lead**: yehan + Claude Opus 4.7 (主 session)
 **问题**: v5 tree 是"branch-immediately-merge-immediately",选项不影响后续剧情,只调整数值。
 
@@ -12,7 +12,7 @@
 
 ## 图拓扑(顶层)
 
-```
+```text
                        n_intro
                          │
                     n_briefing
