@@ -28,9 +28,14 @@ class _Log:
 
     def __init__(self):
         self.lines = []
+        self.clear_count = 0
 
     def write(self, text):
         self.lines.append(text)
+
+    def clear(self):
+        self.clear_count += 1
+        self.lines = []
 
 
 class _Status:
@@ -51,6 +56,31 @@ class _Scroll:
 
     def scroll_end(self, animate=False):
         self.scrolled = True
+
+
+class _SceneStrip:
+    """模拟当前场景条。"""
+
+    def __init__(self):
+        self.value = ""
+
+    def update(self, text):
+        self.value = text
+
+
+class _Options:
+    """模拟 OptionList。"""
+
+    def __init__(self):
+        self.options = []
+        self.cleared = False
+
+    def clear_options(self):
+        self.cleared = True
+        self.options = []
+
+    def add_option(self, option):
+        self.options.append(option)
 
 
 def _state(**overrides):
@@ -226,6 +256,7 @@ def test_stay_choice_refreshes_choices_without_rerendering_node(monkeypatch):
     assert app.state.visit_counts["n"] == 1
     assert status.updated is True
     assert scroll.scrolled is True
+    assert log.clear_count == 0
 
 
 def test_action_show_status_pushes_modal_without_writing_log(monkeypatch):
@@ -244,3 +275,85 @@ def test_action_show_status_pushes_modal_without_writing_log(monkeypatch):
 
     assert len(pushed) == 1
     assert isinstance(pushed[0], StatusScreen)
+
+
+def test_render_node_clears_scene_and_consumes_pending_transition(monkeypatch):
+    """切换节点时主阅读区清屏,上一选择反馈作为过门显示一次。"""
+    from ghost_story_factory.v7.tui_player import GhostStoryApp
+
+    monkeypatch.delenv("GHOST_CHOICE_HINTS", raising=False)
+    app = GhostStoryApp.__new__(GhostStoryApp)
+    app._tree = _tree()
+    app.nodes = app._tree["nodes"]
+    app._tree_path = Path("story.json")
+    app.current_id = "n"
+    app.state = _state()
+    app.save_manager = _Save()
+    app.visible_choices = []
+    app.visited = []
+    app._important_items = set()
+    app._pending_transition_lines = ["[bold yellow]▸[/] [bold]刚才的选择[/]"]
+    app._pending_transition_events = []
+    app._ended = False
+
+    log = _Log()
+    status = _Status()
+    scroll = _Scroll()
+    scene = _SceneStrip()
+    options = _Options()
+
+    def query_one(selector, *_args):
+        return {
+            "#narrative": log,
+            "#status-bar": status,
+            "#narrative-box": scroll,
+            "#scene-strip": scene,
+            "#choices": options,
+        }[selector]
+
+    app.query_one = query_one
+    app._render_node()
+
+    body = "\n".join(log.lines)
+    assert log.clear_count == 1
+    assert "刚才的选择" in body
+    assert "原文" in body
+    assert app._pending_transition_lines == []
+    assert app._pending_transition_events == []
+    assert scene.value == "[dim]节点[/] n"
+    assert status.updated is True
+    assert scroll.scrolled is True
+    assert options.cleared is True
+
+
+def test_non_stay_choice_moves_feedback_to_next_scene(monkeypatch):
+    """非 stay 选择不在旧场景刷反馈,而是交给下一屏过门。"""
+    from ghost_story_factory.v7.tui_player import GhostStoryApp
+
+    monkeypatch.delenv("GHOST_CHOICE_HINTS", raising=False)
+    app = GhostStoryApp.__new__(GhostStoryApp)
+    app._tree = _tree()
+    app.nodes = app._tree["nodes"]
+    app._tree_path = Path("story.json")
+    app.current_id = "n"
+    app.state = _state()
+    app.save_manager = _Save()
+    app.visible_choices = [{"text": "离开[这里]", "next": "end", "effects": {"PR": 1}}]
+    app._pending_transition_lines = []
+    app._pending_transition_events = []
+    app._ended = False
+
+    log = _Log()
+    app.query_one = lambda selector, *_args: log if selector == "#narrative" else None
+    called = {"render_node": 0}
+    app._render_node = lambda: called.__setitem__("render_node", called["render_node"] + 1)
+
+    app._apply_choice(0)
+
+    assert called["render_node"] == 1
+    assert app.current_id == "end"
+    assert log.lines == []
+    pending = "\n".join(app._pending_transition_lines)
+    assert r"离开\[这里\]" in pending
+    assert "路线账本" in pending
+    assert "PR" not in pending
