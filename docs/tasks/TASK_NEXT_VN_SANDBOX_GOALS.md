@@ -5,6 +5,8 @@
 关联:
 - `docs/tasks/TASK_SCRIPT_SANDBOX_PASS1.md`
 - `docs/tasks/TASK_SCRIPT_SANDBOX_PASS2.md`
+- `docs/tasks/TASK_SCRIPT_SANDBOX_PASS3.md`
+- `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
 
@@ -17,8 +19,8 @@
 但它还没有达到目标里的 galgame / 视觉小说厚度。真正的问题不是再加几个吓人名词,而是三件事:
 
 1. 玩家选择对角色关系的影响还不够可见;
-2. 叶某、巡夜员群像、清洁工、论坛围观者仍像功能 NPC,不像有独立欲望的人;
-3. VN 演出字段存在,但还没有形成“镜头、立绘、音效、回忆 CG、结局回放”的可替换素材契约。
+2. 清洁工、论坛围观者、评价室仍偏功能 NPC,不像有独立欲望的人;
+3. VN 演出字段已经覆盖正式节点,但还没有形成“镜头、立绘、音效、回忆 CG、结局回放”的完整可替换素材契约。
 
 本任务记录下一阶段的目标,避免后续继续凭感觉修文本。
 
@@ -47,6 +49,8 @@
 
 ### M1: 剧本 Pass 3 - 叶某与巡夜员群像
 
+状态: Done,见 `docs/tasks/TASK_SCRIPT_SANDBOX_PASS3.md`。
+
 目标:
 
 - 让叶某从“203 琴房事件”升级为能影响林晓燕、赵某、True/Truth/Data 三类结局的角色;
@@ -62,6 +66,8 @@
 
 ### M2: 互动反馈 - 玩家不是摄像机
 
+状态: Partially Done。Pass 4 已先完成入口、地图、晨湖和核心结局的赵某身份回收,见 `docs/tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md`。
+
 目标:
 
 - 建立“玩家行为画像”的最小规则,例如:救人优先、取证优先、替班逃避、曝光冲动;
@@ -75,6 +81,8 @@
 - 不新增 DB schema。
 
 ### M3: VN 演出契约 - 素材未到,结构先到
+
+状态: Partially Done。Pass 4 已给入口 / 简报 / 地图 / 晨湖补关键 `presentation`,正式树仍保持 145/145 演出字段覆盖。
 
 目标:
 

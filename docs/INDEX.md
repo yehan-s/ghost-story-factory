@@ -93,6 +93,7 @@
 | [TASK_SCRIPT_SANDBOX_PASS1.md](tasks/TASK_SCRIPT_SANDBOX_PASS1.md) | 正式剧本沙盒化深层迭代 Pass 1 |
 | [TASK_SCRIPT_SANDBOX_PASS2.md](tasks/TASK_SCRIPT_SANDBOX_PASS2.md) | 正式剧本人物弧线深挖 Pass 2 |
 | [TASK_SCRIPT_SANDBOX_PASS3.md](tasks/TASK_SCRIPT_SANDBOX_PASS3.md) | 正式剧本群像深挖 Pass 3 |
+| [TASK_SCRIPT_PROTAGONIST_UX_PASS4.md](tasks/TASK_SCRIPT_PROTAGONIST_UX_PASS4.md) | 正式剧本主角体验与 VN 演出 Pass 4 |
 | [TASK_NEXT_VN_SANDBOX_GOALS.md](tasks/TASK_NEXT_VN_SANDBOX_GOALS.md) | 下一阶段目标：剧本深挖与 VN 沙盒可玩闭环 |
 | [TASK_V4_GAMETREE_ALIGNMENT.md](tasks/TASK_V4_GAMETREE_ALIGNMENT.md) | v4 生成器对齐 GameTree v1 沙盒拓扑 |
 
