@@ -1,10 +1,13 @@
 # TASK: GameTree v1 可玩闭环与 VN/沙盒契约收敛
 
-版本: v0.1
-状态: Active
+版本: v1.0
+状态: Done
 关联 ADR:
 - `docs/architecture/ADR-010-sandbox-topology-contract.md`
 - `docs/architecture/ADR-001-plot-skeleton-pipeline.md`
+关联 Issue:
+- `#19`
+- 后续拆分: `docs/tasks/TASK_V4_GAMETREE_ALIGNMENT.md`
 
 ---
 
@@ -26,7 +29,7 @@
 
 ### 1.1 目标
 
-- [ ] 定义 `GameTree v1` 最小契约:
+- [x] 定义 `GameTree v1` 最小契约:
   - `nodes`
   - `choices`
   - `require`
@@ -38,18 +41,18 @@
   - `npcs`
   - `landmark_map`
   - `assets`(可空,为 VN 演出预留)
-- [ ] 新增可玩性守门工具,阻断坏树:
+- [x] 新增可玩性守门工具,阻断坏树:
   - 非结局节点不能无出路;
   - choice 不能指向不存在节点;
   - 结局节点必须可识别;
   - v7 `_is_map_picker` 可以通过 `landmark_map` 动态生成目标,不能被旧树检查误判为死路。
-- [ ] 禁止运行时修坏树:
+- [x] 禁止运行时修坏树:
   - runtime 不再创建 `missing_branch` 占位结局;
   - 坏数据必须在生成/导入/审计阶段暴露。
-- [ ] 修正现有工具对 v7 `tree.json` 的误读:
+- [x] 修正现有工具对 v7 `tree.json` 的误读:
   - `tools/view_tree_progress.py` 必须识别 `{"nodes": {...}}` 结构;
   - 不能把顶层 metadata 当成节点统计。
-- [ ] 将 `GameTree v1` 审计挂入测试入口。
+- [x] 将 `GameTree v1` 审计挂入测试入口。
 
 ### 1.2 非目标
 
@@ -141,8 +144,8 @@
 - [x] 修正正式树的 `ending_seen.ending_id`:统一使用 `E_TRUTH` / `E_DATA` 等 ending_type,不再使用 `n_end_*` 节点 ID
 - [x] 修正正式树 `n_landmark_picker` 静态 choices 与 `landmark_map` 的 S6/S7 解锁阈值错位
 - [x] 为 `n_l1985_landmark_picker` 补显式 L1-L4 + 湖边结束 choices,动态 picker 继续作为正式运行路径
-- [ ] 让 v4 生成输出逐步靠近 `GameTree v1`
-- [ ] `PlotSkeleton` 增加 `location_id / npc_ids / event_slots / asset_cues` 等内容大纲字段
+- [x] v4 生成输出对齐 `GameTree v1` 已拆出独立任务,不再塞进本 v7/VN 基线任务
+- [x] `PlotSkeleton` 内容大纲字段扩展已拆出独立任务,见 `TASK_V4_GAMETREE_ALIGNMENT.md`
 
 ### M5: VN 演出契约
 
@@ -164,21 +167,42 @@
 
 本任务完成时,至少满足:
 
-- `tools/audit_playability.py stories/hangzhou_yebanbaoan/tree.json` 不出现 error;
-- `tools/audit_playability.py stories/hangzhou_yebanbaoan/tree.json` 显示 `演出节点: 145/145`;
-- `tools/view_tree_progress.py --checkpoint stories/hangzhou_yebanbaoan/tree.json` 统计节点来自 `nodes`,不是顶层 metadata;
-- runtime 不再生成 `missing_branch` 占位结局;
-- `tools/run_all_tests.py` 包含可玩性审计测试;
-- 文档明确: `PlotSkeleton` 是内容大纲,`GameTree v1` / ADR-010 才是可玩拓扑契约。
+- [x] `tools/audit_playability.py stories/hangzhou_yebanbaoan/tree.json` 不出现 error;
+- [x] `tools/audit_playability.py stories/hangzhou_yebanbaoan/tree.json` 显示 `演出节点: 145/145`;
+- [x] `tools/view_tree_progress.py --checkpoint stories/hangzhou_yebanbaoan/tree.json` 统计节点来自 `nodes`,不是顶层 metadata;
+- [x] runtime 不再生成 `missing_branch` 占位结局;
+- [x] `tools/run_all_tests.py` 包含可玩性审计测试;
+- [x] 文档明确: `PlotSkeleton` 是内容大纲,`GameTree v1` / ADR-010 才是可玩拓扑契约。
+
+## 5. 完成记录
+
+本任务到 v1.0 的边界是:把正式 `hangzhou_yebanbaoan/tree.json` 收敛为可运行、可审计、可 VN 演出兜底的 `GameTree v1` 基线。
+
+已验证:
+
+- `bash tools/audit_all.sh` 通过;
+- 正式树节点可达率为 `145/145`;
+- 结局节点为 `21`;
+- `audit_playability` 报告 `演出节点: 145/145`;
+- `audit_variants` 未发现 `undifferentiated_revisit_nodes`;
+- 反应契约审计通过;
+- linmou 必死不变量审计通过。
+
+未纳入本任务继续做的内容:
+
+- v4 自动生成器直接输出 `GameTree v1` 沙盒拓扑;
+- `PlotSkeleton` 扩展 `location_id / npc_ids / event_slots / asset_cues`;
+- 真实 VN 图片 / 音频资产替换。
+
+这些内容已经转入 `TASK_V4_GAMETREE_ALIGNMENT.md`,避免一个任务无限膨胀。
 
 ---
 
-## 5. 后续路线
+## 6. 后续路线
 
 优先级从高到低:
 
-1. `GameTree v1` 审计阻断坏树;
-2. 现有《断桥残雪》数据债修复;
+1. `TASK_NEXT_VN_SANDBOX_GOALS.md`:剧本 Pass 3、玩家行为反馈、VN 演出契约深化;
+2. `TASK_V4_GAMETREE_ALIGNMENT.md`:v4 生成器输出沙盒拓扑;
 3. v5/v7 播放器继续拆 `PlayerSession / EndingService / ChoiceVisibility / MapChoiceBuilder`;
-4. v4 生成器输出沙盒拓扑;
-5. 用真实素材替换 `assets.*.text_fallback`,并实现回看/收集本。
+4. 用真实素材替换 `assets.*.text_fallback`,并实现回看/收集本。
