@@ -6964,7 +6964,10 @@
         "sprite": "sp_g273",
         "expression": "tired",
         "cg_unlock": null,
-        "transition": "fade"
+        "transition": "fade",
+        "camera": "phone_lock_screen_to_guard_badge",
+        "cg_intent": "opening_rent_pressure_badge",
+        "transition_intent": "start_shift"
       },
       "narrative": "你叫赵某。\n\n至少合同上这么写。\n\n手机屏幕停在 20:17,电量 9%。房东 19:42 发来最后一条微信:「小赵,今晚再不转,明早就换锁。」\n\n你盯着那行字看了 7 秒,又把屏幕按灭。\n\n面试那天,HR 反复跟你强调:「夜班就是坐岗,每小时巡一次,有空调,有夜宵,没事刷手机。」她笑得太用力,嘴角像贴上去的。\n\n你没有问为什么上一任不干了。\n\n你只问:「工资能不能月底前结?」\n\n她说能。\n\n于是你签了。\n\n现在,你站在湖滨国际名品街的员工通道口,胸前多了一张塑料工牌:\n\n**G-273**。\n\n工牌贴上制服的那一秒,你忽然觉得自己的名字被往后推了一格。\n\n赵某还在。\n\n但今晚先轮到 G-273 说话。\n\n你刚领到「商场总控钥匙」。钥匙圈上贴着一张泛黄的小票:\n\n「1984/06/15  西湖牌 14 寸黑白电视  ¥273.00」\n\n——和你的工号尾号一样。\n\n你把小票翻过来,背面用铅笔写着一行字:\n\n「夜班没有尽头,只有下一班。」\n\n字迹有点像你自己的笔迹。\n\n但你确定,至少今晚之前,你还没疯到给自己留这种话。",
       "show_hud": false,
@@ -7044,7 +7047,10 @@
         "sprite": "sp_g273",
         "expression": "tense",
         "cg_unlock": null,
-        "transition": "cut"
+        "transition": "cut",
+        "camera": "locker_room_notice_table",
+        "cg_intent": "briefing_record_form_first_open",
+        "transition_intent": "rules_enter_game"
       },
       "narrative": "更衣室。\n\n灯管闪了两下,把你的影子切成一截一截。\n\n队长把一本卷边的《异常事件记录表》摔在你面前:「7 个打卡点,见到不对劲就填表。漏一栏扣 10%,连续三栏空白——你就别来了。」\n\n他说这话的时候没有看你。\n\n他在看你胸口的工牌。\n\n像是在确认它终于找到下一个能挂住的人。\n\n你翻开记录表:\n\n[01] 湖滨长椅\n[02] 柳浪闻莺 307 阶\n[03] 九溪理安寺\n[04] 中山中路·羊血弄 2 号\n[05] 留下小学旧楼 203 琴房\n[06] 滨江·联庄站盾构井\n[07] 平海街 1 号货梯井\n\n每一栏后面都有一个空格。\n\n空格很小。\n\n但你看久了,会觉得那是给名字留的位置。\n\n表格最下方:\n\n「填完才能走。」\n\n你听见身后有柜门轻轻响了一声。\n\n回头看,第 272 号储物柜开着,里面挂着一件旧雨衣,袖口还在滴水。\n\n墙上挂钟:20:27。\n\n队长把对讲机推过来:「随便。先去哪个,你自己定。」\n\n这句话听起来像自由。\n\n但纸上的 7 个空格,已经开始等你写错。",
       "show_hud": false,
@@ -7081,7 +7087,10 @@
         "sprite": null,
         "expression": null,
         "cg_unlock": null,
-        "transition": "cut"
+        "transition": "cut",
+        "camera": "wall_map_overhead_red_circles",
+        "cg_intent": "map_picker_red_circle_routes",
+        "transition_intent": "sandbox_route_select"
       },
       "_is_map_picker": true,
       "narrative_variants": [
@@ -7833,6 +7842,21 @@
     },
     "n_npc_red_dress_girl": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_redgirl",
+        "expression": "distant",
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "tv_screen_child_reflection",
+        "cg_intent": "redgirl_tv_face_reveal",
+        "transition_intent": "child_memory_intrusion"
+      },
       "_foreshadow_slot": [
         "1996_red_girl_truth",
         "1987_red_dress_truth"
@@ -8054,18 +8078,7 @@
             "GR": 12
           }
         }
-      ],
-      "presentation": {
-        "background": "bg_hangzhou_night",
-        "bgm": "bgm_low_hum",
-        "sfx": [
-          "sfx_radio"
-        ],
-        "sprite": null,
-        "expression": "shadow",
-        "cg_unlock": null,
-        "transition": "fade"
-      }
+      ]
     },
     "n_npc_yang_butcher": {
       "scene": "NPC",
@@ -8904,6 +8917,21 @@
     },
     "n_npc_eight_self": {
       "scene": "NPC",
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_water",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_g273",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "eight_coffins_first_person",
+        "cg_intent": "eight_self_roster_coffins",
+        "transition_intent": "self_roster_reveal"
+      },
       "_foreshadow_slot": [
         "8_self_roster",
         "1985_linmou_other26",
@@ -9060,18 +9088,7 @@
             ]
           }
         }
-      ],
-      "presentation": {
-        "background": "bg_hangzhou_night",
-        "bgm": "bgm_low_hum",
-        "sfx": [
-          "sfx_radio"
-        ],
-        "sprite": null,
-        "expression": "shadow",
-        "cg_unlock": null,
-        "transition": "fade"
-      }
+      ]
     },
     "n_npc_cleaner_null": {
       "scene": "NPC",
@@ -9580,6 +9597,21 @@
     },
     "n_scene_b3_corridor": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "b3_tv_wall_wide",
+        "cg_intent": "b3_twenty_seven_screens_judgement",
+        "transition_intent": "pre_ending_judgement"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -9726,16 +9758,7 @@
             }
           }
         }
-      ],
-      "presentation": {
-        "background": "bg_hangzhou_night",
-        "bgm": "bgm_low_hum",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade"
-      }
+      ]
     },
     "n_scene_evaluator_room": {
       "scene": "SCENE",
@@ -9903,6 +9926,21 @@
     },
     "n_scene_lost_archive": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "archive_drawer_document_closeup",
+        "cg_intent": "lost_archive_all_cases_table",
+        "transition_intent": "evidence_tool_open"
+      },
       "_is_tool": true,
       "_tool_id": "archive",
       "_tool_label": "遗失档案",
@@ -10204,19 +10242,25 @@
           "text": "合上档案,离开。",
           "next": "n_landmark_picker"
         }
-      ],
-      "presentation": {
-        "background": "bg_hangzhou_night",
-        "bgm": "bgm_low_hum",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade"
-      }
+      ]
     },
     "n_scene_red_telephone": {
       "scene": "SCENE",
+      "presentation": {
+        "background": "bg_hangzhou_night",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "red_phone_booth_dial_closeup",
+        "cg_intent": "red_telephone_predecessor_call",
+        "transition_intent": "tool_call_waiting"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -10324,16 +10368,7 @@
       ],
       "_is_tool": true,
       "_tool_id": "phone",
-      "_tool_label": "红色电话亭",
-      "presentation": {
-        "background": "bg_hangzhou_night",
-        "bgm": "bgm_low_hum",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade"
-      }
+      "_tool_label": "红色电话亭"
     },
     "n_scene_morning_lakeside": {
       "scene": "SCENE",
@@ -10347,7 +10382,10 @@
         "sprite": "sp_g273",
         "expression": "exhausted",
         "cg_unlock": null,
-        "transition": "fade"
+        "transition": "fade",
+        "camera": "lakeside_bench_dawn_wide",
+        "cg_intent": "morning_lakeside_result_table",
+        "transition_intent": "end_shift_return"
       },
       "_one_way": true,
       "_one_way_hint": "06:03 · 湖滨 — 夜班已经结束。回不去地图了。",
@@ -10746,6 +10784,20 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_TRUE",
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_water"
+        ],
+        "sprite": "sp_g273",
+        "expression": "exhausted",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "dawn_lakeside_bench_true_end",
+        "cg_intent": "ending_true_shift_closed",
+        "transition_intent": "constant_shutdown"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -10884,21 +10936,27 @@
         }
       ],
       "narrative": "记录表第 7 栏自己写完了。\n\n字迹是你的,也是 8 棺里那 8 个『你』共同的——\n\n他们写完自己那部分,从舱里安静坐起,像终于能睡个好觉。\n\n8 棺合拢。\n\nHUD 弹出系统公告:\n\n「玩家 Guard_Zhao 已完成《异常事件记录表》全部 7 栏。\n  杭州常数 H 已清零。\n  所有 4 年周期裂缝同步关闭。\n  夜班评议会案号 G-273 结案归档。」\n\n你走出货梯。\n\n外面是 6:03 的湖滨,日出把湖面染成铜色——这是你这辈子第一次看见湖面是单纯的橙,而不是带着 1987 年湖水的青灰。\n\n第三把长椅上,只有一只麻雀。\n\n你掏出钥匙圈——那张 1984 年的小票变成了今天的日期。\n\n背面那行字也变了:\n\n「夜班有了尽头。这一班,你下了。」",
-      "show_hud": true,
-      "presentation": {
-        "background": "bg_ending",
-        "bgm": "bgm_ending",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade_to_black"
-      }
+      "show_hud": true
     },
     "n_end_truth": {
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_TRUTH",
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_page",
+          "sfx_radio"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "archive_wall_truth_documents",
+        "cg_intent": "ending_truth_public_memory_wall",
+        "transition_intent": "truth_upload"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -10964,16 +11022,7 @@
         }
       ],
       "narrative": "你站在遗失档案室。\n\n你拿着 5 张拼图碎片——\n\n林某账本完整版 / 1987 踩踏死者真名 / 留下小学女生日记 / 沉船工人工号册 / 红衣女孩真名牌。\n\n你把它们贴在墙上。\n\n27 台电视一齐亮起来。\n\n它们不再播恐怖片。\n\n它们播的是这座城市过去 40 年「被丢弃在档案室角落」的真相。\n\n你站着看了整整一夜——27 个故事,27 个本来该有名字的人。\n\nHUD 提示:\n\n「玩家 Guard_Zhao 拒绝献祭,但记忆库新增 27 条认证档案。\n  下一任 G-273 在交班时会读到你的笔记。」\n\n你回到更衣室,在记录表第 7 栏写:\n\n「我没填完。但我读完了。这就够了。」",
-      "show_hud": true,
-      "presentation": {
-        "background": "bg_ending",
-        "bgm": "bgm_ending",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade_to_black"
-      }
+      "show_hud": true
     },
     "n_end_data": {
       "scene": "END",
@@ -11115,6 +11164,21 @@
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_BAD_1987",
+      "presentation": {
+        "background": "bg_ending",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_radio",
+          "sfx_heartbeat"
+        ],
+        "sprite": "sp_redgirl",
+        "expression": "glitch",
+        "cg_unlock": null,
+        "transition": "glitch",
+        "camera": "vhs_1987_red_dress_loop",
+        "cg_intent": "ending_bad_1987_identity_overlay",
+        "transition_intent": "bad_loop_assignment"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -11140,21 +11204,27 @@
         }
       ],
       "narrative": "记录表的空白栏太多了。\n\n连续 3 栏空白触发系统机制。\n\n你的制服褪成 1980 年代的卡其色。\n\n工牌上的「赵某 G-273」变成「无名 1987-12-24-013」——\n\n1987 年杭州百货大楼 7 楼踩踏事故,第 13 名死者编号。\n\n那天死了 13 个人。\n\n第 13 名,是一个穿红色连衣裙的小女孩。\n\n你抬头,电视墙里 27 个你都换了脸——\n\n你也是那个红衣小女孩。\n\n你穿着红色连衣裙,胸口插着 Y 字形天线。\n\n你成了 1987 年那张永远循环的录像里,30 多年没有人看的死者。\n\n你成为了下一个夜班的『异常事件 ②』。",
-      "show_hud": true,
-      "presentation": {
-        "background": "bg_ending",
-        "bgm": "bgm_ending",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade_to_black"
-      }
+      "show_hud": true
     },
     "n_end_bad_drown": {
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_BAD_DROWN",
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_ending",
+        "sfx": [
+          "sfx_water",
+          "sfx_heartbeat"
+        ],
+        "sprite": null,
+        "expression": null,
+        "cg_unlock": null,
+        "transition": "fade_to_black",
+        "camera": "underwater_hat_sink_first_person",
+        "cg_intent": "ending_bad_drown_eighth_hat",
+        "transition_intent": "drowning_assignment"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -11191,21 +11261,26 @@
         }
       ],
       "narrative": "你被『沉船替死鬼』标记触发。\n\n你跪在沉船备份池边。\n\n7 顶柳条安全帽浮在水面,像 7 只黑色月亮。\n\n第 8 顶——刻着「G-273」的那一顶——浮起来。\n\n它停在水面,等你戴上。\n\n池底传来 7 个声音齐声说:\n\n「替死鬼,可以下班了。」\n\n你的手自己伸出去,戴上第 8 顶。\n\n池水拥抱你。\n\n沉下去时,你听见对讲机里下一任 G-273:\n\n「报告,一切正常。」\n\n他答得太快了。",
-      "show_hud": true,
-      "presentation": {
-        "background": "bg_ending",
-        "bgm": "bgm_ending",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade_to_black"
-      }
+      "show_hud": true
     },
     "n_end_neutral": {
       "scene": "END",
       "is_ending": true,
       "ending_type": "E_NEUTRAL",
+      "presentation": {
+        "background": "bg_locker_room",
+        "bgm": "bgm_low_hum",
+        "sfx": [
+          "sfx_page"
+        ],
+        "sprite": "sp_g273",
+        "expression": "tired",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "locker_room_payroll_after_shift",
+        "cg_intent": "ending_neutral_payroll_return",
+        "transition_intent": "ordinary_life_reasserts"
+      },
       "narrative_variants": [
         {
           "if": {
@@ -11239,16 +11314,7 @@
         }
       ],
       "narrative": "你下班了。\n\n打卡机响了一声「嘀」。\n\n你回头看那栋楼。\n\n它和昨天一模一样,没有任何异常。\n\n你的相册里没有红衣小女孩的照片。\n\n你的钥匙圈上没有 27F 铜钥匙。\n\n似乎什么都没发生过。\n\n第二天早上,房东打电话来,说你拖欠房租。\n\n你打开工资单——这个月被扣了 30% 绩效。\n\n你打开《异常事件记录表》副本——7 栏全空白。\n\n你的下一班,在 14 小时后。\n\n墙上挂钟,比你手表慢了 1987 秒。\n\n你假装没看见。",
-      "show_hud": true,
-      "presentation": {
-        "background": "bg_ending",
-        "bgm": "bgm_ending",
-        "sfx": [],
-        "sprite": null,
-        "expression": null,
-        "cg_unlock": null,
-        "transition": "fade_to_black"
-      }
+      "show_hud": true
     },
     "n_end_hidden": {
       "scene": "END",

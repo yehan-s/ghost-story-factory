@@ -85,7 +85,7 @@
 
 ### M3: VN 演出契约 - 素材未到,结构先到
 
-状态: Partially Done。Pass 4 已给入口 / 简报 / 地图 / 晨湖补关键 `presentation`;Pass 5 已在论坛 / 清洁工 / 评价室 / Data / Broadcast / Hidden 结局补 `camera / cg_intent / transition_intent`,正式树仍保持 145/145 演出字段覆盖。
+状态: Done for current baseline。Pass 4 已给入口 / 简报 / 地图 / 晨湖补关键 `presentation`;Pass 5 已在论坛 / 清洁工 / 评价室 / Data / Broadcast / Hidden 结局补 `camera / cg_intent / transition_intent`;Pass 7 已补遗失档案、红色电话亭、B3、红衣女孩、8 棺自己、True / Truth / Bad / Neutral 等关键节点,并在 `audit_playability` 中锁定关键节点演出意图 warning。正式树仍保持 145/145 演出字段覆盖。
 
 目标:
 
