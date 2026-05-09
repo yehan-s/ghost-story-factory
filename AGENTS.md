@@ -213,6 +213,50 @@ Ghost Story Factory 是一个**交互式灵异故事工厂**，包含两大能�
 
 ---
 
+### 4.5 剧本开发同步事务（强制）
+
+凡是改动正式剧本、玩法闭环、状态结构、文字体验、UX / 演出契约、结局入口或周目反馈，Codex 必须把以下内容作为**一个同步事务**处理，不能只改其中一部分：
+
+1. **Task 同步**
+   - 创建或更新对应 `docs/tasks/TASK_*.md`；
+   - 写清目标 / 非目标 / 里程碑 / 代码入口 / 测试计划 / 完成记录；
+   - 如果用户指出“剧本不够深”“玩法不够闭环”“体验不好”，Task 必须记录这次质疑和对应补救。
+
+2. **团队评审同步**
+   - 参考 Claude 项目级 skill：`.claude/skills/script-review-team/SKILL.md`；
+   - 对剧本 / 玩法 / UX / lore / 拓扑类开发，必须在 `docs/team-reviews/` 新增评审或完成报告，并同步更新 `docs/team-reviews/INDEX.md`；
+   - 评审视角至少覆盖：Chief Editor、State Architect、Meta-Game Designer、UX Designer、Lore Keeper、Topology Designer、QA / Path Tester；
+   - 若受工具限制无法实际创建新 agent team，Codex 仍必须按上述 7 个角色写出结构化评审留痕，不能省略。
+
+3. **Issue / Milestone / PR 同步**
+   - 每个 Task 必须有对应 GitHub Issue；
+   - Issue 必须引用 Task 文档；
+   - 已有 PR 必须追加对应 commit；若是新方向,先建新分支和新 PR；
+   - 完成后必须用 `gh issue comment` 或 `gh pr comment` 回写变更、验证命令和结果。
+
+4. **剧本产物同步**
+   - 改 `stories/hangzhou_yebanbaoan/_fragment_*.json` 后，必须执行 `python3 tools/merge_fragments.py` 重建正式 `stories/hangzhou_yebanbaoan/tree.json`；
+   - 不允许只改 fragment 不提交重建后的正式树；
+   - 若审计发现 flag 上限、死状态、不可达 variant、悬空引用，必须先修数据结构，不能靠调高阈值糊过去。
+
+5. **验证同步**
+   - 剧本 / 玩法改动至少执行：
+     - `python3 -m json.tool <changed-fragment>`;
+     - `python3 tools/merge_fragments.py`;
+     - `bash tools/audit_all.sh`;
+     - `.venv/bin/python tools/run_all_tests.py`。
+   - 纯文档流程改动可只跑 `git diff --check`，但如果同一 PR 内已有代码 / 剧本改动，仍应跑完整测试。
+   - 测试导致 `database/ghost_stories_test.db` 变脏时，必须恢复该测试副作用，除非任务明确要求更新数据库快照。
+
+6. **提交同步**
+   - 提交前检查 `git status --short`，确认只包含本任务文件；
+   - commit message 继续遵守 `type(scope): subject`；
+   - PR 更新后，最终回复必须说明 Issue、PR、测试、团队评审和 Task 的同步状态。
+
+这条规则的目的很简单：**剧本不是孤立 JSON，玩法也不是孤立代码。任何正式体验改动都必须同时更新它的设计意图、评审记录、项目管理状态和验证证据。**
+
+---
+
 ## 5. 必须的自动化流程
 
 **原则：以后每加一个 feat，都必须跑自动化测试。**
@@ -327,7 +371,7 @@ Ghost Story Factory 是一个**交互式灵异故事工厂**，包含两大能�
      - 代码实现一组；
      - 测试新增/修改一组（可以和实现合并，但不要把无关改动混在一个 commit 里）。
 
-### 4.5 Git 提交规范（Commit Message）
+### 4.6 Git 提交规范（Commit Message）
 
 所有提交必须使用统一的前缀风格：
 
