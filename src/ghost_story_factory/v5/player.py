@@ -464,6 +464,102 @@ def render_presentation(tree: Dict[str, Any], node: Dict[str, Any]) -> None:
         print(dim(f"  {line}"))
 
 
+def _choice_hints_enabled() -> bool:
+    """判断是否显示选择意图提示。默认开启,但允许玩家关闭。"""
+    raw = os.environ.get("GHOST_CHOICE_HINTS", "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+def _safe_int(value: Any) -> int:
+    """把 effects 里的数值安全转成 int,坏数据按 0 处理。"""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0
+
+
+def choice_affordance_tags(choice: Dict[str, Any], limit: int = 2) -> List[str]:
+    """根据 choice effects 派生非剧透意图标签。
+
+    不暴露精确 PR / GR 数字。这里是 UI affordance,不是规则系统。
+    """
+    if not _choice_hints_enabled():
+        return []
+
+    effects = choice.get("effects") or {}
+    if not isinstance(effects, dict):
+        effects = {}
+
+    tags: List[str] = []
+
+    def add(tag: str) -> None:
+        if tag and tag not in tags and len(tags) < limit:
+            tags.append(tag)
+
+    picker_kind = choice.get("_picker_kind")
+    if picker_kind == "travel":
+        add("前往")
+    elif picker_kind == "tool":
+        add("工具")
+    elif picker_kind == "endshift":
+        add("收束")
+    elif picker_kind == "detail":
+        add("观察")
+
+    if effects.get("stay"):
+        add("观察")
+    if choice.get("_foreshadow_clue") or choice.get("_foreshadow_slot"):
+        add("伏笔")
+    if effects.get("puzzle_add"):
+        add("关键线索")
+    if effects.get("inv_add"):
+        add("带走物件")
+    if effects.get("inv_remove"):
+        add("消耗物件")
+    if effects.get("landmark_skipped") or effects.get("shifts_skipped"):
+        add("漏卡风险")
+    if effects.get("landmark_visited"):
+        add("巡点")
+    if effects.get("reveal_landmarks"):
+        add("地图线索")
+    if effects.get("npc_move"):
+        add("局势变动")
+
+    flags = effects.get("flags") or {}
+    if isinstance(flags, dict):
+        flag_keys = [str(k) for k in flags.keys()]
+        if any(k.startswith("know.") and flags.get(k) for k in flag_keys):
+            add("记下线索")
+        if any(k.startswith("arc.") for k in flag_keys):
+            add("关系推进")
+        if any(k.startswith("route.") or k.startswith("oneshot.") for k in flag_keys):
+            add("留下痕迹")
+        if any(k.startswith("l_intent_") for k in flag_keys):
+            add("意图选择")
+
+    pr = _safe_int(effects.get("PR"))
+    gr = _safe_int(effects.get("GR"))
+    if pr > 0:
+        add("心境波动")
+    elif pr < 0:
+        add("压住心跳")
+
+    if gr > 0:
+        add("异常注视")
+    elif gr < 0:
+        add("注视减弱")
+
+    return tags
+
+
+def choice_affordance_suffix(choice: Dict[str, Any]) -> str:
+    """返回选择标签后缀,无标签时返回空字符串。"""
+    tags = choice_affordance_tags(choice)
+    if not tags:
+        return ""
+    return "〔" + " · ".join(tags) + "〕"
+
+
 def render_choices(
     visible: List[Dict[str, Any]],
     locked: Optional[List[Tuple[Dict[str, Any], str]]] = None,
@@ -496,16 +592,19 @@ def render_choices(
         print(dim("  ── 在这里看一眼 ──"))
         for i in stay_idx:
             label = visible[i].get("text", "(无文本)")
-            print(f"  {green(str(i + 1))}. {label}")
+            suffix = choice_affordance_suffix(visible[i])
+            print(f"  {green(str(i + 1))}. {label}{dim('  ' + suffix) if suffix else ''}")
         print()
         print(dim("  ── 走出去 ──"))
         for i in fwd_idx:
             label = visible[i].get("text", "(无文本)")
-            print(f"  {green(str(i + 1))}. {label}")
+            suffix = choice_affordance_suffix(visible[i])
+            print(f"  {green(str(i + 1))}. {label}{dim('  ' + suffix) if suffix else ''}")
     else:
         for i, ch in enumerate(visible, start=1):
             label = ch.get("text", "(无文本)")
-            print(f"  {green(str(i))}. {label}")
+            suffix = choice_affordance_suffix(ch)
+            print(f"  {green(str(i))}. {label}{dim('  ' + suffix) if suffix else ''}")
 
     if locked:
         for ch, hint in locked:

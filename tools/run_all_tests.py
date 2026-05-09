@@ -139,6 +139,7 @@ def main():
                 "tests/test_menu_registry.py",
                 "tests/test_archive_view.py",
                 "tests/test_player_presentation.py",
+                "tests/test_choice_affordance.py",
             ],
         ),
     ]

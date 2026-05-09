@@ -55,6 +55,15 @@ def _escape_rich_literal(text: str) -> str:
     """把外部文本当作 Rich 字面量输出,避免方括号被当成 markup。"""
     return str(text).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
 
+def _format_choice_option_label(index: int, choice: Dict[str, Any]) -> str:
+    """构造 TUI 选择文本,附带非剧透意图标签。"""
+    label = _escape_rich_literal(choice.get("text", "(无文本)"))
+    suffix = choice_affordance_suffix(choice)
+    if not suffix:
+        return f"{index}. {label}"
+    return f"{index}. {label} [dim]{_escape_rich_literal(suffix)}[/]"
+
+
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -64,8 +73,8 @@ from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
-    State, collect_important_items, format_presentation_lines, mark_tool_visit,
-    resolve_narrative, resolve_next,
+    State, choice_affordance_suffix, collect_important_items,
+    format_presentation_lines, mark_tool_visit, resolve_narrative, resolve_next,
 )
 from ghost_story_factory.v7.map_view import format_map_lines
 from ghost_story_factory.v7.save_manager import (
@@ -516,15 +525,15 @@ class GhostStoryApp(App):
         if not self.visible_choices:
             log.write("[red][警告] 所有选项都被锁住 — 缺关键道具。[/]")
 
-        # 选项纯文本,不显示效果 hint(增强代入感)
+        # 选项只显示非剧透意图标签,不泄露精确数值或内部状态 key。
         for i, ch in enumerate(self.visible_choices):
-            label = ch.get("text", "(无文本)")
-            opts.add_option(Option(f"{i+1}. {label}", id=str(i)))
+            opts.add_option(Option(_format_choice_option_label(i + 1, ch), id=str(i)))
         # 锁定选项:可见但禁用,带 🔒 + 缺失道具提示
         for ch, hint in locked:
-            label = ch.get("text", "(无文本)")
+            label = _escape_rich_literal(ch.get("text", "(无文本)"))
+            hint_text = _escape_rich_literal(hint)
             opts.add_option(
-                Option(f"[red]🔒[/] [dim]{label}  — {hint}[/]",
+                Option(f"[red]🔒[/] [dim]{label}  — {hint_text}[/]",
                        id=f"__locked_{id(ch)}__", disabled=True)
             )
 

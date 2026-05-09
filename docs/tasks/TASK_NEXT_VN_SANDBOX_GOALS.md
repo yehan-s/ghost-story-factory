@@ -11,6 +11,7 @@
 - `docs/tasks/TASK_SCRIPT_BEHAVIOR_FEEDBACK_PASS6.md`
 - `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md`
 - `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`
+- `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -156,7 +157,7 @@
 
 ### M7: VN 演出契约进入运行时
 
-状态: Active,见 `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`。
+状态: Done,见 `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`。
 
 目标:
 
@@ -172,6 +173,24 @@
 - 新增渲染层测试;
 - `audit_all` 与统一测试通过。
 
+### M8: 选择意图与风险提示
+
+状态: Active,见 `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`。
+
+目标:
+
+- 让玩家在做选择前看到非剧透的行动意图,例如观察、移动、取证、路线留痕、心理高压;
+- CLI 与 TUI 复用同一套选择标签 formatter;
+- 不暴露精确 PR / GR 数值,不把恐怖沙盒变成优化表格;
+- 无 effects 的旧选择保持原样。
+
+验收:
+
+- 选择列表显示最多 2 个短标签;
+- 可用 `GHOST_CHOICE_HINTS=0` 关闭;
+- 新增选择标签测试;
+- `audit_all` 与统一测试通过。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -179,7 +198,8 @@
 1. 已完成 M4 的 `TASK_GAMETREE_V1` 收尾,项目账本已清;
 2. 已完成 M1-M5 的剧本、行为反馈、VN 契约和 NPC 账本;
 3. 当前优先做 M6 Pass 9,把“可玩闭环”推进到“内容厚度达标”;
-4. 同步推进 M7,否则 VN 演出字段会继续停在 JSON 和审计里,没有进入玩家体验。
+4. M7 已完成,演出字段已进入运行时;
+5. 当前同步推进 M8,否则大量带 effects 的选择仍像普通菜单,互动感上不去。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
