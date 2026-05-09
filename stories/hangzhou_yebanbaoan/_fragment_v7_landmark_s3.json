@@ -16,6 +16,15 @@
       "narrative_variants": [
         {
           "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_LINMOU_GRIEVANCE"
+            }
+          },
+          "text": "你再到九溪理安寺时,裂钟没有先响。\n\n它先渗水。\n\n钟缝里流出来的不是寺里的雨水,而是 1985 年锦带桥下那种带账册墨味的湖水。\n\n你听见一个中年男人在钟里说:「我等。」\n\n铜锈侧脸这次没有倒挂。\n\n它正面对着你,像终于等到几十年后有人把那 27 份账带到钟前。"
+        },
+        {
+          "if": {
             "visit_count_min": {
               "n_s3_arrive": 3
             }

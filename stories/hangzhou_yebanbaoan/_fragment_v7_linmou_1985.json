@@ -9,6 +9,18 @@
       "scene": "INTRO",
       "narrative": "1985 年 10 月 18 日,星期五,晚上 20:00。\n\n二轻物资财务科办公室。\n\n你姓林,叫林志诚,人称林副科长。\n\n窗外是杭州深秋,梧桐落叶贴在窗玻璃上。半导体收音机里,中央人民广播电台对台广播刚结束。\n\n你刚锁完档案柜。胸袋里装着 26 联签拨款单的复印件——是你今天傍晚偷偷复印的。\n\n空气里有煤球炉余烬的味道。\n\n你今晚要去一个地方。\n\n但下班路上,你还有几件事要做。",
       "show_hud": true,
+      "presentation": {
+        "background": "bg_old_office",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "strained",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "close_on_blue_ledger_bag_and_locked_archive",
+        "cg_intent": "linmou_1985_office_last_shift",
+        "transition_intent": "character_route_entry"
+      },
       "choices": [
         {
           "text": "走出办公室,去过道。",
@@ -20,6 +32,33 @@
       "scene": "MAP",
       "_is_map_picker": true,
       "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "l_visited_abacus": true
+                }
+              },
+              {
+                "flags": {
+                  "l_visited_boiler": true
+                }
+              },
+              {
+                "flags": {
+                  "l_visited_archive": true
+                }
+              },
+              {
+                "flags": {
+                  "l_visited_pavilion": true
+                }
+              }
+            ]
+          },
+          "text": "你又站回二轻物资大院的过道。\n\n算盘房的茶味、锅炉房的焦纸味、档案室的来苏儿味、湖边凉亭的潮气,全都挤进这条走廊。\n\n过道尽头那盏煤油应急灯忽明忽暗。\n\n你现在知道了:今晚不是四个地点。\n\n是四个人把你推到湖边,也是你自己一步一步走过去。\n\n值班簿上多了一行铅笔字:\n\n『林志诚,请把每个签字人的名字,在心里念一遍再下水。』"
+        },
         {
           "if": {
             "ending_seen": {
@@ -60,6 +99,18 @@
       ],
       "narrative": "(占位)",
       "show_hud": true,
+      "presentation": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "haunted",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "corridor_map_four_1985_locations",
+        "cg_intent": "linmou_1985_sandbox_picker",
+        "transition_intent": "sandbox_route_select"
+      },
       "choices": [
         {
           "text": "L1 算盘房 — 先核 26 联签拨款单。",
@@ -78,48 +129,106 @@
           "next": "n_l1985_pavilion_01"
         },
         {
-          "text": "[05] 直接去湖边。",
-          "next": "n_l1985_lake_jump",
+          "text": "[05] 四处都走过了,把账册包抱紧,去湖边。",
+          "next": "n_l1985_crosscheck_01",
           "require": {
-            "any_of": [
+            "all_of": [
               {
                 "flags": {
-                  "l_intent_release": true
+                  "l_visited_abacus": true
                 }
               },
               {
                 "flags": {
-                  "l_intent_regret": true
+                  "l_visited_boiler": true
                 }
               },
               {
                 "flags": {
-                  "l_intent_grievance": true
+                  "l_visited_archive": true
                 }
+              },
+              {
+                "flags": {
+                  "l_visited_pavilion": true
+                }
+              },
+              {
+                "any_of": [
+                  {
+                    "flags": {
+                      "l_intent_release": true
+                    }
+                  },
+                  {
+                    "flags": {
+                      "l_intent_regret": true
+                    }
+                  },
+                  {
+                    "flags": {
+                      "l_intent_grievance": true
+                    }
+                  },
+                  {
+                    "flags": {
+                      "l_exposed": true
+                    }
+                  }
+                ]
               }
             ]
           }
         }
       ],
       "_picker_endshift_choice": {
-        "text": "[05] 直接去湖边。",
-        "next": "n_l1985_lake_jump",
+        "text": "[05] 四处都走过了,把账册包抱紧,去湖边。",
+        "next": "n_l1985_crosscheck_01",
         "require": {
-          "any_of": [
+          "all_of": [
             {
               "flags": {
-                "l_intent_release": true
+                "l_visited_abacus": true
               }
             },
             {
               "flags": {
-                "l_intent_regret": true
+                "l_visited_boiler": true
               }
             },
             {
               "flags": {
-                "l_intent_grievance": true
+                "l_visited_archive": true
               }
+            },
+            {
+              "flags": {
+                "l_visited_pavilion": true
+              }
+            },
+            {
+              "any_of": [
+                {
+                  "flags": {
+                    "l_intent_release": true
+                  }
+                },
+                {
+                  "flags": {
+                    "l_intent_regret": true
+                  }
+                },
+                {
+                  "flags": {
+                    "l_intent_grievance": true
+                  }
+                },
+                {
+                  "flags": {
+                    "l_exposed": true
+                  }
+                }
+              ]
             }
           ]
         }
@@ -127,8 +236,30 @@
     },
     "n_l1985_abacus_01": {
       "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "l_visited_boiler": true
+            }
+          },
+          "text": "你再进算盘房时,煤灰味跟着你一起进来。\n\n老李抬头,先看你的鞋底,再看你的账册包。\n\n「你去过锅炉房了。」他说。\n\n算盘上的珠子自己往左拨了一颗,像有人替你把王某烧掉的那一笔记上。\n\n老李不再问你是不是来交班。\n\n他问:「小林,你现在还想让我做证,还是想让我活到明天?」"
+        }
+      ],
       "narrative": "算盘房在大院东厢。\n\n你推门进去。\n\n老李坐在那张磨得发亮的木桌后面,搪瓷缸里泡着第二壶廉价绿茶,一支大前门夹在两根手指中间。\n\n他抬头看你,笑了一下:\n\n「小林,这个时候来交班?」\n\n他手边的算盘上,珠子排成一行——他正在核今天的拨款流水。\n\n你胸袋里的 26 联签复印件,**贴着皮肤**。",
       "show_hud": true,
+      "presentation": {
+        "background": "bg_old_office",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "watching",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "abacus_beads_line_up_as_signature_rows",
+        "cg_intent": "linmou_abacus_room_old_li",
+        "transition_intent": "landmark_entry"
+      },
       "choices": [
         {
           "text": "把 26 联签的事告诉老李。求他做证。",
@@ -169,6 +300,15 @@
             "flags": {
               "l_visited_abacus": true,
               "l_exposed": true
+            }
+          }
+        },
+        {
+          "text": "先不表态,翻老李桌角那本旧流水。",
+          "next": "n_l1985_abacus_audit_01",
+          "effects": {
+            "flags": {
+              "l_visited_abacus": true
             }
           }
         }
@@ -220,8 +360,30 @@
     },
     "n_l1985_boiler_01": {
       "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "l_told_old_li": true
+            }
+          },
+          "text": "你从算盘房出来后再进锅炉房,老李那句「我不能做证」还在耳边。\n\n王某手里的纸刚碰到炉火,火苗就退了一寸。\n\n像连火都知道,今晚烧掉的不是纸,是可以让老李活下去的距离。"
+        }
+      ],
       "narrative": "锅炉房在大院后院。\n\n你推门进去,煤球炉的余烬扑面而来——红的、暗的、像是垂死前的呼吸。\n\n王某站在炉口前,手里捏着一沓纸,正一张一张往火里送。\n\n你认得那纸的颜色——\n\n是**调拨单**。\n\n王某是 26 联签里的第三签。\n\n他抬头,看见你,**手停在半空**。\n\n他笑了一下,笑得很难看:\n\n「小林,你也来了?」\n\n你看着炉口里燃烧到一半的纸——\n\n你看见上面有「调拨」红章的边角。",
       "show_hud": true,
+      "presentation": {
+        "background": "bg_old_office",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "ash-lit",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "boiler_mouth_reflects_red_stamp",
+        "cg_intent": "linmou_boiler_burning_transfer_slips",
+        "transition_intent": "landmark_entry"
+      },
       "choices": [
         {
           "text": "夺下他手里的纸,质问他。",
@@ -262,6 +424,16 @@
             "flags": {
               "l_visited_boiler": true,
               "l_exposed": true
+            }
+          }
+        },
+        {
+          "text": "先看清炉膛里还剩哪几张纸。",
+          "next": "n_l1985_boiler_ash_01",
+          "effects": {
+            "flags": {
+              "l_visited_boiler": true,
+              "l_boiler_ash_seen": true
             }
           }
         }
@@ -313,8 +485,30 @@
     },
     "n_l1985_archive_01": {
       "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "l_boiler_ash_seen": true
+            }
+          },
+          "text": "你进档案室时,指甲缝里还留着锅炉灰。\n\n档案柜玻璃上,你的影子背后多了一张被火燎过的纸。\n\n那张纸没有字,只有红章边缘。\n\n它贴在你背后,像一张烧不掉的告示:已经有人开始毁证。"
+        }
+      ],
       "narrative": "档案室在地下半层,潮湿。\n\n来苏儿消毒水的气味从墙缝里渗出来——上个月这里淹过水。\n\n你拉开档案柜。\n\n26 联签拨款单的原件,在 1984 年第二季度卷宗里。\n\n你翻开。\n\n**红章「调拨」依然鲜红**。\n\n26 个签字,排成两列,你的「林志诚」在第 13 行。\n\n第 13 行。\n\n你忽然想起——\n\n你今年 47 岁。\n\n47 减去 13 等于 34。\n\n1985 减去 13 等于 1972。\n\n**那是你进二轻物资的那一年**。",
       "show_hud": true,
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "cornered",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "archive_glass_reflects_signature_row_13",
+        "cg_intent": "linmou_archive_original_transfer_file",
+        "transition_intent": "landmark_entry"
+      },
       "choices": [
         {
           "text": "把原件偷走,带去湖边。",
@@ -355,6 +549,15 @@
             "flags": {
               "l_visited_archive": true,
               "l_exposed": true
+            }
+          }
+        },
+        {
+          "text": "先核对 1972 年入职册,确认第 13 行为什么是你。",
+          "next": "n_l1985_archive_registry_01",
+          "effects": {
+            "flags": {
+              "l_visited_archive": true
             }
           }
         }
@@ -406,8 +609,30 @@
     },
     "n_l1985_pavilion_01": {
       "scene": "SCENE",
+      "narrative_variants": [
+        {
+          "if": {
+            "flags": {
+              "l_visited_archive": true
+            }
+          },
+          "text": "你到湖边凉亭时,1972 年入职册上那行字还贴在眼前。\n\n张某看见你,没有先问 26 联签。\n\n他先问:「你是不是又去翻老档案了?」\n\n湖雾从他身后漫上来,把他的半张脸擦掉。\n\n你忽然明白,他不是等了你两个月。\n\n他等的是你终于查到,第 13 行不是偶然。"
+        }
+      ],
       "narrative": "湖边凉亭。\n\n这是你和张某约的。\n\n张某是 26 联签里的第一签。\n\n他坐在凉亭石凳上,半张脸在路灯里,半张脸在西湖夜雾里。\n\n夜雾从孤山方向漫过来,湖水腥味很浓。\n\n他看见你,抬手示意你坐。\n\n他没递烟——他知道你今晚不会要。\n\n他先开口:\n\n「老林,你今晚来,是为了那 26 个签字?」\n\n你点头。\n\n他叹了一口气。\n\n「我知道你迟早要来。\n  我**等**了你两个月了。」",
       "show_hud": true,
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": ["sfx_water"],
+        "sprite": "sp_linmou",
+        "expression": "resigned",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "pavilion_half_face_in_lake_fog",
+        "cg_intent": "linmou_pavilion_before_jump",
+        "transition_intent": "pre_ending_confrontation"
+      },
       "choices": [
         {
           "text": "「张某,你不能就这么算了。我们一起去自首。」",
@@ -449,6 +674,15 @@
               "l_visited_pavilion": true,
               "l_exposed": true,
               "l_attacked_zhang": true
+            }
+          }
+        },
+        {
+          "text": "先问他:1972 年是谁把第 13 行留给我的?",
+          "next": "n_l1985_pavilion_line13_01",
+          "effects": {
+            "flags": {
+              "l_visited_pavilion": true
             }
           }
         }
@@ -494,6 +728,231 @@
       "choices": [
         {
           "text": "(被押向湖边)",
+          "next": "n_l1985_lake_jump"
+        }
+      ]
+    },
+    "n_l1985_abacus_audit_01": {
+      "scene": "SCENE",
+      "narrative": "你没有立刻把复印件拿出来。\n\n你把老李桌角那本旧流水翻开。纸页边缘被茶水泡软,每一页右上角都写着老李的小字:「复核」。\n\n1972 年 5 月 4 日那页,第 13 行没有你的名字。\n\n那一行原来是空的。\n\n后来有人用另一支笔补上「林志诚」三个字,墨色比前后两行都深。你看着那一笔,忽然觉得它不像签名,像一个提前给你挖好的坑。",
+      "show_hud": false,
+      "presentation": {
+        "background": "bg_old_office",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "alarmed",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "abacus_ledger_line_13_ink_mismatch",
+        "cg_intent": "linmou_line13_first_clue",
+        "transition_intent": "evidence_closeup"
+      },
+      "choices": [
+        {
+          "text": "把第 13 行夹进复印件里。",
+          "next": "n_l1985_abacus_audit_02"
+        }
+      ]
+    },
+    "n_l1985_abacus_audit_02": {
+      "scene": "SCENE",
+      "narrative": "你撕不下那一页。\n\n纸像长在账本里。你一用力,整本流水都发出很轻的呻吟,像老式木门被风推开。\n\n老李没有阻止你。\n\n他只是低头拨算盘。每拨一颗珠子,走廊外就多一声脚步。\n\n你终于明白,这间算盘房不是证据的起点。它是所有人学会闭嘴的地方。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "问老李:当年是谁补了我的名字?",
+          "next": "n_l1985_abacus_audit_03"
+        }
+      ]
+    },
+    "n_l1985_abacus_audit_03": {
+      "scene": "SCENE",
+      "narrative": "老李把烟按灭。\n\n「小林,你别问是谁。」\n\n他抬头看你,眼神像一个已经在明天早上被审过的人。\n\n「你只要知道,你不是第一个第 13 行。也不会是最后一个。」\n\n他说完,把算盘推到你面前。算盘珠子排出四个地点:锅炉、档案、凉亭、湖。\n\n你今晚不是去找真相。\n\n你是在确认这四个地点里,到底哪一个先把你卖掉。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "离开算盘房。",
+          "next": "n_l1985_landmark_picker"
+        }
+      ]
+    },
+    "n_l1985_boiler_ash_01": {
+      "scene": "SCENE",
+      "narrative": "你蹲在炉口前。\n\n王某想拦你,但你的手已经伸进灰里。\n\n还没烧透的纸烫得你指尖发红。你从灰里夹出半张调拨单,红章只剩一个边,签名只剩两个字:「张某」。\n\n炉火照着你的脸。你忽然意识到,如果你今晚不来,这半张纸明天就会变成一层灰,像从来没有人在上面按过手印。",
+      "show_hud": false,
+      "presentation": {
+        "background": "bg_old_office",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "ash-lit",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "burned_transfer_slip_red_stamp_edge",
+        "cg_intent": "linmou_boiler_half_burned_evidence",
+        "transition_intent": "evidence_closeup"
+      },
+      "choices": [
+        {
+          "text": "把半张纸从灰里夹出来。",
+          "next": "n_l1985_boiler_ash_02"
+        }
+      ]
+    },
+    "n_l1985_boiler_ash_02": {
+      "scene": "SCENE",
+      "narrative": "半张纸在你手里碎成三片。\n\n王某突然笑了。他笑得很轻,像终于等到你发现他不是主谋。\n\n「张某让我烧的。」他说。\n\n你看向他。他把火钳放下,声音低得几乎听不见:\n\n「他说只要烧掉这几张,你就只剩自己的那份。你只剩自己的那份,你就会觉得自己还能干净地死。」",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "问他为什么现在告诉我。",
+          "next": "n_l1985_boiler_ash_03"
+        }
+      ]
+    },
+    "n_l1985_boiler_ash_03": {
+      "scene": "SCENE",
+      "narrative": "王某看着炉火。\n\n「因为你已经进来了。」\n\n他指指锅炉房的门。门上原本没有锁,现在却多了一道外插销的影子。\n\n「林副科长,我们这些签字的人,每个人都以为自己只是替别人烧一张纸。烧着烧着,才发现炉膛里蹲着的是自己。」\n\n你把纸灰收进口袋。它很轻,但你走路时,口袋像装了一块湿石头。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "带着纸灰离开锅炉房。",
+          "next": "n_l1985_landmark_picker"
+        }
+      ]
+    },
+    "n_l1985_archive_registry_01": {
+      "scene": "SCENE",
+      "narrative": "你没有先动 26 联签。\n\n你拉开最底层抽屉,找到 1972 年入职册。\n\n封皮上的红布褪成粉色,脊背裂开。你翻到财务科那页,第 13 行果然是你。\n\n但在你的名字下面,还有一行铅笔字,被橡皮擦过很多次:\n\n「如需替补,沿用第 13 行。」\n\n这不是一个人的位置。\n\n这是一个制度留给替死鬼的空格。",
+      "show_hud": false,
+      "presentation": {
+        "background": "bg_archive",
+        "bgm": "bgm_low_hum",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "cornered",
+        "cg_unlock": null,
+        "transition": "cut",
+        "camera": "archive_registry_pencil_note_under_line13",
+        "cg_intent": "linmou_registry_replacement_rule",
+        "transition_intent": "evidence_closeup"
+      },
+      "choices": [
+        {
+          "text": "继续查第 13 行以前是谁。",
+          "next": "n_l1985_archive_registry_02"
+        }
+      ]
+    },
+    "n_l1985_archive_registry_02": {
+      "scene": "SCENE",
+      "narrative": "你往前翻。\n\n1965 年,第 13 行是一个叫陈其顺的人。旁边盖着「调离」。\n\n1959 年,第 13 行是一个女会计。名字被墨水涂掉,只剩一个「燕」字旁。\n\n1947 年,入职册还不是这本格式,但第 13 位后勤员旁边写着:「自行承担」。\n\n你合上册子。\n\n你终于明白,你不是因为犯错才成为第 13 行。\n\n你是因为第 13 行需要一个活人。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "把入职册放回去,再看 26 联签。",
+          "next": "n_l1985_archive_registry_03"
+        }
+      ]
+    },
+    "n_l1985_archive_registry_03": {
+      "scene": "SCENE",
+      "narrative": "26 联签拨款单摊在桌上。\n\n你现在再看那 26 个名字,它们不再像责任人名单。\n\n它们像一圈围观者。\n\n每个人都离第 13 行很近,又都差一点不是第 13 行。\n\n档案室的灯闪了一下。玻璃柜里,你的倒影脖子上那块铜印又亮起来。\n\n这次你看清了铜印上的字:\n\n「替」。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "带着这个字离开档案室。",
+          "next": "n_l1985_landmark_picker"
+        }
+      ]
+    },
+    "n_l1985_pavilion_line13_01": {
+      "scene": "SCENE",
+      "narrative": "你没有先谈自首,也没有谈湖。\n\n你问张某:「1972 年,是谁把第 13 行留给我的?」\n\n张某的脸色变了。\n\n湖风从凉亭穿过去,把他手里的烟吹灭。他没有重新点。\n\n「你查到这一步了。」他说。\n\n这句话不是疑问。\n\n像判决已经宣读,只差落款。",
+      "show_hud": false,
+      "presentation": {
+        "background": "bg_lakeside",
+        "bgm": "bgm_lake",
+        "sfx": ["sfx_water"],
+        "sprite": "sp_linmou",
+        "expression": "resigned",
+        "cg_unlock": null,
+        "transition": "fade",
+        "camera": "pavilion_cigarette_goes_out_in_fog",
+        "cg_intent": "linmou_confronts_zhang_line13",
+        "transition_intent": "pre_ending_confrontation"
+      },
+      "choices": [
+        {
+          "text": "逼他把名字说出来。",
+          "next": "n_l1985_pavilion_line13_02"
+        }
+      ]
+    },
+    "n_l1985_pavilion_line13_02": {
+      "scene": "SCENE",
+      "narrative": "张某沉默很久。\n\n最后他说:「不是谁。是空格。」\n\n你没有听懂。\n\n他抬手指向湖面。雾里,末班船的灯像一排没有盖章的空栏。\n\n「每个单位都有一个空格。出了事,就把最适合被牺牲的人填进去。你当年刚来,老婆生产,家里要钱,又最信组织。你太适合了。」\n\n你觉得比被骂更冷。\n\n原来你不是被选中。\n\n你是被估价。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "问他:那你今晚为什么等我?",
+          "next": "n_l1985_pavilion_line13_03"
+        }
+      ]
+    },
+    "n_l1985_pavilion_line13_03": {
+      "scene": "SCENE",
+      "narrative": "张某把灭掉的烟折成两段。\n\n「因为我也在空格旁边。」\n\n他看着你,眼里第一次不是算计,而是疲惫。\n\n「你死了,空格就满了。我可以再活几年。你不死,今晚以后就轮到我。」\n\n你们两个老国营人坐在湖边,谁都没有哭。\n\n湖水在亭下拍岸,一下一下,像有人用印章盖空表。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "站起来,重新决定今晚怎么走。",
+          "next": "n_l1985_landmark_picker"
+        }
+      ]
+    },
+    "n_l1985_crosscheck_01": {
+      "scene": "ENDING_TRANSITION",
+      "narrative": "你离开大院前,把四个地点在心里重新排了一遍。\n\n老李的算盘告诉你:第 13 行不是事故。\n\n王某的炉灰告诉你:证据正在被人一点点烧掉。\n\n档案室的入职册告诉你:替死鬼是制度预留的位置。\n\n张某的凉亭告诉你:活人也会主动把别人推向那个位置。\n\n你走到门房,值班员没有抬头。他在本子上写天气:晴转雾。",
+      "show_hud": false,
+      "presentation": {
+        "background": "bg_map",
+        "bgm": "bgm_map_static",
+        "sfx": ["sfx_page"],
+        "sprite": "sp_linmou",
+        "expression": "hollow",
+        "cg_unlock": null,
+        "transition": "fade_to_black",
+        "camera": "four_evidence_items_on_guard_desk",
+        "cg_intent": "linmou_four_locations_crosscheck",
+        "transition_intent": "pre_ending_summary"
+      },
+      "choices": [
+        {
+          "text": "把门房登记本翻到今晚这一页。",
+          "next": "n_l1985_crosscheck_02"
+        }
+      ]
+    },
+    "n_l1985_crosscheck_02": {
+      "scene": "ENDING_TRANSITION",
+      "narrative": "登记本上没有你的名字。\n\n20:00 到 23:00 的值班记录,每一栏都空着。\n\n你明明刚从这里走过四次。\n\n你用铅笔写下「林志诚」,笔尖刚离开纸面,那三个字就变成了「G-273」。\n\n你盯着那行字。\n\n几十年后的夜班保安还没出生,却已经在你的名字里等着。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "把 G-273 划掉,重新写林志诚。",
+          "next": "n_l1985_crosscheck_03"
+        }
+      ]
+    },
+    "n_l1985_crosscheck_03": {
+      "scene": "ENDING_TRANSITION",
+      "narrative": "你把 G-273 划掉。\n\n铅笔划过纸面,发出很刺耳的声音。\n\n这一次,纸上没有再变字。\n\n只有「林志诚」三个字留在那里,笔画歪斜,像一个人在水边站不稳。\n\n门外,西湖方向的雾已经压到大院门口。\n\n你抱紧账册包。\n\n你知道自己还是会死。\n\n但至少,死的人终于有名字。",
+      "show_hud": false,
+      "choices": [
+        {
+          "text": "走向湖边。",
           "next": "n_l1985_lake_jump"
         }
       ]

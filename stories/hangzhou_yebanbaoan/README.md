@@ -1,7 +1,7 @@
 # 断桥残雪
 
 > 杭州·湖滨国际名品街·夜班保安 G-273 的一夜七班。
-> 145 节点真迷宫,7 个地标 + 传闻索引 + 林某视角,13 共享 NPC + 7 共享场景,8 主结局 + 13 mini/支线结局,共 21 种 ending narrative。
+> 160 节点真迷宫,7 个地标 + 传闻索引 + 林某 1985 前传视角,13 共享 NPC + 7 共享场景,8 主结局 + 13 mini/支线结局,共 21 种 ending narrative。
 
 ## 玩法
 
@@ -90,9 +90,11 @@ lake_underwater, 27th_floor_corridor, b3_corridor, evaluator_room, lost_archive,
 
 ## 内容资产
 
-- `tree.json` (~500 KB) — 145 节点真迷宫图,Claude Opus 4.7 + team `ghost-v7-maze` 协作手写
+- `tree.json` (~560 KB) — 160 节点真迷宫图,Claude Opus 4.7 + team `ghost-v7-maze` 协作手写
 - `_fragment_v7_*.json` — 7 个写作 fragment(7 地标 + 共享),合并源文件
+- Pass 9 后,`tree.json` 已提升为 160 节点:林某 1985 线新增 15 个深度节点,4 个前传地标具备复访回收,主线 S3/S4/S5 会读取 `E_LINMOU_*` 前传结局回声。
 
 合并 + 验证工具:
 - `tools/merge_fragments.py` — fragment 合并 + 引用完整性检查
 - `tools/path_explorer.py` — BFS 全路径分析 + 状态边界验证
+- `tools/audit_script_depth.py` — Pass 9 剧本深度 / 广度审计
