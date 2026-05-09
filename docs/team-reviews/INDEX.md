@@ -31,6 +31,7 @@
 | 2026-05-10 | 选择后反馈闭环与本轮行为画像 Pass 13 | 修改后放行 | [报告](2026-05-10-behavior-profile-pass13.md) |
 | 2026-05-10 | TUI 体验收束与停留选项去重 Pass 14 | 修改后放行 | [报告](2026-05-10-tui-experience-pass14.md) |
 | 2026-05-10 | TUI 当前场景视图与过门反馈 Pass 15 | 修改后放行 | [报告](2026-05-10-tui-scene-view-pass15.md) |
+| 2026-05-10 | TUI 表达层边界拆分 Pass 16 | 修改后放行 | [报告](2026-05-10-tui-presenter-boundary-pass16.md) |
 
 ---
 

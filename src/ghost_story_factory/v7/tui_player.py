@@ -28,75 +28,9 @@
 from __future__ import annotations
 
 import json
-import re
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
-
-
-def _highlight_narrative_rich(line: str) -> str:
-    """给一行 narrative 加 Rich markup 标记。规则同 CLI 版,但用 Rich 语法。
-      - **xxx**          → [bold yellow]xxx[/]
-      - 「xxx」/『xxx』  → [cyan]...[/]
-      - SID(S1-S7)      → [bold magenta]...[/]
-      - HH:MM            → [yellow]...[/]
-      - 19xx/20xx        → [dim red]...[/]
-    """
-    out = re.sub(r"\*\*([^*]+?)\*\*", r"[bold yellow]\1[/]", line)
-    out = re.sub(r"(「[^」]+」|『[^』]+』)", r"[cyan]\1[/]", out)
-    out = re.sub(r"(?<![A-Za-z0-9])(S[1-7])(?![A-Za-z0-9])",
-                 r"[bold magenta]\1[/]", out)
-    out = re.sub(r"\b(\d{1,2}:\d{2})\b", r"[yellow]\1[/]", out)
-    out = re.sub(r"(?<!\d)((?:19|20)\d{2})(?!\d)", r"[dim red]\1[/]", out)
-    return out
-
-
-def _escape_rich_literal(text: str) -> str:
-    """把外部文本当作 Rich 字面量输出,避免方括号被当成 markup。"""
-    return str(text).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
-
-
-def _format_choice_badges(choice: Dict[str, Any]) -> str:
-    """TUI 专属选择 badge。只表达意图,不暴露数值或内部 key。"""
-    tags = choice_affordance_tags(choice)
-    if not tags:
-        return ""
-    color_map = {
-        "观察": "cyan",
-        "前往": "green",
-        "巡点": "green",
-        "工具": "yellow",
-        "收束": "yellow",
-        "记下线索": "cyan",
-        "关键线索": "cyan",
-        "带走物件": "green",
-        "消耗物件": "yellow",
-        "漏卡风险": "red",
-        "关系推进": "magenta",
-        "留下痕迹": "blue",
-        "意图选择": "magenta",
-        "心境波动": "red",
-        "压住心跳": "green",
-        "异常注视": "red",
-        "注视减弱": "green",
-        "伏笔": "cyan",
-        "地图线索": "yellow",
-        "局势变动": "magenta",
-    }
-    return " ".join(
-        f"[{color_map.get(tag, 'white')}]〈{_escape_rich_literal(tag)}〉[/]"
-        for tag in tags
-    )
-
-
-def _format_choice_option_label(index: int, choice: Dict[str, Any]) -> str:
-    """构造 TUI 选择文本,附带适合扫读的非剧透 badge。"""
-    label = _escape_rich_literal(choice.get("text", "(无文本)"))
-    badges = _format_choice_badges(choice)
-    if not badges:
-        return f"{index}. {label}"
-    return f"{index}. {label}  {badges}"
-
 
 from textual import on
 from textual.app import App, ComposeResult
@@ -107,7 +41,7 @@ from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
-    State, choice_affordance_tags, collect_important_items,
+    State, collect_important_items,
     format_behavior_profile_lines, format_choice_after_feedback_lines,
     format_presentation_lines, mark_tool_visit, resolve_narrative, resolve_next,
     should_show_behavior_profile,
@@ -117,112 +51,15 @@ from ghost_story_factory.v7.save_manager import (
     SaveManager,
     get_character_info,
 )
-
-
-def format_scene_strip(node: Dict[str, Any], node_id: str) -> str:
-    """顶部场景条。给 TUI 一个稳定的当前场景锚点。"""
-    if node.get("is_ending"):
-        ending_type = _escape_rich_literal(node.get("ending_type", "E_UNKNOWN"))
-        return f"[bold magenta]结局[/] [dim]{ending_type}[/]"
-    header = node.get("_landmark_header") or {}
-    if isinstance(header, dict) and (header.get("place") or header.get("time")):
-        place = _escape_rich_literal(header.get("place", ""))
-        time_text = _escape_rich_literal(header.get("time", ""))
-        if place and time_text:
-            return f"[bold yellow]{time_text}[/] [dim]·[/] [bold red]{place}[/]"
-        return f"[bold red]{place or time_text}[/]"
-    if node.get("_is_map_picker"):
-        return "[bold red]现场视图[/] [dim]· 夜班路线[/]"
-    return f"[dim]节点[/] {_escape_rich_literal(node_id)}"
-
-
-def format_tui_status_lines(tree, save_manager, story_id: str, state: State) -> List[str]:
-    """TUI 状态弹层。面向玩家,不显示内部 flag key。"""
-    lines = ["[bold cyan]── 路线账本 ──[/]"]
-    lines.append(
-        f"  [yellow]夜班[/] [bold]{state.shifts_completed}/7[/]   "
-        f"[red]漏卡[/] [bold]{state.shifts_skipped}[/]"
-    )
-    if state.visited_landmarks:
-        lines.append("  已踏入: " + _escape_rich_literal(", ".join(state.visited_landmarks)))
-    if state.skipped_landmarks:
-        lines.append("  已绕开: " + _escape_rich_literal(", ".join(state.skipped_landmarks)))
-    if state.puzzle_pieces:
-        pieces = _escape_rich_literal(" · ".join(state.puzzle_pieces[:8]))
-        lines.append(f"  [green]拼图[/]: {len(state.puzzle_pieces)}/5  [dim]{pieces}[/]")
-    if state.inv:
-        lines.append(f"  [white]随身[/]: {_escape_rich_literal(' · '.join(state.inv))}")
-
-    profile = format_behavior_profile_lines(state)
-    if profile:
-        lines.append("")
-        lines.append("[bold yellow]── 本轮行为画像 ──[/]")
-        for line in profile:
-            lines.append(f"  [dim]{_escape_rich_literal(line)}[/]")
-
-    foreshadows = (tree or {}).get("foreshadows") or {}
-    if foreshadows:
-        seen = set(save_manager.data.get("foreshadows_seen", {}).get(story_id, []))
-        resolved = set(save_manager.data.get("foreshadows_resolved", {}).get(story_id, []))
-        lines.append("")
-        lines.append(
-            f"[bold cyan]── 档案索引({len(seen)}/{len(foreshadows)} 已发现 · "
-            f"{len(resolved)}/{len(foreshadows)} 已解开)──[/]"
-        )
-        unresolved = [slot for slot in seen if slot not in resolved]
-        if unresolved:
-            lines.append("[dim]  下一轮可追:[/]")
-            for slot in unresolved[:3]:
-                meta = foreshadows.get(slot, {})
-                title = _escape_rich_literal(meta.get("title", slot))
-                summary = _escape_rich_literal(meta.get("summary_locked", ""))
-                lines.append(f"  [cyan]?[/] [bold]{title}[/]")
-                if summary:
-                    lines.append(f"    [dim]{summary}[/]")
-        elif seen:
-            lines.append("[dim]  这一轮发现的档案暂时没有未解项。[/]")
-        else:
-            lines.append("[dim]  还没有发现任何伏笔档案。[/]")
-
-    return lines
-
-
-def format_run_recap_lines(
-    tree,
-    save_manager,
-    story_id: str,
-    state: State,
-    visited: List[str],
-    ending_type: str,
-) -> List[str]:
-    """结局页本轮复盘。"""
-    lines = ["[bold yellow]── 本轮复盘 ──[/]"]
-    profile = format_behavior_profile_lines(state)
-    if profile:
-        for line in profile:
-            lines.append(f"  [dim]{_escape_rich_literal(line)}[/]")
-    lines.append(f"  [dim]经历节点: {len(visited)}[/]")
-    if state.visited_landmarks:
-        lines.append(f"  已踏入: {_escape_rich_literal(', '.join(state.visited_landmarks))}")
-    if state.skipped_landmarks:
-        lines.append(f"  已绕开: {_escape_rich_literal(', '.join(state.skipped_landmarks))}")
-    foreshadows = (tree or {}).get("foreshadows") or {}
-    if foreshadows:
-        seen = set(save_manager.data.get("foreshadows_seen", {}).get(story_id, []))
-        resolved = set(save_manager.data.get("foreshadows_resolved", {}).get(story_id, []))
-        lines.append(
-            f"  档案进度:已发现 {len(seen)}/{len(foreshadows)} · "
-            f"已解开 {len(resolved)}/{len(foreshadows)}"
-        )
-        unresolved = [slot for slot in seen if slot not in resolved]
-        if unresolved:
-            titles = [
-                _escape_rich_literal((foreshadows.get(slot) or {}).get("title", slot))
-                for slot in unresolved[:3]
-            ]
-            lines.append(f"  下一轮可追: {' · '.join(titles)}")
-    lines.append(f"  [dim]记录结局:{_escape_rich_literal(ending_type)}[/]")
-    return lines
+from ghost_story_factory.v7.tui_presenter import (
+    escape_rich_literal as _escape_rich_literal,
+    format_choice_option_label as _format_choice_option_label,
+    format_run_recap_lines,
+    format_scene_strip,
+    format_transition_lines,
+    format_tui_status_lines,
+    highlight_narrative_rich as _highlight_narrative_rich,
+)
 
 
 class MapScreen(ModalScreen):
@@ -721,18 +558,11 @@ class GhostStoryApp(App):
         newly_known: List[str],
     ) -> List[str]:
         """格式化节点跳转过门。"""
-        lines = [
-            f"[bold yellow]▸[/] [bold]{_escape_rich_literal(choice.get('text', ''))}[/]"
-        ]
-        for line in format_choice_after_feedback_lines(choice):
-            lines.append(f"[dim]  {_escape_rich_literal(line)}[/]")
-        for sid in newly_known:
-            lm = next((l for l in self._tree.get("landmark_map", []) if l.get("id") == sid), {})
-            short = _escape_rich_literal(lm.get("short", sid))
-            place = _escape_rich_literal(lm.get("place", ""))
-            sid_text = _escape_rich_literal(sid)
-            lines.append(f"  [bold yellow]▌ 地图 +1  ·  {sid_text} {short} {place} ▐[/]")
-        return lines
+        return format_transition_lines(
+            choice,
+            newly_known,
+            self._tree.get("landmark_map", []) or [],
+        )
 
     def _set_pending_transition(
         self,

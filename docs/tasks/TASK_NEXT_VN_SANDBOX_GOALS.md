@@ -16,6 +16,7 @@
 - `docs/tasks/TASK_BEHAVIOR_PROFILE_PASS13.md`
 - `docs/tasks/TASK_TUI_EXPERIENCE_PASS14.md`
 - `docs/tasks/TASK_TUI_SCENE_VIEW_PASS15.md`
+- `docs/tasks/TASK_TUI_PRESENTER_BOUNDARY_PASS16.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -267,6 +268,23 @@
 - 新增 TUI 回归测试;
 - `audit_all` 与统一测试通过。
 
+### M13: TUI 表达层边界拆分
+
+状态: Done,见 `docs/tasks/TASK_TUI_PRESENTER_BOUNDARY_PASS16.md`。
+
+目标:
+
+- 找出 TUI 病根:App 类混合状态、存档、表达格式化和 widget 操作;
+- 新增 TUI presenter 模块,集中 Rich 转义、选择 badge、状态页、复盘、过门等纯表达函数;
+- `tui_player.py` 不再直接持有这些 formatter;
+- 不改 CLI / 正式剧本 / DB schema。
+
+验收:
+
+- 新增 presenter 边界测试;
+- TUI 既有行为测试继续通过;
+- `audit_all` 与统一测试通过。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -279,7 +297,8 @@
 6. M9 已完成,下一阶段总方案已落地;
 7. M10 已完成,选择前意图已经接上选择后反馈闭环;
 8. M11 已完成,TUI 从“能玩”推进到“读起来不累”的第一层闭环;
-9. M12 已完成,主阅读区已从滚动日志改成当前场景视图。
+9. M12 已完成,主阅读区已从滚动日志改成当前场景视图;
+10. M13 已完成,拆出 TUI 表达层,处理反复长体验问题的病根。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
