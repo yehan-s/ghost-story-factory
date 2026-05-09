@@ -50,6 +50,11 @@ def _highlight_narrative_rich(line: str) -> str:
     out = re.sub(r"(?<!\d)((?:19|20)\d{2})(?!\d)", r"[dim red]\1[/]", out)
     return out
 
+
+def _escape_rich_literal(text: str) -> str:
+    """把外部文本当作 Rich 字面量输出,避免方括号被当成 markup。"""
+    return str(text).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+
 from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -59,8 +64,8 @@ from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
-    State, collect_important_items, mark_tool_visit, resolve_narrative,
-    resolve_next,
+    State, collect_important_items, format_presentation_lines, mark_tool_visit,
+    resolve_narrative, resolve_next,
 )
 from ghost_story_factory.v7.map_view import format_map_lines
 from ghost_story_factory.v7.save_manager import (
@@ -310,6 +315,7 @@ class GhostStoryApp(App):
             log.write("")
             log.write(f"[dim]{'─' * 58}[/]")
             log.write("")
+        self._render_presentation_tui(node, log)
         # 伏笔自动跟踪 — 收集首次触发的 slot,稍后渲染卡片
         story_id = str(self._tree.get("story_id") or self._tree_path.stem)
         newly_seen_slots: List[str] = []
@@ -582,6 +588,15 @@ class GhostStoryApp(App):
             return
         self.current_id = nxt
         self._render_node()
+
+    def _render_presentation_tui(self, node, log) -> None:
+        """TUI 文本演出提示。复用 CLI formatter,输出前转义 Rich markup。"""
+        lines = format_presentation_lines(self._tree, node)
+        if not lines:
+            return
+        log.write("")
+        for line in lines:
+            log.write(f"[dim]  {_escape_rich_literal(line)}[/]")
 
     def _render_apply_events_tui(self, events, log) -> None:
         """根据 events 在 RichLog 里卡片化渲染状态变化。"""
