@@ -25,6 +25,7 @@
 | 2026-05-09 | Pass 8 NPC 关系账本与终局前回咬 | 修改后放行 | [报告](2026-05-09-npc-accountability-pass8.md) |
 | 2026-05-09 | v4 GameTreePlan 沙盒骨架审计接入 | 修改后放行 | [报告](2026-05-09-v4-sandbox-audit.md) |
 | 2026-05-09 | Pass 9 正式剧本深度与广度补强 | 修改后放行 | [报告](2026-05-09-script-depth-breadth-pass9.md) |
+| 2026-05-09 | VN 演出契约进入运行时 Pass 10 | 修改后放行 | [报告](2026-05-09-vn-presentation-runtime-pass10.md) |
 
 ---
 

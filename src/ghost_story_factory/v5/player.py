@@ -360,6 +360,110 @@ def render_narrative(text: str) -> None:
     print()
 
 
+def _presentation_enabled() -> bool:
+    """判断是否显示 VN 文本演出提示。默认开启,便于无素材时仍能看到演出意图。"""
+    raw = os.environ.get("GHOST_VN_CUES", "1").strip().lower()
+    return raw not in {"0", "false", "no", "off"}
+
+
+def _asset_label(tree: Dict[str, Any], section: str, asset_id: Any) -> str:
+    """把资产 id 转成 label。找不到 label 时保留 id,方便定位坏数据。"""
+    if not asset_id:
+        return ""
+    key = str(asset_id)
+    meta = ((tree.get("assets") or {}).get(section) or {}).get(key)
+    if isinstance(meta, dict):
+        label = meta.get("label")
+        if label:
+            return str(label)
+    return key
+
+
+def format_presentation_lines(
+    tree: Dict[str, Any],
+    node: Dict[str, Any],
+) -> List[str]:
+    """把节点 presentation 格式化成玩家可见的短文本演出提示。
+
+    这是运行时的文本 fallback,不是资产加载器。真实图片 / 音频以后可以替换
+    这一层,但当前 CLI/TUI 至少不能继续丢掉演出契约。
+    """
+    if not _presentation_enabled():
+        return []
+
+    presentation = node.get("presentation") or {}
+    if not isinstance(presentation, dict):
+        return []
+
+    base_parts: List[str] = []
+    detail_parts: List[str] = []
+
+    background = _asset_label(tree, "backgrounds", presentation.get("background"))
+    if background:
+        base_parts.append(f"背景={background}")
+
+    bgm = _asset_label(tree, "bgm", presentation.get("bgm"))
+    if bgm:
+        base_parts.append(f"音乐={bgm}")
+
+    sfx_values = presentation.get("sfx") or []
+    if isinstance(sfx_values, str):
+        sfx_values = [sfx_values]
+    elif not isinstance(sfx_values, list):
+        sfx_values = [sfx_values]
+    sfx_labels: List[str] = []
+    for sfx in sfx_values:
+        label = _asset_label(tree, "sfx", sfx)
+        if label:
+            sfx_labels.append(label)
+    if sfx_labels:
+        base_parts.append(f"音效={','.join(sfx_labels)}")
+
+    sprite = _asset_label(tree, "sprites", presentation.get("sprite"))
+    expression = presentation.get("expression")
+    if sprite and expression:
+        base_parts.append(f"角色={sprite}({expression})")
+    elif sprite:
+        base_parts.append(f"角色={sprite}")
+
+    camera = presentation.get("camera")
+    if camera:
+        detail_parts.append(f"镜头={camera}")
+
+    transition = presentation.get("transition")
+    if transition:
+        detail_parts.append(f"转场={transition}")
+
+    transition_intent = presentation.get("transition_intent")
+    if transition_intent:
+        detail_parts.append(f"转场意图={transition_intent}")
+
+    cg_intent = presentation.get("cg_intent")
+    if cg_intent:
+        detail_parts.append(f"CG意图={cg_intent}")
+
+    cg_unlock = presentation.get("cg_unlock")
+    if cg_unlock:
+        detail_parts.append(f"CG解锁={cg_unlock}")
+
+    lines: List[str] = []
+    if base_parts:
+        lines.append("演出: " + " · ".join(base_parts))
+    if detail_parts:
+        lines.append("镜头: " + " · ".join(detail_parts))
+    return lines
+
+
+def render_presentation(tree: Dict[str, Any], node: Dict[str, Any]) -> None:
+    """CLI 文本演出提示。无 presentation 时保持静默。"""
+    lines = format_presentation_lines(tree, node)
+    if not lines:
+        return
+    print()
+    for line in lines:
+        print(dim(f"  {line}"))
+
+
 def render_choices(
     visible: List[Dict[str, Any]],
     locked: Optional[List[Tuple[Dict[str, Any], str]]] = None,
@@ -816,6 +920,7 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
         newly_achievements = save_manager.check_achievements(
             tree, state, story_id, on_ending=False
         )
+        render_presentation(tree, node)
         # _is_map_picker 节点:用地图视图替代普通 narrative
         # 先 build picker_choices 算出 travel_indices(让数字贴到地图上)
         if node.get("_is_map_picker"):

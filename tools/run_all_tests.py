@@ -138,6 +138,7 @@ def main():
                 "tests/test_save_manager_query.py",
                 "tests/test_menu_registry.py",
                 "tests/test_archive_view.py",
+                "tests/test_player_presentation.py",
             ],
         ),
     ]
