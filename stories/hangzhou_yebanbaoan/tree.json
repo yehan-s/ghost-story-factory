@@ -8732,6 +8732,23 @@
       "narrative_variants": [
         {
           "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.forum_posted": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              }
+            ]
+          },
+          "text": "论坛刷新。\n\n你上一条更正帖没有爆。\n\n没有置顶,没有热榜,甚至没有几条评论。\n\n它只是安静地躺在夜班论坛第 27 页,标题很笨:\n\n「这些不是素材,是名字。」\n\n第一个匿名账号回复:\n\n「楼主,这样写没人看。」\n\n第二个匿名账号回复:\n\n「可我终于知道他们叫什么了。」\n\n第三个账号没有头像,ID 是 G-272。\n\n他只回了一个字:\n\n「够。」\n\n你忽然明白,论坛不是只能吞人。\n\n它也能留下很小、很慢、很不适合传播的东西。\n\n比如名字。"
+        },
+        {
+          "if": {
             "flags": {
               "arc.all_archives_photoed": true
             }
@@ -8782,7 +8799,8 @@
           "text": "只发一条更正:这些不是素材,是名字。",
           "effects": {
             "flags": {
-              "oneshot.forum_posted": true
+              "oneshot.forum_posted": true,
+              "arc.named_the_dead": true
             },
             "PR": 6,
             "GR": -2
@@ -8816,7 +8834,7 @@
           }
         },
         {
-          "text": "把手机摔了。",
+          "text": "把手机摔了,宁愿丢掉前任号码也不让论坛继续剪辑。",
           "next": "n_landmark_picker",
           "effects": {
             "GR": 8,
@@ -8852,6 +8870,23 @@
         "transition_intent": "judgement_summons"
       },
       "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.forum_posted": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              }
+            ]
+          },
+          "text": "你在夜班论坛写过一条更正帖。\n\n夜班评议会把它打印出来,夹进案卷。\n\n纸很薄。\n\n薄到几乎不像证据。\n\n但评议会还是给它盖了骑缝章:\n\n「案由四:赵某曾尝试阻止围观者把死者改写成素材。\n  证据:论坛更正帖、G-272 私信、未被热榜采纳的 27 个名字。\n  评议意见:无传播价值,有归档价值。」\n\n你看着最后一句,突然觉得评议会第一次不像怪物。\n\n它只是这座城市里少数还承认『没人看』也可以算完成的东西。"
+        },
         {
           "if": {
             "flags": {
@@ -9110,6 +9145,31 @@
       "narrative_variants": [
         {
           "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.live_streaming": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              }
+            ]
+          },
+          "text": "清洁工出现在直播回放里。\n\n这一次,他没有立刻擦掉画面。\n\n他站在镜头边缘,像在等你说完。\n\n你上一条论坛更正帖的标题浮在他空白的脸上:\n\n「这些不是素材,是名字。」\n\n弹幕还在催你剪高潮片段。\n\n清洁工却把拖把横在手机屏幕前,把那些催促擦成一行雪花。\n\n他的雪花声从听筒里钻出来:\n\n「名字留下。\n  标题清掉。\n  这是两种清洁。」\n\n你第一次觉得他不是来删除真相。\n\n他是在问你:到底要删掉围观者,还是删掉人。"
+        },
+        {
+          "if": {
+            "flags": {
+              "oneshot.sacrificed_id": true
+            }
+          },
+          "text": "你已经把工牌交给过电视雪花。\n\n清洁工远远看着你,没有靠近。\n\n他的空桶里传出塑料卡片互相碰撞的声音。\n\n一张、两张、十一张。\n\n每一张都曾经挂在某个 G-273 胸前。\n\n他用拖把在空气里写:\n\n「工牌不是垃圾。\n  工牌是系统用来夹住人的夹子。\n  你把夹子交出去,它当然会替你清理名字。」\n\n你摸了摸胸口那两个小洞。\n\n清洁不是消失。\n\n清洁有时只是把你从赵某擦成一个岗位。"
+        },
+        {
+          "if": {
             "flags": {
               "oneshot.live_streaming": true
             }
@@ -9168,7 +9228,7 @@
           }
         },
         {
-          "text": "让他删掉你和前任之间最危险的联系。",
+          "text": "让他清理你在论坛和手机里留下的身份痕迹。",
           "next": "n_landmark_picker",
           "effects": {
             "GR": 5,
@@ -9618,6 +9678,50 @@
             "all_of": [
               {
                 "flags": {
+                  "oneshot.live_streaming": true
+                }
+              },
+              {
+                "flags": {
+                  "oneshot.s6_no_fingerprint": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.got_judge_seal": true
+                }
+              }
+            ]
+          },
+          "text": "你走进 B3 走廊。\n\n27 台电视没有播鬼影。\n\n它们分成三组。\n\n左边 9 台播放论坛弹幕,每一条都在问『下一段呢』。\n\n右边 9 台播放清洁工的拖把,每一帧都少掉一点你的脸。\n\n中间 9 台播放评价室案卷,每一页都写着同一句话:\n\n「已传播。\n  已清洁。\n  已获章。\n  责任仍未注销。」\n\n你站在三组屏幕中间,第一次看见这三个 NPC 原来在处理同一件事。\n\n论坛把人变成内容。\n\n清洁工把人变成空白。\n\n评议会把空白重新叫上庭。\n\n它们不是三条支线。\n\n它们是同一张账本的三列。"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.forum_posted": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.redgirl_trusts_zhao": true
+                }
+              }
+            ]
+          },
+          "text": "你走进 B3 走廊。\n\n第 14 台电视亮起。\n\n屏幕里不是林晓燕被剪成标题的画面。\n\n是一条很短的论坛更正帖。\n\n「她叫林晓燕。」\n\n这 5 个字在雪花里闪了 27 次。\n\n第 28 次,屏幕里那个抱电视的女孩终于抬头。\n\n她没有说谢谢。\n\n她只是把电视往怀里抱紧一点,像第一次确定自己不是一个素材编号。\n\nB3 的判词从墙上浮出来:\n\n「命名行为有效。\n  围观伤害降低。\n  后续仍需完成归档。」"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
                   "oneshot.s5_freed_yeh": true
                 }
               },
@@ -9778,6 +9882,40 @@
         "transition_intent": "case_review"
       },
       "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.forum_posted": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              }
+            ]
+          },
+          "text": "你走进档案室时,桌上已经放着那条论坛更正帖。\n\n它没有点赞截图。\n\n没有热榜排名。\n\n只有一个很丑的标题:\n\n「这些不是素材,是名字。」\n\n第 12 本空白记录表把它归在『低传播证据』一栏。\n\n旁边批注:\n\n「本栏通常为空。\n  因多数记录员更愿意提交爆款,不愿提交名字。」\n\n11 本前任记录表没有鼓掌。\n\n它们只是把蜡烛往中间挪了一厘米。\n\n那一厘米,够你看清桌上每一张证词的姓名栏。"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.s6_no_fingerprint": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.got_judge_seal": true
+                }
+              }
+            ]
+          },
+          "text": "你带着候补判官章走进档案室。\n\n但第 12 本空白记录表先检查的不是章。\n\n是你的手。\n\n指纹卡仍然一片干净。\n\n清洁工替你做过第一步:擦掉身份。\n\n评议会现在做第二步:确认你是否还愿意承担被擦掉之前做过的事。\n\n纸页上慢慢浮现:\n\n「无指纹者不得逃避签名。\n  无姓名者不得免除案由。」\n\n你把手按在记录表上。\n\n没有指纹。\n\n但纸背面渗出一个很浅的名字:\n\n赵某。"
+        },
         {
           "if": {
             "flags": {
@@ -10390,6 +10528,45 @@
       "_one_way": true,
       "_one_way_hint": "06:03 · 湖滨 — 夜班已经结束。回不去地图了。",
       "narrative_variants": [
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.forum_posted": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.named_the_dead": true
+                }
+              },
+              {
+                "flags": {
+                  "route.behavior_self_audit": true
+                }
+              }
+            ]
+          },
+          "text": "06:03,湖滨。\n\n你回看过自己的路线,也发过那条没人爱看的更正帖。\n\n湖面上漂来一张很薄的纸。\n\n不是判决书。\n\n是论坛打印页。\n\n「这些不是素材,是名字。」\n\n纸角被水泡软,但 27 个名字没有糊。\n\n记录表在最后一栏补了一句:\n\n「玩家曾尝试把传播改回归档。\n  效果有限。\n  但有效。」\n\n这句话很克制。\n\n克制得像真正的好消息。\n\n因为这一夜终于有一件事没有靠热度证明自己。"
+        },
+        {
+          "if": {
+            "all_of": [
+              {
+                "flags": {
+                  "oneshot.s6_no_fingerprint": true
+                }
+              },
+              {
+                "flags": {
+                  "arc.got_judge_seal": true
+                }
+              }
+            ]
+          },
+          "text": "06:03,湖滨。\n\n你伸手去摸湖水。\n\n湖面没有留下指纹。\n\n这本来很可怕。\n\n但胸袋里的候补判官章还在发热。\n\n记录表像知道你在想什么,自己翻到最后一页:\n\n「无指纹者仍可签名。\n  获章者仍需承担。\n  清洁不等于免责。」\n\n你把手从湖水里收回来。\n\n指尖空空的。\n\n可你第一次不急着证明自己存在。\n\n你只想把该负责的那几栏写完。"
+        },
         {
           "if": {
             "flags": {
