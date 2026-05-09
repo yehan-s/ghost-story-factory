@@ -15,6 +15,7 @@
 - `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`
 - `docs/tasks/TASK_BEHAVIOR_PROFILE_PASS13.md`
 - `docs/tasks/TASK_TUI_EXPERIENCE_PASS14.md`
+- `docs/tasks/TASK_TUI_SCENE_VIEW_PASS15.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -247,6 +248,25 @@
 - 新增 TUI helper / 行为回归测试;
 - `audit_all` 与统一测试通过。
 
+### M12: TUI 当前场景视图与过门反馈
+
+状态: Done,见 `docs/tasks/TASK_TUI_SCENE_VIEW_PASS15.md`。
+
+目标:
+
+- 主阅读区从滚动日志改成当前场景视图;
+- 新节点渲染前清屏;
+- 上一选择与路线账本反馈作为过门显示在下一屏顶部;
+- `stay` / detail 保持原地追加,不清屏。
+
+验收:
+
+- 切节点不会堆叠旧 narrative;
+- 选择反馈不会丢,会进入下一屏顶部;
+- stay/detail 不重复访问计数;
+- 新增 TUI 回归测试;
+- `audit_all` 与统一测试通过。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -258,7 +278,8 @@
 5. M8 已完成,选择意图已进入运行时;
 6. M9 已完成,下一阶段总方案已落地;
 7. M10 已完成,选择前意图已经接上选择后反馈闭环;
-8. M11 已完成,TUI 从“能玩”推进到“读起来不累”的第一层闭环。
+8. M11 已完成,TUI 从“能玩”推进到“读起来不累”的第一层闭环;
+9. M12 已完成,主阅读区已从滚动日志改成当前场景视图。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 

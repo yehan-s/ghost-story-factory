@@ -483,6 +483,8 @@ class GhostStoryApp(App):
             self.current_id = characters[chosen].get("start_node", self.current_id)
         self.visible_choices: List[Dict[str, Any]] = []
         self.visited: List[str] = []
+        self._pending_transition_lines: List[str] = []
+        self._pending_transition_events: List[Dict[str, Any]] = []
         self._ended = False
 
     def compose(self) -> ComposeResult:
@@ -502,9 +504,11 @@ class GhostStoryApp(App):
             return
         node = self.nodes.get(self.current_id)
         log = self.query_one("#narrative", RichLog)
+        self._clear_scene_log(log)
         if node is None:
             log.write(f"[red bold][错误] 节点 {self.current_id} 不存在,故事中断。[/]")
             return
+        self._render_pending_transition(log)
         self.query_one("#scene-strip", SceneStrip).update(
             format_scene_strip(node, self.current_id)
         )
@@ -695,6 +699,51 @@ class GhostStoryApp(App):
         visible, locked = self._collect_choices_for_node(node)
         self._refresh_choices(visible, locked, log)
 
+    def _clear_scene_log(self, log) -> None:
+        """切换节点时清空主阅读区,让 TUI 呈现当前场景而非整局日志。"""
+        if hasattr(log, "clear"):
+            log.clear()
+
+    def _render_pending_transition(self, log) -> None:
+        """把上一选择的过门反馈显示在新场景顶部。"""
+        if not self._pending_transition_lines and not self._pending_transition_events:
+            return
+        for line in self._pending_transition_lines:
+            log.write(line)
+        self._render_apply_events_tui(self._pending_transition_events, log)
+        log.write(f"\n[dim]{'─' * 60}[/]")
+        self._pending_transition_lines = []
+        self._pending_transition_events = []
+
+    def _build_transition_lines(
+        self,
+        choice: Dict[str, Any],
+        newly_known: List[str],
+    ) -> List[str]:
+        """格式化节点跳转过门。"""
+        lines = [
+            f"[bold yellow]▸[/] [bold]{_escape_rich_literal(choice.get('text', ''))}[/]"
+        ]
+        for line in format_choice_after_feedback_lines(choice):
+            lines.append(f"[dim]  {_escape_rich_literal(line)}[/]")
+        for sid in newly_known:
+            lm = next((l for l in self._tree.get("landmark_map", []) if l.get("id") == sid), {})
+            short = _escape_rich_literal(lm.get("short", sid))
+            place = _escape_rich_literal(lm.get("place", ""))
+            sid_text = _escape_rich_literal(sid)
+            lines.append(f"  [bold yellow]▌ 地图 +1  ·  {sid_text} {short} {place} ▐[/]")
+        return lines
+
+    def _set_pending_transition(
+        self,
+        choice: Dict[str, Any],
+        newly_known: List[str],
+        events: List[Dict[str, Any]],
+    ) -> None:
+        """保存下一节点顶部要显示的过门反馈。"""
+        self._pending_transition_lines = self._build_transition_lines(choice, newly_known)
+        self._pending_transition_events = list(events or [])
+
     def _collect_choices_for_node(self, node: Dict[str, Any]) -> tuple[List[Dict[str, Any]], List[tuple]]:
         """收集当前节点的可见 / 锁定选项。TUI stay 刷新复用它,不重刷正文。"""
         if node.get("_is_map_picker"):
@@ -781,18 +830,13 @@ class GhostStoryApp(App):
         from ghost_story_factory.v7.map_view import expand_known_landmarks
         newly_known = expand_known_landmarks(self.state, self._tree, effects)
         log = self.query_one("#narrative", RichLog)
-        log.write(f"\n[bold yellow]▸[/] [bold]{_escape_rich_literal(chosen.get('text', ''))}[/]")
-        self._render_choice_after_feedback_tui(chosen, log)
-        if newly_known:
-            for sid in newly_known:
-                lm = next((l for l in self._tree.get("landmark_map", []) if l.get("id") == sid), {})
-                short = lm.get("short", sid)
-                place = lm.get("place", "")
-                log.write(f"  [bold yellow]▌ 地图 +1  ·  {sid} {short} {place} ▐[/]")
-        # 卡片化渲染状态变化
-        self._render_apply_events_tui(self.state._last_events, log)
+        transition_lines = self._build_transition_lines(chosen, newly_known)
         # stay-effect:不跳 next,留在当前节点;场景细节渲染 _detail_text
         if effects.get("stay"):
+            log.write("")
+            for line in transition_lines:
+                log.write(line)
+            self._render_apply_events_tui(self.state._last_events, log)
             detail_text = chosen.get("_detail_text")
             if detail_text:
                 log.write(f"\n[dim]  ─── 看了一眼 ───[/]")
@@ -812,9 +856,12 @@ class GhostStoryApp(App):
             return
         nxt = resolve_next(chosen, self.state)
         if not nxt:
+            for line in transition_lines:
+                log.write(line)
             log.write("[red][错误] 选项缺少 next/next_variants 字段。[/]")
             self._ended = True
             return
+        self._set_pending_transition(chosen, newly_known, self.state._last_events)
         self.current_id = nxt
         self._render_node()
 
