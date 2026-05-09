@@ -261,6 +261,7 @@ def audit(tree: Dict[str, Any]) -> Tuple[List[Issue], Dict[str, int]]:
     # === 9. 道具 ===
     inv_desc = (tree.get("inv_descriptions") or {})
     inv_used: Set[str] = set()
+    inv_key_items: Set[str] = set()
     for node in nodes.values():
         # narrative & narrative_variants 引用
         # 简化:只看 effects.inv_add / require.inv_has / inv_lacks
@@ -274,6 +275,12 @@ def audit(tree: Dict[str, Any]) -> Tuple[List[Issue], Dict[str, int]]:
                 inv_used.add(it)
             for it in req.get("inv_lacks", []) or []:
                 inv_used.add(it)
+    # NPC 档案 key_items 不是玩家背包 require,但会在档案/人物志中展示,
+    # 也应该算作“被使用的物件”。否则审计会逼人把纯 lore 物件硬塞进玩法。
+    for info in npcs.values():
+        for it in (info.get("key_items") or []):
+            inv_key_items.add(it)
+    inv_used |= inv_key_items
     inv_orphan = set(inv_desc.keys()) - inv_used - {"未注明物品"}
     inv_undocumented = inv_used - set(inv_desc.keys())
     for it in sorted(inv_orphan):
@@ -284,6 +291,7 @@ def audit(tree: Dict[str, Any]) -> Tuple[List[Issue], Dict[str, int]]:
                             f"道具 '{it}' 被节点引用,但 inv_descriptions 未注册"))
     stats["inv_described"] = len(inv_desc)
     stats["inv_used"] = len(inv_used)
+    stats["inv_key_items"] = len(inv_key_items)
     stats["inv_orphan"] = len(inv_orphan)
     stats["inv_undocumented"] = len(inv_undocumented)
 
@@ -316,6 +324,7 @@ def print_report(issues: List[Issue], stats: Dict[str, int]) -> int:
           f"可达 {stats.get('nodes_reachable', 0)} · "
           f"孤儿 {stats.get('nodes_unreachable', 0)}")
     print(f"  道具: 注册 {stats.get('inv_described', 0)} · 引用 {stats.get('inv_used', 0)} · "
+          f"档案物件 {stats.get('inv_key_items', 0)} · "
           f"孤儿 {stats.get('inv_orphan', 0)} · 未记录 {stats.get('inv_undocumented', 0)}")
     print()
     print("──────── 问题清单 ────────")
