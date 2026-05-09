@@ -1,6 +1,6 @@
 # TASK: 正式剧本行为画像与工具回访 Pass 6
 
-版本: v0.1
+版本: v0.2
 状态: Done
 关联:
 - `docs/tasks/TASK_NEXT_VN_SANDBOX_GOALS.md`
@@ -77,6 +77,15 @@ Pass 4/5 已经让入口、地图、论坛、清洁工、评价室开始读玩�
 - [x] `.venv/bin/python tools/run_all_tests.py`;
 - [x] Issue #31 记录结果。
 
+### M5: 路线状态化回补
+
+- [x] 复用现有“取证 / 曝光 / 等待系统来电”状态作为行为画像输入;
+- [x] 在地图 hub 增加基于行为画像解锁的 `[回访]` 入口;
+- [x] 让评价室读取玩家主动回访,而不是只在终局文本里评价;
+- [x] 让 B3 / 清晨继续读取回访结果;
+- [x] 只新增 `route.behavior_self_audit`,避免正式树 flag 总数超过上限;
+- [x] 保持 DB schema 和运行时引擎不变。
+
 ---
 
 ## 3. 代码入口
@@ -105,4 +114,17 @@ Pass 4/5 已经让入口、地图、论坛、清洁工、评价室开始读玩�
 - `n_scene_b3_corridor` 新增曝光过量、路线跳过的终局前判读;
 - `n_scene_evaluator_room` 新增公开证据与命名死者之间的审判差异;
 - `n_scene_morning_lakeside` 新增救人无声回收与直播按钮反咬;
-- 正式 `tree.json` 已重建,节点总数不变,variant 总量提升到 298。
+- 正式 `tree.json` 已重建,节点总数不变,variant 总量提升到 309。
+
+## 6. 二次加深记录
+
+用户指出上一轮“没怎么改剧本”。这个判断成立:Pass 6 初版主要增加的是 narrative variants,还没有把玩家行为稳定写成后续路线条件。
+
+本轮补上结构性改动:
+
+- `n_scene_lost_archive` 的“拍照准备公开”继续使用 `arc.all_archives_photoed` 作为取证输入;
+- `n_npc_forum_lurkers` 的“继续直播”继续使用 `oneshot.live_streaming` 作为曝光输入;
+- `n_scene_red_telephone` 的“等电话亭自己响”继续使用 `know.phone_called_1987` 作为等待系统来电输入;
+- `n_landmark_picker` 新增 `[回访] 不选地标,先让记录表判读你的路线。`,根据上述行为或跳过巡逻解锁;
+- `[回访]` 会写入 `route.behavior_self_audit`,并被地图、B3、评价室、清晨继续读取;
+- 这一层不是单纯旁白,而是“行为 -> 状态 -> 新选择 -> 后续反馈”的闭环。
