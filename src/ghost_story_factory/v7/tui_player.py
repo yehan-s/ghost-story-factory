@@ -55,13 +55,47 @@ def _escape_rich_literal(text: str) -> str:
     """把外部文本当作 Rich 字面量输出,避免方括号被当成 markup。"""
     return str(text).replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
 
+
+def _format_choice_badges(choice: Dict[str, Any]) -> str:
+    """TUI 专属选择 badge。只表达意图,不暴露数值或内部 key。"""
+    tags = choice_affordance_tags(choice)
+    if not tags:
+        return ""
+    color_map = {
+        "观察": "cyan",
+        "前往": "green",
+        "巡点": "green",
+        "工具": "yellow",
+        "收束": "yellow",
+        "记下线索": "cyan",
+        "关键线索": "cyan",
+        "带走物件": "green",
+        "消耗物件": "yellow",
+        "漏卡风险": "red",
+        "关系推进": "magenta",
+        "留下痕迹": "blue",
+        "意图选择": "magenta",
+        "心境波动": "red",
+        "压住心跳": "green",
+        "异常注视": "red",
+        "注视减弱": "green",
+        "伏笔": "cyan",
+        "地图线索": "yellow",
+        "局势变动": "magenta",
+    }
+    return " ".join(
+        f"[{color_map.get(tag, 'white')}]〈{_escape_rich_literal(tag)}〉[/]"
+        for tag in tags
+    )
+
+
 def _format_choice_option_label(index: int, choice: Dict[str, Any]) -> str:
-    """构造 TUI 选择文本,附带非剧透意图标签。"""
+    """构造 TUI 选择文本,附带适合扫读的非剧透 badge。"""
     label = _escape_rich_literal(choice.get("text", "(无文本)"))
-    suffix = choice_affordance_suffix(choice)
-    if not suffix:
+    badges = _format_choice_badges(choice)
+    if not badges:
         return f"{index}. {label}"
-    return f"{index}. {label} [dim]{_escape_rich_literal(suffix)}[/]"
+    return f"{index}. {label}  {badges}"
 
 
 from textual import on
@@ -73,7 +107,7 @@ from textual.widgets import Footer, Header, OptionList, RichLog, Static
 from textual.widgets.option_list import Option
 
 from ghost_story_factory.v5.player import (
-    State, choice_affordance_suffix, collect_important_items,
+    State, choice_affordance_tags, collect_important_items,
     format_behavior_profile_lines, format_choice_after_feedback_lines,
     format_presentation_lines, mark_tool_visit, resolve_narrative, resolve_next,
     should_show_behavior_profile,
@@ -83,6 +117,112 @@ from ghost_story_factory.v7.save_manager import (
     SaveManager,
     get_character_info,
 )
+
+
+def format_scene_strip(node: Dict[str, Any], node_id: str) -> str:
+    """顶部场景条。给 TUI 一个稳定的当前场景锚点。"""
+    if node.get("is_ending"):
+        ending_type = _escape_rich_literal(node.get("ending_type", "E_UNKNOWN"))
+        return f"[bold magenta]结局[/] [dim]{ending_type}[/]"
+    header = node.get("_landmark_header") or {}
+    if isinstance(header, dict) and (header.get("place") or header.get("time")):
+        place = _escape_rich_literal(header.get("place", ""))
+        time_text = _escape_rich_literal(header.get("time", ""))
+        if place and time_text:
+            return f"[bold yellow]{time_text}[/] [dim]·[/] [bold red]{place}[/]"
+        return f"[bold red]{place or time_text}[/]"
+    if node.get("_is_map_picker"):
+        return "[bold red]现场视图[/] [dim]· 夜班路线[/]"
+    return f"[dim]节点[/] {_escape_rich_literal(node_id)}"
+
+
+def format_tui_status_lines(tree, save_manager, story_id: str, state: State) -> List[str]:
+    """TUI 状态弹层。面向玩家,不显示内部 flag key。"""
+    lines = ["[bold cyan]── 路线账本 ──[/]"]
+    lines.append(
+        f"  [yellow]夜班[/] [bold]{state.shifts_completed}/7[/]   "
+        f"[red]漏卡[/] [bold]{state.shifts_skipped}[/]"
+    )
+    if state.visited_landmarks:
+        lines.append("  已踏入: " + _escape_rich_literal(", ".join(state.visited_landmarks)))
+    if state.skipped_landmarks:
+        lines.append("  已绕开: " + _escape_rich_literal(", ".join(state.skipped_landmarks)))
+    if state.puzzle_pieces:
+        pieces = _escape_rich_literal(" · ".join(state.puzzle_pieces[:8]))
+        lines.append(f"  [green]拼图[/]: {len(state.puzzle_pieces)}/5  [dim]{pieces}[/]")
+    if state.inv:
+        lines.append(f"  [white]随身[/]: {_escape_rich_literal(' · '.join(state.inv))}")
+
+    profile = format_behavior_profile_lines(state)
+    if profile:
+        lines.append("")
+        lines.append("[bold yellow]── 本轮行为画像 ──[/]")
+        for line in profile:
+            lines.append(f"  [dim]{_escape_rich_literal(line)}[/]")
+
+    foreshadows = (tree or {}).get("foreshadows") or {}
+    if foreshadows:
+        seen = set(save_manager.data.get("foreshadows_seen", {}).get(story_id, []))
+        resolved = set(save_manager.data.get("foreshadows_resolved", {}).get(story_id, []))
+        lines.append("")
+        lines.append(
+            f"[bold cyan]── 档案索引({len(seen)}/{len(foreshadows)} 已发现 · "
+            f"{len(resolved)}/{len(foreshadows)} 已解开)──[/]"
+        )
+        unresolved = [slot for slot in seen if slot not in resolved]
+        if unresolved:
+            lines.append("[dim]  下一轮可追:[/]")
+            for slot in unresolved[:3]:
+                meta = foreshadows.get(slot, {})
+                title = _escape_rich_literal(meta.get("title", slot))
+                summary = _escape_rich_literal(meta.get("summary_locked", ""))
+                lines.append(f"  [cyan]?[/] [bold]{title}[/]")
+                if summary:
+                    lines.append(f"    [dim]{summary}[/]")
+        elif seen:
+            lines.append("[dim]  这一轮发现的档案暂时没有未解项。[/]")
+        else:
+            lines.append("[dim]  还没有发现任何伏笔档案。[/]")
+
+    return lines
+
+
+def format_run_recap_lines(
+    tree,
+    save_manager,
+    story_id: str,
+    state: State,
+    visited: List[str],
+    ending_type: str,
+) -> List[str]:
+    """结局页本轮复盘。"""
+    lines = ["[bold yellow]── 本轮复盘 ──[/]"]
+    profile = format_behavior_profile_lines(state)
+    if profile:
+        for line in profile:
+            lines.append(f"  [dim]{_escape_rich_literal(line)}[/]")
+    lines.append(f"  [dim]经历节点: {len(visited)}[/]")
+    if state.visited_landmarks:
+        lines.append(f"  已踏入: {_escape_rich_literal(', '.join(state.visited_landmarks))}")
+    if state.skipped_landmarks:
+        lines.append(f"  已绕开: {_escape_rich_literal(', '.join(state.skipped_landmarks))}")
+    foreshadows = (tree or {}).get("foreshadows") or {}
+    if foreshadows:
+        seen = set(save_manager.data.get("foreshadows_seen", {}).get(story_id, []))
+        resolved = set(save_manager.data.get("foreshadows_resolved", {}).get(story_id, []))
+        lines.append(
+            f"  档案进度:已发现 {len(seen)}/{len(foreshadows)} · "
+            f"已解开 {len(resolved)}/{len(foreshadows)}"
+        )
+        unresolved = [slot for slot in seen if slot not in resolved]
+        if unresolved:
+            titles = [
+                _escape_rich_literal((foreshadows.get(slot) or {}).get("title", slot))
+                for slot in unresolved[:3]
+            ]
+            lines.append(f"  下一轮可追: {' · '.join(titles)}")
+    lines.append(f"  [dim]记录结局:{_escape_rich_literal(ending_type)}[/]")
+    return lines
 
 
 class MapScreen(ModalScreen):
@@ -162,6 +302,53 @@ class MapScreen(ModalScreen):
         return "\n".join(out)
 
 
+class StatusScreen(ModalScreen):
+    """状态 / 档案弹层。s 键打开,不污染 narrative log。"""
+
+    BINDINGS = [
+        Binding("s", "app.pop_screen", "关闭"),
+        Binding("escape", "app.pop_screen", "关闭"),
+        Binding("enter", "app.pop_screen", "关闭"),
+        Binding("q", "app.pop_screen", "关闭"),
+    ]
+
+    DEFAULT_CSS = """
+    StatusScreen {
+        align: center middle;
+        background: rgba(0, 0, 0, 0.86);
+    }
+    #status-box {
+        width: 82;
+        max-width: 92%;
+        height: 32;
+        max-height: 86%;
+        padding: 1 2;
+        background: #05080a;
+        border: heavy #008080;
+    }
+    #status-content {
+        height: 1fr;
+    }
+    #status-hint {
+        height: auto;
+        color: #707070;
+        text-align: center;
+        padding-top: 1;
+    }
+    """
+
+    def __init__(self, lines: List[str]):
+        super().__init__()
+        self._lines = lines
+
+    def compose(self) -> ComposeResult:
+        from textual.containers import Vertical
+        with Vertical(id="status-box"):
+            with VerticalScroll(id="status-content"):
+                yield Static("\n".join(self._lines))
+            yield Static("[dim]s / Enter / Esc 关闭[/]", id="status-hint")
+
+
 class StatusBar(Static):
     """顶部状态栏。每次 state 变化时调 update_state。"""
 
@@ -178,6 +365,10 @@ class StatusBar(Static):
         inv_str = " · ".join(s.inv) if s.inv else "—"
         line2 = f"[dim]随身:[/] {inv_str}"
         self.update(f"{line1}\n{line2}")
+
+
+class SceneStrip(Static):
+    """当前场景条。避免玩家被历史日志淹没时失去位置感。"""
 
 
 class GhostStoryApp(App):
@@ -199,6 +390,13 @@ class GhostStoryApp(App):
         padding: 0 1;
         border: solid #800000;
         background: #100000;
+    }
+
+    #scene-strip {
+        height: 1;
+        padding: 0 1;
+        background: #070707;
+        color: #b0b0b0;
     }
 
     #narrative-box {
@@ -290,6 +488,7 @@ class GhostStoryApp(App):
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         yield StatusBar(id="status-bar")
+        yield SceneStrip(id="scene-strip")
         with VerticalScroll(id="narrative-box"):
             yield RichLog(highlight=False, markup=True, wrap=True, id="narrative")
         yield OptionList(id="choices")
@@ -306,6 +505,9 @@ class GhostStoryApp(App):
         if node is None:
             log.write(f"[red bold][错误] 节点 {self.current_id} 不存在,故事中断。[/]")
             return
+        self.query_one("#scene-strip", SceneStrip).update(
+            format_scene_strip(node, self.current_id)
+        )
 
         self.visited.append(self.current_id)
         # 累计节点访问次数(给 NPC 重访 narrative_variants 用)
@@ -477,6 +679,11 @@ class GhostStoryApp(App):
                     log.write(f"[bold cyan]{'─' * 60}[/]")
             except Exception as e:
                 log.write(f"[dim red]存档警告: {e}[/]")
+            for line in format_run_recap_lines(
+                self._tree, self.save_manager, story_id, self.state,
+                self.visited, ending_type,
+            ):
+                log.write(line)
             opts = self.query_one("#choices", OptionList)
             opts.clear_options()
             opts.add_option(Option("[退出] 按 Enter / q 结束", id="__end__"))
@@ -485,54 +692,59 @@ class GhostStoryApp(App):
             self.query_one("#narrative-box", VerticalScroll).scroll_end(animate=False)
             return
 
-        # 选项分类:visible / locked / hidden
+        visible, locked = self._collect_choices_for_node(node)
+        self._refresh_choices(visible, locked, log)
+
+    def _collect_choices_for_node(self, node: Dict[str, Any]) -> tuple[List[Dict[str, Any]], List[tuple]]:
+        """收集当前节点的可见 / 锁定选项。TUI stay 刷新复用它,不重刷正文。"""
         if node.get("_is_map_picker"):
             from ghost_story_factory.v7.map_view import picker_choices
             generated = picker_choices(self._tree, self.state, node=node)
-            self.visible_choices = [c for c in generated if c.get("_picker_kind") != "locked"]
-            locked: List[tuple] = [
+            visible = [c for c in generated if c.get("_picker_kind") != "locked"]
+            locked = [
                 (c, c.get("text", "").split("(")[-1].rstrip(")"))
                 for c in generated if c.get("_picker_kind") == "locked"
             ]
-        else:
-            all_choices = node.get("choices", []) or []
-            self.visible_choices = []
-            locked: List[tuple] = []
-            for c in all_choices:
-                status, hint = self.state.get_choice_status(c)
-                if status == "visible":
-                    self.visible_choices.append(c)
-                elif status == "locked":
-                    locked.append((c, hint))
-                # hidden 跳过
-            # _scene_details:场景细节"看一眼"选项(stay-effect)
-            for det in (node.get("_scene_details") or []):
-                require = det.get("require")
-                if require and not self.state.meets(require):
-                    continue
-                self.visible_choices.append({
-                    "text": f"  · 看一眼 {det.get('label', '场景细节')}",
-                    "effects": {"stay": True, **(det.get("effects") or {})},
-                    "_detail_text": det.get("text", ""),
-                    "_picker_kind": "detail",
-                    "_foreshadow_clue": det.get("_foreshadow_clue") or [],
-                    "_foreshadow_slot": det.get("_foreshadow_slot") or [],
-                })
+            return visible, locked
 
+        visible = []
+        locked: List[tuple] = []
+        for c in node.get("choices", []) or []:
+            status, hint = self.state.get_choice_status(c)
+            if status == "visible":
+                visible.append(c)
+            elif status == "locked":
+                locked.append((c, hint))
+
+        for det in (node.get("_scene_details") or []):
+            require = det.get("require")
+            if require and not self.state.meets(require):
+                continue
+            visible.append({
+                "text": f"  · 看一眼 {det.get('label', '场景细节')}",
+                "effects": {"stay": True, **(det.get("effects") or {})},
+                "_detail_text": det.get("text", ""),
+                "_picker_kind": "detail",
+                "_foreshadow_clue": det.get("_foreshadow_clue") or [],
+                "_foreshadow_slot": det.get("_foreshadow_slot") or [],
+            })
+        return visible, locked
+
+    def _refresh_choices(self, visible: List[Dict[str, Any]], locked: List[tuple], log) -> None:
+        """刷新 OptionList。不会写 narrative 正文,供 stay/detail 原地动作复用。"""
+        self.visible_choices = visible
         opts = self.query_one("#choices", OptionList)
         opts.clear_options()
-        if not self.visible_choices and not locked:
+        if not visible and not locked:
             log.write("[red][警告] 此节点没有可用选项,故事中断。[/]")
             opts.add_option(Option("[退出] 按 Enter / q 结束", id="__end__"))
             self._ended = True
             return
-        if not self.visible_choices:
+        if not visible:
             log.write("[red][警告] 所有选项都被锁住 — 缺关键道具。[/]")
 
-        # 选项只显示非剧透意图标签,不泄露精确数值或内部状态 key。
-        for i, ch in enumerate(self.visible_choices):
+        for i, ch in enumerate(visible):
             opts.add_option(Option(_format_choice_option_label(i + 1, ch), id=str(i)))
-        # 锁定选项:可见但禁用,带 🔒 + 缺失道具提示
         for ch, hint in locked:
             label = _escape_rich_literal(ch.get("text", "(无文本)"))
             hint_text = _escape_rich_literal(hint)
@@ -592,8 +804,11 @@ class GhostStoryApp(App):
                 log.write(f"[dim]  ─── 你收回视线 ───[/]\n")
             else:
                 log.write(f"\n[dim]  · 你停留片刻,然后回头。[/]\n")
-            # 重渲染当前节点的选项(让玩家继续选)
-            self._render_node()
+            node = self.nodes.get(self.current_id) or {}
+            visible, locked = self._collect_choices_for_node(node)
+            self._refresh_choices(visible, locked, log)
+            self.query_one("#status-bar", StatusBar).update_state(self.state)
+            self.query_one("#narrative-box", VerticalScroll).scroll_end(animate=False)
             return
         nxt = resolve_next(chosen, self.state)
         if not nxt:
@@ -703,57 +918,10 @@ class GhostStoryApp(App):
         ))
 
     def action_show_status(self) -> None:
-        """s 键 — 显示完整状态(含个人共鸣 / 全局共鸣的具体数值 + 解释)。"""
-        s = self.state
-        log = self.query_one("#narrative", RichLog)
-        log.write(f"\n[bold cyan]── 完整状态 ──[/]")
-        log.write(f"  [cyan]个人共鸣[/] [bold]{s.PR}/100[/]   "
-                  f"[magenta]全局共鸣[/] [bold]{s.GR}/100[/]")
-        log.write(f"  [dim]· 个人共鸣 = 你被这个夜班影响的程度。越高越触发心境分支。[/]")
-        log.write(f"  [dim]· 全局共鸣 = 杭州常数对你的注视。越高越被异常实体盯上。[/]")
-        log.write(f"  [yellow]夜班[/] {s.shifts_completed}/7   "
-                  f"[red]漏卡[/] {s.shifts_skipped}")
-        if s.character and s.character != "G-273":
-            log.write(f"  [blue]角色[/]: {s.character}")
-        if s.puzzle_pieces:
-            log.write(f"  [green]拼图[/]: {len(s.puzzle_pieces)}/5 — {' · '.join(s.puzzle_pieces[:8])}")
-        if s.inv:
-            log.write(f"  [white]随身[/]: {' · '.join(s.inv)}")
-        if s.visited_landmarks:
-            log.write(f"  已踏入: {', '.join(s.visited_landmarks)}")
-        if s.skipped_landmarks:
-            log.write(f"  已跳过: {', '.join(s.skipped_landmarks)}")
-        if s.flags:
-            true_flags = [k for k, v in s.flags.items() if v]
-            if true_flags:
-                shown = ', '.join(true_flags[:12])
-                more = f" (+{len(true_flags) - 12} 更多)" if len(true_flags) > 12 else ""
-                log.write(f"  [dim]内部标记[/]: {shown}{more}")
-        # 伏笔档案
-        foreshadows = self._tree.get("foreshadows", {}) or {}
-        if foreshadows:
-            story_id = str(self._tree.get("story_id") or self._tree_path.stem)
-            seen_list = self.save_manager.data.get("foreshadows_seen", {}).get(story_id, [])
-            resolved_set = set(self.save_manager.data.get("foreshadows_resolved", {}).get(story_id, []))
-            if seen_list:
-                log.write(f"\n[bold cyan]── 档案(已发现 {len(seen_list)}/{len(foreshadows)} · 已解 {len(resolved_set)}/{len(foreshadows)})──[/]")
-                for slot in seen_list:
-                    meta = foreshadows.get(slot, {})
-                    title = meta.get("title", slot)
-                    if slot in resolved_set:
-                        summary = meta.get("summary_resolved", "")
-                        log.write(f"  [green]✦[/] [bold]{title}[/]")
-                        if summary:
-                            log.write(f"    [dim]{summary}[/]")
-                    else:
-                        summary = meta.get("summary_locked", "")
-                        log.write(f"  [dim]?[/] [dim]{title}[/]")
-                        if summary:
-                            log.write(f"    [dim]{summary}[/]")
-            else:
-                log.write(f"\n[dim]档案:0/{len(foreshadows)} · 还没发现任何伏笔[/]")
-        log.write("")
-        self.query_one("#narrative-box", VerticalScroll).scroll_end(animate=False)
+        """s 键 — 打开玩家可读状态 / 档案弹层,不再污染 narrative log。"""
+        story_id = str(self._tree.get("story_id") or self._tree_path.stem)
+        lines = format_tui_status_lines(self._tree, self.save_manager, story_id, self.state)
+        self.push_screen(StatusScreen(lines))
 
 
 def main(argv: Optional[List[str]] = None) -> int:

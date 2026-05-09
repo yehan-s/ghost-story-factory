@@ -146,5 +146,5 @@ def test_tui_choice_after_feedback_escapes_choice_text(monkeypatch):
     )
 
     assert r"查看\[直播\]" in label
+    assert "[cyan]〈观察〉[/]" in label
     assert "查看[直播]" not in label
-
