@@ -12,6 +12,7 @@
 - `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md`
 - `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`
 - `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`
+- `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -191,6 +192,22 @@
 - 新增选择标签测试;
 - `audit_all` 与统一测试通过。
 
+### M9: VN 沙盒体验改进总方案
+
+状态: Planning,见 `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`。
+
+目标:
+
+- 把下一阶段改进拆成可执行路线,避免继续凭感觉加节点;
+- 明确优先级:基线清账 → 选择后反馈 → 角色关系账本 → 周目复盘 → 演出优先级 → 质量红线;
+- 将“深度不够”转成可验收的玩家反馈链路。
+
+验收:
+
+- 方案文档落地;
+- 团队评审留痕;
+- 后续 Pass 13 可直接从方案切出 Task / Issue。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -199,7 +216,8 @@
 2. 已完成 M1-M5 的剧本、行为反馈、VN 契约和 NPC 账本;
 3. 当前优先做 M6 Pass 9,把“可玩闭环”推进到“内容厚度达标”;
 4. M7 已完成,演出字段已进入运行时;
-5. 当前同步推进 M8,否则大量带 effects 的选择仍像普通菜单,互动感上不去。
+5. M8 已完成,选择意图已进入运行时;
+6. 当前以 M9 作为下一阶段总方案,后续优先切 `Pass 13: 选择后反馈闭环与本轮行为画像`。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
