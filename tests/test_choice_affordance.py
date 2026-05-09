@@ -120,6 +120,6 @@ def test_tui_choice_label_escapes_rich_markup(monkeypatch):
     label = _format_choice_option_label(1, choice)
 
     assert r"查看\[档案\]" in label
-    assert "〔观察 · 心境波动〕" in label
+    assert "[cyan]〈观察〉[/]" in label
+    assert "[red]〈心境波动〉[/]" in label
     assert "查看[档案]" not in label
-

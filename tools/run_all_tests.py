@@ -141,6 +141,7 @@ def main():
                 "tests/test_player_presentation.py",
                 "tests/test_choice_affordance.py",
                 "tests/test_behavior_profile.py",
+                "tests/test_tui_experience_pass14.py",
             ],
         ),
     ]

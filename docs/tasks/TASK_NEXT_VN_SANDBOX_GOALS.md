@@ -14,6 +14,7 @@
 - `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`
 - `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`
 - `docs/tasks/TASK_BEHAVIOR_PROFILE_PASS13.md`
+- `docs/tasks/TASK_TUI_EXPERIENCE_PASS14.md`
 - `docs/tasks/TASK_V7_AUDIT_DEBT_CLEANUP.md`
 - `docs/tasks/TASK_GAMETREE_V1.md`
 - GitHub Issue: `#22`
@@ -227,6 +228,25 @@
 - 新增行为画像测试;
 - `audit_all` 与统一测试通过。
 
+### M11: TUI 体验收束与停留选项去重
+
+状态: Done,见 `docs/tasks/TASK_TUI_EXPERIENCE_PASS14.md`。
+
+目标:
+
+- 把 TUI 作为正式体验入口处理,本轮不再以 CLI 为主;
+- 修复 `stay` / “看一眼”重复刷当前节点 narrative / map 的体验问题;
+- TUI 状态页移除内部 flag key,改为路线账本、行为画像、档案进度;
+- 增加顶部场景条和 TUI 专属选择 badge。
+
+验收:
+
+- 观察细节不重复整屏正文;
+- 选择列表更适合扫读;
+- 状态页不再像调试面板;
+- 新增 TUI helper / 行为回归测试;
+- `audit_all` 与统一测试通过。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -237,7 +257,8 @@
 4. M7 已完成,演出字段已进入运行时;
 5. M8 已完成,选择意图已进入运行时;
 6. M9 已完成,下一阶段总方案已落地;
-7. M10 已完成,选择前意图已经接上选择后反馈闭环。
+7. M10 已完成,选择前意图已经接上选择后反馈闭环;
+8. M11 已完成,TUI 从“能玩”推进到“读起来不累”的第一层闭环。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
