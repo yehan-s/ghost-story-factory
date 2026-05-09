@@ -22,6 +22,7 @@
 | 2026-05-08 | Pass 6 / VN 化大批量铺开(第 1+2 批 7 节点 + 引擎渲染层 P0) | 修改后放行(Meta 投不可放行,采纳 Topology 3 批分级 + UX render P0 + 绝对不动批化解) | [报告](2026-05-08-vn-bulk-rollout.md) |
 | 2026-05-09 | 项目级同步事务与团队评审留痕 | 修改后放行 | [报告](2026-05-09-project-sync-workflow.md) |
 | 2026-05-09 | VN 演出意图契约 Pass 7 | 修改后放行 | [报告](2026-05-09-vn-presentation-contract-pass7.md) |
+| 2026-05-09 | Pass 8 NPC 关系账本与终局前回咬 | 修改后放行 | [报告](2026-05-09-npc-accountability-pass8.md) |
 
 ---
 

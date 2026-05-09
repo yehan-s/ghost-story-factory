@@ -22,8 +22,8 @@
 但它还没有达到目标里的 galgame / 视觉小说厚度。真正的问题不是再加几个吓人名词,而是三件事:
 
 1. 玩家选择对角色关系的影响还不够可见;
-2. 清洁工、论坛围观者、评价室已经完成第一轮人格化,但仍需要扩展到更多关键 NPC;
-3. VN 演出字段已经覆盖正式节点,关键节点开始补 `camera / cg_intent / transition_intent`,但还没有形成完整审计工具。
+2. 清洁工、论坛围观者、评价室已经完成第一轮人格化,Pass 8 已把三者推进为“曝光 / 删除 / 审判”的同一张 NPC 账本;
+3. VN 演出字段已经覆盖正式节点,关键节点已补 `camera / cg_intent / transition_intent`,并被 `audit_playability` 关键节点 warning 锁住。
 
 本任务记录下一阶段的目标,避免后续继续凭感觉修文本。
 
@@ -101,7 +101,7 @@
 
 ### M4: 工具债收敛
 
-状态: In Progress。Issue `#27` 已完成 audit_tree 孤儿道具口径修正与 audit_state 分级输出,剩余为全量验收和后续细项压缩。
+状态: Done for current baseline。Issue `#27` 已完成 audit_tree 孤儿道具口径修正与 audit_state 分级输出;Issue `#19` 已关闭并把 v4 生成器对齐拆到 `#23`;已完成的 `#31` / `#33` 也已关闭,当前 milestone 只剩 roadmap `#22` 与 v4 生成器对齐 `#23`。
 
 目标:
 
@@ -114,6 +114,23 @@
 - `audit_tree` 不再报告无意义孤儿道具;
 - `audit_state` 的输出能分出 error / warning / info;
 - Issue `#19` 状态与 Task 文档一致。
+
+### M5: 剧本 Pass 8 - NPC 关系账本与终局前回咬
+
+状态: Done,见 `docs/tasks/TASK_SCRIPT_NPC_ACCOUNTABILITY_PASS8.md` 与 GitHub Issue `#36`。
+
+目标:
+
+- 让论坛、清洁工、评价室不再只是功能节点,而是共同读取玩家取证、曝光、删痕、审判和命名行为;
+- 用既有 `arc.named_the_dead / oneshot.live_streaming / oneshot.s6_no_fingerprint / arc.got_judge_seal / route.behavior_self_audit` 建立终局前回咬;
+- 保持开放沙盒和 DB schema 不变。
+
+验收:
+
+- `n_npc_forum_lurkers` 写入命名死者状态;
+- `n_npc_cleaner_null`、`n_scene_b3_corridor`、`n_scene_evaluator_room`、`n_scene_morning_lakeside` 读取 NPC 账本状态;
+- 新增 `tests/test_npc_accountability_pass8.py`;
+- `audit_all` 与统一测试通过。
 
 ---
 
