@@ -34,16 +34,21 @@ RECOGNITION_KEYS = {
 
 
 def _has_recognition(req: Dict[str, Any]) -> bool:
-    """递归判断 require 是否含任一识别键。"""
+    """递归判断 require 是否含任一识别键。
+
+    顶层有 direct key(如 behavior_profile / flags / inv_has) → 命中。
+    再递归 all_of / any_of / not 子句。任一路径命中即返回 True。
+    """
     if not isinstance(req, dict) or not req:
         return False
-    if any(k in req for k in RECOGNITION_KEYS):
-        # 嵌套 all_of / any_of 仍要递归看子句是否真有内容
-        if "all_of" in req:
-            return any(_has_recognition(c) for c in (req.get("all_of") or []))
-        if "any_of" in req:
-            return any(_has_recognition(c) for c in (req.get("any_of") or []))
+    # direct key 命中:behavior_profile / *_resolved / ending_seen 等
+    DIRECT_KEYS = RECOGNITION_KEYS - {"all_of", "any_of"}
+    if any(k in req for k in DIRECT_KEYS):
         return True
+    # 递归 all_of / any_of 子句
+    for sub in (req.get("all_of") or []) + (req.get("any_of") or []):
+        if _has_recognition(sub):
+            return True
     if "not" in req:
         return _has_recognition(req["not"])
     return False

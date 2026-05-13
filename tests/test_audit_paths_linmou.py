@@ -258,11 +258,13 @@ def _linmou_subgraph(tree):
         for ch in node.get("choices", []) or []:
             nxt = ch.get("next")
             if nxt and nxt not in seen and nxt in nodes:
-                seen.add(nxt); q.append(nxt)
+                seen.add(nxt)
+                q.append(nxt)
         for nv in node.get("next_variants") or []:
             nxt = nv.get("next")
             if nxt and nxt not in seen and nxt in nodes:
-                seen.add(nxt); q.append(nxt)
+                seen.add(nxt)
+                q.append(nxt)
     return seen
 
 

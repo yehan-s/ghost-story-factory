@@ -187,11 +187,15 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                 spec_sid = spec.get("story_id")
                 if not eid or eid == "*":
                     continue
-                # 跨 story_id 引用 → skip(不在本树管辖)
+                # 历史命名别名:save_manager 默认 story_id="杭州_v7",
+                # tree.story_id="hangzhou_yebanbaoan",视作同一 story
+                STORY_ALIASES = {
+                    ("杭州_v7", "hangzhou_yebanbaoan"),
+                    ("hangzhou_yebanbaoan", "杭州_v7"),
+                }
                 if spec_sid and tree_story_id and spec_sid != tree_story_id:
-                    # 历史命名兼容:save_manager 默认 story_id="杭州_v7",
-                    # tree.story_id="hangzhou_yebanbaoan",视作同一 story 别名
-                    if not (spec_sid == "杭州_v7" and tree_story_id == "hangzhou_yebanbaoan"):
+                    if (spec_sid, tree_story_id) not in STORY_ALIASES:
+                        # 真正跨 story 引用 → skip(不在本树管辖)
                         continue
                 if eid not in known_ending_types:
                     problems.append({

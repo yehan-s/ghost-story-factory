@@ -5,6 +5,11 @@ set -e
 
 TREE="stories/hangzhou_yebanbaoan/tree.json"
 
+# 用 mktemp 避免并发(local jobs / CI shards)写同一 /tmp 文件竞态
+CROSS_RUN_JSON="$(mktemp -t cross_run.XXXXXX.json)"
+VARIANT_TRIGGER_JSON="$(mktemp -t variant_trigger.XXXXXX.json)"
+trap 'rm -f "$CROSS_RUN_JSON" "$VARIANT_TRIGGER_JSON"' EXIT
+
 echo "=== 1/12 audit_playability(GameTree 可玩闭环)==="
 python tools/audit_playability.py "$TREE"
 echo
@@ -36,8 +41,8 @@ python tools/audit_foreshadow_chain.py "$TREE" > /dev/null
 echo "  伏笔链条审计通过"
 echo
 echo "=== 10/12 audit_cross_run_continuity(Pass 22 — 跨周目消费侧覆盖)==="
-python tools/audit_cross_run_continuity.py "$TREE" > /tmp/cross_run.json
-PROBLEMS=$(python3 -c "import json; print(len(json.load(open('/tmp/cross_run.json'))['problems']))")
+python tools/audit_cross_run_continuity.py "$TREE" > "$CROSS_RUN_JSON"
+PROBLEMS=$(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1]))['problems']))" "$CROSS_RUN_JSON")
 if [ "$PROBLEMS" -gt 0 ]; then
   echo "  ⚠️  跨周目消费侧 debt: $PROBLEMS 处主结局无反咬(留剧本扩写偿还,非阻断)"
 else
@@ -45,8 +50,8 @@ else
 fi
 echo
 echo "=== 11/12 audit_variant_trigger(Pass 22 — variant 触发难度)==="
-python tools/audit_variant_trigger.py "$TREE" > /tmp/variant_trigger.json
-ERRORS=$(python3 -c "import json; print(json.load(open('/tmp/variant_trigger.json'))['errors_count'])")
+python tools/audit_variant_trigger.py "$TREE" > "$VARIANT_TRIGGER_JSON"
+ERRORS=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['errors_count'])" "$VARIANT_TRIGGER_JSON")
 if [ "$ERRORS" -gt 0 ]; then
   echo "  ❌ 触发难度 ERROR: $ERRORS"
   python tools/audit_variant_trigger.py "$TREE"

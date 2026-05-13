@@ -7537,6 +7537,7 @@
       }
     },
     "n_l1985_tool_account_satchel": {
+      "scene": "SCENE",
       "_is_tool": true,
       "_tool_id": "linmou_account_satchel",
       "_tool_label": "账册包",
@@ -7575,6 +7576,7 @@
       ]
     },
     "n_l1985_tool_enamel_cup": {
+      "scene": "SCENE",
       "_is_tool": true,
       "_tool_id": "linmou_enamel_cup",
       "_tool_label": "搪瓷缸",

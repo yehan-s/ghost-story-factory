@@ -132,18 +132,25 @@ class RequirementEvaluator:
             return True
         # 懒加载避免 contracts.py ↔ player.py 循环 import
         from ghost_story_factory.v5.player import behavior_profile_axes  # type: ignore
-        spec = require["behavior_profile"] or {}
+        spec = require["behavior_profile"]
+        # Fail closed on malformed spec(CodeRabbit:non-dict 值会静默通过)
+        if not isinstance(spec, dict):
+            return False
         axes = behavior_profile_axes(state)
         joined = " · ".join(axes)
         if "has" in spec:
-            if spec["has"] not in joined:
+            want = spec["has"]
+            if not isinstance(want, str) or want not in joined:
                 return False
         if "has_any" in spec:
-            wants = spec["has_any"] or []
-            if not any(w in joined for w in wants):
+            wants = spec["has_any"]
+            if not isinstance(wants, list) or not any(
+                isinstance(w, str) and w in joined for w in wants
+            ):
                 return False
         if "dominant" in spec:
-            if not axes or spec["dominant"] not in axes[0]:
+            want = spec["dominant"]
+            if not axes or not isinstance(want, str) or want not in axes[0]:
                 return False
         return True
 

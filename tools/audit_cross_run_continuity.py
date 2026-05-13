@@ -78,10 +78,13 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                 spec_sid = spec.get("story_id")
                 if not eid or eid == "*":
                     continue
-                # 跨 story_id skip(同 audit_reactions Pass 20 修复)
+                # 跨 story_id skip(双向 alias,同 audit_reactions Pass 20+24 修复)
+                STORY_ALIASES = {
+                    ("杭州_v7", "hangzhou_yebanbaoan"),
+                    ("hangzhou_yebanbaoan", "杭州_v7"),
+                }
                 if (spec_sid and tree_story_id and spec_sid != tree_story_id
-                        and not (spec_sid == "杭州_v7"
-                                 and tree_story_id == "hangzhou_yebanbaoan")):
+                        and (spec_sid, tree_story_id) not in STORY_ALIASES):
                     continue
                 referenced.add(eid)
 

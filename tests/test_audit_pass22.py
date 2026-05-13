@@ -27,7 +27,7 @@ def _write_tree(tree: dict) -> Path:
     """把 dict 写入临时文件,返回 Path。"""
     fd, name = tempfile.mkstemp(suffix=".json")
     os.close(fd)
-    Path(name).write_text(json.dumps(tree, ensure_ascii=False))
+    Path(name).write_text(json.dumps(tree, ensure_ascii=False), encoding="utf-8")
     return Path(name)
 
 
