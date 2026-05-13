@@ -169,23 +169,44 @@ def audit(tree_path: Path) -> Dict[str, Any]:
                 })
 
     # DEAD_ENDING_SEEN(ADR-009 cross-character contract):
-    # variant require ending_seen 引用的 ending_id 必须存在为节点(ending 是节点)。
-    # 通配 "*" 不检查(语义是"任意")。
+    # ending_seen.ending_id 在 save_manager.record_ending 中存的是 ending_TYPE
+    # (业务标签,如 "E_TRUTH"),不是节点 id。所以验证应当查所有 is_ending=True
+    # 节点的 ending_type 集合,而不是 nodes 表。
+    # Pass 20(#15):当 spec.story_id 与当前 tree.story_id 不一致时 skip
+    # ——这是真正的跨 story_id 引用,不在本树管辖范围。
+    tree_story_id = tree.get("story_id")
+    known_ending_types: Set[str] = set()
+    for n in nodes.values():
+        if n.get("is_ending") and n.get("ending_type"):
+            known_ending_types.add(n["ending_type"])
     for nid, node in nodes.items():
         for ctx, req in _walk_requires(node):
             for spec in _walk_ending_seen(req):
-                eid = (spec or {}).get("ending_id")
+                spec = spec or {}
+                eid = spec.get("ending_id")
+                spec_sid = spec.get("story_id")
                 if not eid or eid == "*":
                     continue
-                if eid not in nodes:
+                # 历史命名别名:save_manager 默认 story_id="杭州_v7",
+                # tree.story_id="hangzhou_yebanbaoan",视作同一 story
+                STORY_ALIASES = {
+                    ("杭州_v7", "hangzhou_yebanbaoan"),
+                    ("hangzhou_yebanbaoan", "杭州_v7"),
+                }
+                if spec_sid and tree_story_id and spec_sid != tree_story_id:
+                    if (spec_sid, tree_story_id) not in STORY_ALIASES:
+                        # 真正跨 story 引用 → skip(不在本树管辖)
+                        continue
+                if eid not in known_ending_types:
                     problems.append({
                         "code": "DEAD_ENDING_SEEN",
                         "node": nid,
                         "ctx": ctx,
                         "msg": (
-                            f"ending_seen ending_id={eid!r} 不在节点表(跨角色契约缺失)。"
-                            f" 修复方向:补 ending 节点 / 把引用改成正确的 node_id(snake_case n_end_*),"
-                            f"不要删 variant — variant 删除会丢跨周目反应,违背 ADR-010 沙盒契约。"
+                            f"ending_seen ending_id={eid!r} 不在本树的 ending_type 集合"
+                            f"({sorted(known_ending_types)})。修复方向:补对应 ending 节点 "
+                            f"/ 改用现有 ending_type / 不要删 variant — variant 删除会丢"
+                            f"跨周目反应,违背 ADR-010 沙盒契约。"
                         ),
                     })
 

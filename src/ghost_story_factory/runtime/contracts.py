@@ -112,6 +112,46 @@ class RequirementEvaluator:
             return False
         if not cls._meets_ending_seen(state, require):
             return False
+        if not cls._meets_behavior_profile(state, require):
+            return False
+        return True
+
+    @classmethod
+    def _meets_behavior_profile(cls, state: Any, require: Dict[str, Any]) -> bool:
+        """Pass 20:行为画像派生条件。
+
+        协议(0 新字段,纯派生):
+        - behavior_profile.has      — 任一 axis 包含该子串
+        - behavior_profile.has_any  — 任一 axis 包含 list 中任一子串
+        - behavior_profile.dominant — 主导(第一)axis 包含该子串
+
+        行为画像 axes 由 `behavior_profile_axes(state)` 从既有 flags/state 派生,
+        不引入新真相源,完全符合 ADR-007/008 单一真相源约束。
+        """
+        if "behavior_profile" not in require:
+            return True
+        # 懒加载避免 contracts.py ↔ player.py 循环 import
+        from ghost_story_factory.v5.player import behavior_profile_axes  # type: ignore
+        spec = require["behavior_profile"]
+        # Fail closed on malformed spec(CodeRabbit:non-dict 值会静默通过)
+        if not isinstance(spec, dict):
+            return False
+        axes = behavior_profile_axes(state)
+        joined = " · ".join(axes)
+        if "has" in spec:
+            want = spec["has"]
+            if not isinstance(want, str) or want not in joined:
+                return False
+        if "has_any" in spec:
+            wants = spec["has_any"]
+            if not isinstance(wants, list) or not any(
+                isinstance(w, str) and w in joined for w in wants
+            ):
+                return False
+        if "dominant" in spec:
+            want = spec["dominant"]
+            if not axes or not isinstance(want, str) or want not in axes[0]:
+                return False
         return True
 
     @classmethod

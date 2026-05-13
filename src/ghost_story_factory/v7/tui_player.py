@@ -783,7 +783,7 @@ class GhostStoryApp(App):
             log = self.query_one("#narrative", RichLog)
             log.write("")
             log.write("[dim]  你停下来,从胸袋里摸出手机。[/]")
-            log.write("[dim]  屏幕亮了 — 屏保是你和你媳妇 2023 年的合照。[/]")
+            log.write("[dim]  屏幕亮了 — 屏保还是出厂默认那张西湖夜景,你刚入职两周,没换过。[/]")
             log.write("[dim]  你点开『杭州地铁夜班巡逻图』 — 队长发的内部 app。[/]")
             log.write("[dim]  地图加载,信号是『 4G · 弱』。[/]")
             log.write("[dim]  地图只画了你[/][bold]已经知道[/][dim]的几个点。其他位置,只有问号。[/]")

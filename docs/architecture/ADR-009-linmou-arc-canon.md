@@ -157,11 +157,16 @@ P0 落地后实测发现:**linmou Act 1 是沙盒"拓扑骨架",但没有沙盒�
 | Sandbox 原语 | G-273 周目(参考) | linmou Act 1 现状 | 偿还时机 |
 |---|---|---|---|
 | `_is_map_picker` hub | 1 个(56 入边) | 1 个(7 入边) ✅ | — |
-| 地标 `connections` 邻接 | 7 地标全网状连接 | 4 地标**全部从 picker 单向辐射,0 邻接** | Act 2 |
-| `_is_tool` 工具节点 | 9 个 | **0 个** | Act 2(账册包/搪瓷缸/26 联签作物件) |
-| `effects.stay: true` 自循环 | 9 处 | **0 处** | Act 2 |
-| `narrative_variants` 反应 clause | 11 处 | 1 处(picker 反应) | Act 3 |
-| 总节点数 | 50+ | 27(目标 50) | Act 2 补 23 节点 |
+| 地标 `connections` 邻接 | 7 地标全网状连接 | 4 地标 ✅(manifest 层 L1-L4 全网状) | — |
+| `_is_tool` 工具节点 | 9 个 | **2 个 ✅**(Pass 21 偿还:账册包 + 搪瓷缸) | Pass 21 已偿还 |
+| `effects.stay: true` 自循环 | 9 处 | **2 处 ✅**(Pass 21 偿还) | Pass 21 已偿还 |
+| `narrative_variants` 反应 clause | 11 处 | **3 处 ✅**(picker + 2 tool) | Pass 21 加强 |
+| 总节点数 | 50+ | 29(27 叙事 + 2 tool,Act 2 留扩展) | Act 2 |
+
+> **Pass 21 偿还(2026-05-13)**:见 `docs/tasks/TASK_LINMOU_SANDBOX_PASS21.md`。
+> "Act 1 不必回炉"决议保留——Pass 21 是**追加** 2 个 tool 节点而非回炉。
+> linmou 子图独立满足 ADR-010 五项最小骨架,回归测试见
+> `tests/test_audit_paths_linmou.py::test_linmou_subgraph_meets_adr010_sandbox_skeleton`。
 
 **核心问题**:Act 1 节点 = 单点决策机,picker → 地标 → 选择 → ending。**没有"反复回访 / 物件互动 / 横向移动"**,这是死剧本结构,只是用了 picker 包装。
 

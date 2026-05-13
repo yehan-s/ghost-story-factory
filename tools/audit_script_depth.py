@@ -34,6 +34,7 @@ LINMOU_LANDMARKS = {
 G273_BIOGRAPHY_AUDIT_NODES = [
     "n_npc_predecessor_voice",
     "n_scene_lost_archive",
+    "n_scene_red_telephone",
     "n_lore_leifeng_worm",
     "n_lore_songmuchang_inn",
     "n_lore_zheda_clock_girl",
@@ -54,6 +55,15 @@ G273_OLD_BIOGRAPHY_TERMS = [
     "2010 年接",
     "一个月工资是 38 块",
     "1987 年坐 K6",
+    "你爸单位",
+    "你妈说",
+    "你这辈子都没问过你爸",
+    "你 5 岁",
+    "你 6 岁",
+    "1990 年你",
+    "你父亲 1980",
+    "你那时候才 19 岁",
+    "你妻儿",
 ]
 
 
@@ -340,18 +350,33 @@ def _check_g273_protagonist_biography(
     nodes: Dict[str, Dict[str, Any]],
     report: ScriptDepthReport,
 ) -> None:
-    """检查 G-273 首访文本不能泄漏旧版中年老保安设定。"""
+    """检查 G-273 首访文本不能泄漏旧版中年老保安设定。
+
+    Pass 19:扫描扩展到 narrative_variants[*].text,而不只是 resolve_narrative
+    返回的默认匹配——variants 里也可能埋着旧履历。
+    """
     state = State({"character": "G-273"})
     for node_id in G273_BIOGRAPHY_AUDIT_NODES:
         node = nodes.get(node_id)
         if not node:
             continue
-        text = resolve_narrative(node, state)
-        leaks = [term for term in G273_OLD_BIOGRAPHY_TERMS if term in text]
-        if leaks:
-            report.protagonist_biography_violations.append(
-                f"{node_id} 混入旧主角履历: {', '.join(leaks)}"
-            )
+        texts: List[str] = []
+        default_text = resolve_narrative(node, state)
+        if default_text:
+            texts.append(("default", default_text))
+        raw_default = node.get("narrative") or ""
+        if raw_default and raw_default != default_text:
+            texts.append(("narrative", raw_default))
+        for idx, variant in enumerate(node.get("narrative_variants") or []):
+            v_text = variant.get("text") or ""
+            if v_text:
+                texts.append((f"variant[{idx}]", v_text))
+        for source, text in texts:
+            leaks = [term for term in G273_OLD_BIOGRAPHY_TERMS if term in text]
+            if leaks:
+                report.protagonist_biography_violations.append(
+                    f"{node_id}.{source} 混入旧主角履历: {', '.join(leaks)}"
+                )
     if report.protagonist_biography_violations:
         report.errors.extend(report.protagonist_biography_violations)
 

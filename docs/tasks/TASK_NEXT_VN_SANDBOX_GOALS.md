@@ -12,6 +12,7 @@
 - `docs/tasks/TASK_SCRIPT_DEPTH_BREADTH_PASS9.md`
 - `docs/tasks/TASK_SCRIPT_ROOT_CAUSE_PASS17.md`
 - `docs/tasks/TASK_SCRIPT_THIN_NODES_PASS18.md`
+- `docs/tasks/TASK_SCRIPT_PROTAGONIST_LEAK_PASS19.md`
 - `docs/tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md`
 - `docs/tasks/TASK_CHOICE_AFFORDANCE_PASS11.md`
 - `docs/tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md`
@@ -323,6 +324,115 @@
 - `audit_script_depth` 能把薄节点超标作为错误;
 - fragments 合并后的正式树通过 `audit_all` 与统一测试。
 
+### M16: G-273 主角身份泄漏清扫
+
+状态: Active,见 `docs/tasks/TASK_SCRIPT_PROTAGONIST_LEAK_PASS19.md`。
+
+目标:
+
+- 清理正式剧本中残留的旧版中年保安主角设定;
+- 将主角履历审计从默认 narrative 扩展到所有 `narrative_variants`;
+- 修正 TUI 地图首开硬编码文案,避免“媳妇合照”等旧设定逃过剧本审计;
+- 保持赵某为 2024 新入职、缺钱、误接编号的当前主角。
+
+验收:
+
+- 正式树不再包含 G-273 旧履历泄漏;
+- `audit_script_depth` 能抓到 variant 里的旧履历词;
+- TUI 首开地图文案不再泄漏旧主角设定;
+- fragments 合并后的正式树通过 `audit_all` 与统一测试。
+
+### M17: Pass 20 - 跨周目联动与行为画像反喂 variants
+
+状态: Done,见 `docs/tasks/TASK_SCRIPT_REACTION_PROFILE_PASS20.md`。
+来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 5 票)。
+
+目标:
+
+- 把"既有真相源榨干"——0 新字段,只动 `narrative_variants` 与 `reaction_contracts`;
+- 让行为画像 7 维(救人/取证/替班/曝光/命名/删痕/审判)从"打标签"变成"反向喂 variants",在 NPC 复访 / 终局回咬里直接读 dominant_tag;
+- 修 `audit_reactions` 跨 story_id `endings_seen` 引用降级(close #15),让跨周目联动真正生效;
+- 至少补强 verdict / 审判维度在二周目可见;
+- 保持开放沙盒,不新增 DB schema,不在 player.py 加持久字段。
+
+验收:
+
+- `reaction_contracts` 出现 behavior_profile 派生条件,且 G-273 至少 3 个 NPC 节点读这一条件分化;
+- `endings_seen[story_id]` 跨周目引用在 audit_reactions 全部 pass,无降级;
+- 至少 2 个 hangzhou ending 在二周目展示"上周目你判了谁"的回咬文本;
+- `audit_all` 与统一测试通过。
+
+非目标:
+
+- 不加新 flag 镜像兑现状态;
+- 不在 player.py 加 noticed_* / seen_* / met_* 字段;
+- 不重写行为画像引擎。
+
+### M18: Pass 21 - linmou Act 1 沙盒化(ADR-009 还债)
+
+状态: Done,见 `docs/tasks/TASK_LINMOU_SANDBOX_PASS21.md`。
+来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 3 票)。
+
+目标:
+
+- 把 linmou_1985 Act 1 的 27 节点 / 0 工具 / 单向辐射重构为符合 ADR-010 五项骨架的沙盒;
+- 复用 G-273 周目作为参考实现(picker hub + 网状 connections + stay:true 工具自循环 + reaction variants);
+- 保留 linmou "必死" 不变量(ADR-009),改造前 freeze ending_seen 入口;
+- 不引入新角色/新结局,只重构现有 27 节点的拓扑形状。
+
+验收:
+
+- linmou Act 1 至少 1 个 `_is_map_picker: true` hub 节点;
+- ≥ 4 地标,每个 ≥ 1 条 `connections` 邻边;
+- ≥ 2 个 `_is_tool: true` 节点;
+- ≥ 1 处 `effects.stay: true` 自循环;
+- ≥ 1 处 `narrative_variants[].if.{deduction_resolved | foreshadow_resolved | theme_resolved | ending_seen}` 反应 clause;
+- `audit_sandbox` 在 linmou Act 1 通过(不再列入 sandbox debt);
+- `audit_paths_linmou` 仍保持必死不变量绿;
+- ADR-009 状态从 Active 改为 Resolved 或 Superseded;
+- `audit_all` 与统一测试通过。
+
+非目标:
+
+- 不为 linmou 加新结局;
+- 不打破必死不变量;
+- 不动 G-273 周目。
+
+### M19: Pass 22 - audit 语义化三件套
+
+状态: Done,见 `docs/tasks/TASK_AUDIT_SEMANTIC_PASS22.md`。
+来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 2 票),可与 M17 并行。
+
+### M20: Pass 23 - 主结局跨周目反咬补完
+
+状态: Done,见 `docs/tasks/TASK_SCRIPT_CROSS_RUN_FINALE_PASS23.md`。
+本 Pass 由 M19 的 audit_cross_run_continuity 揭示的剧本债务衍生而来——
+沿用 Pass 20 (M17) 反咬模式,给 4 处主结局补 ending_seen variant。
+
+目标:
+
+- 把 audit 从"结构合规"扩展到"语义运行时",填补"在测代码能跑,没测剧本能演"的盲区;
+- 新增三件工具:
+  1. `audit_foreshadow_chain`:守"伏笔埋了但没人捡 / 捡了没回响",与 audit_variants 配对;
+  2. `audit_cross_run_continuity`:验证 `endings_seen[story_id]` 在二周目真能被某 variant clause 命中,而非空挂;
+  3. `audit_variant_trigger`:模拟最短触发路径长度 + 必需前置 flag 数,超阈值标 warning;
+- 全部纳入 `tools/audit_all.sh`(第 9-11 项);
+- 纯引擎工具,不动剧本。
+
+验收:
+
+- 三件工具落地并跑通正式 tree.json;
+- `tools/audit_all.sh` 升级到 11 项,全绿;
+- 新增 `tests/test_audit_foreshadow_chain.py` / `test_audit_cross_run_continuity.py` / `test_audit_variant_trigger.py`;
+- 保安线增加"主角行为画像不变量"审计(对称 audit_paths_linmou);
+- `audit_all` 与统一测试通过。
+
+非目标:
+
+- 不改剧本本体;
+- 不强求 TUI session 回放校验(中危盲区挂账到后续 Pass);
+- 不重写既有 8 项 audit 内部逻辑,只扩展。
+
 ---
 
 ## 3. 推荐执行顺序
@@ -339,8 +449,17 @@
 10. M13 已完成,拆出 TUI 表达层,处理反复长体验问题的病根;
 11. M14 已完成,正式剧本终局入口、单行路和 G-273 履历一致性进入审计红线;
 12. M15 已完成,薄节点从 50 降到 31,并进入审计红线。
+13. M16 已完成,主角身份泄漏清扫已落地(Pass 19)。
+14. M17 已完成(Pass 20),**已把已有数据榨干**——跨周目联动 + 行为画像反喂 variants 接入引擎,#15 闭环,0 新字段;
+15. M18 已完成(Pass 21),**沙盒债已偿**——linmou 子图独立满足 ADR-010 五项骨架,账册包+搪瓷缸升级为 tool 节点;
+16. M19 已完成(Pass 22),**守门工具已加**——audit 语义化四件套(foreshadow_chain / cross_run_continuity / variant_trigger / protagonist_behavior),audit_all 从 8 项升到 12 项。
+17. M20 已完成(Pass 23),**主结局反咬已补**——E_TRUE / E_BROADCAST / E_NEUTRAL / E_HIDDEN 各 1 处反咬 variant,cross_run_continuity debt 清零。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
+
+**M17/M18/M19 顺序不可换**:换了等于先在没扎实的数据底座上扩沙盒,再用未及格的审计验证——给未来的自己挖坑。详见 `docs/team-reviews/2026-05-13-next-direction-survey.md`。
+
+**短名单全部落地后**:audit_cross_run_continuity 揭示 4 处主结局(E_TRUE / E_BROADCAST / E_NEUTRAL / E_HIDDEN)跨周目无反咬,留 Pass 23+ 偿还。下一阶段方向回到评审团短名单表上挑选。
 
 ---
 
