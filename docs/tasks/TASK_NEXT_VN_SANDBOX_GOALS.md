@@ -456,6 +456,7 @@
 17. M20 已完成(Pass 23),**主结局反咬已补**——E_TRUE / E_BROADCAST / E_NEUTRAL / E_HIDDEN 各 1 处反咬 variant,cross_run_continuity debt 清零。
 18. M21 已完成(Pass 24),**linmou ending 反咬已补**——E_LINMOU_RELEASE(米黄牛皮纸袋)/ E_LINMOU_EXPOSED(广播喇叭三遍)2 处反咬 variant 接入 G-273 主线节点。
 19. M22 已完成(Pass 25),**人格惯性协议已落地**——`ending_seen.last` 协议 + record_ending 末尾重排 + ADR-011 映射表 + audit_profile_inheritance,audit_all 升到 13 项;4 项 main ending .last 反咬留 debt。
+20. M23 已完成(Pass 26),**人格惯性 debt 清零 + 阻断升级**——E_TRUTH / E_BROADCAST / E_DATA / E_HIDDEN 各补 1 条 `.last` 残影变体,audit_profile_inheritance 默认 strict、CI 一票否决。新增 main ending 缺 .last consumer 的 PR 现在直接被红线挡下。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 

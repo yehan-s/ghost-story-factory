@@ -64,13 +64,14 @@ echo "=== 12/13 audit_protagonist_behavior(Pass 22 — G-273 行为画像不变�
 python tools/audit_protagonist_behavior.py "$TREE" > /dev/null
 echo "  G-273 行为画像审计通过"
 echo
-echo "=== 13/13 audit_profile_inheritance(Pass 25 — ending_seen.last 人格惯性消费侧)==="
-python tools/audit_profile_inheritance.py "$TREE" > "$PROFILE_INHERIT_JSON"
-INHERIT_PROBLEMS=$(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1]))['problems']))" "$PROFILE_INHERIT_JSON")
-if [ "$INHERIT_PROBLEMS" -gt 0 ]; then
-  echo "  ⚠️  人格惯性 debt: $INHERIT_PROBLEMS 个 main ending 缺 .last 反咬(留剧本扩写偿还,非阻断)"
-else
-  echo "  人格惯性审计通过"
-fi
+echo "=== 13/13 audit_profile_inheritance(Pass 25/26 — ending_seen.last 人格惯性消费侧)==="
+# Pass 26:升级为阻断。5 个 main ending 都必须有 ≥1 个 .last consumer。
+python tools/audit_profile_inheritance.py "$TREE" > "$PROFILE_INHERIT_JSON" || {
+  INHERIT_PROBLEMS=$(python3 -c "import json,sys; print(len(json.load(open(sys.argv[1]))['problems']))" "$PROFILE_INHERIT_JSON")
+  echo "  ❌ 人格惯性审计未通过: $INHERIT_PROBLEMS 个 main ending 缺 .last 反咬"
+  python tools/audit_profile_inheritance.py "$TREE" 2>&1 | tail -30
+  exit 2
+}
+echo "  人格惯性审计通过"
 echo
 echo "=== 全套审计通过 ✅ ==="

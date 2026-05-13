@@ -463,11 +463,19 @@ def test_profile_inheritance_malformed_spec_does_not_raise():
         path.unlink()
 
 
-def test_profile_inheritance_official_tree_pass_24_25_state():
-    """正式树状态:Pass 25 落地后 E_TRUE 有 1 个 consumer(n_intro),其余 4 个仍 debt。"""
+def test_profile_inheritance_official_tree_zero_debt():
+    """Pass 26:5 个 main ending 全部具备 .last consumer,debt 清零。"""
     report = audit_pi(OFFICIAL_TREE)
-    assert report["consumers_by_ending"]["E_TRUE"] == ["n_intro"]
-    missing = sorted(p["ending_type"] for p in report["problems"])
-    # 这条断言保护 ADR-011 debt 的可观测度:E_TRUE 已偿,4 个未偿
-    assert "E_TRUE" not in missing
-    assert len(missing) == 4
+    expected_consumers = {
+        "E_TRUE": ["n_intro"],
+        "E_TRUTH": ["n_landmark_picker"],
+        "E_BROADCAST": ["n_npc_forum_lurkers"],
+        "E_DATA": ["n_npc_predecessor_voice"],
+        "E_HIDDEN": ["n_scene_evaluator_room"],
+    }
+    for etype, nodes in expected_consumers.items():
+        assert report["consumers_by_ending"][etype] == nodes, (
+            f"{etype} 期望 consumer {nodes},实际 "
+            f"{report['consumers_by_ending'][etype]}"
+        )
+    assert report["problems"] == []

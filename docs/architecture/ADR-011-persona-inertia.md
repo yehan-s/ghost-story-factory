@@ -102,7 +102,13 @@ list 末尾,保证 `list[-1]` 永远是最近一次通关。
 ## Migration / Rollout
 
 - **Pass 25(已交付)**:协议落地 + `n_intro` E_TRUE 一条示范 variant + `audit_profile_inheritance` INFO 报告。
-- **后续 pass(debt)**:逐步把剩余 4 条 main ending 的 `.last` 反咬补齐(E_TRUTH / E_BROADCAST / E_DATA / E_HIDDEN)。
+- **Pass 26(已交付)**:4 条剩余 main ending 的 `.last` 反咬补齐:
+  - E_TRUTH → `n_landmark_picker`(指尖虚搭在 B3 档案圈上)
+  - E_BROADCAST → `n_npc_forum_lurkers`(匿名 @ 你的工号)
+  - E_DATA → `n_npc_predecessor_voice`(键盘敲击 + 字段名 schema 确认)
+  - E_HIDDEN → `n_scene_evaluator_room`(名字到了喉咙却叫不出)
+- **Pass 26 起**:`audit_profile_inheritance` 升级为默认阻断;`audit_all.sh` 第 13 项一票否决。
+  新增 main ending 时,必须同时铺 `.last` consumer,否则 CI 不接受。
 
 ## References
 
