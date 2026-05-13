@@ -344,7 +344,8 @@
 
 ### M17: Pass 20 - 跨周目联动与行为画像反喂 variants
 
-状态: Planned,来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 5 票)。
+状态: Done,见 `docs/tasks/TASK_SCRIPT_REACTION_PROFILE_PASS20.md`。
+来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 5 票)。
 
 目标:
 
@@ -440,8 +441,8 @@
 10. M13 已完成,拆出 TUI 表达层,处理反复长体验问题的病根;
 11. M14 已完成,正式剧本终局入口、单行路和 G-273 履历一致性进入审计红线;
 12. M15 已完成,薄节点从 50 降到 31,并进入审计红线。
-13. M16 当前执行,先修主角身份泄漏,再继续切 TUI 演出状态机。
-14. M17 (Pass 20) 下一步,**先把已有数据榨干**——跨周目联动 + 行为画像反喂 variants,0 新字段;
+13. M16 已完成,主角身份泄漏清扫已落地(Pass 19)。
+14. M17 已完成(Pass 20),**已把已有数据榨干**——跨周目联动 + 行为画像反喂 variants 接入引擎,#15 闭环,0 新字段;
 15. M18 (Pass 21) 紧接 M17,**再还沙盒债**——linmou Act 1 沙盒化(ADR-009 还债);
 16. M19 (Pass 22) 与 M17 并行可启动,**最后加守门工具**——audit 语义化三件套(foreshadow_chain / cross_run_continuity / variant_trigger)。
 
