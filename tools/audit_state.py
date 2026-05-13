@@ -68,11 +68,17 @@ def _build_severity(report: Dict[str, Any]) -> Dict[str, Any]:
         "require_namespace_violations",
         "variant_count_overflow",
         "variant_if_dupes",
+        "placeholder_narratives_picker",  # Pass 27a 防回归
     ):
         if report.get(key):
             warnings[key] = report[key]
 
-    for key in ("year_violations", "dead_set_flags", "dead_set_inv"):
+    for key in (
+        "year_violations",
+        "dead_set_flags",
+        "dead_set_inv",
+        "placeholder_narratives_other",  # Pass 27a 防回归(if=[] 兜底保护,只 info)
+    ):
         if report.get(key):
             info[key] = report[key]
 
@@ -177,6 +183,12 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
     term_violations: List[Tuple[str, str]] = []
     variant_overflow: List[Tuple[str, int]] = []  # 单节点 variants > VARIANT_COUNT_PER_NODE_WARN
     variant_if_dupes: List[Tuple[str, int, int]] = []  # (node_id, idx_a, idx_b) if 完全相同
+    # Pass 27a 防回归(2026-05-14 评审决议 Topology Designer 建议):
+    # picker 节点曾因引擎不调 resolve_narrative 导致 narrative 字段(占位)字符串泄漏给玩家。
+    # 引擎层已修(tui_player.py:380 + v5/player.py:1162 加 resolve_narrative + (占位 guard),
+    # 这里加 audit 防数据层回归:作者不应在 narrative 写 (占位 — ...) 调试字符串。
+    placeholder_narratives_picker: List[str] = []  # picker 节点 narrative 含 (占位 → warning
+    placeholder_narratives_other: List[str] = []   # 其他节点 narrative 含 (占位 → info(if=[] 兜底已保护)
 
     for node_id, node in nodes.items():
         # effects.flags / effects.inv_add(从所有 effects 出现处遍历)
@@ -211,6 +223,13 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
                     variant_if_dupes.append((node_id, seen_keys[key], idx))
                 else:
                     seen_keys[key] = idx
+        # Pass 27a 防回归:检查 narrative 是否含 (占位 调试字符串
+        narrative_raw = node.get("narrative") or ""
+        if "(占位" in narrative_raw:
+            if node.get("_is_map_picker"):
+                placeholder_narratives_picker.append(node_id)
+            else:
+                placeholder_narratives_other.append(node_id)
         # Lore 红线:narrative + 所有 variant 文本扫描
         text_parts: List[str] = [node.get("narrative") or ""]
         for v in node.get("narrative_variants") or []:
@@ -259,6 +278,9 @@ def audit_tree(tree_path: Path) -> Dict[str, Any]:
         "dead_set_inv": dead_set_inv,
         "year_violations": year_violations,
         "term_violations": term_violations,
+        # Pass 27a 防回归(picker 节点 narrative 含 (占位 → warning;其他 → info)
+        "placeholder_narratives_picker": placeholder_narratives_picker,
+        "placeholder_narratives_other": placeholder_narratives_other,
     }
     report["severity"] = _build_severity(report)
     return report
@@ -280,6 +302,7 @@ def _exit_code(report: Dict[str, Any], strict: bool) -> int:
         or report["dead_set_inv"]
         or report["variant_count_overflow"]
         or report["variant_if_dupes"]
+        or report.get("placeholder_narratives_picker")  # Pass 27a 防回归
     )
     if blocking:
         return 2

@@ -376,8 +376,20 @@ class GhostStoryApp(App):
         for slot in node.get("_foreshadow_slot") or []:
             if self.save_manager.mark_foreshadow_seen(story_id, slot):
                 newly_seen_slots.append(slot)
-        # _is_map_picker 节点:用地图视图替代普通 narrative
+        # _is_map_picker 节点:先渲染 narrative_variant,再叠加地图视图
+        # Pass 27' 修复(2026-05-14 评审决议):picker variants 死渲染
+        # 修复前:picker 分支不调 resolve_narrative,24 picker variants(Pass 9/24/26 反咬等)
+        # 全部运行时不显示;玩家只看到 ASCII 地图 + 进度条
         if node.get("_is_map_picker"):
+            picker_narrative = resolve_narrative(node, self.state)
+            if picker_narrative and not picker_narrative.strip().startswith("(占位"):
+                log.write(f"\n[dim]{'─' * 60}[/]")
+                for line in picker_narrative.strip().split("\n"):
+                    if line.strip():
+                        log.write(_highlight_narrative_rich(line))
+                    else:
+                        log.write("")
+                log.write("")
             from ghost_story_factory.v7.map_view import picker_choices as _pc
             _pre = _pc(self._tree, self.state)
             _vis_pre = [c for c in _pre if c.get("_picker_kind") != "locked"]
