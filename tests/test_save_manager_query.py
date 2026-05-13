@@ -92,6 +92,33 @@ def test_record_ending_writes_to_dict():
     assert "E_LINMOU_RELEASE" in es.get("杭州_v7", [])
 
 
+def test_record_ending_repeat_moves_to_tail():
+    """Pass 25:重复通关把 ending 移到末尾,list[-1] 永远是最近一次通关。"""
+    import tempfile
+    p = Path(tempfile.mkdtemp()) / "save.json"
+    sm = SaveManager(p)
+    sm.record_ending("E_TRUTH", story_id="杭州_v7")
+    sm.record_ending("E_DATA", story_id="杭州_v7")
+    sm.record_ending("E_TRUTH", story_id="杭州_v7")  # 重复通关
+    seq = sm.data["endings_seen"]["杭州_v7"]
+    # 去重不变(2 项),但顺序变成 [E_DATA, E_TRUTH]
+    assert seq == ["E_DATA", "E_TRUTH"]
+    assert seq[-1] == "E_TRUTH"
+
+
+def test_record_ending_purges_legacy_duplicates_in_tail_reorder():
+    """CodeRabbit:旧版数据若含重复项,record_ending 也得全清后 append。"""
+    import tempfile
+    p = Path(tempfile.mkdtemp()) / "save.json"
+    sm = SaveManager(p)
+    # 构造一个含重复项的"旧版"历史(模拟 v4 → v5 迁移残留)
+    sm.data["endings_seen"] = {"杭州_v7": ["E_TRUE", "E_DATA", "E_TRUE", "E_TRUE"]}
+    sm.record_ending("E_TRUE", story_id="杭州_v7")
+    seq = sm.data["endings_seen"]["杭州_v7"]
+    # 所有 E_TRUE 应被全部清除,只保留一个在末尾
+    assert seq == ["E_DATA", "E_TRUE"]
+
+
 def test_check_achievements_counts_flattened_endings_seen():
     """endings_seen_min 应统计 ending 数,不是 story 数。"""
     sm = _save_with({

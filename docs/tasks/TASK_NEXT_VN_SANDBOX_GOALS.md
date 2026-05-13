@@ -454,6 +454,8 @@
 15. M18 已完成(Pass 21),**沙盒债已偿**——linmou 子图独立满足 ADR-010 五项骨架,账册包+搪瓷缸升级为 tool 节点;
 16. M19 已完成(Pass 22),**守门工具已加**——audit 语义化四件套(foreshadow_chain / cross_run_continuity / variant_trigger / protagonist_behavior),audit_all 从 8 项升到 12 项。
 17. M20 已完成(Pass 23),**主结局反咬已补**——E_TRUE / E_BROADCAST / E_NEUTRAL / E_HIDDEN 各 1 处反咬 variant,cross_run_continuity debt 清零。
+18. M21 已完成(Pass 24),**linmou ending 反咬已补**——E_LINMOU_RELEASE(米黄牛皮纸袋)/ E_LINMOU_EXPOSED(广播喇叭三遍)2 处反咬 variant 接入 G-273 主线节点。
+19. M22 已完成(Pass 25),**人格惯性协议已落地**——`ending_seen.last` 协议 + record_ending 末尾重排 + ADR-011 映射表 + audit_profile_inheritance,audit_all 升到 13 项;4 项 main ending .last 反咬留 debt。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 

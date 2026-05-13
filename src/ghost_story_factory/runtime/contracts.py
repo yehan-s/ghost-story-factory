@@ -201,10 +201,22 @@ class RequirementEvaluator:
         if save_manager is None:
             return False
 
-        spec = require["ending_seen"] or {}
+        spec = require["ending_seen"]
+        # CodeRabbit: spec 非 dict(e.g. true / list / str)直接 fail-closed,不能 raise。
+        if not isinstance(spec, dict):
+            return False
         story_id = spec.get("story_id")
         ending_id = spec.get("ending_id")
-        if not story_id or not ending_id:
+        last_id = spec.get("last")
+        # Pass 25:`last` 是"最近一次通关 ending_type",依赖 record_ending 的"重复
+        # 移到末尾"语义。`ending_id` / `last` 至少需一个;两者都缺则 fail-closed。
+        if not isinstance(story_id, str) or not story_id:
+            return False
+        if ending_id is not None and not isinstance(ending_id, str):
+            return False
+        if last_id is not None and not isinstance(last_id, str):
+            return False
+        if not ending_id and not last_id:
             return False
 
         seen = (save_manager.data or {}).get("endings_seen")
@@ -215,9 +227,18 @@ class RequirementEvaluator:
         else:
             story_endings = []
 
-        if ending_id == "*":
-            return bool(story_endings)
-        return ending_id in story_endings
+        if last_id:
+            if not story_endings:
+                return False
+            if story_endings[-1] != last_id:
+                return False
+        if ending_id:
+            if ending_id == "*":
+                if not story_endings:
+                    return False
+            elif ending_id not in story_endings:
+                return False
+        return True
 
 
 class EffectApplier:

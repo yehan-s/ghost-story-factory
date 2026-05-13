@@ -36,6 +36,7 @@
 | 2026-05-10 | 正式剧本薄节点压缩 Pass 18 | 已落地,验证通过 | [报告](2026-05-10-script-thin-nodes-pass18.md) |
 | 2026-05-10 | G-273 主角身份泄漏清扫 Pass 19 | 修改后放行 | [报告](2026-05-10-script-protagonist-leak-pass19.md) |
 | 2026-05-13 | 项目下一步深入方向调研 | 放行(推荐短名单) | [报告](2026-05-13-next-direction-survey.md) |
+| 2026-05-13 | Pass 24 linmou 终局反咬 + Pass 25 跨周目人格惯性 | Pass 24 放行 / Pass 25 修改后放行(State A 方案 + MRU + 主线限定 + `.last` 取值器;Topology/UX 缺席) | [报告](2026-05-13-pass24-25-finale-inertia.md) |
 
 ---
 
