@@ -400,7 +400,8 @@
 
 ### M19: Pass 22 - audit 语义化三件套
 
-状态: Planned,来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 2 票),可与 M17 并行。
+状态: Done,见 `docs/tasks/TASK_AUDIT_SEMANTIC_PASS22.md`。
+来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 2 票),可与 M17 并行。
 
 目标:
 
@@ -445,11 +446,13 @@
 13. M16 已完成,主角身份泄漏清扫已落地(Pass 19)。
 14. M17 已完成(Pass 20),**已把已有数据榨干**——跨周目联动 + 行为画像反喂 variants 接入引擎,#15 闭环,0 新字段;
 15. M18 已完成(Pass 21),**沙盒债已偿**——linmou 子图独立满足 ADR-010 五项骨架,账册包+搪瓷缸升级为 tool 节点;
-16. M19 (Pass 22) 与 M17 并行可启动,**最后加守门工具**——audit 语义化三件套(foreshadow_chain / cross_run_continuity / variant_trigger)。
+16. M19 已完成(Pass 22),**守门工具已加**——audit 语义化四件套(foreshadow_chain / cross_run_continuity / variant_trigger / protagonist_behavior),audit_all 从 8 项升到 12 项。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
 **M17/M18/M19 顺序不可换**:换了等于先在没扎实的数据底座上扩沙盒,再用未及格的审计验证——给未来的自己挖坑。详见 `docs/team-reviews/2026-05-13-next-direction-survey.md`。
+
+**短名单全部落地后**:audit_cross_run_continuity 揭示 4 处主结局(E_TRUE / E_BROADCAST / E_NEUTRAL / E_HIDDEN)跨周目无反咬,留 Pass 23+ 偿还。下一阶段方向回到评审团短名单表上挑选。
 
 ---
 
