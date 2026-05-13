@@ -439,6 +439,30 @@ def test_profile_inheritance_story_alias_works():
         path.unlink()
 
 
+def test_profile_inheritance_malformed_spec_does_not_raise():
+    """CodeRabbit:spec 非 dict(true / list / str)应被跳过,不 raise。"""
+    tree = {
+        "story_id": "杭州_v7",
+        "nodes": {
+            "n_a": {
+                "narrative_variants": [
+                    {"if": {"ending_seen": True}, "text": "x"},
+                    {"if": {"ending_seen": ["E_TRUE"]}, "text": "y"},
+                    {"if": {"ending_seen": "E_TRUE"}, "text": "z"},
+                ],
+            },
+        },
+    }
+    path = _write_tree(tree)
+    try:
+        report = audit_pi(path)
+        # 不 raise + 0 consumer + 5 个 main ending 都 missing
+        assert all(not v for v in report["consumers_by_ending"].values())
+        assert len(report["problems"]) == 5
+    finally:
+        path.unlink()
+
+
 def test_profile_inheritance_official_tree_pass_24_25_state():
     """正式树状态:Pass 25 落地后 E_TRUE 有 1 个 consumer(n_intro),其余 4 个仍 debt。"""
     report = audit_pi(OFFICIAL_TREE)

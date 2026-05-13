@@ -292,8 +292,10 @@ class SaveManager:
         story_eds = es.setdefault(story_id, [])
         # Pass 25:重复通关时把 ending 移到末尾,保证 list[-1] = 最近一次通关。
         # 不破坏现有"x in list"消费;新增不变量供 ending_seen.last 使用。
+        # CodeRabbit:旧版数据可能含重复项,list.remove 只删第一个 → 用 list comprehension
+        # 全部清除后再 append,保证 list 去重 + 末尾即最近。
         if ending_type in story_eds:
-            story_eds.remove(ending_type)
+            story_eds[:] = [e for e in story_eds if e != ending_type]
         story_eds.append(ending_type)
 
         unlocked = self.data.setdefault("unlocked_characters", ["G-273"])

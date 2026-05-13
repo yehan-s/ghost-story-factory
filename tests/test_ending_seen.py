@@ -101,6 +101,25 @@ def test_ending_seen_last_empty_list_false():
     assert s.meets({"ending_seen": {"story_id": "杭州_v7", "last": "E_TRUE"}}) is False
 
 
+def test_ending_seen_malformed_spec_returns_false():
+    """spec 非 dict(true / list / str)→ False 不 raise。"""
+    s = _state_with({"杭州_v7": ["E_TRUE"]})
+    assert s.meets({"ending_seen": True}) is False
+    assert s.meets({"ending_seen": ["E_TRUE"]}) is False
+    assert s.meets({"ending_seen": "E_TRUE"}) is False
+
+
+def test_ending_seen_non_str_fields_return_false():
+    """story_id / ending_id / last 非 str → False。"""
+    s = _state_with({"杭州_v7": ["E_TRUE"]})
+    # story_id 非 str
+    assert s.meets({"ending_seen": {"story_id": 123, "last": "E_TRUE"}}) is False
+    # ending_id 非 str
+    assert s.meets({"ending_seen": {"story_id": "杭州_v7", "ending_id": ["E_TRUE"]}}) is False
+    # last 非 str
+    assert s.meets({"ending_seen": {"story_id": "杭州_v7", "last": 42}}) is False
+
+
 def test_ending_seen_last_and_ending_id_both_required():
     """last + ending_id 同时给 → AND 关系。"""
     s = _state_with({"杭州_v7": ["E_TRUTH", "E_TRUE"]})

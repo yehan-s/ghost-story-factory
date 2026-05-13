@@ -74,7 +74,10 @@ def audit(tree_path: Path) -> Dict[str, Any]:
             continue
         for req in _walk_requires(node):
             for spec in _walk_ending_seen(req):
-                spec = spec or {}
+                # CodeRabbit: spec 可能是 true / list / str(剧本错误形式),
+                # 跳过而不是 raise。审计永远不应该因为剧本数据形态崩溃。
+                if not isinstance(spec, dict):
+                    continue
                 last_id = spec.get("last")
                 if not last_id:
                     continue
