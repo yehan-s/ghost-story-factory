@@ -221,3 +221,92 @@ def test_inv5_red_when_one_intent_unreachable():
     # RELEASE 不可达 = "释" intent 缺失
     assert len(inv5) >= 1
     assert any("释" in p.get("msg", "") for p in inv5)
+
+
+# ============ Pass 21 M18 — linmou Act 1 沙盒化(ADR-009 还债) ============
+
+
+def _has_reaction_clause(req):
+    """递归判断 require 是否含 reaction key,跳过 None/空 dict 防止无限递归。"""
+    REACTION_KEYS = {
+        "deduction_resolved", "foreshadow_resolved",
+        "theme_resolved", "ending_seen",
+    }
+    if not isinstance(req, dict) or not req:
+        return False
+    if any(k in req for k in REACTION_KEYS):
+        return True
+    for sub in (req.get("all_of") or []) + (req.get("any_of") or []):
+        if _has_reaction_clause(sub):
+            return True
+    not_clause = req.get("not")
+    if not_clause and _has_reaction_clause(not_clause):
+        return True
+    return False
+
+
+def _linmou_subgraph(tree):
+    """从 n_l1985_entry BFS,返回 linmou 子图节点 id 集合。"""
+    from collections import deque
+    nodes = tree["nodes"]
+    start = "n_l1985_entry"
+    seen = {start}
+    q = deque([start])
+    while q:
+        cur = q.popleft()
+        node = nodes.get(cur, {})
+        for ch in node.get("choices", []) or []:
+            nxt = ch.get("next")
+            if nxt and nxt not in seen and nxt in nodes:
+                seen.add(nxt); q.append(nxt)
+        for nv in node.get("next_variants") or []:
+            nxt = nv.get("next")
+            if nxt and nxt not in seen and nxt in nodes:
+                seen.add(nxt); q.append(nxt)
+    return seen
+
+
+def test_linmou_subgraph_meets_adr010_sandbox_skeleton():
+    """Pass 21 M18:linmou 子图独立满足 ADR-010 5 项最小骨架。"""
+    import json
+    from pathlib import Path
+    tree = json.loads(
+        Path("stories/hangzhou_yebanbaoan/tree.json").read_text(encoding="utf-8")
+    )
+    nodes = tree["nodes"]
+    subgraph = _linmou_subgraph(tree)
+
+    # 1. ≥ 1 picker hub
+    pickers = [n for n in subgraph if nodes[n].get("_is_map_picker")]
+    assert len(pickers) >= 1, f"linmou 子图缺少 picker hub: {pickers}"
+
+    # 2. ≥ 4 地标,每个 ≥ 1 条 connections
+    landmarks = [
+        item for item in (tree.get("landmark_map") or [])
+        if (item.get("node_id") or "") in subgraph and (item.get("id") or "").startswith("L")
+    ]
+    assert len(landmarks) >= 4, f"linmou 地标数不足: {len(landmarks)}"
+    for item in landmarks:
+        assert item.get("connections"), f"linmou 地标 {item['id']} 缺少 connections 邻边"
+
+    # 3. ≥ 2 个 _is_tool 节点
+    tools = [n for n in subgraph if nodes[n].get("_is_tool")]
+    assert len(tools) >= 2, f"linmou 子图 tool 节点不足: {tools}"
+
+    # 4. ≥ 1 处 effects.stay: true 自循环
+    stay_loops = []
+    for n in tools:
+        for ch in nodes[n].get("choices", []) or []:
+            if (ch.get("effects") or {}).get("stay") and ch.get("next") == n:
+                stay_loops.append(n)
+                break
+    assert len(stay_loops) >= 1, f"linmou 子图缺少 stay:true 自循环: {stay_loops}"
+
+    # 5. ≥ 1 处 reaction clause variant
+    reaction_nodes = []
+    for n in subgraph:
+        for v in nodes[n].get("narrative_variants") or []:
+            if _has_reaction_clause(v.get("if") or {}):
+                reaction_nodes.append(n)
+                break
+    assert len(reaction_nodes) >= 1, f"linmou 子图缺少 reaction clause: {reaction_nodes}"

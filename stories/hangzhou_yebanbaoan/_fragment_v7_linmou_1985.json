@@ -12,7 +12,9 @@
       "presentation": {
         "background": "bg_old_office",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "strained",
         "cg_unlock": null,
@@ -102,7 +104,9 @@
       "presentation": {
         "background": "bg_map",
         "bgm": "bgm_map_static",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "haunted",
         "cg_unlock": null,
@@ -179,6 +183,14 @@
               }
             ]
           }
+        },
+        {
+          "text": "[06] 摸一摸账册包(物件)。",
+          "next": "n_l1985_tool_account_satchel"
+        },
+        {
+          "text": "[07] 看一眼老李那只搪瓷缸(物件)。",
+          "next": "n_l1985_tool_enamel_cup"
         }
       ],
       "_picker_endshift_choice": {
@@ -251,7 +263,9 @@
       "presentation": {
         "background": "bg_old_office",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "watching",
         "cg_unlock": null,
@@ -375,7 +389,9 @@
       "presentation": {
         "background": "bg_old_office",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "ash-lit",
         "cg_unlock": null,
@@ -500,7 +516,9 @@
       "presentation": {
         "background": "bg_archive",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "cornered",
         "cg_unlock": null,
@@ -624,7 +642,9 @@
       "presentation": {
         "background": "bg_lakeside",
         "bgm": "bgm_lake",
-        "sfx": ["sfx_water"],
+        "sfx": [
+          "sfx_water"
+        ],
         "sprite": "sp_linmou",
         "expression": "resigned",
         "cg_unlock": null,
@@ -739,7 +759,9 @@
       "presentation": {
         "background": "bg_old_office",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "alarmed",
         "cg_unlock": null,
@@ -784,7 +806,9 @@
       "presentation": {
         "background": "bg_old_office",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "ash-lit",
         "cg_unlock": null,
@@ -829,7 +853,9 @@
       "presentation": {
         "background": "bg_archive",
         "bgm": "bgm_low_hum",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "cornered",
         "cg_unlock": null,
@@ -874,7 +900,9 @@
       "presentation": {
         "background": "bg_lakeside",
         "bgm": "bgm_lake",
-        "sfx": ["sfx_water"],
+        "sfx": [
+          "sfx_water"
+        ],
         "sprite": "sp_linmou",
         "expression": "resigned",
         "cg_unlock": null,
@@ -919,7 +947,9 @@
       "presentation": {
         "background": "bg_map",
         "bgm": "bgm_map_static",
-        "sfx": ["sfx_page"],
+        "sfx": [
+          "sfx_page"
+        ],
         "sprite": "sp_linmou",
         "expression": "hollow",
         "cg_unlock": null,
@@ -1082,6 +1112,82 @@
       "narrative": "1985 年 10 月 18 日 23:35。\n\n西湖北山街锦带桥东侧。\n\n你被押到岸边。\n\n3 个人——你不认识他们,但他们的口哨,你听过。\n\n他们没说一句话。\n\n他们让你**跪**。\n\n你跪下。\n\n膝盖在湿草地上,凉。\n\n远处大院的广播喇叭还在响——\n\n「请财务科林志诚同志立即到党委办公室。\n  请财务科林志诚同志……」\n\n声音是党委王书记的,带着杭州本地腔。\n\n你抬头看湖。\n\n夜雾很浓。\n\n你看不见对岸。\n\n其中一个人,从背后**推**了你一下。\n\n你向前栽倒。\n\n水冷。\n\n你想挣扎,但脖子上有麻绳。\n\n你没力气。\n\n岸上有人在抽烟——\n\n烟头红光,在你视线最后一瞬,像 1985 年最后一颗**没有月亮的星**。\n\n你没留下遗书。\n\n你没留下账册。\n\n你的蓝布账册包,被他们拿走了。\n\n— 曝光 —\n\n(明天大院广播会说:林志诚同志昨夜不慎落水,经抢救无效,因公殉职。)",
       "show_hud": false,
       "choices": []
+    },
+    "n_l1985_tool_account_satchel": {
+      "_is_tool": true,
+      "_tool_id": "linmou_account_satchel",
+      "_tool_label": "账册包",
+      "presentation": {
+        "camera": "close",
+        "cg_intent": "tool_inspect",
+        "transition_intent": "cut"
+      },
+      "narrative_variants": [
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_TRUTH"
+            }
+          },
+          "text": "你又把账册包从腋下抽出来。\n\n蓝布外皮已经磨白,边角的针脚是你媳妇 1983 年帮你缝的。\n包里 26 联签的复印件还在,纸边有一处铅笔淡淡圈过——\n那是你 1985-10-18 晚上 7 点 14 分自己圈的,**圈错了一栏**。\n\n你今晚已经摸过这个包**很多次**。\n\n但这一次,你忽然闻到了一股**铜锈味**——\n不是 1985 的味道。\n\n好像有人,从 2024 年的某个夜班柜子里,**也在闻这个包**。"
+        },
+        {
+          "if": {},
+          "text": "你把账册包从腋下抽出来。\n\n蓝布外皮已经磨白,边角的针脚松了一截。\n包里塞着 26 联签的复印件——**8 联是别人替你签的**。\n\n你把包重新抱紧。\n\n今晚还没结束。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "再摩挲一遍账册包内衬。",
+          "effects": {
+            "stay": true
+          },
+          "next": "n_l1985_tool_account_satchel"
+        },
+        {
+          "text": "把账册包重新背好,回过道。",
+          "next": "n_l1985_landmark_picker"
+        }
+      ]
+    },
+    "n_l1985_tool_enamel_cup": {
+      "_is_tool": true,
+      "_tool_id": "linmou_enamel_cup",
+      "_tool_label": "搪瓷缸",
+      "presentation": {
+        "camera": "close",
+        "cg_intent": "tool_inspect",
+        "transition_intent": "cut"
+      },
+      "narrative_variants": [
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "ending_id": "E_TRUTH"
+            }
+          },
+          "text": "你又走到过道窗台,看老李那只 1976 年厂庆发的搪瓷缸。\n\n白底蓝字,「为人民服务」五个字漆掉了「服」字一半。\n缸里第二壶廉价绿茶还没凉透,但茶叶**已经沉到了底**——\n这意味着老李至少 17 分钟没碰过它了。\n\n你今晚已经看过这个缸**几遍**。\n\n但今晚的某一刻,你看见缸壁上**多了一道指纹**——\n不是老李的。\n也不是你的。\n\n指纹的角度,像是**有人在 2024 年的某个夜班柜子里,把同样的缸捧起来过**。"
+        },
+        {
+          "if": {},
+          "text": "你走到过道窗台。\n\n老李的搪瓷缸放在那——1976 年厂庆发的款,白底蓝字。\n缸里第二壶廉价绿茶还冒着一点点热气。\n\n老李至少 17 分钟没回来。\n\n你伸手碰了一下缸壁。\n缸**还温的**。"
+        }
+      ],
+      "choices": [
+        {
+          "text": "凑近看缸沿的釉色裂纹。",
+          "effects": {
+            "stay": true
+          },
+          "next": "n_l1985_tool_enamel_cup"
+        },
+        {
+          "text": "把缸放回原位,回过道。",
+          "next": "n_l1985_landmark_picker"
+        }
+      ]
     }
   }
 }
