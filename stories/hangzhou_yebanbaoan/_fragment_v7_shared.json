@@ -171,6 +171,15 @@
           "if": {
             "ending_seen": {
               "story_id": "杭州_v7",
+              "last": "E_TRUTH"
+            }
+          },
+          "text": "你又站在地图前。\n\n你低头看着自己的手——**指尖已经虚搭在 B3 档案室那个圈上**。\n你还没读图例,你还没数红圈红叉。\n可你的食指**早就知道**那一笔该落在哪。\n\n你不记得自己为什么这么熟。你只知道:今晚还没开始,你**已经在归档了**。"
+        },
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
               "ending_id": "E_NEUTRAL"
             }
           },
@@ -736,6 +745,15 @@
         }
       ],
       "narrative_variants": [
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "last": "E_DATA"
+            }
+          },
+          "text": "对讲机接通。\n\n背景**没有滋滋声**。\n也没有 1980 年的厂区广播。\n只有**键盘敲击的连音**——很轻、很匀、很像在表格里跳格。\n\n前任开口前,先报了一串字段名:\n「shift_id、anchor_score、ledger_hash……G-273,你能确认 schema 吗?」\n\n你不知道这些词从哪儿来。你只知道:你的嘴唇**已经准备好回答**。"
+        },
         {
           "if": {
             "ending_seen": {
@@ -1717,6 +1735,15 @@
         "transition_intent": "exposure_feedback"
       },
       "narrative_variants": [
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "last": "E_BROADCAST"
+            }
+          },
+          "text": "夜班论坛今晚的首页很安静。\n\n但你刚一刷新,顶楼跳出来一条匿名评论——\n「**@G-273 你回来了**」\n\n他没说为什么 @ 你。\n他没附图,没引用,没艾特过任何前面的帖子。\n他**就是认得这张工牌号**——像是在哪一夜的直播里见过它,而那一夜你自己已经不记得了。"
+        },
         {
           "if": {
             "ending_seen": {
@@ -2865,6 +2892,15 @@
         "transition_intent": "case_review"
       },
       "narrative_variants": [
+        {
+          "if": {
+            "ending_seen": {
+              "story_id": "杭州_v7",
+              "last": "E_HIDDEN"
+            }
+          },
+          "text": "你推开档案室那扇门。\n\n第 12 本空白记录表**已经摊在桌面**——没人翻开过它,可它就摊在那里。\n你伸手,指尖悬在签字位置。\n\n**一个名字几乎到了喉咙**。\n不是赵某,不是 G-273。\n是更早的、你叫不出的那个名字——\n你**知道它本来是谁**,你也知道:你曾经替它签过字。"
+        },
         {
           "if": {
             "ending_seen": {

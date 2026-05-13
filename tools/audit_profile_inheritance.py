@@ -10,14 +10,15 @@ main ending(在本 audit 范围内):
 - E_TRUE / E_TRUTH / E_BROADCAST / E_DATA / E_HIDDEN
 - BAD ending / NEUTRAL / LINMOU 不在 .last 反咬范围(见 ADR-011)
 
-报告级别:
-- 默认 INFO:缺 .last 反咬只报告,不阻断(debt 性质,靠剧本扩写偿还)
-- --strict:升级为 ERROR(全部 5 个 main ending 都必须有 ≥1 个 .last variant)
+报告级别(Pass 26 起):
+- **默认 strict**:5 个 main ending 都必须有 ≥1 个非结局 variant 用 .last 反咬,
+  否则退出码 2。这是引擎已支持、剧本已落地的协议,不允许新 ending 再留账。
+- --lenient:仅用于本地新铺剧本期间临时绕开,CI 不接受。
 
 用法:
     python tools/audit_profile_inheritance.py path/to/tree.json
-    python tools/audit_profile_inheritance.py path/to/tree.json --strict
-退出码:0=全绿/INFO模式;2=strict 模式下有缺失。
+    python tools/audit_profile_inheritance.py path/to/tree.json --lenient
+退出码:0=全绿;2=有缺失(默认)。
 """
 from __future__ import annotations
 
@@ -114,18 +115,20 @@ def audit(tree_path: Path) -> Dict[str, Any]:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("tree", type=Path)
+    # Pass 26 起:strict 升级为默认。5 个 main ending 都必须有 ≥1 个 .last consumer。
+    # `--lenient` 用于本地新铺剧本时临时绕开,CI 不接受。
     ap.add_argument(
-        "--strict",
+        "--lenient",
         action="store_true",
         help=(
-            "缺失 main ending .last 反咬时退出码 2。"
-            "默认只报告(debt 性质,靠剧本扩写偿还)。"
+            "缺失 main ending .last 反咬时**不**阻断,仅报告。"
+            "仅用于本地新铺剧本期间;CI / merge gate 不应使用。"
         ),
     )
     args = ap.parse_args()
     report = audit(args.tree)
     print(json.dumps(report, ensure_ascii=False, indent=2))
-    if args.strict and report["problems"]:
+    if report["problems"] and not args.lenient:
         sys.exit(2)
     sys.exit(0)
 
