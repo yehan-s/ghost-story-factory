@@ -90,8 +90,11 @@ def test_g273_biography_leak_fails_depth_audit():
     report = analyze_script_depth(tree, min_nodes=1, min_intent_nodes=0, min_linmou_path=1)
 
     assert not report.ok
+    # Pass 19:审计扩展到 narrative_variants[*].text,会同时报告 default 命中
+    # 与原始 variant 命中(同一文本,两份违规记录,带 .{source} 后缀)
     assert report.protagonist_biography_violations == [
-        "n_npc_predecessor_voice 混入旧主角履历: 你媳妇, 你今年 51"
+        "n_npc_predecessor_voice.default 混入旧主角履历: 你媳妇, 你今年 51",
+        "n_npc_predecessor_voice.variant[0] 混入旧主角履历: 你媳妇, 你今年 51",
     ]
 
 
@@ -247,3 +250,53 @@ def test_one_way_node_returning_to_map_fails():
     assert report.one_way_violations == [
         "n_s7_arrive choices[1] 在 _one_way 节点返回 n_landmark_picker"
     ]
+
+
+def test_g273_biography_leak_in_fallback_variant_is_detected():
+    """Pass 19 回归:旧履历藏在空 if 的 fallback variant 里也要被抓到。"""
+    tree = {
+        "start_node": "n_lore_leifeng_worm",
+        "characters": {
+            "linmou_1985": {"start_node": "n_l1985_entry"},
+        },
+        "nodes": {
+            "n_lore_leifeng_worm": {
+                "narrative_variants": [
+                    {"if": {"character": "G-273"}, "text": "你刚入职两周。"},
+                    {"if": {}, "text": "你今年 51,你媳妇还在等你。"},
+                ],
+                "choices": [],
+            },
+            "n_l1985_entry": {
+                "narrative": "林某开始。",
+                "choices": [{"text": "跳湖", "next": "E_LINMOU_RELEASE"}],
+            },
+            "E_LINMOU_RELEASE": {
+                "is_ending": True,
+                "ending_type": "E_LINMOU_RELEASE",
+                "narrative": "结束。",
+            },
+        },
+    }
+
+    report = analyze_script_depth(tree, min_nodes=1, min_intent_nodes=0, min_linmou_path=1)
+
+    # G-273 state 下,resolve_narrative 命中 variant[0](无泄漏);
+    # 但审计要遍历所有 variants,必须抓到 variant[1] 的 fallback 泄漏
+    assert any(
+        "variant[1]" in v and "你今年 51" in v
+        for v in report.protagonist_biography_violations
+    ), f"未抓到 fallback variant 泄漏: {report.protagonist_biography_violations}"
+
+
+def test_tui_hardcoded_no_g273_old_biography_terms():
+    """Pass 19 回归:TUI 文件不得硬编码旧主角履历词。"""
+    from tools.audit_script_depth import G273_OLD_BIOGRAPHY_TERMS
+
+    tui_path = Path("src/ghost_story_factory/v7/tui_player.py")
+    text = tui_path.read_text(encoding="utf-8")
+    leaks = [term for term in G273_OLD_BIOGRAPHY_TERMS if term in text]
+    assert leaks == [], (
+        f"TUI 文件 {tui_path} 混入旧主角履历词: {leaks}。"
+        f"参考 docs/tasks/TASK_SCRIPT_PROTAGONIST_LEAK_PASS19.md M3"
+    )
