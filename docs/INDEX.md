@@ -82,9 +82,6 @@
 | [ADR-010-sandbox-topology-contract.md](architecture/ADR-010-sandbox-topology-contract.md) | Accepted | 沙盒拓扑契约 — 这是沙盒不是死剧本(第一公理)|
 | [ADR-011-persona-inertia.md](architecture/ADR-011-persona-inertia.md) | Accepted | 人格惯性 ending_seen.last 协议(Pass 25/26)|
 
-------|------|
-| [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | 采用「骨架优先」的新故事生成流水线的架构决策 |
-
 ---
 
 ### 📌 任务与 Roadmap
