@@ -370,7 +370,8 @@
 
 ### M18: Pass 21 - linmou Act 1 沙盒化(ADR-009 还债)
 
-状态: Planned,来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 3 票)。
+状态: Done,见 `docs/tasks/TASK_LINMOU_SANDBOX_PASS21.md`。
+来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 3 票)。
 
 目标:
 
@@ -443,7 +444,7 @@
 12. M15 已完成,薄节点从 50 降到 31,并进入审计红线。
 13. M16 已完成,主角身份泄漏清扫已落地(Pass 19)。
 14. M17 已完成(Pass 20),**已把已有数据榨干**——跨周目联动 + 行为画像反喂 variants 接入引擎,#15 闭环,0 新字段;
-15. M18 (Pass 21) 紧接 M17,**再还沙盒债**——linmou Act 1 沙盒化(ADR-009 还债);
+15. M18 已完成(Pass 21),**沙盒债已偿**——linmou 子图独立满足 ADR-010 五项骨架,账册包+搪瓷缸升级为 tool 节点;
 16. M19 (Pass 22) 与 M17 并行可启动,**最后加守门工具**——audit 语义化三件套(foreshadow_chain / cross_run_continuity / variant_trigger)。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
