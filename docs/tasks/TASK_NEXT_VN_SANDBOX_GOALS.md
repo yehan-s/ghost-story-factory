@@ -403,6 +403,12 @@
 状态: Done,见 `docs/tasks/TASK_AUDIT_SEMANTIC_PASS22.md`。
 来源 `docs/team-reviews/2026-05-13-next-direction-survey.md`(7 人共振 2 票),可与 M17 并行。
 
+### M20: Pass 23 - 主结局跨周目反咬补完
+
+状态: Done,见 `docs/tasks/TASK_SCRIPT_CROSS_RUN_FINALE_PASS23.md`。
+本 Pass 由 M19 的 audit_cross_run_continuity 揭示的剧本债务衍生而来——
+沿用 Pass 20 (M17) 反咬模式,给 4 处主结局补 ending_seen variant。
+
 目标:
 
 - 把 audit 从"结构合规"扩展到"语义运行时",填补"在测代码能跑,没测剧本能演"的盲区;
@@ -447,6 +453,7 @@
 14. M17 已完成(Pass 20),**已把已有数据榨干**——跨周目联动 + 行为画像反喂 variants 接入引擎,#15 闭环,0 新字段;
 15. M18 已完成(Pass 21),**沙盒债已偿**——linmou 子图独立满足 ADR-010 五项骨架,账册包+搪瓷缸升级为 tool 节点;
 16. M19 已完成(Pass 22),**守门工具已加**——audit 语义化四件套(foreshadow_chain / cross_run_continuity / variant_trigger / protagonist_behavior),audit_all 从 8 项升到 12 项。
+17. M20 已完成(Pass 23),**主结局反咬已补**——E_TRUE / E_BROADCAST / E_NEUTRAL / E_HIDDEN 各 1 处反咬 variant,cross_run_continuity debt 清零。
 
 理由很简单:先清账,再加戏。否则后面每一次剧本增强都会被旧告警和旧任务拖住。
 
