@@ -76,10 +76,11 @@
 | [ADR-004-core-llm-refactor.md](architecture/ADR-004-core-llm-refactor.md) | Draft | 核心结构化 LLM 调用从 Crew 重构为 LLMClient |
 | [ADR-005-langgraph-agent-orchestration.md](architecture/ADR-005-langgraph-agent-orchestration.md) | Draft | 用 LangGraph 收敛 Agent 编排（保留 LLMClient 与 v4） |
 | [ADR-006-response-llmclient-and-guided-approx-merge-scope.md](architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md) | Accepted | 响应默认走 LLMClient + guided 近似合并按 depth/beat 分桶 |
-| [ADR-011-persona-inertia.md](architecture/ADR-011-persona-inertia.md) | Accepted | 人格惯性 ending_seen.last 协议(Pass 25)|
-
-------|------|
-| [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | 采用「骨架优先」的新故事生成流水线的架构决策 |
+| [ADR-007-state-contract.md](architecture/ADR-007-state-contract.md) | Accepted | 状态空间契约与 Flag 命名规范 |
+| [ADR-008-reaction-mechanism.md](architecture/ADR-008-reaction-mechanism.md) | Accepted | 戏剧化反应机制 + 跨周目认知继承契约 |
+| [ADR-009-linmou-arc-canon.md](architecture/ADR-009-linmou-arc-canon.md) | Accepted | linmou_1985 角色周目契约 + 跨周目联动(Act 2/3 sandbox debt 在偿)|
+| [ADR-010-sandbox-topology-contract.md](architecture/ADR-010-sandbox-topology-contract.md) | Accepted | 沙盒拓扑契约 — 这是沙盒不是死剧本(第一公理)|
+| [ADR-011-persona-inertia.md](architecture/ADR-011-persona-inertia.md) | Accepted | 人格惯性 ending_seen.last 协议(Pass 25/26)|
 
 ---
 
