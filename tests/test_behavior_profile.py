@@ -148,3 +148,62 @@ def test_tui_choice_after_feedback_escapes_choice_text(monkeypatch):
     assert r"查看\[直播\]" in label
     assert "[cyan]〈观察〉[/]" in label
     assert "查看[直播]" not in label
+
+
+# ============== Pass 20:behavior_profile 反向喂 variants ==============
+
+
+def test_behavior_profile_require_has_matches_substring():
+    """Pass 20:variant if {behavior_profile: {has: '取证'}} 命中取证型玩家。"""
+    from ghost_story_factory.runtime.contracts import RequirementEvaluator
+
+    state = _state(flags={"know.archive_visited": True})
+    require = {"behavior_profile": {"has": "取证"}}
+    assert RequirementEvaluator.meets(state, require)
+
+
+def test_behavior_profile_require_has_misses_when_axis_absent():
+    """没解锁取证轴,has 条件不命中。"""
+    from ghost_story_factory.runtime.contracts import RequirementEvaluator
+
+    state = _state()
+    require = {"behavior_profile": {"has": "取证"}}
+    assert not RequirementEvaluator.meets(state, require)
+
+
+def test_behavior_profile_require_has_any_matches_at_least_one():
+    """has_any 列表里任一命中即可。"""
+    from ghost_story_factory.runtime.contracts import RequirementEvaluator
+
+    state = _state(flags={"oneshot.live_streaming": True})  # 曝光轴
+    require = {"behavior_profile": {"has_any": ["取证", "曝光", "审判"]}}
+    assert RequirementEvaluator.meets(state, require)
+
+
+def test_behavior_profile_require_dominant_only_matches_first_axis():
+    """dominant 只命中主导轴(axes[0]),不考虑次要轴。"""
+    from ghost_story_factory.runtime.contracts import RequirementEvaluator
+
+    # 取证轴会先于曝光/救援被加入(代码里第一个判断),所以是 dominant
+    state = _state(
+        flags={"know.archive_visited": True, "oneshot.live_streaming": True},
+    )
+    require_match = {"behavior_profile": {"dominant": "取证"}}
+    require_miss = {"behavior_profile": {"dominant": "曝光"}}
+    assert RequirementEvaluator.meets(state, require_match)
+    assert not RequirementEvaluator.meets(state, require_miss)
+
+
+def test_behavior_profile_require_combines_with_other_keys():
+    """behavior_profile 与 character/flags 组合,默认 AND。"""
+    from ghost_story_factory.runtime.contracts import RequirementEvaluator
+
+    state = _state(flags={"arc.got_judge_seal": True})  # 审判轴
+    require = {
+        "character": "G-273",
+        "behavior_profile": {"has": "审判"},
+    }
+    assert RequirementEvaluator.meets(state, require)
+    # 同样画像但 character 不符
+    state2 = _state(flags={"arc.got_judge_seal": True}, character="linmou_1985")
+    assert not RequirementEvaluator.meets(state2, require)
