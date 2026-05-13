@@ -18,6 +18,7 @@ from tools.audit_foreshadow_chain import audit as audit_fc
 from tools.audit_cross_run_continuity import audit as audit_cr
 from tools.audit_variant_trigger import audit as audit_vt
 from tools.audit_protagonist_behavior import audit as audit_pb
+from tools.audit_profile_inheritance import audit as audit_pi
 
 
 OFFICIAL_TREE = Path("stories/hangzhou_yebanbaoan/tree.json")
@@ -320,3 +321,129 @@ def test_protagonist_behavior_linmou_endings_skipped():
         assert report["problems"] == []
     finally:
         path.unlink()
+
+
+# ============== audit_profile_inheritance(Pass 25) ==============
+
+
+def test_profile_inheritance_empty_tree_reports_all_5_missing():
+    """空树 → 5 个 main ending 都缺 .last consumer。"""
+    tree = {"story_id": "杭州_v7", "nodes": {}}
+    path = _write_tree(tree)
+    try:
+        report = audit_pi(path)
+        assert report["main_endings_count"] == 5
+        missing = sorted(p["ending_type"] for p in report["problems"])
+        assert missing == ["E_BROADCAST", "E_DATA", "E_HIDDEN", "E_TRUE", "E_TRUTH"]
+    finally:
+        path.unlink()
+
+
+def test_profile_inheritance_recognises_last_consumer():
+    """.last consumer 命中后,对应 ending 不再报 problem。"""
+    tree = {
+        "story_id": "杭州_v7",
+        "nodes": {
+            "n_intro": {
+                "narrative_variants": [
+                    {
+                        "if": {"ending_seen": {"story_id": "杭州_v7", "last": "E_TRUE"}},
+                        "text": "残影",
+                    },
+                ],
+            },
+        },
+    }
+    path = _write_tree(tree)
+    try:
+        report = audit_pi(path)
+        assert report["consumers_by_ending"]["E_TRUE"] == ["n_intro"]
+        missing = sorted(p["ending_type"] for p in report["problems"])
+        assert "E_TRUE" not in missing
+        # 其余 4 个仍 missing
+        assert len(missing) == 4
+    finally:
+        path.unlink()
+
+
+def test_profile_inheritance_ignores_ending_id_form():
+    """旧形式 ending_id 不算 .last 消费——这是 Pass 23 已覆盖的"曾经"。"""
+    tree = {
+        "story_id": "杭州_v7",
+        "nodes": {
+            "n_intro": {
+                "narrative_variants": [
+                    {
+                        "if": {"ending_seen": {"story_id": "杭州_v7", "ending_id": "E_TRUE"}},
+                        "text": "曾经",
+                    },
+                ],
+            },
+        },
+    }
+    path = _write_tree(tree)
+    try:
+        report = audit_pi(path)
+        # ending_id 形式不计入 .last consumers
+        assert report["consumers_by_ending"]["E_TRUE"] == []
+    finally:
+        path.unlink()
+
+
+def test_profile_inheritance_skips_ending_nodes():
+    """ending 节点内部 variant 的 .last 不算"开场反咬",不计入 consumer。"""
+    tree = {
+        "story_id": "杭州_v7",
+        "nodes": {
+            "n_end_neutral": {
+                "is_ending": True,
+                "ending_type": "E_NEUTRAL",
+                "narrative_variants": [
+                    {
+                        "if": {"ending_seen": {"story_id": "杭州_v7", "last": "E_TRUE"}},
+                        "text": "结算文案",
+                    },
+                ],
+            },
+        },
+    }
+    path = _write_tree(tree)
+    try:
+        report = audit_pi(path)
+        # ending 节点的 .last 不被认作开场反咬,不计入 consumer
+        assert report["consumers_by_ending"]["E_TRUE"] == []
+    finally:
+        path.unlink()
+
+
+def test_profile_inheritance_story_alias_works():
+    """story_id 别名:variant 写"杭州_v7",tree 写"hangzhou_yebanbaoan" → 仍认。"""
+    tree = {
+        "story_id": "hangzhou_yebanbaoan",
+        "nodes": {
+            "n_picker": {
+                "narrative_variants": [
+                    {
+                        "if": {"ending_seen": {"story_id": "杭州_v7", "last": "E_DATA"}},
+                        "text": "残影",
+                    },
+                ],
+            },
+        },
+    }
+    path = _write_tree(tree)
+    try:
+        report = audit_pi(path)
+        assert report["consumers_by_ending"]["E_DATA"] == ["n_picker"]
+    finally:
+        path.unlink()
+
+
+def test_profile_inheritance_official_tree_pass_24_25_state():
+    """正式树状态:Pass 25 落地后 E_TRUE 有 1 个 consumer(n_intro),其余 4 个仍 debt。"""
+    report = audit_pi(OFFICIAL_TREE)
+    assert report["consumers_by_ending"]["E_TRUE"] == ["n_intro"]
+    missing = sorted(p["ending_type"] for p in report["problems"])
+    # 这条断言保护 ADR-011 debt 的可观测度:E_TRUE 已偿,4 个未偿
+    assert "E_TRUE" not in missing
+    assert len(missing) == 4

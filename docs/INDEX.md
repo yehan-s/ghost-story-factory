@@ -76,6 +76,7 @@
 | [ADR-004-core-llm-refactor.md](architecture/ADR-004-core-llm-refactor.md) | Draft | 核心结构化 LLM 调用从 Crew 重构为 LLMClient |
 | [ADR-005-langgraph-agent-orchestration.md](architecture/ADR-005-langgraph-agent-orchestration.md) | Draft | 用 LangGraph 收敛 Agent 编排（保留 LLMClient 与 v4） |
 | [ADR-006-response-llmclient-and-guided-approx-merge-scope.md](architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md) | Accepted | 响应默认走 LLMClient + guided 近似合并按 depth/beat 分桶 |
+| [ADR-011-persona-inertia.md](architecture/ADR-011-persona-inertia.md) | Accepted | 人格惯性 ending_seen.last 协议(Pass 25)|
 
 ------|------|
 | [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | 采用「骨架优先」的新故事生成流水线的架构决策 |
@@ -103,6 +104,8 @@
 | [TASK_LINMOU_SANDBOX_PASS21.md](tasks/TASK_LINMOU_SANDBOX_PASS21.md) | linmou Act 1 沙盒骨架补齐 Pass 21 |
 | [TASK_AUDIT_SEMANTIC_PASS22.md](tasks/TASK_AUDIT_SEMANTIC_PASS22.md) | audit 语义化三件套 + 行为画像不变量 Pass 22 |
 | [TASK_SCRIPT_CROSS_RUN_FINALE_PASS23.md](tasks/TASK_SCRIPT_CROSS_RUN_FINALE_PASS23.md) | 主结局跨周目反咬补完 Pass 23 |
+| [TASK_LINMOU_FINALE_REACTIONS_PASS24.md](tasks/TASK_LINMOU_FINALE_REACTIONS_PASS24.md) | linmou ending 跨周目反咬补完 Pass 24 |
+| [TASK_PERSONA_INERTIA_PASS25.md](tasks/TASK_PERSONA_INERTIA_PASS25.md) | 人格惯性 ending_seen.last 协议 Pass 25 |
 | [TASK_VN_PRESENTATION_RUNTIME_PASS10.md](tasks/TASK_VN_PRESENTATION_RUNTIME_PASS10.md) | VN 演出契约进入运行时 Pass 10 |
 | [TASK_CHOICE_AFFORDANCE_PASS11.md](tasks/TASK_CHOICE_AFFORDANCE_PASS11.md) | 选择意图与风险提示 Pass 11 |
 | [TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md](tasks/TASK_VN_SANDBOX_IMPROVEMENT_PLAN_PASS12.md) | VN 沙盒体验改进总方案 Pass 12 |

@@ -80,3 +80,38 @@ def test_ending_seen_missing_spec_returns_false():
     assert s.meets({"ending_seen": {}}) is False
     assert s.meets({"ending_seen": {"story_id": "杭州_v7"}}) is False
     assert s.meets({"ending_seen": {"ending_id": "E_TRUTH"}}) is False
+
+
+# --- Pass 25:人格惯性 .last 协议 ---
+
+def test_ending_seen_last_matches_tail():
+    """ending_seen.last 匹配 list[-1]。"""
+    s = _state_with({"杭州_v7": ["E_TRUTH", "E_DATA", "E_TRUE"]})
+    assert s.meets({"ending_seen": {"story_id": "杭州_v7", "last": "E_TRUE"}}) is True
+
+
+def test_ending_seen_last_mismatch_non_tail():
+    """ending_seen.last 不是末尾 → False(就算 list 里出现过)。"""
+    s = _state_with({"杭州_v7": ["E_TRUTH", "E_DATA", "E_TRUE"]})
+    assert s.meets({"ending_seen": {"story_id": "杭州_v7", "last": "E_TRUTH"}}) is False
+
+
+def test_ending_seen_last_empty_list_false():
+    s = _state_with({"杭州_v7": []})
+    assert s.meets({"ending_seen": {"story_id": "杭州_v7", "last": "E_TRUE"}}) is False
+
+
+def test_ending_seen_last_and_ending_id_both_required():
+    """last + ending_id 同时给 → AND 关系。"""
+    s = _state_with({"杭州_v7": ["E_TRUTH", "E_TRUE"]})
+    require = {
+        "ending_seen": {
+            "story_id": "杭州_v7",
+            "last": "E_TRUE",
+            "ending_id": "E_TRUTH",
+        }
+    }
+    assert s.meets(require) is True
+    # E_DATA 不在 list 里 → False
+    require["ending_seen"]["ending_id"] = "E_DATA"
+    assert s.meets(require) is False
