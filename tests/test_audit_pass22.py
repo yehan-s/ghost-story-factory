@@ -464,18 +464,22 @@ def test_profile_inheritance_malformed_spec_does_not_raise():
 
 
 def test_profile_inheritance_official_tree_zero_debt():
-    """Pass 26:5 个 main ending 全部具备 .last consumer,debt 清零。"""
+    """Pass 26:5 个 main ending 全部具备 .last consumer,debt 清零。
+
+    CodeRabbit:断言"必须包含"而非"严格相等"——剧本后续扩写时给某个
+    ending 再加 .last consumer 不应让本测试挂掉。
+    """
     report = audit_pi(OFFICIAL_TREE)
-    expected_consumers = {
-        "E_TRUE": ["n_intro"],
-        "E_TRUTH": ["n_landmark_picker"],
-        "E_BROADCAST": ["n_npc_forum_lurkers"],
-        "E_DATA": ["n_npc_predecessor_voice"],
-        "E_HIDDEN": ["n_scene_evaluator_room"],
+    required_consumers = {
+        "E_TRUE": "n_intro",
+        "E_TRUTH": "n_landmark_picker",
+        "E_BROADCAST": "n_npc_forum_lurkers",
+        "E_DATA": "n_npc_predecessor_voice",
+        "E_HIDDEN": "n_scene_evaluator_room",
     }
-    for etype, nodes in expected_consumers.items():
-        assert report["consumers_by_ending"][etype] == nodes, (
-            f"{etype} 期望 consumer {nodes},实际 "
-            f"{report['consumers_by_ending'][etype]}"
+    for etype, node in required_consumers.items():
+        actual = report["consumers_by_ending"][etype]
+        assert node in actual, (
+            f"{etype} 必须至少有 consumer {node!r},实际 {actual}"
         )
     assert report["problems"] == []

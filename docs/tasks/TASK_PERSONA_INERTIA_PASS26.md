@@ -44,7 +44,7 @@ Pass 25 落地了 `ending_seen.last` 协议,但只补了 E_TRUE(n_intro)1 条
 
 ## 状态
 
-✅ Done(2026-05-14)
+✅ Done(2026-05-13)
 
 ## 后续
 
