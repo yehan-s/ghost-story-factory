@@ -1157,9 +1157,14 @@ def play(tree_path: Path, character_id: Optional[str] = None) -> None:
             tree, state, story_id, on_ending=False
         )
         render_presentation(tree, node)
-        # _is_map_picker 节点:用地图视图替代普通 narrative
-        # 先 build picker_choices 算出 travel_indices(让数字贴到地图上)
+        # _is_map_picker 节点:先渲染 narrative_variant,再叠加地图视图
+        # Pass 27' 修复(2026-05-14 评审决议):picker variants 死渲染
+        # 修复前:picker 分支不调 resolve_narrative,24 picker variants(Pass 9/24/26 反咬等)
+        # 全部运行时不显示;玩家只看到 ASCII 地图 + 进度条
         if node.get("_is_map_picker"):
+            picker_narrative = resolve_narrative(node, state)
+            if picker_narrative and not picker_narrative.strip().startswith("(占位"):
+                render_narrative(picker_narrative)
             from ghost_story_factory.v7.map_view import (
                 render_map_cli, picker_choices
             )
