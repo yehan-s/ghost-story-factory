@@ -1,198 +1,111 @@
 #!/usr/bin/env python3
-"""
-统一测试套件
+"""统一测试入口 — v7 沙盒播放器版。
 
-运行所有核心测试并生成报告
+LLM 流水线相关的脚本测试和单元测试已随代码归档到 `legacy/llm-pipeline` 分支,
+本脚本只跑剧本播放器主线相关的 pytest 套件。
 """
+from __future__ import annotations
 
-import sys
 import subprocess
-from pathlib import Path
+import sys
+
 from rich.console import Console
 from rich.table import Table
 
+console = Console()
 
-def run_test(test_name: str, test_file: str) -> tuple:
-    """运行单个脚本型测试文件（如 test_full_flow.py）"""
-    console = Console()
 
-    console.print(f"\n🧪 运行测试: {test_name}")
-    console.print(f"   文件: {test_file}")
-    console.print("─" * 70)
+PYTEST_SUITES: list[tuple[str, list[str]]] = [
+    (
+        "运行时契约 / state 派生",
+        [
+            "tests/test_save_manager_query.py",
+            "tests/test_ending_seen.py",
+            "tests/test_behavior_profile.py",
+            "tests/test_shifts_completed_derived.py",
+            "tests/test_shifts_skipped_derived.py",
+            "tests/test_state_save_binding.py",
+            "tests/test_state_sim.py",
+            "tests/test_effects_learn.py",
+            "tests/test_reaction_engine.py",
+            "tests/test_reaction_contracts_schema.py",
+            "tests/test_reaction_coverage.py",
+        ],
+    ),
+    (
+        "剧本审计(audit_*)",
+        [
+            "tests/test_audit_pass22.py",
+            "tests/test_audit_paths_linmou.py",
+            "tests/test_audit_playability.py",
+            "tests/test_audit_reactions.py",
+            "tests/test_audit_script_depth.py",
+            "tests/test_audit_state.py",
+            "tests/test_audit_variants.py",
+            "tests/test_npc_accountability_pass8.py",
+            "tests/test_npc_drowned_official_variants.py",
+            "tests/test_lore_data.py",
+            "tests/test_linmou_sandbox.py",
+        ],
+    ),
+    (
+        "v7 TUI / 表达层",
+        [
+            "tests/test_archive_view.py",
+            "tests/test_menu_registry.py",
+            "tests/test_player_presentation.py",
+            "tests/test_choice_affordance.py",
+            "tests/test_tui_presenter.py",
+            "tests/test_tui_experience_pass14.py",
+            "tests/test_picker_variant_renders.py",
+            "tests/test_path_explorer_variants.py",
+            "tests/test_view_tree_progress.py",
+        ],
+    ),
+]
 
+
+def run_suite(name: str, files: list[str]) -> tuple[str, bool, str]:
+    console.print(f"\n🧪 {name}")
     try:
         result = subprocess.run(
-            [sys.executable, test_file],
+            [sys.executable, "-m", "pytest", "-q", "--tb=short", *files],
+            timeout=180,
             capture_output=True,
             text=True,
-            timeout=120,
         )
-
         if result.returncode == 0:
-            console.print(f"✅ {test_name}: 通过\n")
-            return (test_name, True, "")
-        else:
-            console.print(f"❌ {test_name}: 失败\n")
-            output = result.stderr or result.stdout
-            console.print(f"错误输出:\n{output[:1000]}\n")
-            return (test_name, False, output[:200])
-
+            console.print(f"   ✅ 通过\n")
+            return (name, True, "")
+        tail = (result.stdout + result.stderr).strip().split("\n")[-1]
+        console.print(f"   ❌ 失败: {tail}\n")
+        return (name, False, tail[:200])
     except subprocess.TimeoutExpired:
-        console.print(f"⏰ {test_name}: 超时\n")
-        return (test_name, False, "测试超时")
-    except Exception as e:
-        console.print(f"❌ {test_name}: 异常 - {e}\n")
-        return (test_name, False, str(e)[:200])
+        console.print(f"   ⏰ 超时\n")
+        return (name, False, "超时")
 
 
-def run_pytest_suite(test_name: str, pytest_args) -> tuple:
-    """运行一组 pytest 测试（例如 tests/test_*.py）"""
-    console = Console()
+def main() -> int:
+    results = [run_suite(n, fs) for n, fs in PYTEST_SUITES]
 
-    console.print(f"\n🧪 运行 Pytest 测试: {test_name}")
-    console.print(f"   pytest 参数: {' '.join(pytest_args)}")
-    console.print("─" * 70)
-
-    try:
-        result = subprocess.run(
-            [sys.executable, "-m", "pytest", *pytest_args],
-            capture_output=True,
-            text=True,
-            timeout=300,
-        )
-
-        if result.returncode == 0:
-            console.print(f"✅ {test_name}: 通过\n")
-            return (test_name, True, "")
-        else:
-            console.print(f"❌ {test_name}: 失败\n")
-            output = result.stderr or result.stdout
-            console.print(f"错误输出:\n{output[:1000]}\n")
-            return (test_name, False, output[:200])
-
-    except subprocess.TimeoutExpired:
-        console.print(f"⏰ {test_name}: 超时\n")
-        return (test_name, False, "pytest 测试超时")
-    except Exception as e:
-        console.print(f"❌ {test_name}: 异常 - {e}\n")
-        return (test_name, False, str(e)[:200])
-
-
-def main():
-    """主函数"""
-    console = Console()
-
-    console.print("\n")
-    console.print("╔══════════════════════════════════════════════════════════════════╗")
-    console.print("║              🧪 Ghost Story Factory - 测试套件                 ║")
-    console.print("╚══════════════════════════════════════════════════════════════════╝")
-    console.print("\n")
-
-    results = []
-
-    # 一、脚本型测试（历史测试）
-    script_tests = [
-        ("数据库系统测试", "test_database.py"),
-        ("完整流程测试", "test_full_flow.py"),
-        ("GameEngine集成测试", "test_engine_integration.py"),
-    ]
-    for test_name, test_file in script_tests:
-        results.append(run_test(test_name, test_file))
-
-    # 二、Pytest 单元测试（骨架 & guided TreeBuilder + 工具）
-    pytest_suites = [
-        (
-            "骨架模型 / SkeletonGenerator / guided TreeBuilder / StoryGenerator 模式 / 文本填充 / 报告单元测试",
-            [
-                "tests/test_skeleton_model.py",
-                "tests/test_skeleton_generator.py",
-                "tests/test_gametree_plan.py",
-                "tests/test_tree_builder_guided.py",
-                "tests/test_text_filler.py",
-                "tests/test_story_report.py",
-                "tests/test_story_generator_modes.py",
-            ],
-        ),
-        (
-            "工具类单元测试 / 生成进度可视化 / GameTree 可玩性审计",
-            [
-                "tests/test_view_tree_progress.py",
-                "tests/test_audit_playability.py",
-                "tests/test_audit_sandbox.py",
-                "tests/test_audit_script_depth.py",
-                "tests/test_npc_accountability_pass8.py",
-            ],
-        ),
-        (
-            "选择点 LLM 封装与 BMAD 启发式评估单元测试",
-            [
-                "tests/test_choices_llm_wrapper.py",
-                "tests/test_choice_evaluator_bmad.py",
-                "tests/test_response_llmclient.py",
-                "tests/test_state_manager_scope.py",
-            ],
-        ),
-        (
-            "v7 运行时存档 / 菜单 / 档案视图回归测试",
-            [
-                "tests/test_save_manager_query.py",
-                "tests/test_menu_registry.py",
-                "tests/test_archive_view.py",
-                "tests/test_player_presentation.py",
-                "tests/test_choice_affordance.py",
-                "tests/test_behavior_profile.py",
-                "tests/test_tui_presenter.py",
-                "tests/test_tui_experience_pass14.py",
-            ],
-        ),
-    ]
-    for test_name, args in pytest_suites:
-        results.append(run_pytest_suite(test_name, args))
-
-    # 生成报告
-    console.print("\n")
-    console.print("╔══════════════════════════════════════════════════════════════════╗")
-    console.print("║              📊 测试报告                                        ║")
-    console.print("╚══════════════════════════════════════════════════════════════════╝")
-    console.print("\n")
-
-    # 创建结果表格
-    table = Table(show_header=True, header_style="bold cyan")
-    table.add_column("测试名称", style="cyan", width=30)
-    table.add_column("状态", width=10)
-    table.add_column("备注", width=30)
-
-    passed = 0
-    failed = 0
-
-    for test_name, success, error in results:
-        if success:
-            table.add_row(test_name, "[green]✅ 通过[/green]", "")
-            passed += 1
-        else:
-            table.add_row(test_name, "[red]❌ 失败[/red]", error[:30])
-            failed += 1
-
+    table = Table(title="测试结果")
+    table.add_column("套件")
+    table.add_column("状态")
+    table.add_column("备注")
+    for name, ok, msg in results:
+        table.add_row(name, "✅ 通过" if ok else "❌ 失败", msg)
     console.print(table)
-    console.print("\n")
 
-    # 总结
-    total = passed + failed
-    success_rate = (passed / total * 100) if total > 0 else 0
+    total = len(results)
+    passed = sum(1 for _, ok, _ in results if ok)
+    console.print(f"\n总套件: {total}  ✅ 通过: {passed}  ❌ 失败: {total - passed}")
+    console.print(f"成功率: {passed / total * 100:.1f}%")
 
-    console.print(f"总测试数: {total}")
-    console.print(f"✅ 通过: {passed}")
-    console.print(f"❌ 失败: {failed}")
-    console.print(f"成功率: {success_rate:.1f}%")
-    console.print("\n")
-
-    if failed == 0:
-        console.print("🎉 所有测试通过！系统状态良好！\n")
+    if passed == total:
+        console.print("\n🎉 所有套件通过！")
         return 0
-    else:
-        console.print(f"⚠️  有 {failed} 个测试失败，请检查错误信息\n")
-        return 1
+    return 1
 
 
 if __name__ == "__main__":
-    exit(main())
+    sys.exit(main())
