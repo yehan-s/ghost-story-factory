@@ -68,9 +68,7 @@
 ### 🧠 架构决策 (ADR)
 位于 `docs/architecture/`
 
-| 文档 | 状态 | 说明 |
-|------|------|------|
-**LLM 流水线 ADR(已归档到 legacy/llm-pipeline 分支)**
+#### LLM 流水线 ADR(已归档到 `legacy/llm-pipeline` 分支)
 
 | 文档 | 状态 | 说明 |
 |------|------|------|
@@ -81,7 +79,7 @@
 | [ADR-005-langgraph-agent-orchestration.md](architecture/ADR-005-langgraph-agent-orchestration.md) | 🔴 Superseded by ADR-012 | 用 LangGraph 收敛 Agent 编排 |
 | [ADR-006-response-llmclient-and-guided-approx-merge-scope.md](architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md) | 🔴 Superseded by ADR-012 | 响应生成走 LLMClient + guided 分桶 |
 
-**当前主线 ADR(运行时契约,main 上有效)**
+#### 当前主线 ADR(运行时契约,`main` 上有效)
 
 | 文档 | 状态 | 说明 |
 |------|------|------|

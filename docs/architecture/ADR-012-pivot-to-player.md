@@ -47,7 +47,7 @@ LLM 生成流水线整套(代码 + ADR + 依赖)从 main 移除,
 
 ### main 上保留的 src 目录
 
-```
+```text
 src/ghost_story_factory/
 ├── v5/         玩家状态 + 派生量(meets / effects / behavior_profile)
 ├── v7/         全屏 TUI 播放器(textual)
@@ -139,7 +139,7 @@ generate = ["crewai", "langchain-*", "langgraph"]
 
 ## Migration / Rollout
 
-```
+```text
 2026-05-14 12:00  Step 0 ── legacy/llm-pipeline 分支冻结(commit d7ff176)
 2026-05-14 13:00  Step 1 ── PR #64 合并(main 瘦身 -21036 / +205)
 2026-05-14 14:00  Step 2 ── PR #65 合并(README + SCRIPTING)
