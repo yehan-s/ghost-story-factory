@@ -1,6 +1,11 @@
 # ADR-003: v4 故事生成工作流分阶段 & Agent 编排收敛
 
-- 状态: Draft
+> 🔴 **Superseded by [ADR-012](ADR-012-pivot-to-player.md)**(2026-05-14)
+> 本 ADR 描述的 LLM 流水线代码已从 `main` 移除,归档到
+> [`legacy/llm-pipeline`](https://github.com/yehan-s/ghost-story-factory/tree/legacy/llm-pipeline) 分支。
+> 历史决策内容保留作参考,但**实施细节请在 legacy 分支查看**。
+
+- 状态: Superseded by ADR-012(2026-05-14);原状态 Draft
 - 日期: 2025-11-17
 - 作者: yehan（由 Codex 协助起草）
 

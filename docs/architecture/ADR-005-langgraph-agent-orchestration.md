@@ -1,9 +1,14 @@
 # ADR-005: 用 LangGraph 收敛 Agent 编排，保留 LLMClient 与 v4 骨架主路径
 
+> 🔴 **Superseded by [ADR-012](ADR-012-pivot-to-player.md)**(2026-05-14)
+> 本 ADR 描述的 LLM 流水线代码已从 `main` 移除,归档到
+> [`legacy/llm-pipeline`](https://github.com/yehan-s/ghost-story-factory/tree/legacy/llm-pipeline) 分支。
+> 历史决策内容保留作参考,但**实施细节请在 legacy 分支查看**。
+
 > **✅ 文档状态**: ADR-006 已完成，本 ADR M1-M2 已完成。
 > **前置条件**: ✅ ADR-004 M1-M4 完成 + ✅ ADR-006 代码已实现
 
-- 状态: **Accepted** (M1-M2 完成, 2025-12-13)
+- 状态: Superseded by ADR-012(2026-05-14);原状态 **Accepted** (M1-M2 完成, 2025-12-13)
 - 日期: 2025-11-20
 - 作者: yehan（由 Codex 协助起草）
 - 关联: ADR-001/002（v4 骨架与默认流水线）、ADR-003（工作流分阶段 & Agent 编排收敛）、ADR-004（核心 LLM 重构为 LLMClient）
