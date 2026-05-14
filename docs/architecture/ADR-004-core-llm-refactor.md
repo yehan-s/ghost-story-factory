@@ -1,6 +1,11 @@
 # ADR-004: 核心结构化 LLM 调用从 Crew 重构为轻量客户端
 
-- 状态: Accepted (M1-M4 全部完成, 2025-12-13)
+> 🔴 **Superseded by [ADR-012](ADR-012-pivot-to-player.md)**(2026-05-14)
+> 本 ADR 描述的 LLM 流水线代码已从 `main` 移除,归档到
+> [`legacy/llm-pipeline`](https://github.com/yehan-s/ghost-story-factory/tree/legacy/llm-pipeline) 分支。
+> 历史决策内容保留作参考,但**实施细节请在 legacy 分支查看**。
+
+- 状态: Superseded by ADR-012(2026-05-14);原状态 Accepted (M1-M4 全部完成, 2025-12-13)
 - 日期: 2025-11-17
 - 作者: yehan（由 Codex 协助起草）
 - 里程碑:

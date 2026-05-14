@@ -1,6 +1,11 @@
 # ADR-001: 采用「骨架优先」的新故事生成流水线
 
-- 状态: Accepted(技术上仍生效,但语境过时 — 见警告)
+> 🔴 **Superseded by [ADR-012](ADR-012-pivot-to-player.md)**(2026-05-14)
+> 本 ADR 描述的 LLM 流水线代码已从 `main` 移除,归档到
+> [`legacy/llm-pipeline`](https://github.com/yehan-s/ghost-story-factory/tree/legacy/llm-pipeline) 分支。
+> 历史决策内容保留作参考,但**实施细节请在 legacy 分支查看**。
+
+- 状态: Superseded by ADR-012(2026-05-14);原状态 Accepted(技术上仍生效,但语境过时)
 - 日期: 2025-11-15(2026-05-08 加沙盒契约引用)
 - 作者: yehan
 

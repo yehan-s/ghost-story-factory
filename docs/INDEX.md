@@ -70,17 +70,27 @@
 
 | 文档 | 状态 | 说明 |
 |------|------|------|
-| [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | Accepted | 采用「骨架优先」的新故事生成流水线 |
-| [ADR-002-v4-default-pipeline.md](architecture/ADR-002-v4-default-pipeline.md) | Accepted | v4 骨架流水线升级为默认生成路径（v3 仅回退） |
-| [ADR-003-v4-workflow-staging-and-agents.md](architecture/ADR-003-v4-workflow-staging-and-agents.md) | Draft | v4 分阶段入口与 Agent 编排收敛 |
-| [ADR-004-core-llm-refactor.md](architecture/ADR-004-core-llm-refactor.md) | Draft | 核心结构化 LLM 调用从 Crew 重构为 LLMClient |
-| [ADR-005-langgraph-agent-orchestration.md](architecture/ADR-005-langgraph-agent-orchestration.md) | Draft | 用 LangGraph 收敛 Agent 编排（保留 LLMClient 与 v4） |
-| [ADR-006-response-llmclient-and-guided-approx-merge-scope.md](architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md) | Accepted | 响应默认走 LLMClient + guided 近似合并按 depth/beat 分桶 |
-| [ADR-007-state-contract.md](architecture/ADR-007-state-contract.md) | Accepted | 状态空间契约与 Flag 命名规范 |
-| [ADR-008-reaction-mechanism.md](architecture/ADR-008-reaction-mechanism.md) | Accepted | 戏剧化反应机制 + 跨周目认知继承契约 |
-| [ADR-009-linmou-arc-canon.md](architecture/ADR-009-linmou-arc-canon.md) | Accepted | linmou_1985 角色周目契约 + 跨周目联动(Act 2/3 sandbox debt 在偿)|
-| [ADR-010-sandbox-topology-contract.md](architecture/ADR-010-sandbox-topology-contract.md) | Accepted | 沙盒拓扑契约 — 这是沙盒不是死剧本(第一公理)|
-| [ADR-011-persona-inertia.md](architecture/ADR-011-persona-inertia.md) | Accepted | 人格惯性 ending_seen.last 协议(Pass 25/26)|
+**LLM 流水线 ADR(已归档到 legacy/llm-pipeline 分支)**
+
+| 文档 | 状态 | 说明 |
+|------|------|------|
+| [ADR-001-plot-skeleton-pipeline.md](architecture/ADR-001-plot-skeleton-pipeline.md) | 🔴 Superseded by ADR-012 | 采用「骨架优先」的新故事生成流水线 |
+| [ADR-002-v4-default-pipeline.md](architecture/ADR-002-v4-default-pipeline.md) | 🔴 Superseded by ADR-012 | v4 骨架流水线升级为默认生成路径 |
+| [ADR-003-v4-workflow-staging-and-agents.md](architecture/ADR-003-v4-workflow-staging-and-agents.md) | 🔴 Superseded by ADR-012 | v4 分阶段入口与 Agent 编排收敛 |
+| [ADR-004-core-llm-refactor.md](architecture/ADR-004-core-llm-refactor.md) | 🔴 Superseded by ADR-012 | 核心结构化 LLM 调用从 Crew 重构为 LLMClient |
+| [ADR-005-langgraph-agent-orchestration.md](architecture/ADR-005-langgraph-agent-orchestration.md) | 🔴 Superseded by ADR-012 | 用 LangGraph 收敛 Agent 编排 |
+| [ADR-006-response-llmclient-and-guided-approx-merge-scope.md](architecture/ADR-006-response-llmclient-and-guided-approx-merge-scope.md) | 🔴 Superseded by ADR-012 | 响应生成走 LLMClient + guided 分桶 |
+
+**当前主线 ADR(运行时契约,main 上有效)**
+
+| 文档 | 状态 | 说明 |
+|------|------|------|
+| [ADR-007-state-contract.md](architecture/ADR-007-state-contract.md) | ✅ Accepted | 状态空间契约与 Flag 命名规范 |
+| [ADR-008-reaction-mechanism.md](architecture/ADR-008-reaction-mechanism.md) | ✅ Accepted | 戏剧化反应机制 + 跨周目认知继承契约 |
+| [ADR-009-linmou-arc-canon.md](architecture/ADR-009-linmou-arc-canon.md) | ✅ Accepted | linmou_1985 角色周目契约(Act 2/3 sandbox debt 在偿) |
+| [ADR-010-sandbox-topology-contract.md](architecture/ADR-010-sandbox-topology-contract.md) | ✅ Accepted | 沙盒拓扑契约 — 这是沙盒不是死剧本(第一公理) |
+| [ADR-011-persona-inertia.md](architecture/ADR-011-persona-inertia.md) | ✅ Accepted | 人格惯性 ending_seen.last 协议(Pass 25/26) |
+| [ADR-012-pivot-to-player.md](architecture/ADR-012-pivot-to-player.md) | ✅ Accepted | **项目转型为 VN 沙盒播放器,LLM 流水线归档**(2026-05-14) |
 
 ---
 
