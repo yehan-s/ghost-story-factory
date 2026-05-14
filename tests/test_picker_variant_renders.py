@@ -20,6 +20,7 @@ import re
 from pathlib import Path
 
 from ghost_story_factory.v5.player import State, resolve_narrative
+from ghost_story_factory.v7.map_view import picker_choices
 from tools.audit_state import audit_tree
 
 
@@ -142,6 +143,74 @@ def test_audit_state_reports_picker_placeholder_narratives_as_warning():
     sev_warnings = report["severity"]["warnings"]
     assert "placeholder_narratives_picker" in sev_warnings, (
         "placeholder_narratives_picker 应该在 severity.warnings 中"
+    )
+
+
+# ─── Pass 27 剩余:author_text 优先于 GPS 模板 ─────────────────────────
+
+def _make_picker_tree(with_author_text: bool):
+    """构造最小 picker 树 — 含 1 个地标 + node.choices 是否带作者文案可控。"""
+    landmark = {
+        "id": "S1",
+        "short": "湖滨",
+        "place": "湖滨第三把绿色长椅",
+        "time": "20:27",
+        "node_id": "n_s1_hubin",
+        "connections": [],
+    }
+    picker_choices_data = [{"next": "n_s1_hubin"}]
+    if with_author_text:
+        picker_choices_data[0]["text"] = "[01] 湖滨长椅 — 把手电调低一档,去坐那把第三号绿色长椅"
+    picker_node = {
+        "_is_map_picker": True,
+        "choices": picker_choices_data,
+    }
+    tree = {
+        "nodes": {
+            "n_picker": picker_node,
+            "n_s1_hubin": {"narrative": "湖滨"},
+        },
+        "landmark_map": [landmark],
+        "tools": [],
+    }
+    return tree, picker_node
+
+
+def test_picker_choices_uses_author_text_when_available():
+    """Pass 27 剩余:node.choices 写了作者文案时,picker_choices 应优先用作者文案。
+
+    修复前:picker_choices 完全忽略 node.choices.text,所有 travel 选项强行套
+    "→ S1 湖滨 · 湖滨第三把绿色长椅 (20:27)" GPS 格式。
+    修复后:有作者文案则用作者文案 + 标签后缀(回访/终局)。
+    """
+    tree, picker_node = _make_picker_tree(with_author_text=True)
+    state = State({"known_landmarks": ["S1"]})
+
+    out = picker_choices(tree, state, picker_node)
+    travel = [c for c in out if c.get("_picker_kind") == "travel"]
+    assert travel, "picker_choices 应至少产出 1 个 travel 选项"
+    text = travel[0]["text"]
+    assert "[01] 湖滨长椅" in text, (
+        f"travel 选项应包含作者文案 '[01] 湖滨长椅 ...',实际: {text!r}"
+    )
+    # 不应该被 GPS 模板覆盖
+    assert "→ S1 湖滨 · 湖滨第三把绿色长椅" not in text, (
+        f"travel 文案不应被 GPS 模板覆盖,实际: {text!r}"
+    )
+
+
+def test_picker_choices_falls_back_to_gps_when_no_author_text():
+    """node.choices 缺作者文案时,picker_choices 应 fallback 到 GPS 模板(向后兼容)。"""
+    tree, picker_node = _make_picker_tree(with_author_text=False)
+    state = State({"known_landmarks": ["S1"]})
+
+    out = picker_choices(tree, state, picker_node)
+    travel = [c for c in out if c.get("_picker_kind") == "travel"]
+    assert travel, "picker_choices 应至少产出 1 个 travel 选项"
+    text = travel[0]["text"]
+    # 无作者文案 → GPS 模板兜底
+    assert "→ S1" in text and "湖滨" in text and "20:27" in text, (
+        f"无作者文案时应 fallback 到 GPS 模板,实际: {text!r}"
     )
 
 

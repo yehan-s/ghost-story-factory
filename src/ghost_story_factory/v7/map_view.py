@@ -504,6 +504,17 @@ def picker_choices(
     known = set(getattr(state, "known_landmarks", None) or [])
     current_lid = getattr(state, "last_landmark_id", None)
 
+    # Pass 27 剩余(2026-05-14 评审决议):作者文案接回
+    # 从 node.choices 反查 {next: text} 映射;travel / tool 分支优先用作者写的叙事性文案,
+    # fallback 到 GPS 模板。修复前作者写的 10 段文案("[01] 湖滨长椅 — 把手电调低..." 等)
+    # 被 picker_choices 完全替换为 "→ S1 湖滨 · 湖滨第三把绿色长椅 (20:27)" GPS 格式。
+    author_text_by_next: Dict[str, str] = {}
+    for ch in (node or {}).get("choices") or []:
+        nxt = ch.get("next")
+        txt = (ch.get("text") or "").strip()
+        if nxt and txt:
+            author_text_by_next[nxt] = txt
+
     choices: List[Dict[str, Any]] = []
 
     # 自由移动 — 邻接地标 + 已解锁 + 已知道
@@ -533,10 +544,16 @@ def picker_choices(
         revisit_tag = "(回访)" if sid in visited else ""
         # S7 是终局,特别标注
         ending_tag = " · 终局" if sid == "S7" else ""
-        text = f"→ {sid} {short} · {place} ({time}){ending_tag} {revisit_tag}".strip()
+        # Pass 27 剩余:优先用作者写的 node.choices.text;无作者文案时 fallback 到 GPS 模板
+        node_id = lm.get("node_id")
+        author_text = author_text_by_next.get(node_id, "") if node_id else ""
+        if author_text:
+            text = f"{author_text}{ending_tag} {revisit_tag}".strip()
+        else:
+            text = f"→ {sid} {short} · {place} ({time}){ending_tag} {revisit_tag}".strip()
         choices.append({
             "text": text,
-            "next": lm.get("node_id"),
+            "next": node_id,
             "_picker_kind": "travel",
             "_landmark_id": sid,
         })
@@ -554,7 +571,12 @@ def picker_choices(
         flags = getattr(state, "flags", {}) or {}
         on = bool(flags.get(flag, False)) if flag else False
         status_text = tool.get("on_text", "已开") if on else tool.get("off_text", "未开")
-        text = f"[{icon}] {label} · {status_text}"
+        # Pass 27 剩余:工具节点同样优先用作者文案(若 node.choices 中有对应 next)
+        author_text = author_text_by_next.get(node_id, "")
+        if author_text:
+            text = author_text  # 状态信息(已开/未开)交给作者文案自己表达
+        else:
+            text = f"[{icon}] {label} · {status_text}"
         choices.append({
             "text": text,
             "next": node_id,
