@@ -124,17 +124,14 @@ def test_resolve_narrative_lore_index_has_fallback_variant():
 # ─── audit_state 防回归 Rule(新增,Pass 27a 配套)──────────────────
 
 def test_audit_state_reports_picker_placeholder_narratives_as_warning():
-    """audit_state 新 rule:picker 节点 narrative 含 (占位 应列入 warnings(防回归)。
+    """audit_state rule:picker 节点 narrative 含 (占位 应列入 warnings(防回归)。
 
-    现状:n_lore_index 和 n_l1985_landmark_picker 的 narrative 字段都是 (占位)。
-    虽然 if=[] 兜底 + 引擎 (占位 guard 已保证安全,但 audit 应主动提醒清理。
+    Pass 27a 设置:当时 n_lore_index 和 n_l1985_landmark_picker 都有占位主文。
+    Pass 35-A(2026-05-15)清理了 n_lore_index 占位,但 n_l1985_landmark_picker
+    仍是 Pass 35-C 范围,继续作为 audit_state 的功能锚点。
     """
     report = audit_tree(OFFICIAL_TREE)
     pickers = report.get("placeholder_narratives_picker", [])
-    # 当前已知的 2 个 picker 节点 narrative 是 (占位),audit 应该捞出
-    assert "n_lore_index" in pickers, (
-        f"audit_state 未识别 n_lore_index 的 (占位 narrative;实际 pickers={pickers}"
-    )
     assert "n_l1985_landmark_picker" in pickers, (
         f"audit_state 未识别 n_l1985_landmark_picker 的 (占位 narrative;"
         f"实际 pickers={pickers}"
