@@ -146,3 +146,89 @@ def test_zheda_lore_specifies_yuquan_campus(tree):
     assert not non_yuquan, (
         f"浙大老校区钟楼必有'玉泉'前缀,但发现 {non_yuquan}"
     )
+
+
+# ─── Pass 35-B1 沉淀的不变量 ──────────────────────────────
+
+def test_character_variant_before_visit_count_min(tree):
+    """Pass 35-B1 沉淀(QA):character variant 必须在所有 visit_count_min variant 之前。
+
+    引擎按顺序匹配(player.py:799-806),若 visit_count_min 在 character 之前,
+    G-273 角色重访(visit≥2)时会被 visit_count_min 截胡,看不到 G-273 专属文本。
+    Pass 35-A 修过 5 个 lore_* 节点,Pass 35-B1 修了 lost_archive / predecessor_voice。
+    """
+    violations = []
+    for nid, node in tree["nodes"].items():
+        variants = node.get("narrative_variants") or []
+        char_idx = next(
+            (i for i, v in enumerate(variants) if "character" in (v.get("if") or {})),
+            None,
+        )
+        visit_idxs = [
+            i for i, v in enumerate(variants) if "visit_count_min" in (v.get("if") or {})
+        ]
+        if char_idx is not None and visit_idxs:
+            if char_idx >= min(visit_idxs):
+                violations.append(
+                    f"{nid}: character@[{char_idx}] ≥ visit_count_min 首位@[{min(visit_idxs)}]"
+                )
+    assert not violations, (
+        "character variant 必须在所有 visit_count_min 之前(防 35-A 同型 bug 复发):\n  "
+        + "\n  ".join(violations)
+    )
+
+
+def test_no_duplicate_ending_seen_variants(tree):
+    """Pass 35-B1 沉淀(QA):同一节点的 narrative_variants 中,
+    同一 (story_id, ending_id) 的 ending_seen 不得出现多次。
+
+    QA 实测发现 predecessor_voice 曾有 [0] last:E_DATA + [2] ending_id:E_DATA,
+    后者被前者截胡 → 死代码。Pass 35-B1 删除了 [2]。
+    """
+    violations = []
+    for nid, node in tree["nodes"].items():
+        seen = set()
+        for i, v in enumerate(node.get("narrative_variants") or []):
+            cond = v.get("if") or {}
+            es = cond.get("ending_seen")
+            if es and isinstance(es, dict) and "ending_id" in es and "story_id" in es:
+                key = (es["story_id"], es["ending_id"])
+                if key in seen:
+                    violations.append(f"{nid}.variants[{i}]: 重复 ending_seen {key}")
+                seen.add(key)
+    assert not violations, (
+        "同一 (story_id, ending_id) 的 ending_seen 不得重复(死代码防回归):\n  "
+        + "\n  ".join(violations)
+    )
+
+
+def test_heavy_variant_tool_nodes_have_character_branch(tree):
+    """Pass 35-B1 沉淀(QA):_is_tool 节点 variants ≥ 8 时必须有 character 分支。
+
+    工具节点是玩家高频重访点,若 variants 丰富但无 character 分支,
+    G-273 玩家专属代入感丢失。Pass 35-A 修了 5 个 lore_* tool,
+    Pass 35-B1 修了 lost_archive / predecessor_voice。
+
+    KNOWN_DEBT 是 Pass 35-B1 评审时暴露的历史 sandbox debt,
+    挂账 Pass 36+ 处理(forum_lurkers 是 NPC 而非真工具,可能调整 _is_tool 标记;
+    lake_underwater 是终局场景,character 是否必要待评)。
+    """
+    KNOWN_DEBT = {
+        "n_npc_forum_lurkers",  # 10 variants,Pass 36+ 补 character 或下放 _is_tool
+        "n_scene_lake_underwater",  # 8 variants,西湖水下终局场景
+    }
+    violations = []
+    for nid, node in tree["nodes"].items():
+        if nid in KNOWN_DEBT:
+            continue
+        if not node.get("_is_tool"):
+            continue
+        variants = node.get("narrative_variants") or []
+        if len(variants) >= 8:
+            has_char = any("character" in (v.get("if") or {}) for v in variants)
+            if not has_char:
+                violations.append(f"{nid}: {len(variants)} variants 无 character 分支")
+    assert not violations, (
+        "重 variants 工具节点(≥8)必须有 character 分支(G-273 重访身份代入感):\n  "
+        + "\n  ".join(violations)
+    )
