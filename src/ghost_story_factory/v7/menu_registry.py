@@ -80,11 +80,31 @@ _CITY_DEFAULT_LABELS = {
 
 
 def _stories_root() -> Path:
-    """定位 stories/ 根目录。"""
-    # 包路径 → 仓库根 → stories/
+    """定位 stories/ 根目录。
+
+    优先级:
+    1. 环境变量 `GHOST_STORY_STORIES_DIR`(显式覆盖,debug 友好)
+    2. PyInstaller 冻结模式 → `sys._MEIPASS/stories`(打包进 binary 的资源)
+    3. 源码运行 → `<repo_root>/stories`
+    """
+    import os
+    import sys
+
+    override = os.environ.get("GHOST_STORY_STORIES_DIR")
+    if override:
+        return Path(override)
+
+    # PyInstaller 冻结模式
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        return Path(sys._MEIPASS) / "stories"  # type: ignore[attr-defined]
+
+    # 源码运行:src/ghost_story_factory/v7/menu_registry.py → repo_root
     here = Path(__file__).resolve()
-    repo_root = here.parents[3]
-    return repo_root / "stories"
+    return here.parents[3] / "stories"
+
+
+# 公开别名:供其他模块统一使用
+stories_root = _stories_root
 
 
 def list_cities() -> List[City]:
