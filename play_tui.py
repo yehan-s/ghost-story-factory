@@ -18,9 +18,12 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-_SRC = Path(__file__).resolve().parent / "src"
-if str(_SRC) not in sys.path:
-    sys.path.insert(0, str(_SRC))
+# 源码运行时需要把 src 加进 sys.path;PyInstaller 冻结模式下不需要
+# (整个包已经被打进 binary 的 sys.path)。
+if not getattr(sys, "frozen", False):
+    _SRC = Path(__file__).resolve().parent / "src"
+    if str(_SRC) not in sys.path:
+        sys.path.insert(0, str(_SRC))
 
 
 def main() -> int:

@@ -818,8 +818,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     if argv:
         path = Path(argv[0])
     else:
-        repo_root = Path(__file__).resolve().parents[3]
-        path = repo_root / "stories" / "hangzhou_yebanbaoan" / "tree.json"
+        from ghost_story_factory.v7.menu_registry import stories_root
+        path = stories_root() / "hangzhou_yebanbaoan" / "tree.json"
     if not path.exists():
         print(f"找不到对话树: {path}")
         return 1

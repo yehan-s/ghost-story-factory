@@ -20,6 +20,7 @@ coverage.xml
 build/
 dist/
 *.egg-info/
+*.spec
 
 # OS / tools
 .DS_Store
